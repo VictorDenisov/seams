@@ -1,3 +1,5 @@
+package org.creativelabs;
+
 import japa.parser.ast.body.ClassOrInterfaceDeclaration;
 import japa.parser.ast.body.FieldDeclaration;
 import japa.parser.ast.body.ConstructorDeclaration;
@@ -29,7 +31,6 @@ public class CodeVisitor extends VoidVisitorAdapter<String> {
 
     @Override
     public void visit(FieldDeclaration n, String file) {
-        System.out.println
     }
 
     @Override

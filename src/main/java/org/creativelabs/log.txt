@@ -1,0 +1,56 @@
+[?1000h[?1049h[?1h=[1;34r[?12;25h[?12l[?25h[27m[m[H[2J[?25l[34;1H"App.java" 100L, 3562C
+Error detected while processing /home/victor/.vim/autoload/javacomplete.vim:
+line  110:
+E128: Function name must start with a capital or contain a colon: findStart()
+line  120:
+E117: Unknown function: s:GetStatement
+E15: Invalid expression: s:GetStatement()
+line  121:
+E121: Undefined variable: statement
+E116: Invalid arguments for function <SNR>49_WatchVariant
+line  123:
+E121: Undefined variable: statement
+E15: Invalid expression: statement =~ '[.0-9A-Za-z_]\s*$'
+line  129:
+E133: :return not inside a function
+line  149:
+E133: :return not inside a function
+line  158:
+E133: :return not inside a function
+line  169:
+E133: :return not inside a function
+line  189:
+E133: :return not inside a function
+line  202:
+E133: :return not inside a function
+line  206:
+E133: :return not inside a function
+line  213:
+E133: :return not inside a function
+line  218:
+E133: :return not inside a function
+line  219:
+E193: :endfunction not inside a function[?1000l[?1000h[27m[m[H[2J[1;1H[35mpackage[m org.creativelabs;
+
+[35mimport[m japa.parser.JavaParser;
+[35mimport[m japa.parser.ParseException;
+[35mimport[m japa.parser.ast.CompilationUnit;
+[35mimport[m java.io.FileInputStream;
+[35mimport[m java.io.FileNotFoundException;
+[35mimport[m java.io.File;
+[35mimport[m japa.parser.ast.body.ClassOrInterfaceDeclaration;
+[35mimport[m japa.parser.ast.body.BodyDeclaration;
+[35mimport[m japa.parser.ast.body.FieldDeclaration;
+[35mimport[m japa.parser.ast.body.MethodDeclaration;
+[35mimport[m japa.parser.ast.body.VariableDeclarator;
+[35mimport[m japa.parser.ast.body.TypeDeclaration;
+[35mimport[m japa.parser.ast.type.ClassOrInterfaceType;
+[35mimport[m japa.parser.ast.type.PrimitiveType;
+[35mimport[m japa.parser.ast.stmt.BlockStmt;
+[35mimport[m japa.parser.ast.visitor.VoidVisitorAdapter;
+[35mimport[m java.util.HashMap;
+[35mimport[m java.util.Map;
+[35mimport[m java.util.List;
+
+[32mpublic[m [32mclass[m App {
+    [32mpublic[m [32mstatic[m [32mvoid[m main(String[] args) {[25;8H FileInputStream fis = [31mnull[m;[26;8H [33mtry[m {[27;12H fis = [33mnew[m FileInputStream([33mnew[m File([31m"Sample.java"[m));[28;8H } [33mcatch[m (FileNotFoundException e) {[29;12H e.printStackTrace();[30;8H }[32;8H CompilationUnit cu = [31mnull[m;[33;8H [33mtry[m {[34;119H1,1[11CTop]2;App.java (~/javaprojects/seams/src/main/java/org/creativelabs) - VIM]1;App.java[1;1H[?12l[?25h[?25l[34;1HType  :quit<Enter>  to exit Vim[34;119H[K[34;119H1,1[11CTop[1;1H[?12l[?25h[?25l[34;109H:[1;1H[34;1H[K[34;1H:[?12l[?25hq[?25l[?12l[?25h[?25l[?1000l]2;victor@victor-laptop: ~/javaprojects/seams/src/main/java/org/creativelabs]1;victor@victor-laptop: ~/javaprojects/seams/src/main/java/org/creativelabs[34;1H[K[34;1H[?1l>[?12l[?25h[?1049l
