@@ -97,8 +97,8 @@ public class App {
         BlockStmt body  = md.getBody();
         SeamCounterVisitor seamCounter = new SeamCounterVisitor(variables);
         seamCounter.visit(body, null);
-        System.out.println(seamCounter.getAssignedVariables());
-        System.out.println(seamCounter.getLocalVariables());
+        logger.debug("Assigned variables are: " + seamCounter.getAssignedVariables());
+        logger.debug("Local variables are: " + seamCounter.getLocalVariables());
         System.out.println("------End of method processing " + md.getName());
         return 0;
     }

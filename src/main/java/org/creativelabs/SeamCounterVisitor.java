@@ -19,8 +19,11 @@ import japa.parser.ast.visitor.VoidVisitorAdapter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.log4j.Logger;
 
 public class SeamCounterVisitor extends VoidVisitorAdapter<Object> {
+
+    private Logger logger = Logger.getLogger(this.getClass());
 
     private Map<String, String> variables;
     private Map<String, String> localVariables;
@@ -50,7 +53,7 @@ public class SeamCounterVisitor extends VoidVisitorAdapter<Object> {
 
     @Override
     public void visit(NameExpr n, Object o) {
-        System.out.println(n.getName() + ":" + n.getBeginLine() + " " + n.getBeginColumn());
+        logger.trace(n.getName() + ":" + n.getBeginLine() + " " + n.getBeginColumn());
     }
 
     @Override
@@ -58,20 +61,15 @@ public class SeamCounterVisitor extends VoidVisitorAdapter<Object> {
         ScopeDetectorVisitor scopeDetector = new ScopeDetectorVisitor();
         scopeDetector.visit(n, o);
 
-        System.out.println("Method name " + n.getName() + " Deepest name - " + scopeDetector.getName() + 
+        logger.debug("Method name " + n.getName() + " Deepest name - " + scopeDetector.getName() + 
                 ":" + n.getBeginLine() + " " + n.getBeginColumn());
-
-        if (!internalInstances.containsKey(scopeDetector.getName())) {
-            System.out.println("We have seam here");
-
-        }
     }
 
     @Override
     public void visit(FieldAccessExpr n, Object o) {
         ScopeDetectorVisitor scopeDetector = new ScopeDetectorVisitor();
         scopeDetector.visit(n, o);
-        System.out.println("Field name " + n.getField() + " Deepest name - " + scopeDetector.getName() + 
+        logger.debug("Field name " + n.getField() + " Deepest name - " + scopeDetector.getName() + 
                 ":" + n.getBeginLine() + " " + n.getBeginColumn());
         super.visit(n, o);
     }
@@ -79,7 +77,7 @@ public class SeamCounterVisitor extends VoidVisitorAdapter<Object> {
     @Override
     public void visit(AssignExpr n, Object o) {
         if (n.getValue() != null) {
-            System.out.println("Assigning the following expression type " + n.getValue().getClass());
+            logger.trace("Assigning the following expression type " + n.getValue().getClass());
             ExpressionSeparatorVisitor esv = new ExpressionSeparatorVisitor(internalInstances);
             n.getValue().accept(esv, null);
             if (esv.isAssignedInternalInstance()) {
@@ -93,14 +91,15 @@ public class SeamCounterVisitor extends VoidVisitorAdapter<Object> {
     public void visit(VariableDeclarationExpr n, Object o) {
         for (VariableDeclarator var : n.getVars()) {
             localVariables.put(var.getId().getName(), n.getType().toString());
-            System.out.println("Variable declaration name " + var.getId().getName());
-            System.out.println("Assigning the following expression " + var.getInit());
+            logger.trace("Variable declaration name " + var.getId().getName());
+            logger.trace("Assigning the following expression " + var.getInit());
             ExpressionSeparatorVisitor esv = new ExpressionSeparatorVisitor(internalInstances);
             if (var.getInit() != null) {
-                System.out.println("Assigning the following expression type " + var.getInit().getClass());
+                logger.trace("Assigning the following expression type " + var.getInit().getClass());
                 var.getInit().accept(esv, null);
                 if (esv.isAssignedInternalInstance()) {
                     internalInstances.put(var.getId().getName(), true);
+                    System.out.println(var.getId().getName() + " - internal instance");
                 }
             }
         }
