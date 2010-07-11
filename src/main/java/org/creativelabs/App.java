@@ -19,22 +19,27 @@ import japa.parser.ast.visitor.VoidVisitorAdapter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
+import org.apache.log4j.Logger;
 
 public class App {
-    public static void main(String[] args) {
-        FileInputStream fis = null;
-        try {
-            fis = new FileInputStream(new File("Sample.java"));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+    private static Logger logger = Logger.getLogger(App.class);
+    private static String fileName;
+    
+    private static void peekValuesFromArgs(String[] args) {
+        logger.trace("Peeking values");
+        if (args.length == 0) {
+            System.out.println("File name is expected");
+            return;
         }
 
-        CompilationUnit cu = null;
-        try {
-            cu = JavaParser.parse(fis);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        fileName = args[0];
+    }
+    public static void main(String[] args) throws ParseException, FileNotFoundException {
+        peekValuesFromArgs(args);
+
+        FileInputStream fis = new FileInputStream(new File(fileName));
+
+        CompilationUnit cu = JavaParser.parse(fis);
 
         for (TypeDeclaration typeDeclaration : cu.getTypes()) {
             if (typeDeclaration instanceof ClassOrInterfaceDeclaration) {

@@ -57,8 +57,10 @@ public class SeamCounterVisitor extends VoidVisitorAdapter<Object> {
     public void visit(MethodCallExpr n, Object o) {
         ScopeDetectorVisitor scopeDetector = new ScopeDetectorVisitor();
         scopeDetector.visit(n, o);
+
         System.out.println("Method name " + n.getName() + " Deepest name - " + scopeDetector.getName() + 
                 ":" + n.getBeginLine() + " " + n.getBeginColumn());
+
         if (!internalInstances.containsKey(scopeDetector.getName())) {
             System.out.println("We have seam here");
 
@@ -82,6 +84,7 @@ public class SeamCounterVisitor extends VoidVisitorAdapter<Object> {
             n.getValue().accept(esv, null);
             if (esv.isAssignedInternalInstance()) {
                 internalInstances.put(n.getTarget().toString(), true);
+                System.out.println(n.getTarget().toString() + " - internal instance");
             }
         }
     }

@@ -13,7 +13,7 @@ define "seams" do
 
   project.version = VERSION_NUMBER
   project.group = GROUP
-  compile.with 'lib/*.jar'
+  compile.with 'lib/*.jar', 'log4j:log4j:jar:1.2.14'
   manifest["Implementation-Vendor"] = COPYRIGHT
   package(:jar)
 end
