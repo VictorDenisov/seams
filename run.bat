@@ -1,0 +1,1 @@
+scala -cp ./target/classes;./lib/javaparser-1.0.8.jar org.creativelabs.ScalaApp
