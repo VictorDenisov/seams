@@ -77,12 +77,14 @@ public class SeamCounterVisitor extends VoidVisitorAdapter<Object> {
     @Override
     public void visit(AssignExpr n, Object o) {
         if (n.getValue() != null) {
-            logger.trace("Assigning the following expression type " + n.getValue().getClass());
+            logger.debug("Assigning the following expression type " + n.getValue().getClass());
             ExpressionSeparatorVisitor esv = new ExpressionSeparatorVisitor(internalInstances);
             n.getValue().accept(esv, null);
             if (esv.isAssignedInternalInstance()) {
                 internalInstances.put(n.getTarget().toString(), true);
                 System.out.println(n.getTarget().toString() + " - internal instance");
+            } else {
+                System.out.println(n.getTarget().toString() + " - external instance");
             }
         }
     }
@@ -100,7 +102,10 @@ public class SeamCounterVisitor extends VoidVisitorAdapter<Object> {
                 if (esv.isAssignedInternalInstance()) {
                     internalInstances.put(var.getId().getName(), true);
                     System.out.println(var.getId().getName() + " - internal instance");
+                } else {
+                    System.out.println(var.getId().getName() + " - external instance");
                 }
+
             }
         }
     }
