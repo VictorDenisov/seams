@@ -9,6 +9,7 @@ import japa.parser._
 import scala.collection.JavaConversions._
 
 object ScalaApp {
+/*
     def main(args: Array[String]) {
         val fis = new FileInputStream(new File("Sample.java"))
 
@@ -50,8 +51,8 @@ object ScalaApp {
     }
 
     def processMethods(n: ClassOrInterfaceDeclaration, vars: Map[Stirng, String]) = {
-        
-    }
+        ""
+    } */
 }
 
 // vim: set ts=4 sw=4 et:
