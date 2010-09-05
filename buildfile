@@ -4,6 +4,7 @@ VERSION_NUMBER = "1.0.0"
 # Group identifier for your projects
 GROUP = "seams"
 COPYRIGHT = ""
+Buildr.settings.build['scala.version'] = "2.8.0"
 require 'buildr/scala'
 
 # Specify Maven 2.0 remote repositories here, like this:
@@ -11,7 +12,6 @@ repositories.remote << "http://www.ibiblio.org/maven2/"
 
 desc "The Seams Determination project"
 define "seams" do
-
   project.version = VERSION_NUMBER
   project.group = GROUP
   compile.with 'lib/*.jar', 'log4j:log4j:jar:1.2.14'
