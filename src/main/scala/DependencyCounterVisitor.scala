@@ -37,6 +37,9 @@ private class DependencyCounterVisitor(private val classFields: Map[String, Stri
         if (classFields.contains(n.getName)) {
             dependenciesUponType += classFields(n.getName)
         }
+        if (n.getName()(0).isUpper) {
+            dependenciesUponType += n.getName
+        }
     }
     
     override def visit(n: MethodCallExpr, o: Object) {
