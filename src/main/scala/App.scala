@@ -7,7 +7,7 @@ import japa.parser.ast.body._
 import japa.parser.ast.`type`._
 import japa.parser._
 import scala.collection.JavaConversions._
-import scala.collection.mutable._
+import scala.collection._
 
 object ScalaApp {
 
@@ -22,31 +22,32 @@ object ScalaApp {
         }
     }
 
-    def printFields(fields: Map[String, String]) {
+    private def printFields(fields: Map[String, String]) {
         for ((key, value) <- fields) {
             println(key + " -> " + value)
         }
     }
 
-    def processClass(typeDeclaration: ClassOrInterfaceDeclaration) {
+    private def processClass(typeDeclaration: ClassOrInterfaceDeclaration) {
         val fields = findFields(typeDeclaration)
-        val deps = processMethods(typeDeclaration, fields)
+        val (deps, uponType) = processMethods(typeDeclaration, fields)
         printFields(fields)
-        printDeps(deps)
+        printDeps("Dependencies", deps)
+        printDeps("UponType", uponType)
     }
 
-    private def outputSet(set: Set[String]) {
-        println("Dependencies(")
+    private def outputSet(depsName: String, set: Set[String]) {
+        println(depsName + "(")
         for (value <- set) {
             println(value)
         }
         println(")")
     }
 
-    private def printDeps(deps: Map[String, Set[String]]) {
+    private def printDeps(depsName: String, deps: Map[String, Set[String]]) {
         for ((key, value) <- deps) {
             print(key + " -> ")
-            outputSet(value)
+            outputSet(depsName, value)
         }
     }
     
@@ -58,41 +59,46 @@ object ScalaApp {
         override def visit(n: PrimitiveType, a: Object) = name = n.getType().toString()
     }
     
-    def findFields(typeDeclaration: ClassOrInterfaceDeclaration): 
+    private def findFields(typeDeclaration: ClassOrInterfaceDeclaration): 
                     Map[String, String] = {
 
-        val fields = new HashMap[String, String]
+        val fields = new mutable.HashMap[String, String]
         for (bd <- typeDeclaration.getMembers) bd match {
             case fd: FieldDeclaration => 
-            for (vardecl <- fd.getVariables()) {
-                val tv = new TypeVisitor
-                fd.getType().accept(tv, null)
-                fields.put(vardecl.getId().getName(), tv.name)
-            }
+                for (vardecl <- fd.getVariables()) {
+                    val tv = new TypeVisitor
+                    fd.getType().accept(tv, null)
+                    fields.put(vardecl.getId().getName(), tv.name)
+                }
             case _ =>
         }
         fields
     }
 
     private def processMethods(n: ClassOrInterfaceDeclaration, 
-                    classFields: Map[String, String]): Map[String, Set[String]] = {
+                    classFields: Map[String, String]): 
+                    (Map[String, Set[String]], Map[String, Set[String]]) = {
 
-        val outgoingDependencies = new HashMap[String, Set[String]]
+        val outgoingDependencies = new mutable.HashMap[String, Set[String]]
+        val outgoingDependenciesUponType = new mutable.HashMap[String, Set[String]]
+
         for (bd <- n.getMembers()) bd match {
             case md: MethodDeclaration =>
-            outgoingDependencies += (md.getName -> findOutgoingDependencies(md, classFields))
+                val (deps, uponType) = findOutgoingDependencies(md, classFields)
+                outgoingDependencies += (md.getName -> deps)
+                outgoingDependenciesUponType += (md.getName -> uponType)
             case _ => 
         }
         
-        outgoingDependencies
+        (outgoingDependencies, outgoingDependenciesUponType)
     }
 
     private def findOutgoingDependencies(md: MethodDeclaration, 
-                    classFields: Map[String, String]): Set[String] = {
+                    classFields: Map[String, String]): (Set[String], Set[String]) = {
         val body = md.getBody
         val dependencyCounter = new DependencyCounterVisitor(classFields)
         dependencyCounter.visit(body, null)
-        dependencyCounter.getDependencies
+        (dependencyCounter.getDependencies, dependencyCounter.getDependenciesUponType)
     }
 }
 

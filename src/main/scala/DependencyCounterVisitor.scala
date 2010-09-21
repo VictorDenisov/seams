@@ -1,6 +1,6 @@
 package org.creativelabs.seams
 
-import scala.collection.mutable._
+import scala.collection._
 
 import japa.parser.ast.stmt._
 import japa.parser.ast.expr._
@@ -11,13 +11,17 @@ import scala.collection.JavaConversions._
 private class DependencyCounterVisitor(private val classFields: Map[String, String]) 
                     extends VoidVisitorAdapter[Object] {
 
-    private var dependencies = new HashSet[String]
+    private val dependencies = new mutable.HashSet[String]
 
-    private val localVariables = new HashMap[String, String]
+    private val dependenciesUponType = new mutable.HashSet[String]
 
-    private val internalInstances = new HashMap[String, Boolean]
+    private val localVariables = new mutable.HashMap[String, String]
 
-    def getDependencies = dependencies
+    private val internalInstances = new mutable.HashMap[String, Boolean]
+
+    def getDependencies = immutable.HashSet.empty[String] ++ dependencies
+
+    def getDependenciesUponType = immutable.HashSet.empty[String] ++ dependenciesUponType
 
     override def visit(n: BlockStmt, o: Object) {
         for (statement <- n.getStmts) {
@@ -26,7 +30,13 @@ private class DependencyCounterVisitor(private val classFields: Map[String, Stri
     }
 
     override def visit(n: NameExpr, o: Object) {
-        dependencies += n.getName()
+        dependencies += n.getName
+        if (localVariables.contains(n.getName)) {
+            dependenciesUponType += localVariables(n.getName)
+        }
+        if (classFields.contains(n.getName)) {
+            dependenciesUponType += classFields(n.getName)
+        }
     }
     
     override def visit(n: MethodCallExpr, o: Object) {
