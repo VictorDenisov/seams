@@ -10,9 +10,9 @@ import scala.collection.JavaConversions._
 import scala.collection._
 
 class ClassProcessor(typeDeclaration: ClassOrInterfaceDeclaration) {
-    var fields: Map[String, String] = new immutable.HashMap
-    var dependencies: Map[String, Set[String]] = new immutable.HashMap
-    var dependenciesUponType: Map[String, Set[String]] = new immutable.HashMap
+    var fields: Map[String, String] = new mutable.HashMap
+    var dependencies: Map[String, Set[String]] = new mutable.HashMap
+    var dependenciesUponType: Map[String, Set[String]] = new mutable.HashMap
 
     def compute() {            
         fields = findFields(typeDeclaration)
@@ -31,19 +31,14 @@ class ClassProcessor(typeDeclaration: ClassOrInterfaceDeclaration) {
     private def processMethods(n: ClassOrInterfaceDeclaration, 
                     classFields: Map[String, String]) {
 
-        val outgoingDependencies = new mutable.HashMap[String, Set[String]]
-        val outgoingDependenciesUponType = new mutable.HashMap[String, Set[String]]
-
         for (bd <- n.getMembers()) bd match {
             case md: MethodDeclaration =>
                 val (deps, uponType) = findOutgoingDependencies(md, classFields)
-                outgoingDependencies += (md.getName -> deps)
-                outgoingDependenciesUponType += (md.getName -> uponType)
+                dependencies += (md.getName -> deps)
+                dependenciesUponType += (md.getName -> uponType)
             case _ => 
         }
         
-        dependencies = outgoingDependencies
-        dependenciesUponType = outgoingDependenciesUponType
     }
 
     private def findOutgoingDependencies(md: MethodDeclaration, 
