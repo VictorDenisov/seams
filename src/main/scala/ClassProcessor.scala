@@ -10,9 +10,15 @@ import scala.collection.JavaConversions._
 import scala.collection._
 
 class ClassProcessor(typeDeclaration: ClassOrInterfaceDeclaration) {
+    var fields: Map[String, String] = new immutable.HashMap
+    var dependencies: Map[String, Set[String]] = new immutable.HashMap
+    var dependencidesUponType: Map[String, Set[String]] = new immutable.HashMap
+
     def compute() {            
-        val fields = findFields(typeDeclaration)
+        fields = findFields(typeDeclaration)
         val (deps, uponType) = processMethods(typeDeclaration, fields)
+        dependencies = deps
+        dependencidesUponType = uponType
         ScalaApp.printFields(fields)
         ScalaApp.printDeps("Dependencies", deps)
         ScalaApp.printDeps("UponType", uponType)
