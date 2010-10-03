@@ -16,10 +16,10 @@ class ClassProcessor(typeDeclaration: ClassOrInterfaceDeclaration) {
 
     def compute() {            
         fields = findFields(typeDeclaration)
-        val (deps, uponType) = processMethods(typeDeclaration, fields)
-        dependencies = deps
-        dependenciesUponType = uponType
-        outData
+
+        processMethods(typeDeclaration, fields)
+
+        outData()
     }
 
     def outData() {
@@ -29,8 +29,7 @@ class ClassProcessor(typeDeclaration: ClassOrInterfaceDeclaration) {
     }
 
     private def processMethods(n: ClassOrInterfaceDeclaration, 
-                    classFields: Map[String, String]): 
-                    (Map[String, Set[String]], Map[String, Set[String]]) = {
+                    classFields: Map[String, String]) {
 
         val outgoingDependencies = new mutable.HashMap[String, Set[String]]
         val outgoingDependenciesUponType = new mutable.HashMap[String, Set[String]]
@@ -43,7 +42,8 @@ class ClassProcessor(typeDeclaration: ClassOrInterfaceDeclaration) {
             case _ => 
         }
         
-        (outgoingDependencies, outgoingDependenciesUponType)
+        dependencies = outgoingDependencies
+        dependenciesUponType = outgoingDependenciesUponType
     }
 
     private def findOutgoingDependencies(md: MethodDeclaration, 
