@@ -22,13 +22,13 @@ object ScalaApp {
         }
     }
 
-    private def printFields(fields: Map[String, String]) {
+    private[seams] def printFields(fields: Map[String, String]) {
         for ((key, value) <- fields) {
             println(key + " -> " + value)
         }
     }
 
-    private def processClass(typeDeclaration: ClassOrInterfaceDeclaration) {
+    private[seams] def processClass(typeDeclaration: ClassOrInterfaceDeclaration) {
         val fields = findFields(typeDeclaration)
         val (deps, uponType) = processMethods(typeDeclaration, fields)
         printFields(fields)
@@ -36,7 +36,7 @@ object ScalaApp {
         printDeps("UponType", uponType)
     }
 
-    private def outputSet(depsName: String, set: Set[String]) {
+    private[seams] def outputSet(depsName: String, set: Set[String]) {
         println(depsName + "(")
         for (value <- set) {
             println(value)
@@ -44,7 +44,7 @@ object ScalaApp {
         println(")")
     }
 
-    private def printDeps(depsName: String, deps: Map[String, Set[String]]) {
+    private[seams] def printDeps(depsName: String, deps: Map[String, Set[String]]) {
         for ((key, value) <- deps) {
             print(key + " -> ")
             outputSet(depsName, value)
@@ -59,7 +59,7 @@ object ScalaApp {
         override def visit(n: PrimitiveType, a: Object) = name = n.getType().toString()
     }
     
-    private def findFields(typeDeclaration: ClassOrInterfaceDeclaration): 
+    private[seams] def findFields(typeDeclaration: ClassOrInterfaceDeclaration): 
                     Map[String, String] = {
 
         val fields = new mutable.HashMap[String, String]
@@ -75,7 +75,7 @@ object ScalaApp {
         fields
     }
 
-    private def processMethods(n: ClassOrInterfaceDeclaration, 
+    private[seams] def processMethods(n: ClassOrInterfaceDeclaration, 
                     classFields: Map[String, String]): 
                     (Map[String, Set[String]], Map[String, Set[String]]) = {
 

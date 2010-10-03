@@ -1,0 +1,44 @@
+Construction of SampleClass
+sampleField -> SampleClass
+myField -> Int
+v -> Int
+getV -> Dependencies(
+v
+)
+setV -> Dependencies(
+this.v
+v
+)
+doSomething -> Dependencies(
+Logger.getLogger()
+n
+newSampleLocalVariable
+sampleField.doIt()
+System.out.println("Hello world")
+myField
+sampleLocalVariable.getWarn()
+Logger
+System.out
+i
+System
+Logger.getLogger().warn("Hello")
+newSampleLocalVariable.helloAll()
+Logger.getInstance()
+getV()
+getV().processValue()
+sampleLocalVariable
+sampleField
+)
+getV -> UponType(
+Int
+)
+setV -> UponType(
+Int
+)
+doSomething -> UponType(
+Logger
+Int
+System
+int
+SampleClass
+)
