@@ -9,14 +9,39 @@ import japa.parser._
 import scala.collection.JavaConversions._
 import scala.collection._
 
-
 class ClassProcessor(typeDeclaration: ClassOrInterfaceDeclaration) {
     def compute() {            
         val fields = findFields(typeDeclaration)
-        val (deps, uponType) = ScalaApp.processMethods(typeDeclaration, fields)
+        val (deps, uponType) = processMethods(typeDeclaration, fields)
         ScalaApp.printFields(fields)
         ScalaApp.printDeps("Dependencies", deps)
         ScalaApp.printDeps("UponType", uponType)
+    }
+
+    private def processMethods(n: ClassOrInterfaceDeclaration, 
+                    classFields: Map[String, String]): 
+                    (Map[String, Set[String]], Map[String, Set[String]]) = {
+
+        val outgoingDependencies = new mutable.HashMap[String, Set[String]]
+        val outgoingDependenciesUponType = new mutable.HashMap[String, Set[String]]
+
+        for (bd <- n.getMembers()) bd match {
+            case md: MethodDeclaration =>
+                val (deps, uponType) = findOutgoingDependencies(md, classFields)
+                outgoingDependencies += (md.getName -> deps)
+                outgoingDependenciesUponType += (md.getName -> uponType)
+            case _ => 
+        }
+        
+        (outgoingDependencies, outgoingDependenciesUponType)
+    }
+
+    private def findOutgoingDependencies(md: MethodDeclaration, 
+                    classFields: Map[String, String]): (Set[String], Set[String]) = {
+        val body = md.getBody
+        val dependencyCounter = new DependencyCounterVisitor(classFields)
+        dependencyCounter.visit(body, null)
+        (dependencyCounter.getDependencies, dependencyCounter.getDependenciesUponType)
     }
 
     private def findFields(typeDeclaration: ClassOrInterfaceDeclaration): 

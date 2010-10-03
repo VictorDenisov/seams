@@ -47,31 +47,6 @@ object ScalaApp {
         }
     }
     
-    private[seams] def processMethods(n: ClassOrInterfaceDeclaration, 
-                    classFields: Map[String, String]): 
-                    (Map[String, Set[String]], Map[String, Set[String]]) = {
-
-        val outgoingDependencies = new mutable.HashMap[String, Set[String]]
-        val outgoingDependenciesUponType = new mutable.HashMap[String, Set[String]]
-
-        for (bd <- n.getMembers()) bd match {
-            case md: MethodDeclaration =>
-                val (deps, uponType) = findOutgoingDependencies(md, classFields)
-                outgoingDependencies += (md.getName -> deps)
-                outgoingDependenciesUponType += (md.getName -> uponType)
-            case _ => 
-        }
-        
-        (outgoingDependencies, outgoingDependenciesUponType)
-    }
-
-    private def findOutgoingDependencies(md: MethodDeclaration, 
-                    classFields: Map[String, String]): (Set[String], Set[String]) = {
-        val body = md.getBody
-        val dependencyCounter = new DependencyCounterVisitor(classFields)
-        dependencyCounter.visit(body, null)
-        (dependencyCounter.getDependencies, dependencyCounter.getDependenciesUponType)
-    }
 }
 
 // vim: set ts=4 sw=4 et:
