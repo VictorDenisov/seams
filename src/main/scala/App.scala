@@ -29,11 +29,7 @@ object ScalaApp {
     }
 
     private[seams] def processClass(typeDeclaration: ClassOrInterfaceDeclaration) {
-        val fields = findFields(typeDeclaration)
-        val (deps, uponType) = processMethods(typeDeclaration, fields)
-        printFields(fields)
-        printDeps("Dependencies", deps)
-        printDeps("UponType", uponType)
+        new ClassProcessor(typeDeclaration).compute()
     }
 
     private[seams] def outputSet(depsName: String, set: Set[String]) {
@@ -51,30 +47,6 @@ object ScalaApp {
         }
     }
     
-    private class TypeVisitor extends VoidVisitorAdapter[Object] {
-        var name: String = _
-
-        override def visit(n: ClassOrInterfaceType, a: Object) = name = n.getName()
-
-        override def visit(n: PrimitiveType, a: Object) = name = n.getType().toString()
-    }
-    
-    private[seams] def findFields(typeDeclaration: ClassOrInterfaceDeclaration): 
-                    Map[String, String] = {
-
-        val fields = new mutable.HashMap[String, String]
-        for (bd <- typeDeclaration.getMembers) bd match {
-            case fd: FieldDeclaration => 
-                for (vardecl <- fd.getVariables()) {
-                    val tv = new TypeVisitor
-                    fd.getType().accept(tv, null)
-                    fields.put(vardecl.getId().getName(), tv.name)
-                }
-            case _ =>
-        }
-        fields
-    }
-
     private[seams] def processMethods(n: ClassOrInterfaceDeclaration, 
                     classFields: Map[String, String]): 
                     (Map[String, Set[String]], Map[String, Set[String]]) = {
