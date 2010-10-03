@@ -10,13 +10,12 @@ import scala.collection.JavaConversions._
 import scala.collection._
 
 class ClassProcessor(typeDeclaration: ClassOrInterfaceDeclaration) {
-    var fields: Map[String, String] = new mutable.HashMap
+    var fields: Map[String, String] = findFields(typeDeclaration)
+
     var dependencies: Map[String, Set[String]] = new mutable.HashMap
     var dependenciesUponType: Map[String, Set[String]] = new mutable.HashMap
 
     def compute() {            
-        fields = findFields(typeDeclaration)
-
         processMethods(typeDeclaration, fields)
 
         outData()
