@@ -12,16 +12,20 @@ import scala.collection._
 class ClassProcessor(typeDeclaration: ClassOrInterfaceDeclaration) {
     var fields: Map[String, String] = new immutable.HashMap
     var dependencies: Map[String, Set[String]] = new immutable.HashMap
-    var dependencidesUponType: Map[String, Set[String]] = new immutable.HashMap
+    var dependenciesUponType: Map[String, Set[String]] = new immutable.HashMap
 
     def compute() {            
         fields = findFields(typeDeclaration)
         val (deps, uponType) = processMethods(typeDeclaration, fields)
         dependencies = deps
-        dependencidesUponType = uponType
+        dependenciesUponType = uponType
+        outData
+    }
+
+    def outData() {
         ScalaApp.printFields(fields)
-        ScalaApp.printDeps("Dependencies", deps)
-        ScalaApp.printDeps("UponType", uponType)
+        ScalaApp.printDeps("Dependencies", dependencies)
+        ScalaApp.printDeps("UponType", dependenciesUponType)
     }
 
     private def processMethods(n: ClassOrInterfaceDeclaration, 
