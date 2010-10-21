@@ -15,6 +15,12 @@ class ClassProcessor(typeDeclaration: ClassOrInterfaceDeclaration) {
     private var dependencies: Map[String, Set[String]] = new mutable.HashMap
     private var dependenciesUponType: Map[String, Set[String]] = new mutable.HashMap
 
+    def fields(): Map[String, String] = fields
+
+    def dependencies(): Map[String, Set[String]] = this.dependencies
+
+    def dependenciesUponType(): Map[String, Set[String]] = this.dependenciesUponType
+
     def compute() {            
         processMethods(typeDeclaration, fields)
 
