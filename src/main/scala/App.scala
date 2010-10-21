@@ -29,7 +29,9 @@ object ScalaApp {
     }
 
     private[seams] def processClass(typeDeclaration: ClassOrInterfaceDeclaration) {
-        new ClassProcessor(typeDeclaration).compute()
+        val classProcessor = new ClassProcessor(typeDeclaration)
+        classProcessor.compute()
+        classProcessor.outData()
     }
 
     private[seams] def outputSet(depsName: String, set: Set[String]) {

@@ -10,27 +10,25 @@ import scala.collection.JavaConversions._
 import scala.collection._
 
 class ClassProcessor(typeDeclaration: ClassOrInterfaceDeclaration) {
-    private var fields: Map[String, String] = findFields(typeDeclaration)
+    private var _fields: Map[String, String] = findFields(typeDeclaration)
 
-    private var dependencies: Map[String, Set[String]] = new mutable.HashMap
-    private var dependenciesUponType: Map[String, Set[String]] = new mutable.HashMap
+    private var _dependencies: Map[String, Set[String]] = new mutable.HashMap
+    private var _dependenciesUponType: Map[String, Set[String]] = new mutable.HashMap
 
-    def fields(): Map[String, String] = fields
+    def fields(): Map[String, String] = _fields
 
-    def dependencies(): Map[String, Set[String]] = this.dependencies
+    def dependencies(): Map[String, Set[String]] = this._dependencies
 
-    def dependenciesUponType(): Map[String, Set[String]] = this.dependenciesUponType
+    def dependenciesUponType(): Map[String, Set[String]] = this._dependenciesUponType
 
     def compute() {            
-        processMethods(typeDeclaration, fields)
-
-        outData()
+        processMethods(typeDeclaration, _fields)
     }
 
     def outData() {
-        ScalaApp.printFields(fields)
-        ScalaApp.printDeps("Dependencies", dependencies)
-        ScalaApp.printDeps("UponType", dependenciesUponType)
+        ScalaApp.printFields(_fields)
+        ScalaApp.printDeps("Dependencies", _dependencies)
+        ScalaApp.printDeps("UponType", _dependenciesUponType)
     }
 
     private def processMethods(n: ClassOrInterfaceDeclaration, 
@@ -39,8 +37,8 @@ class ClassProcessor(typeDeclaration: ClassOrInterfaceDeclaration) {
         for (bd <- n.getMembers()) bd match {
             case md: MethodDeclaration =>
                 val (deps, uponType) = findOutgoingDependencies(md, classFields)
-                dependencies += (md.getName -> deps)
-                dependenciesUponType += (md.getName -> uponType)
+                _dependencies += (md.getName -> deps)
+                _dependenciesUponType += (md.getName -> uponType)
             case _ => 
         }
         
