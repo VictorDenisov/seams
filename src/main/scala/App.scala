@@ -31,7 +31,13 @@ object ScalaApp {
     private[seams] def processClass(typeDeclaration: ClassOrInterfaceDeclaration) {
         val classProcessor = new ClassProcessor(typeDeclaration)
         classProcessor.compute()
-        classProcessor.outData()
+        outData(classProcessor)
+    }
+
+    private[seams] def outData(classProcessor: ClassProcessor) {
+        ScalaApp.printFields(classProcessor.fields)
+        ScalaApp.printDeps("Dependencies", classProcessor.dependencies)
+        ScalaApp.printDeps("UponType", classProcessor.dependenciesUponType)
     }
 
     private[seams] def outputSet(depsName: String, set: Set[String]) {

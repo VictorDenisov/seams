@@ -25,12 +25,6 @@ class ClassProcessor(typeDeclaration: ClassOrInterfaceDeclaration) {
         processMethods(typeDeclaration, _fields)
     }
 
-    def outData() {
-        ScalaApp.printFields(_fields)
-        ScalaApp.printDeps("Dependencies", _dependencies)
-        ScalaApp.printDeps("UponType", _dependenciesUponType)
-    }
-
     private def processMethods(n: ClassOrInterfaceDeclaration, 
                     classFields: Map[String, String]) {
 
