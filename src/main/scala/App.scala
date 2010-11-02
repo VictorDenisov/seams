@@ -22,12 +22,6 @@ object ScalaApp {
         }
     }
 
-    private[seams] def printFields(fields: Map[String, String]) {
-        for ((key, value) <- fields) {
-            println(key + " -> " + value)
-        }
-    }
-
     private[seams] def processClass(typeDeclaration: ClassOrInterfaceDeclaration) {
         val classProcessor = new ClassProcessor(typeDeclaration)
         classProcessor.compute()
@@ -40,12 +34,10 @@ object ScalaApp {
         ScalaApp.printDeps("UponType", classProcessor.dependenciesUponType)
     }
 
-    private[seams] def outputSet(depsName: String, set: Set[String]) {
-        println(depsName + "(")
-        for (value <- set) {
-            println(value)
+    private[seams] def printFields(fields: Map[String, String]) {
+        for ((key, value) <- fields) {
+            println(key + " -> " + value)
         }
-        println(")")
     }
 
     private[seams] def printDeps(depsName: String, deps: Map[String, Set[String]]) {
@@ -53,6 +45,14 @@ object ScalaApp {
             print(key + " -> ")
             outputSet(depsName, value)
         }
+    }
+
+    private[seams] def outputSet(depsName: String, set: Set[String]) {
+        println(depsName + "(")
+        for (value <- set) {
+            println(value)
+        }
+        println(")")
     }
 }
 
