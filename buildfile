@@ -14,7 +14,8 @@ desc "The Seams Determination project"
 define "seams" do
   project.version = VERSION_NUMBER
   project.group = GROUP
-  compile.with 'lib/*.jar', 'log4j:log4j:jar:1.2.14'
+  compile.with 'lib/javaparser-1.0.8.jar', 'lib/jgraphx.jar', 'log4j:log4j:jar:1.2.14'
   manifest["Implementation-Vendor"] = COPYRIGHT
   package(:jar)
+  test.using(:testng)
 end

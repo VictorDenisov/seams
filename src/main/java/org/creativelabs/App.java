@@ -24,7 +24,7 @@ import org.apache.log4j.Logger;
 public class App {
     private static Logger logger = Logger.getLogger(App.class);
     private static String fileName;
-    
+
     private static void peekValuesFromArgs(String[] args) {
         logger.trace("Peeking values");
         if (args.length == 0) {
