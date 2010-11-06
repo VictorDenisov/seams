@@ -1,4 +1,4 @@
-package org.creativelabs.seams;
+package org.creativelabs;
 
 import java.io.*;
 import java.util.*;
@@ -10,7 +10,7 @@ import japa.parser.*;
 
 class MainApp {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         FileInputStream fis = new FileInputStream(new File("Sample.java"));
 
         CompilationUnit cu = JavaParser.parse(fis);
@@ -29,18 +29,18 @@ class MainApp {
 
     private static void outData(ClassProcessor classProcessor) {
         printFields(classProcessor.getFields());
-        printDeps("Dependencies", classProcessor.dependencies);
-        printDeps("UponType", classProcessor.dependenciesUponType);
+        printDeps("Dependencies", classProcessor.getDependencies());
+        printDeps("UponType", classProcessor.getDependenciesUponType());
     }
 
     private static void printFields(Map<String, String> fields) {
-        for (Map.Entry<String, String> entry : fields) {
+        for (Map.Entry<String, String> entry : fields.entrySet()) {
             System.out.println(entry.getKey() + " -> " + entry.getValue());
         }
     }
 
     private static void printDeps(String depsName, Map<String, Set<String>> deps) {
-        for (Map.Entry<String, Set<String>> entry : deps) {
+        for (Map.Entry<String, Set<String>> entry : deps.entrySet()) {
             System.out.print(entry.getKey() + " -> ");
             outputSet(depsName, entry.getValue());
         }
