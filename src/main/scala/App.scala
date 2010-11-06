@@ -29,9 +29,9 @@ object ScalaApp {
     }
 
     private[seams] def outData(classProcessor: ClassProcessor) {
-        ScalaApp.printFields(classProcessor.fields)
-        ScalaApp.printDeps("Dependencies", classProcessor.dependencies)
-        ScalaApp.printDeps("UponType", classProcessor.dependenciesUponType)
+        printFields(classProcessor.fields)
+        printDeps("Dependencies", classProcessor.dependencies)
+        printDeps("UponType", classProcessor.dependenciesUponType)
     }
 
     private[seams] def printFields(fields: Map[String, String]) {

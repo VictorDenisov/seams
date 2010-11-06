@@ -18,4 +18,5 @@ define "seams" do
   manifest["Implementation-Vendor"] = COPYRIGHT
   package(:jar)
   test.using(:testng)
+  test.with 'lib/javaparser-1.0.8.jar', 'lib/jgraphx.jar', 'log4j:log4j:jar:1.2.14'
 end
