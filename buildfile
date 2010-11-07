@@ -4,8 +4,6 @@ VERSION_NUMBER = "1.0.0"
 # Group identifier for your projects
 GROUP = "seams"
 COPYRIGHT = ""
-Buildr.settings.build['scala.version'] = "2.8.0"
-require 'buildr/scala'
 
 # Specify Maven 2.0 remote repositories here, like this:
 repositories.remote << "http://www.ibiblio.org/maven2/"
@@ -17,6 +15,5 @@ define "seams" do
   compile.with 'lib/javaparser-1.0.8.jar', 'lib/jgraphx.jar', 'log4j:log4j:jar:1.2.14'
   manifest["Implementation-Vendor"] = COPYRIGHT
   package(:jar)
-  test.using(:testng)
-  test.with 'lib/javaparser-1.0.8.jar', 'lib/jgraphx.jar', 'log4j:log4j:jar:1.2.14'
+  test.using :testng
 end
