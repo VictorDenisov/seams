@@ -11,7 +11,7 @@ class TypeFinder {
         return myCl.getName();
     }
 
-        /*
+    /*
     String determineType(MethodCallExpr expr) throws Exception {
         String scopeType = determineType();
 
@@ -20,5 +20,5 @@ class TypeFinder {
         Class myCl = method.getReturnType();
         return myCl.getName();
     }
-        */
+    */
 }
