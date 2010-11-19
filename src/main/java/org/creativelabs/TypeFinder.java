@@ -42,30 +42,13 @@ class TypeFinder {
     }
 
     String determineType(FieldAccessExpr expr, Map<String, Class> varType) throws Exception {
-        NameExpr scope = (NameExpr)expr.getScope();
-
-        String scopeClassName;
-
-        if (Character.isUpperCase(scope.getName().charAt(0))) {
-            scopeClassName = "java.lang." + scope.getName();
-        } else {
-            scopeClassName = varType.get(scope.getName()).getName();
-        }
+        String scopeClassName = determineType(expr.getScope(), varType);
 
         return getFieldType(scopeClassName, expr.getField());
     }
  
     String determineType(MethodCallExpr expr, Map<String, Class> varType) throws Exception {
-//String scopeClassName = determineType(expr.getScope(), varType);
-        NameExpr scope = (NameExpr)expr.getScope();
-        
-        String scopeClassName;
-
-        if (Character.isUpperCase(scope.getName().charAt(0))) {
-            scopeClassName = "java.lang." + scope.getName();
-        } else {
-            scopeClassName = varType.get(scope.getName()).getName();
-        }
+        String scopeClassName = determineType(expr.getScope(), varType);
 
         Class[] argType = new Class[1];
 
