@@ -8,6 +8,7 @@ import java.util.HashMap;
 
 import japa.parser.ast.expr.MethodCallExpr;
 import japa.parser.ast.expr.FieldAccessExpr;
+import japa.parser.ast.expr.NameExpr;
 import japa.parser.ast.expr.Expression;
 
 import static org.testng.AssertJUnit.*;
@@ -53,7 +54,7 @@ public class TypeFinderTest {
     }
 
     @Test
-    public void testDetermineTypeExpression() throws Exception {
+    public void testDetermineTypeNameExprVariable() throws Exception {
         Expression expr = ParseHelper.createExpression("string");
 
         HashMap<String, Class> varTypes = new HashMap<String, Class> ();
@@ -65,8 +66,8 @@ public class TypeFinderTest {
     }
 
     @Test
-    public void testDetermineTypeExpressionComesNameExpression() throws Exception {
-        Expression expr = ParseHelper.createExpression("String");
+    public void testDetermineTypeNameExprClass() throws Exception {
+        NameExpr expr = (NameExpr)ParseHelper.createExpression("String");
 
         HashMap<String, Class> varTypes = new HashMap<String, Class> ();
         varTypes.put("string", String.class);
@@ -77,31 +78,7 @@ public class TypeFinderTest {
     }
 
     @Test
-    public void testDetermineTypeMethodCall() throws Exception {
-        Expression expr = ParseHelper.createExpression("string.compareTo(x)");
-
-        HashMap<String, Class> varTypes = new HashMap<String, Class> ();
-        varTypes.put("string", String.class);
-        varTypes.put("x", String.class);
-
-        String type = new TypeFinder().determineType(expr, varTypes);
-
-        assertEquals("int", type);
-    }
-
-    @Test
-    public void testDetermineTypeForFieldAccess() throws Exception {
-        Expression expr = ParseHelper.createExpression("str.CASE_INSENSITIVE_ORDER");
-
-        HashMap<String, Class> varTypes = new HashMap<String, Class> ();
-        varTypes.put("str", String.class);
-
-        String type = new TypeFinder().determineType(expr, varTypes);
-        assertEquals("java.util.Comparator", type);
-    }
-
-    @Test
-    public void testDetermineType() throws Exception {
+    public void testDetermineTypeMethodCallStatic() throws Exception {
         MethodCallExpr expr = (MethodCallExpr)ParseHelper.createExpression("String.valueOf(x)");
 
         HashMap<String, Class> varTypes = new HashMap<String, Class> ();
@@ -135,4 +112,5 @@ public class TypeFinderTest {
         String type = new TypeFinder().determineType(expr, varTypes);
         assertEquals("java.util.Comparator", type);
     }
+
 }

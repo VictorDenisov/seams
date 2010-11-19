@@ -41,13 +41,13 @@ class TypeFinder {
         return "";
     }
 
-    String determineType(FieldAccessExpr expr, Map<String, Class> varType) throws Exception {
+    private String determineType(FieldAccessExpr expr, Map<String, Class> varType) throws Exception {
         String scopeClassName = determineType(expr.getScope(), varType);
 
         return getFieldType(scopeClassName, expr.getField());
     }
  
-    String determineType(MethodCallExpr expr, Map<String, Class> varType) throws Exception {
+    private String determineType(MethodCallExpr expr, Map<String, Class> varType) throws Exception {
         String scopeClassName = determineType(expr.getScope(), varType);
 
         Class[] argType = new Class[1];
