@@ -26,7 +26,12 @@ class TypeFinder {
 
     String determineType(Expression expr, Map<String, Class> varType) throws Exception {
         if (expr instanceof NameExpr) {
-            return varType.get(((NameExpr)expr).getName()).getName();
+            String name = ((NameExpr)expr).getName();
+            if (Character.isUpperCase(name.charAt(0))) {
+                return "java.lang." + name;
+            } else {
+                return varType.get(name).getName();
+            }
         } else if (expr instanceof MethodCallExpr) {
             return determineType((MethodCallExpr)expr, varType);
         } else if (expr instanceof FieldAccessExpr) {
@@ -51,6 +56,7 @@ class TypeFinder {
     }
  
     String determineType(MethodCallExpr expr, Map<String, Class> varType) throws Exception {
+//String scopeClassName = determineType(expr.getScope(), varType);
         NameExpr scope = (NameExpr)expr.getScope();
         
         String scopeClassName;

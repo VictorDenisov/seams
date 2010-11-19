@@ -65,6 +65,18 @@ public class TypeFinderTest {
     }
 
     @Test
+    public void testDetermineTypeExpressionComesNameExpression() throws Exception {
+        Expression expr = ParseHelper.createExpression("String");
+
+        HashMap<String, Class> varTypes = new HashMap<String, Class> ();
+        varTypes.put("string", String.class);
+
+        String type = new TypeFinder().determineType(expr, varTypes);
+
+        assertEquals("java.lang.String", type);
+    }
+
+    @Test
     public void testDetermineTypeMethodCall() throws Exception {
         Expression expr = ParseHelper.createExpression("string.compareTo(x)");
 

@@ -2,6 +2,9 @@ package temp;
 
 import java.io.File;
 
+import log4j.logger.Logger;
+import org.sample.SampleClass;
+
 public class Sample {
     
     private int v;
