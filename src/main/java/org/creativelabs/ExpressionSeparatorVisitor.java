@@ -1,32 +1,16 @@
 package org.creativelabs;
 
-import japa.parser.ast.body.ClassOrInterfaceDeclaration;
-import japa.parser.ast.body.ConstructorDeclaration;
-import japa.parser.ast.body.FieldDeclaration;
-import japa.parser.ast.body.MethodDeclaration;
-import japa.parser.ast.body.VariableDeclarator;
-import japa.parser.ast.body.VariableDeclarator;
-import japa.parser.ast.expr.AssignExpr;
-import japa.parser.ast.expr.FieldAccessExpr;
-import japa.parser.ast.expr.ObjectCreationExpr;
-import japa.parser.ast.expr.MethodCallExpr;
-import japa.parser.ast.expr.NameExpr;
-import japa.parser.ast.expr.VariableDeclarationExpr;
-import japa.parser.ast.stmt.BlockStmt;
-import japa.parser.ast.stmt.ExplicitConstructorInvocationStmt;
-import japa.parser.ast.stmt.ExpressionStmt;
-import japa.parser.ast.stmt.Statement;
-import japa.parser.ast.TypeParameter;
+import japa.parser.ast.body.*;
+import japa.parser.ast.expr.*;
+import japa.parser.ast.stmt.*;
 import japa.parser.ast.visitor.VoidVisitorAdapter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ExpressionSeparatorVisitor extends VoidVisitorAdapter<Object> {
 
     private boolean assignedInternalInstance = false;
 
-    Map<String, Boolean> internalInstances;
+    private Map<String, Boolean> internalInstances;
 
     public ExpressionSeparatorVisitor(Map<String, Boolean> internalInstances) {
         this.internalInstances = internalInstances;

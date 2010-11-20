@@ -129,4 +129,16 @@ public class TypeFinderTest {
         assertEquals("org.apache.log4j.Logger", type);
     }
 
+    @Test
+    public void testDetermineTypeThrowsUnsupportedExpression() throws Exception {
+        Expression expr = ParseHelper.createExpression("x = y");
+
+        String result = "noException";
+        try {
+            String type = new TypeFinder().determineType(expr, null);
+        } catch (TypeFinder.UnsupportedExpressionException e) {
+            result = "UnsupportedExpressionException";
+        }
+        assertEquals("UnsupportedExpressionException", result);
+    }
 }

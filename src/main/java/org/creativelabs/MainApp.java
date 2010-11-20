@@ -8,7 +8,11 @@ import japa.parser.ast.body.*;
 import japa.parser.ast.type.*;
 import japa.parser.*;
 
-class MainApp {
+final class MainApp {
+
+    private MainApp() {
+
+    }
 
     public static void main(String[] args) throws Exception {
         FileInputStream fis = new FileInputStream(new File("Sample.java"));

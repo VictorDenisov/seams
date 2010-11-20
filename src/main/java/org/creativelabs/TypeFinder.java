@@ -11,6 +11,9 @@ import java.util.Map;
 
 class TypeFinder {
 
+    static class UnsupportedExpressionException extends RuntimeException {
+    }
+
     String getReturnType(String className, String methodName, Class[] types) throws Exception {
         Class cl = Class.forName(className);
         Method method = cl.getMethod(methodName, types);
@@ -43,7 +46,7 @@ class TypeFinder {
             return determineType((FieldAccessExpr) expr, varType);
         }
 
-        return "";
+        throw new UnsupportedExpressionException();
     }
 
     private String determineType(FieldAccessExpr expr, Map<String, Class> varType) throws Exception {

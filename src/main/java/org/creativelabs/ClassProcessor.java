@@ -14,7 +14,7 @@ class ClassProcessor {
 
     public ClassProcessor(ClassOrInterfaceDeclaration typeDeclaration) {
         this.typeDeclaration = typeDeclaration;
-        this.fields = findFields(typeDeclaration);
+        findFields();
     }
         
     private Map<String, String> fields;
@@ -63,9 +63,8 @@ class ClassProcessor {
         return result;
     }
 
-    private Map<String, String> findFields(ClassOrInterfaceDeclaration typeDeclaration) {
-
-        Map<String, String> fields = new HashMap<String, String>();
+    private void findFields() {
+        fields = new HashMap<String, String>();
         for (BodyDeclaration bd : typeDeclaration.getMembers()) {
             if (bd instanceof FieldDeclaration) {
                 FieldDeclaration fd = (FieldDeclaration) bd;
@@ -76,7 +75,6 @@ class ClassProcessor {
                 }
             }
         }
-        return fields;
     }
 
     private class TypeVisitor extends VoidVisitorAdapter<Object> {

@@ -1,16 +1,8 @@
 package org.creativelabs;
 
-import japa.parser.ast.body.ClassOrInterfaceDeclaration;
-import japa.parser.ast.body.FieldDeclaration;
-import japa.parser.ast.body.ConstructorDeclaration;
-import japa.parser.ast.body.VariableDeclarator;
-import japa.parser.ast.expr.VariableDeclarationExpr;
-import japa.parser.ast.body.MethodDeclaration;
-import japa.parser.ast.expr.MethodCallExpr;
-import japa.parser.ast.expr.FieldAccessExpr;
-import japa.parser.ast.expr.NameExpr;
+import japa.parser.ast.body.*;
+import japa.parser.ast.expr.*;
 import japa.parser.ast.stmt.Statement;
-import japa.parser.ast.stmt.ExpressionStmt;
 import japa.parser.ast.visitor.VoidVisitorAdapter;
 import japa.parser.ast.TypeParameter;
 import java.util.List;
