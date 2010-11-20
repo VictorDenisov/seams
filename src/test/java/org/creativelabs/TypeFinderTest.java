@@ -104,13 +104,29 @@ public class TypeFinderTest {
 
     @Test
     public void testDetermineTypeFieldAccessExpr() throws Exception {
-        FieldAccessExpr expr = (FieldAccessExpr)ParseHelper.createExpression("str.CASE_INSENSITIVE_ORDER");
+        FieldAccessExpr expr = (FieldAccessExpr)ParseHelper
+            .createExpression("str.CASE_INSENSITIVE_ORDER");
 
         HashMap<String, Class> varTypes = new HashMap<String, Class> ();
         varTypes.put("str", String.class);
 
         String type = new TypeFinder().determineType(expr, varTypes);
         assertEquals("java.util.Comparator", type);
+    }
+
+    @Test
+    public void testDetermineTypeNonStandardClass() throws Exception {
+        Expression expr = ParseHelper.createExpression("Logger.getLogger(str)");
+
+        HashMap<String, Class> varTypes = new HashMap<String, Class> ();
+        varTypes.put("str", String.class);
+
+        HashMap<String, String> imports = new HashMap<String, String> ();
+        imports.put("Logger", "org.apache.log4j.Logger");
+
+        String type = new TypeFinder().determineType(expr, varTypes, imports);
+
+        assertEquals("org.apache.log4j.Logger", type);
     }
 
 }

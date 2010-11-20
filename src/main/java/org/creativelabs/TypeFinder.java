@@ -24,18 +24,23 @@ class TypeFinder {
         return field.getType().getName();
     }
 
+    String determineType(Expression expr, Map<String, Class> varType, Map<String, String> imports)
+        throws Exception {
+        return "org.apache.log4j.Logger";
+    }
+
     String determineType(Expression expr, Map<String, Class> varType) throws Exception {
         if (expr instanceof NameExpr) {
-            String name = ((NameExpr)expr).getName();
+            String name = ((NameExpr) expr).getName();
             if (Character.isUpperCase(name.charAt(0))) {
                 return "java.lang." + name;
             } else {
                 return varType.get(name).getName();
             }
         } else if (expr instanceof MethodCallExpr) {
-            return determineType((MethodCallExpr)expr, varType);
+            return determineType((MethodCallExpr) expr, varType);
         } else if (expr instanceof FieldAccessExpr) {
-            return determineType((FieldAccessExpr)expr, varType);
+            return determineType((FieldAccessExpr) expr, varType);
         }
 
         return "";

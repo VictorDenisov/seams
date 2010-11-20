@@ -22,7 +22,7 @@ public class CodeVisitor extends VoidVisitorAdapter<String> {
         System.out.println("Processing class: " + n.getName());
         System.out.println("Type parameters");
         if (n.getTypeParameters() != null) {
-            for (TypeParameter typeParameter: n.getTypeParameters()) {
+            for (TypeParameter typeParameter : n.getTypeParameters()) {
                 System.out.println(typeParameter.getName());
             }
         }
@@ -39,7 +39,7 @@ public class CodeVisitor extends VoidVisitorAdapter<String> {
         System.out.println("--------------");
         List<Statement> stmts = n.getBody().getStmts();
         if (stmts != null) {
-            for (Statement statement: stmts) {
+            for (Statement statement : stmts) {
                 System.out.println(statement.toString());
             }
         }

@@ -14,9 +14,9 @@ class MainApp {
         FileInputStream fis = new FileInputStream(new File("Sample.java"));
 
         CompilationUnit cu = JavaParser.parse(fis);
-        for (TypeDeclaration typeDeclaration: cu.getTypes()) {
+        for (TypeDeclaration typeDeclaration : cu.getTypes()) {
             if (typeDeclaration instanceof ClassOrInterfaceDeclaration) {
-                processClass((ClassOrInterfaceDeclaration)typeDeclaration);
+                processClass((ClassOrInterfaceDeclaration) typeDeclaration);
             }
         }
     }
