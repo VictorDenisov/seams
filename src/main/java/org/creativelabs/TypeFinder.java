@@ -6,6 +6,7 @@ import japa.parser.ast.expr.MethodCallExpr;
 import japa.parser.ast.expr.FieldAccessExpr;
 import japa.parser.ast.expr.Expression;
 import japa.parser.ast.expr.NameExpr;
+import org.apache.log4j.Logger;
 
 import java.util.Map;
 
@@ -27,36 +28,39 @@ class TypeFinder {
         return field.getType().getName();
     }
 
-    String determineType(Expression expr, Map<String, Class> varType, Map<String, String> imports)
-        throws Exception {
-        return "org.apache.log4j.Logger";
-    }
-
-    String determineType(Expression expr, Map<String, Class> varType) throws Exception {
+    String determineType(Expression expr, Map<String, Class> varType, 
+            Map<String, String> imports) throws Exception {
         if (expr instanceof NameExpr) {
             String name = ((NameExpr) expr).getName();
             if (Character.isUpperCase(name.charAt(0))) {
-                return "java.lang." + name;
+                if (imports != null && imports.containsKey(name)) {
+                    return imports.get(name);
+                } else {
+                    //TODO check that java.lang contains name type.
+                    return "java.lang." + name;
+                }
             } else {
                 return varType.get(name).getName();
             }
         } else if (expr instanceof MethodCallExpr) {
-            return determineType((MethodCallExpr) expr, varType);
+            return determineType((MethodCallExpr) expr, varType, imports);
         } else if (expr instanceof FieldAccessExpr) {
-            return determineType((FieldAccessExpr) expr, varType);
+            return determineType((FieldAccessExpr) expr, varType, imports);
         }
 
         throw new UnsupportedExpressionException();
     }
 
-    private String determineType(FieldAccessExpr expr, Map<String, Class> varType) throws Exception {
-        String scopeClassName = determineType(expr.getScope(), varType);
+    private String determineType(FieldAccessExpr expr, Map<String, Class> varType,
+            Map<String, String> imports) throws Exception {
+        String scopeClassName = determineType(expr.getScope(), varType, imports);
 
         return getFieldType(scopeClassName, expr.getField());
     }
  
-    private String determineType(MethodCallExpr expr, Map<String, Class> varType) throws Exception {
-        String scopeClassName = determineType(expr.getScope(), varType);
+    private String determineType(MethodCallExpr expr, Map<String, Class> varType, 
+            Map<String, String> imports) throws Exception {
+        String scopeClassName = determineType(expr.getScope(), varType, imports);
 
         Class[] argType = new Class[1];
 

@@ -60,7 +60,7 @@ public class TypeFinderTest {
         HashMap<String, Class> varTypes = new HashMap<String, Class> ();
         varTypes.put("string", String.class);
 
-        String type = new TypeFinder().determineType(expr, varTypes);
+        String type = new TypeFinder().determineType(expr, varTypes, null);
 
         assertEquals("java.lang.String", type);
     }
@@ -72,8 +72,9 @@ public class TypeFinderTest {
         HashMap<String, Class> varTypes = new HashMap<String, Class> ();
         varTypes.put("string", String.class);
 
-        String type = new TypeFinder().determineType(expr, varTypes);
+        String type = new TypeFinder().determineType(expr, varTypes, null);
 
+        System.out.println(type);
         assertEquals("java.lang.String", type);
     }
 
@@ -84,7 +85,7 @@ public class TypeFinderTest {
         HashMap<String, Class> varTypes = new HashMap<String, Class> ();
         varTypes.put("x", int.class);
         
-        String type = new TypeFinder().determineType(expr, varTypes);
+        String type = new TypeFinder().determineType(expr, varTypes, null);
 
         assertEquals("java.lang.String", type);
     }
@@ -97,7 +98,7 @@ public class TypeFinderTest {
         varTypes.put("x", String.class);
         varTypes.put("str", String.class);
         
-        String type = new TypeFinder().determineType(expr, varTypes);
+        String type = new TypeFinder().determineType(expr, varTypes, null);
 
         assertEquals("int", type);
     }
@@ -110,7 +111,7 @@ public class TypeFinderTest {
         HashMap<String, Class> varTypes = new HashMap<String, Class> ();
         varTypes.put("str", String.class);
 
-        String type = new TypeFinder().determineType(expr, varTypes);
+        String type = new TypeFinder().determineType(expr, varTypes, null);
         assertEquals("java.util.Comparator", type);
     }
 
@@ -130,12 +131,27 @@ public class TypeFinderTest {
     }
 
     @Test
+    public void testDetermineTypeNonStandardClassFieldAccess() throws Exception {
+        Expression expr = ParseHelper.createExpression("LogLevel.DEBUG");
+
+        HashMap<String, Class> varTypes = new HashMap<String, Class> ();
+        varTypes.put("str", String.class);
+
+        HashMap<String, String> imports = new HashMap<String, String> ();
+        imports.put("LogLevel", "org.apache.log4j.lf5.LogLevel");
+
+        String type = new TypeFinder().determineType(expr, varTypes, imports);
+
+        assertEquals("org.apache.log4j.lf5.LogLevel", type);
+    }
+
+    @Test
     public void testDetermineTypeThrowsUnsupportedExpression() throws Exception {
         Expression expr = ParseHelper.createExpression("x = y");
 
         String result = "noException";
         try {
-            String type = new TypeFinder().determineType(expr, null);
+            String type = new TypeFinder().determineType(expr, null, null);
         } catch (TypeFinder.UnsupportedExpressionException e) {
             result = "UnsupportedExpressionException";
         }
