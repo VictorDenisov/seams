@@ -2,8 +2,6 @@ package org.creativelabs;
 
 import org.testng.annotations.Test;
 
-import japa.parser.ast.expr.Expression;
-
 import static org.testng.AssertJUnit.*;
 
 public class DependencyTest {

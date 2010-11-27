@@ -1,7 +1,5 @@
 package org.creativelabs;
 
-import japa.parser.ast.expr.Expression;
-
 class Dependency {
 
     private String expression;
