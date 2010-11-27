@@ -13,20 +13,14 @@ class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
         this.classFields = classFields;
     }
 
-    private Set<String> dependencies = new HashSet<String>();
-
-    private Set<String> dependenciesUponType = new HashSet<String>();
+    private Set<Dependency> dependencies = new HashSet<Dependency>();
 
     private Map<String, String> localVariables = new HashMap<String, String>();
 
     private Map<String, Boolean> internalInstances = new HashMap<String, Boolean>();
 
-    Set<String> getDependencies() {
+    Set<Dependency> getDependencies() {
         return Collections.unmodifiableSet(dependencies);
-    }
-
-    Set<String> getDependenciesUponType() {
-        return Collections.unmodifiableSet(dependenciesUponType);
     }
 
     @Override
@@ -38,23 +32,22 @@ class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
 
     @Override
     public void visit(NameExpr n, Object o) {
-        dependencies.add(n.getName());
+        String dependencyUponType = null;
         if (localVariables.containsKey(n.getName())) {
-            dependenciesUponType.add(localVariables.get(n.getName()));
+            dependencyUponType = localVariables.get(n.getName());
+        } else if (classFields.containsKey(n.getName())) {
+            dependencyUponType = classFields.get(n.getName());
+        } else if (Character.isUpperCase(n.getName().charAt(0))) {
+            dependencyUponType = n.getName();
         }
-        if (classFields.containsKey(n.getName())) {
-            dependenciesUponType.add(classFields.get(n.getName()));
-        }
-        if (Character.isUpperCase(n.getName().charAt(0))) {
-            dependenciesUponType.add(n.getName());
-        }
+        dependencies.add(new Dependency(n.getName(), dependencyUponType));
     }
     
     @Override
     public void visit(MethodCallExpr n, Object o) {
         ScopeDetectorVisitor scopeDetector = new ScopeDetectorVisitor();
         scopeDetector.visit(n, o);
-        dependencies.add(n.toString());
+        dependencies.add(new Dependency(n.toString(), null));
         super.visit(n, o);
     }
 
@@ -62,7 +55,7 @@ class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
     public void visit(FieldAccessExpr n, Object o) {
         ScopeDetectorVisitor scopeDetector = new ScopeDetectorVisitor();
         scopeDetector.visit(n, o);
-        dependencies.add(n.toString());
+        dependencies.add(new Dependency(n.toString(), null));
         super.visit(n, o);
     }
 

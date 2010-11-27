@@ -19,19 +19,14 @@ class ClassProcessor {
         
     private Map<String, String> fields;
 
-    private Map<String, Set<String>> dependencies = new HashMap<String, Set<String>>();
-    private Map<String, Set<String>> dependenciesUponType = new HashMap<String, Set<String>>();
+    private Map<String, Set<Dependency>> dependencies = new HashMap<String, Set<Dependency>>();
 
     public Map<String, String> getFields() {
         return fields;
     }
 
-    public Map<String, Set<String>> getDependencies() {
+    public Map<String, Set<Dependency>> getDependencies() {
         return dependencies;
-    }
-
-    public Map<String, Set<String>> getDependenciesUponType() {
-        return dependenciesUponType;
     }
 
     public void compute() {            
@@ -57,7 +52,6 @@ class ClassProcessor {
         dependencyCounter.visit(body, null);
 
         dependencies.put(md.getName(), dependencyCounter.getDependencies());
-        dependenciesUponType.put(md.getName(), dependencyCounter.getDependenciesUponType());
     }
 
     private void findFields() {

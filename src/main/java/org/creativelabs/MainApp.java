@@ -34,7 +34,7 @@ final class MainApp {
     private static void outData(ClassProcessor classProcessor) {
         printFields(classProcessor.getFields());
         printDeps("Dependencies", classProcessor.getDependencies());
-        printDeps("UponType", classProcessor.getDependenciesUponType());
+        printDepsUponType("UponType", classProcessor.getDependencies());
     }
 
     private static void printFields(Map<String, String> fields) {
@@ -43,17 +43,34 @@ final class MainApp {
         }
     }
 
-    private static void printDeps(String depsName, Map<String, Set<String>> deps) {
-        for (Map.Entry<String, Set<String>> entry : deps.entrySet()) {
+    private static void printDeps(String depsName, Map<String, Set<Dependency>> deps) {
+        for (Map.Entry<String, Set<Dependency>> entry : deps.entrySet()) {
             System.out.print(entry.getKey() + " -> ");
             outputSet(depsName, entry.getValue());
         }
     }
 
-    private static void outputSet(String depsName, Set<String> set) {
+    private static void outputSet(String depsName, Set<Dependency> set) {
         System.out.println(depsName + "(");
-        for (String value : set) {
-            System.out.println(value);
+        for (Dependency value : set) {
+            System.out.println(value.expression);
+        }
+        System.out.println(")");
+    }
+
+    private static void printDepsUponType(String depsName, Map<String, Set<Dependency>> deps) {
+        for (Map.Entry<String, Set<Dependency>> entry : deps.entrySet()) {
+            System.out.print(entry.getKey() + " -> ");
+            outputSetUponType(depsName, entry.getValue());
+        }
+    }
+
+    private static void outputSetUponType(String depsName, Set<Dependency> set) {
+        System.out.println(depsName + "(");
+        for (Dependency value : set) {
+            if (value.type != null) {
+                System.out.println(value.type);
+            }
         }
         System.out.println(")");
     }
