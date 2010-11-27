@@ -44,23 +44,20 @@ class ClassProcessor {
         for (BodyDeclaration bd : n.getMembers()) {
             if (bd instanceof MethodDeclaration) {
                 MethodDeclaration md = (MethodDeclaration) bd;
-                Map<String, Set<String>> res = findOutgoingDependencies(md, classFields);
-                dependencies.put(md.getName(), res.get("deps"));
-                dependenciesUponType.put(md.getName(), res.get("depsUponType"));
+
+                findOutgoingDependencies(md, classFields);
             }
         }
     }
 
-    private Map<String, Set<String>>  findOutgoingDependencies(MethodDeclaration md, 
+    private void findOutgoingDependencies(MethodDeclaration md, 
                     Map<String, String> classFields) {
         BlockStmt body = md.getBody();
         DependencyCounterVisitor dependencyCounter = new DependencyCounterVisitor(classFields);
         dependencyCounter.visit(body, null);
 
-        Map<String, Set<String>> result = new HashMap<String, Set<String>>();
-        result.put("deps", dependencyCounter.getDependencies());
-        result.put("depsUponType", dependencyCounter.getDependenciesUponType());
-        return result;
+        dependencies.put(md.getName(), dependencyCounter.getDependencies());
+        dependenciesUponType.put(md.getName(), dependencyCounter.getDependenciesUponType());
     }
 
     private void findFields() {
