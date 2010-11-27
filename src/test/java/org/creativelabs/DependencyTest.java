@@ -12,8 +12,8 @@ public class DependencyTest {
     public void testConstructor() throws Exception {
         Dependency dependency = new Dependency("value", "type");
 
-        assertEquals("value", dependency.expression);
-        assertEquals("type", dependency.type);
+        assertEquals("value", dependency.getExpression());
+        assertEquals("type", dependency.getType());
 
     }
 }

@@ -4,13 +4,20 @@ import japa.parser.ast.expr.Expression;
 
 class Dependency {
 
-    String expression;
+    private String expression;
 
-    String type;
+    private String type;
 
     Dependency(String expression, String type) {
         this.expression = expression;
         this.type = type;
     }
 
+    String getExpression() {
+        return expression;
+    }
+
+    String getType() {
+        return type;
+    }
 }

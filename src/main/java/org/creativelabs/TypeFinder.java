@@ -6,7 +6,6 @@ import japa.parser.ast.expr.MethodCallExpr;
 import japa.parser.ast.expr.FieldAccessExpr;
 import japa.parser.ast.expr.Expression;
 import japa.parser.ast.expr.NameExpr;
-import org.apache.log4j.Logger;
 
 import java.util.Map;
 

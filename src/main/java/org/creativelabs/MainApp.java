@@ -53,7 +53,7 @@ final class MainApp {
     private static void outputSet(String depsName, Set<Dependency> set) {
         System.out.println(depsName + "(");
         for (Dependency value : set) {
-            System.out.println(value.expression);
+            System.out.println(value.getExpression());
         }
         System.out.println(")");
     }
@@ -68,8 +68,8 @@ final class MainApp {
     private static void outputSetUponType(String depsName, Set<Dependency> set) {
         System.out.println(depsName + "(");
         for (Dependency value : set) {
-            if (value.type != null) {
-                System.out.println(value.type);
+            if (value.getType() != null) {
+                System.out.println(value.getType());
             }
         }
         System.out.println(")");
