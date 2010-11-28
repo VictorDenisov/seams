@@ -16,7 +16,7 @@ class ClassProcessor {
         this.typeDeclaration = typeDeclaration;
         findFields();
     }
-        
+
     private Map<String, String> fields;
 
     private Map<String, Set<Dependency>> dependencies = new HashMap<String, Set<Dependency>>();

@@ -4,6 +4,7 @@ import japa.parser.ast.stmt.*;
 import japa.parser.ast.expr.*;
 import japa.parser.ast.body.*;
 import japa.parser.ast.visitor.*;
+
 import java.util.*;
 
 class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
@@ -25,8 +26,10 @@ class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
 
     @Override
     public void visit(BlockStmt n, Object o) {
-        for (Statement statement : n.getStmts()) {
-            statement.accept(this, o);
+        if (n.getStmts() != null) {
+            for (Statement statement : n.getStmts()) {
+                statement.accept(this, o);
+            }
         }
     }
 
@@ -42,7 +45,7 @@ class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
         }
         dependencies.add(new Dependency(n.getName(), dependencyUponType));
     }
-    
+
     @Override
     public void visit(MethodCallExpr n, Object o) {
         ScopeDetectorVisitor scopeDetector = new ScopeDetectorVisitor();

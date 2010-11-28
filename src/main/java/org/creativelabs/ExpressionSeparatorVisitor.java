@@ -50,12 +50,14 @@ public class ExpressionSeparatorVisitor extends VoidVisitorAdapter<Object> {
 
     @Override
     public void visit(ExplicitConstructorInvocationStmt n, Object o) {
+        //TODO Redirect to file
         System.out.println("Processing constructor invocation");
     }
 
     @Override
     public void visit(ObjectCreationExpr n, Object o) {
         assignedInternalInstance = true;
+        //TODO Redirect to file
         System.out.println("Construction of " + n.getType().getName());
     }
 
