@@ -21,5 +21,16 @@ public class ParseHelperTest {
 
         assertEquals("class japa.parser.ast.expr.MethodCallExpr", expr.getClass().toString());
     }
+
+    @Test
+    public void testCreateCompilationUnit() throws Exception {
+        CompilationUnit cu = ParseHelper.createCompilationUnit("package org.sample;"
+                + "import org.apache.log4j.Logger;"
+                + "class Main {}");
+        assertEquals("org.sample", cu.getPackage().getName().toString());
+        assertEquals(1, cu.getImports().size());
+        assertEquals("org.apache.log4j.Logger", cu.getImports().get(0).getName().toString());
+    }
+
 }
 

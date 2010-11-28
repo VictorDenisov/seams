@@ -12,17 +12,13 @@ import java.util.*;
 class ClassProcessor {
     private ClassOrInterfaceDeclaration typeDeclaration;
 
-    public ClassProcessor(ClassOrInterfaceDeclaration typeDeclaration) {
-        this.typeDeclaration = typeDeclaration;
-        findFields();
-    }
-        
     private Map<String, String> fields;
 
     private Map<String, Set<Dependency>> dependencies = new HashMap<String, Set<Dependency>>();
 
-    public Map<String, String> getFields() {
-        return fields;
+    public ClassProcessor(ClassOrInterfaceDeclaration typeDeclaration) {
+        this.typeDeclaration = typeDeclaration;
+        findFields();
     }
 
     public Map<String, Set<Dependency>> getDependencies() {
