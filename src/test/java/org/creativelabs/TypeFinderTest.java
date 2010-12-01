@@ -74,7 +74,6 @@ public class TypeFinderTest {
 
         String type = new TypeFinder().determineType(expr, varTypes, null);
 
-        System.out.println(type);
         assertEquals("java.lang.String", type);
     }
 

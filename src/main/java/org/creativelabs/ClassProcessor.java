@@ -21,6 +21,10 @@ class ClassProcessor {
         findFields();
     }
 
+    public Map<String, String> getFields() {
+        return fields;
+    }
+
     public Map<String, Set<Dependency>> getDependencies() {
         return dependencies;
     }
