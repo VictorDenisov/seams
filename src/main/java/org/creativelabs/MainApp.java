@@ -91,11 +91,14 @@ final class MainApp {
                 printToFile(directory);
             }
         } else {
-            FileInputStream fis = new FileInputStream(fileOrDirectory);
-            CompilationUnit cu = JavaParser.parse(fis);
-            for (TypeDeclaration typeDeclaration : cu.getTypes()) {
-                if (typeDeclaration instanceof ClassOrInterfaceDeclaration) {
-                    processClass((ClassOrInterfaceDeclaration) typeDeclaration, fileOrDirectory.getAbsolutePath());
+            String fileName = fileOrDirectory.getName();
+            if (fileName.endsWith(".java")) {
+                FileInputStream fis = new FileInputStream(fileOrDirectory);
+                CompilationUnit cu = JavaParser.parse(fis);
+                for (TypeDeclaration typeDeclaration : cu.getTypes()) {
+                    if (typeDeclaration instanceof ClassOrInterfaceDeclaration) {
+                        processClass((ClassOrInterfaceDeclaration) typeDeclaration, fileOrDirectory.getAbsolutePath());
+                    }
                 }
             }
         }
