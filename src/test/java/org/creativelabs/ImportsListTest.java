@@ -31,6 +31,13 @@ public class ImportsListTest {
         assertEqualsList(Arrays.asList(new String[]{"org.apache.log4j"}), imports);
     }
 
-    //TODO org.apache.log4j.Logger test
+    @Test
+    public void testImportsConstructionConcreteClass() throws Exception {
+        CompilationUnit cu = ParseHelper.createCompilationUnit(
+                "import org.apache.log4j.Logger; public class Main{}");
+        ImportList importList = new ImportList(cu);
+        List<String> imports = importList.getImports();
 
+        assertEqualsList(Arrays.asList(new String[]{"org.apache.log4j.Logger"}), imports);
+    }
 }

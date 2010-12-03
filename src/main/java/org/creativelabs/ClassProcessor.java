@@ -14,9 +14,12 @@ class ClassProcessor {
 
     private Map<String, String> fields;
 
+    private ImportList imports;
+
     private Map<String, Set<Dependency>> dependencies = new HashMap<String, Set<Dependency>>();
 
-    public ClassProcessor(ClassOrInterfaceDeclaration typeDeclaration) {
+    public ClassProcessor(ClassOrInterfaceDeclaration typeDeclaration, ImportList imports) {
+        this.imports = imports;
         this.typeDeclaration = typeDeclaration;
         findFields();
     }

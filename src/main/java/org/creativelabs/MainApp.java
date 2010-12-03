@@ -10,6 +10,8 @@ import japa.parser.*;
 
 final class MainApp {
 
+    private static ImportList imports;
+
     private MainApp() {
 
     }
@@ -18,6 +20,7 @@ final class MainApp {
         FileInputStream fis = new FileInputStream(new File("Sample.java"));
 
         CompilationUnit cu = JavaParser.parse(fis);
+        imports = new ImportList(cu);
         for (TypeDeclaration typeDeclaration : cu.getTypes()) {
             if (typeDeclaration instanceof ClassOrInterfaceDeclaration) {
                 processClass((ClassOrInterfaceDeclaration) typeDeclaration);
@@ -26,7 +29,7 @@ final class MainApp {
     }
 
     private static void processClass(ClassOrInterfaceDeclaration typeDeclaration) {
-        ClassProcessor classProcessor = new ClassProcessor(typeDeclaration);
+        ClassProcessor classProcessor = new ClassProcessor(typeDeclaration, imports);
         classProcessor.compute();
         outData(classProcessor);
     }
