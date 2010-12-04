@@ -51,7 +51,7 @@ class ClassProcessor {
     private void findOutgoingDependencies(MethodDeclaration md, 
                     Map<String, String> classFields) {
         BlockStmt body = md.getBody();
-        DependencyCounterVisitor dependencyCounter = new DependencyCounterVisitor(classFields);
+        DependencyCounterVisitor dependencyCounter = new DependencyCounterVisitor(classFields, imports);
         dependencyCounter.visit(body, null);
 
         dependencies.put(md.getName(), dependencyCounter.getDependencies());

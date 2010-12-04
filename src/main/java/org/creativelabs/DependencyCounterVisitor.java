@@ -9,8 +9,11 @@ import java.util.*;
 class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
     private Map<String, String> classFields;
 
-    DependencyCounterVisitor(Map<String, String> classFields) {
+    private ImportList imports;
+
+    DependencyCounterVisitor(Map<String, String> classFields, ImportList imports) {
         this.classFields = classFields;
+        this.imports = imports;
     }
 
     private Set<Dependency> dependencies = new HashSet<Dependency>();
