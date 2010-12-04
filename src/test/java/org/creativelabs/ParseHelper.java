@@ -45,4 +45,9 @@ public class ParseHelper {
         ImportList imports = new ImportList(cu);
         return imports;
     }
+
+    public static ClassOrInterfaceDeclaration createClassDeclaration(String data) throws Exception {
+        CompilationUnit cu = ParseHelper.createCompilationUnit(data);
+        return (ClassOrInterfaceDeclaration)cu.getTypes().get(0);
+    }
 }

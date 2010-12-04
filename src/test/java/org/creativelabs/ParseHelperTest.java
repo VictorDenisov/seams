@@ -41,5 +41,12 @@ public class ParseHelperTest {
         assertEqualsList(Arrays.asList(new String[]{"org.apache.log4j.Logger"}), imports.getImports());
     }
 
+    @Test
+    public void testCreateClassDeclaration() throws Exception {
+        ClassOrInterfaceDeclaration classDeclaration = 
+            ParseHelper.createClassDeclaration("class Main { int v; }");
+        assertEquals("Main", classDeclaration.getName());
+    }
+
 }
 
