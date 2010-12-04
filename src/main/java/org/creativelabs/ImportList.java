@@ -3,15 +3,20 @@ package org.creativelabs;
 import japa.parser.ast.CompilationUnit;
 import japa.parser.ast.ImportDeclaration;
 
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
 
 class ImportList {
 
     private List<ImportDeclaration> list;
 
+    private Map<String, String> map;
+
     ImportList(CompilationUnit cu) {
-         this.list = cu.getImports();
+        map = new HashMap<String, String>();
+        this.list = cu.getImports();
+        for (ImportDeclaration d : list) {
+            map.put(d.getName().getName(), d.getName().toString());
+        }
     }
 
     List<String> getImports() {
@@ -22,4 +27,11 @@ class ImportList {
         return result;
     }
 
+    String get(String key) {
+        return map.get(key);
+    }
+
+    boolean containsKey(String key) {
+        return map.containsKey(key);
+    }
 }

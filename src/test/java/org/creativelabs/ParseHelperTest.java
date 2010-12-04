@@ -11,7 +11,10 @@ import japa.parser.ast.body.*;
 import japa.parser.ast.stmt.*;
 import japa.parser.ast.expr.*;
 
+import java.util.Arrays;
+
 import static org.testng.AssertJUnit.*;
+import static org.creativelabs.AssertHelper.*;
 
 public class ParseHelperTest {
 
@@ -30,6 +33,12 @@ public class ParseHelperTest {
         assertEquals("org.sample", cu.getPackage().getName().toString());
         assertEquals(1, cu.getImports().size());
         assertEquals("org.apache.log4j.Logger", cu.getImports().get(0).getName().toString());
+    }
+
+    @Test
+    public void testCreateImportList() throws Exception {
+        ImportList imports = ParseHelper.createImportList("import org.apache.log4j.Logger;");
+        assertEqualsList(Arrays.asList(new String[]{"org.apache.log4j.Logger"}), imports.getImports());
     }
 
 }

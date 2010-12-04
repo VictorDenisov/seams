@@ -38,4 +38,11 @@ public class ParseHelper {
 
         return cu;
     }
+
+    public static ImportList createImportList(String data) throws Exception {
+        CompilationUnit cu = ParseHelper.createCompilationUnit(
+                data + " public class Main{}");
+        ImportList imports = new ImportList(cu);
+        return imports;
+    }
 }

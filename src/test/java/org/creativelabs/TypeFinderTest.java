@@ -6,10 +6,8 @@ import org.creativelabs.TypeFinder;
 
 import java.util.HashMap;
 
-import japa.parser.ast.expr.MethodCallExpr;
-import japa.parser.ast.expr.FieldAccessExpr;
-import japa.parser.ast.expr.NameExpr;
-import japa.parser.ast.expr.Expression;
+import japa.parser.ast.expr.*;
+import japa.parser.ast.CompilationUnit;
 
 import static org.testng.AssertJUnit.*;
 
@@ -121,8 +119,7 @@ public class TypeFinderTest {
         HashMap<String, Class> varTypes = new HashMap<String, Class> ();
         varTypes.put("str", String.class);
 
-        HashMap<String, String> imports = new HashMap<String, String> ();
-        imports.put("Logger", "org.apache.log4j.Logger");
+        ImportList imports = ParseHelper.createImportList("import org.apache.log4j.Logger;");
 
         String type = new TypeFinder().determineType(expr, varTypes, imports);
 
@@ -136,8 +133,7 @@ public class TypeFinderTest {
         HashMap<String, Class> varTypes = new HashMap<String, Class> ();
         varTypes.put("str", String.class);
 
-        HashMap<String, String> imports = new HashMap<String, String> ();
-        imports.put("LogLevel", "org.apache.log4j.lf5.LogLevel");
+        ImportList imports = ParseHelper.createImportList("import org.apache.log4j.lf5.LogLevel;");
 
         String type = new TypeFinder().determineType(expr, varTypes, imports);
 
