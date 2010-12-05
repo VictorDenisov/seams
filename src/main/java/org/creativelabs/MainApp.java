@@ -39,12 +39,6 @@ final class MainApp {
         printDepsUponType("UponType", classProcessor.getDependencies());
     }
 
-    private static void printFields(Map<String, String> fields) {
-        for (Map.Entry<String, String> entry : fields.entrySet()) {
-            System.out.println(entry.getKey() + " -> " + entry.getValue());
-        }
-    }
-
     private static void printDeps(String depsName, Map<String, Set<Dependency>> deps) {
         for (Map.Entry<String, Set<Dependency>> entry : deps.entrySet()) {
             System.out.print(entry.getKey() + " -> ");
