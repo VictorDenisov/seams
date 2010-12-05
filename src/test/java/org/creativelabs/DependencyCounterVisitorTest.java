@@ -1,6 +1,7 @@
 package org.creativelabs; 
 
 import japa.parser.ast.expr.*;
+import japa.parser.ast.body.*;
 
 import org.testng.annotations.Test;
 
@@ -12,10 +13,12 @@ public class DependencyCounterVisitorTest {
 
     @Test
     public void testVisitNameExpr() throws Exception {
-        Map<String, String> mp = new HashMap<String, String>();
-        mp.put("name", "String");
+        ClassOrInterfaceDeclaration classDeclaration = 
+            ParseHelper.createClassDeclaration("class Main { String name; }");
 
-        DependencyCounterVisitor dc = new DependencyCounterVisitor(mp, null);
+        FieldList fieldList = new FieldList(classDeclaration, null);
+
+        DependencyCounterVisitor dc = new DependencyCounterVisitor(fieldList, null);
 
         NameExpr expr = (NameExpr)ParseHelper.createExpression("name");
 

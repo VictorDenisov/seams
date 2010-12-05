@@ -47,4 +47,16 @@ public class FieldListTest {
 
         assertEquals("String", fieldList.getFieldTypeAsString("str"));
     }
+
+    @Test
+    public void testHasName() throws Exception {
+        ClassOrInterfaceDeclaration classDeclaration = 
+            ParseHelper.createClassDeclaration("class Main { String str; }");
+
+        ImportList imports = null;
+
+        FieldList fieldList = new FieldList(classDeclaration, imports);
+
+        assertTrue(fieldList.hasName("str"));
+    }
 }

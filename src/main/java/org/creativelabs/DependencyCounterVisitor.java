@@ -7,11 +7,11 @@ import japa.parser.ast.visitor.*;
 import java.util.*;
 
 class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
-    private Map<String, String> classFields;
+    private FieldList classFields;
 
     private ImportList imports;
 
-    DependencyCounterVisitor(Map<String, String> classFields, ImportList imports) {
+    DependencyCounterVisitor(FieldList classFields, ImportList imports) {
         this.classFields = classFields;
         this.imports = imports;
     }
@@ -38,8 +38,8 @@ class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
         String dependencyUponType = null;
         if (localVariables.containsKey(n.getName())) {
             dependencyUponType = localVariables.get(n.getName());
-        } else if (classFields.containsKey(n.getName())) {
-            dependencyUponType = classFields.get(n.getName());
+        } else if (classFields.hasName(n.getName())) {
+            dependencyUponType = classFields.getFieldTypeAsString(n.getName());
         } else if (Character.isUpperCase(n.getName().charAt(0))) {
             dependencyUponType = n.getName();
         }

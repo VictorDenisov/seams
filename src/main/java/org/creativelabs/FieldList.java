@@ -30,4 +30,8 @@ class FieldList {
     String getFieldTypeAsString(String fieldName) {
         return fieldTypes.get(fieldName);
     }
+
+    boolean hasName(String fieldName) {
+        return fieldTypes.keySet().contains(fieldName);
+    }
 }

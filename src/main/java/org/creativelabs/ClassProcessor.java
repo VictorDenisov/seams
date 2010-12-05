@@ -12,7 +12,7 @@ import java.util.*;
 class ClassProcessor {
     private ClassOrInterfaceDeclaration typeDeclaration;
 
-    private Map<String, String> fields;
+    private FieldList fieldList;
 
     private ImportList imports;
 
@@ -24,69 +24,35 @@ class ClassProcessor {
         findFields();
     }
 
-    public Map<String, String> getFields() {
-        return fields;
-    }
-
     public Map<String, Set<Dependency>> getDependencies() {
         return dependencies;
     }
 
     public void compute() {            
-        processMethods(typeDeclaration, fields);
+        processMethods(typeDeclaration);
     }
 
-    private void processMethods(ClassOrInterfaceDeclaration n, 
-                    Map<String, String> classFields) {
+    private void processMethods(ClassOrInterfaceDeclaration n) {
 
         for (BodyDeclaration bd : n.getMembers()) {
             if (bd instanceof MethodDeclaration) {
                 MethodDeclaration md = (MethodDeclaration) bd;
 
-                findOutgoingDependencies(md, classFields);
+                findOutgoingDependencies(md);
             }
         }
     }
 
-    private void findOutgoingDependencies(MethodDeclaration md, 
-                    Map<String, String> classFields) {
+    private void findOutgoingDependencies(MethodDeclaration md) {
         BlockStmt body = md.getBody();
-        DependencyCounterVisitor dependencyCounter = new DependencyCounterVisitor(classFields, imports);
+        DependencyCounterVisitor dependencyCounter = new DependencyCounterVisitor(fieldList, imports);
         dependencyCounter.visit(body, null);
 
         dependencies.put(md.getName(), dependencyCounter.getDependencies());
     }
 
     private void findFields() {
-        fields = new HashMap<String, String>();
-        for (BodyDeclaration bd : typeDeclaration.getMembers()) {
-            if (bd instanceof FieldDeclaration) {
-                FieldDeclaration fd = (FieldDeclaration) bd;
-                for (VariableDeclarator vardecl : fd.getVariables()) {
-                    TypeVisitor tv = new TypeVisitor();
-                    fd.getType().accept(tv, null);
-                    fields.put(vardecl.getId().getName(), tv.getName());
-                }
-            }
-        }
-    }
-
-    private class TypeVisitor extends VoidVisitorAdapter<Object> {
-        private String name;
-
-        String getName() {
-            return name;
-        }
-
-        @Override
-        public void visit(ClassOrInterfaceType n, Object a) { 
-            name = n.getName();
-        }
-
-        @Override
-        public void visit(PrimitiveType n, Object a) {
-            name = n.getType().toString();
-        }
+        fieldList = new FieldList(typeDeclaration, imports);
     }
 
 }

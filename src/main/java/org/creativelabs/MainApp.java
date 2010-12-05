@@ -35,7 +35,6 @@ final class MainApp {
     }
 
     private static void outData(ClassProcessor classProcessor) {
-        printFields(classProcessor.getFields());
         printDeps("Dependencies", classProcessor.getDependencies());
         printDepsUponType("UponType", classProcessor.getDependencies());
     }
