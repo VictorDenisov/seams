@@ -6,9 +6,9 @@ import java.util.*;
 
 class FieldList {
 
-    List<String> fieldNames = new ArrayList<String>();
+    private List<String> fieldNames = new ArrayList<String>();
 
-    Map<String, String> fieldTypes = new HashMap<String, String>();
+    private Map<String, String> fieldTypes = new HashMap<String, String>();
 
     FieldList(ClassOrInterfaceDeclaration classDeclaration, ImportList imports) {
         for (BodyDeclaration bd : classDeclaration.getMembers()) {
