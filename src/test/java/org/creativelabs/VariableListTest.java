@@ -1,5 +1,4 @@
 package org.creativelabs;
-
 import japa.parser.ast.expr.*;
 import japa.parser.ast.body.*;
 
@@ -58,5 +57,12 @@ public class VariableListTest {
         VariableList fieldList = new VariableList(classDeclaration, imports);
 
         assertTrue(fieldList.hasName("str"));
+    }
+
+    @Test
+    public void testPut() throws Exception {
+        VariableList varList = new VariableList();
+        varList.put("name", "String");
+        assertEquals("String", varList.getFieldTypeAsString("name"));
     }
 }

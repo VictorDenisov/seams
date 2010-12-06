@@ -10,6 +10,9 @@ class VariableList {
 
     private Map<String, String> fieldTypes = new HashMap<String, String>();
 
+    VariableList() {
+    }
+
     VariableList(ClassOrInterfaceDeclaration classDeclaration, ImportList imports) {
         for (BodyDeclaration bd : classDeclaration.getMembers()) {
             if (bd instanceof FieldDeclaration) {
@@ -34,4 +37,10 @@ class VariableList {
     boolean hasName(String fieldName) {
         return fieldTypes.keySet().contains(fieldName);
     }
+
+    void put(String fieldName, String fieldType) {
+        fieldNames.add(fieldName);
+        fieldTypes.put(fieldName, fieldType);
+    }
+ 
 }
