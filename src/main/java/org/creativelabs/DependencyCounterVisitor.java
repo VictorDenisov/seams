@@ -8,11 +8,11 @@ import japa.parser.ast.visitor.*;
 import java.util.*;
 
 class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
-    private FieldList classFields;
+    private VariableList classFields;
 
     private ImportList imports;
 
-    DependencyCounterVisitor(FieldList classFields, ImportList imports) {
+    DependencyCounterVisitor(VariableList classFields, ImportList imports) {
         this.classFields = classFields;
         this.imports = imports;
     }

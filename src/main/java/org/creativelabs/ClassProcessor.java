@@ -12,7 +12,7 @@ import java.util.*;
 class ClassProcessor {
     private ClassOrInterfaceDeclaration typeDeclaration;
 
-    private FieldList fieldList;
+    private VariableList fieldList;
 
     private ImportList imports;
 
@@ -52,7 +52,7 @@ class ClassProcessor {
     }
 
     private void findFields() {
-        fieldList = new FieldList(typeDeclaration, imports);
+        fieldList = new VariableList(typeDeclaration, imports);
     }
 
 }

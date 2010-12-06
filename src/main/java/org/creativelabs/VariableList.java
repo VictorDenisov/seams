@@ -4,13 +4,13 @@ import japa.parser.ast.body.*;
 import java.util.*;
 
 
-class FieldList {
+class VariableList {
 
     private List<String> fieldNames = new ArrayList<String>();
 
     private Map<String, String> fieldTypes = new HashMap<String, String>();
 
-    FieldList(ClassOrInterfaceDeclaration classDeclaration, ImportList imports) {
+    VariableList(ClassOrInterfaceDeclaration classDeclaration, ImportList imports) {
         for (BodyDeclaration bd : classDeclaration.getMembers()) {
             if (bd instanceof FieldDeclaration) {
                 FieldDeclaration fd = (FieldDeclaration) bd;

@@ -17,7 +17,7 @@ public class DependencyCounterVisitorTest {
         ClassOrInterfaceDeclaration classDeclaration = 
             ParseHelper.createClassDeclaration("class Main { String name; }");
 
-        FieldList fieldList = new FieldList(classDeclaration, null);
+        VariableList fieldList = new VariableList(classDeclaration, null);
 
         DependencyCounterVisitor dc = new DependencyCounterVisitor(fieldList, null);
 

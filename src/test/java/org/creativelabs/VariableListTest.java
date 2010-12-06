@@ -10,7 +10,7 @@ import java.util.*;
 import static org.testng.AssertJUnit.*;
 import static org.creativelabs.AssertHelper.*;
 
-public class FieldListTest {
+public class VariableListTest {
 
     @Test
     public void testConstructor() throws Exception {
@@ -19,7 +19,7 @@ public class FieldListTest {
 
         ImportList imports = null;
 
-        FieldList fieldList = new FieldList(classDeclaration, imports);
+        VariableList fieldList = new VariableList(classDeclaration, imports);
 
         assertEqualsList(Arrays.asList(new String[]{"v"}), fieldList.getNames());
     }
@@ -31,7 +31,7 @@ public class FieldListTest {
 
         ImportList imports = null;
 
-        FieldList fieldList = new FieldList(classDeclaration, imports);
+        VariableList fieldList = new VariableList(classDeclaration, imports);
 
         assertEquals("int", fieldList.getFieldTypeAsString("v"));
     }
@@ -43,7 +43,7 @@ public class FieldListTest {
 
         ImportList imports = null;
 
-        FieldList fieldList = new FieldList(classDeclaration, imports);
+        VariableList fieldList = new VariableList(classDeclaration, imports);
 
         assertEquals("String", fieldList.getFieldTypeAsString("str"));
     }
@@ -55,7 +55,7 @@ public class FieldListTest {
 
         ImportList imports = null;
 
-        FieldList fieldList = new FieldList(classDeclaration, imports);
+        VariableList fieldList = new VariableList(classDeclaration, imports);
 
         assertTrue(fieldList.hasName("str"));
     }
