@@ -19,7 +19,7 @@ class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
 
     private Set<Dependency> dependencies = new HashSet<Dependency>();
 
-    private Map<String, String> localVariables = new HashMap<String, String>();
+    private VariableList localVariables = new VariableList();
 
     private Map<String, Boolean> internalInstances = new HashMap<String, Boolean>();
 
@@ -39,8 +39,8 @@ class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
     @Override
     public void visit(NameExpr n, Object o) {
         String dependencyUponType = null;
-        if (localVariables.containsKey(n.getName())) {
-            dependencyUponType = localVariables.get(n.getName());
+        if (localVariables.hasName(n.getName())) {
+            dependencyUponType = localVariables.getFieldTypeAsString(n.getName());
         } else if (classFields.hasName(n.getName())) {
             dependencyUponType = classFields.getFieldTypeAsString(n.getName());
         } else if (Character.isUpperCase(n.getName().charAt(0))) {
