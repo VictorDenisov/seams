@@ -50,4 +50,15 @@ public class ParseHelper {
         CompilationUnit cu = ParseHelper.createCompilationUnit(data);
         return (ClassOrInterfaceDeclaration)cu.getTypes().get(0);
     }
+
+    public static BlockStmt createBlockStmt(String data) throws ParseException {
+        InputStream sr = new ByteArrayInputStream(("public class Sample {" +
+                data +
+                "}").getBytes());
+
+        CompilationUnit cu = JavaParser.parse(sr);
+
+        ClassOrInterfaceDeclaration cd = (ClassOrInterfaceDeclaration)cu.getTypes().get(0);
+        return ((MethodDeclaration) cd.getMembers().get(0)).getBody();
+    }
 }
