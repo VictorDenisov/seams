@@ -39,7 +39,37 @@ class VariableList {
     }
 
     Class getFieldTypeAsClass(String fieldName) throws Exception {
-        Expression expr = ParseHelper.createExpression(fieldTypes.get(fieldName));
+        String fieldType = fieldTypes.get(fieldName);
+        if (Character.isLowerCase(fieldType.charAt(0))) {
+            if (fieldType.equals("int")) {
+                return int.class;
+            }
+            if (fieldType.equals("double")) {
+                return double.class;
+            }
+            if (fieldType.equals("boolean")) {
+                return boolean.class;
+            }
+            if (fieldType.equals("char")) {
+                return char.class;
+            }
+            if (fieldType.equals("byte")) {
+                return byte.class;
+            }
+            if (fieldType.equals("short")) {
+                return short.class;
+            }
+            if (fieldType.equals("long")) {
+                return long.class;
+            }
+            if (fieldType.equals("float")) {
+                return float.class;
+            }
+            if (fieldType.equals("void")) {
+                return void.class;
+            }
+        }
+        Expression expr = ParseHelper.createExpression(fieldType);
         String className = new TypeFinder().determineType(expr, null, imports);
         Class clazz = Class.forName(className);
         return clazz;
@@ -56,7 +86,7 @@ class VariableList {
 
     void put(String fieldName, Class clazz) {
         fieldNames.add(fieldName);
-        fieldTypes.put(fieldName, clazz.getName());
+        fieldTypes.put(fieldName, clazz.getSimpleName());
     }
 
     void addAll(VariableList list) {

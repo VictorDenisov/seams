@@ -27,7 +27,7 @@ class TypeFinder {
         return field.getType().getName();
     }
 
-    String determineType(Expression expr, Map<String, Class> varType, 
+    String determineType(Expression expr, VariableList varType, 
             ImportList imports) throws Exception {
         if (expr instanceof NameExpr) {
             String name = ((NameExpr) expr).getName();
@@ -39,7 +39,7 @@ class TypeFinder {
                     return "java.lang." + name;
                 }
             } else {
-                return varType.get(name).getName();
+                return varType.getFieldTypeAsClass(name).getName();
             }
         } else if (expr instanceof MethodCallExpr) {
             return determineType((MethodCallExpr) expr, varType, imports);
@@ -50,14 +50,14 @@ class TypeFinder {
         throw new UnsupportedExpressionException();
     }
 
-    private String determineType(FieldAccessExpr expr, Map<String, Class> varType,
+    private String determineType(FieldAccessExpr expr, VariableList varType,
             ImportList imports) throws Exception {
         String scopeClassName = determineType(expr.getScope(), varType, imports);
 
         return getFieldType(scopeClassName, expr.getField());
     }
  
-    private String determineType(MethodCallExpr expr, Map<String, Class> varType, 
+    private String determineType(MethodCallExpr expr, VariableList varType, 
             ImportList imports) throws Exception {
         String scopeClassName = determineType(expr.getScope(), varType, imports);
 
@@ -65,7 +65,7 @@ class TypeFinder {
 
         NameExpr arg = (NameExpr) expr.getArgs().get(0);
 
-        argType[0] = varType.get(arg.getName());
+        argType[0] = varType.getFieldTypeAsClass(arg.getName());
         return getReturnType(scopeClassName, expr.getName(), argType);
     }
 }

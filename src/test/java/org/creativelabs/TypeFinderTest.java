@@ -13,6 +13,10 @@ import static org.testng.AssertJUnit.*;
 
 public class TypeFinderTest {
 
+    private VariableList createEmptyVariableList() {
+        return new VariableList();
+    }
+
     @Test
     public void testGetReturnType() throws Exception {
         Class[] types = new Class[1];
@@ -55,7 +59,7 @@ public class TypeFinderTest {
     public void testDetermineTypeNameExprVariable() throws Exception {
         Expression expr = ParseHelper.createExpression("string");
 
-        HashMap<String, Class> varTypes = new HashMap<String, Class> ();
+        VariableList varTypes = createEmptyVariableList();
         varTypes.put("string", String.class);
 
         String type = new TypeFinder().determineType(expr, varTypes, null);
@@ -67,7 +71,7 @@ public class TypeFinderTest {
     public void testDetermineTypeNameExprClass() throws Exception {
         NameExpr expr = (NameExpr)ParseHelper.createExpression("String");
 
-        HashMap<String, Class> varTypes = new HashMap<String, Class> ();
+        VariableList varTypes = createEmptyVariableList();
         varTypes.put("string", String.class);
 
         String type = new TypeFinder().determineType(expr, varTypes, null);
@@ -79,7 +83,7 @@ public class TypeFinderTest {
     public void testDetermineTypeMethodCallStatic() throws Exception {
         MethodCallExpr expr = (MethodCallExpr)ParseHelper.createExpression("String.valueOf(x)");
 
-        HashMap<String, Class> varTypes = new HashMap<String, Class> ();
+        VariableList varTypes = createEmptyVariableList();
         varTypes.put("x", int.class);
         
         String type = new TypeFinder().determineType(expr, varTypes, null);
@@ -91,7 +95,7 @@ public class TypeFinderTest {
     public void testDetermineTypeMethodExprVariable() throws Exception {
         MethodCallExpr expr = (MethodCallExpr)ParseHelper.createExpression("str.compareTo(x)");
 
-        HashMap<String, Class> varTypes = new HashMap<String, Class> ();
+        VariableList varTypes = createEmptyVariableList();
         varTypes.put("x", String.class);
         varTypes.put("str", String.class);
         
@@ -105,7 +109,7 @@ public class TypeFinderTest {
         FieldAccessExpr expr = (FieldAccessExpr)ParseHelper
             .createExpression("str.CASE_INSENSITIVE_ORDER");
 
-        HashMap<String, Class> varTypes = new HashMap<String, Class> ();
+        VariableList varTypes = createEmptyVariableList();
         varTypes.put("str", String.class);
 
         String type = new TypeFinder().determineType(expr, varTypes, null);
@@ -116,7 +120,7 @@ public class TypeFinderTest {
     public void testDetermineTypeNonStandardClass() throws Exception {
         Expression expr = ParseHelper.createExpression("Logger.getLogger(str)");
 
-        HashMap<String, Class> varTypes = new HashMap<String, Class> ();
+        VariableList varTypes = createEmptyVariableList();
         varTypes.put("str", String.class);
 
         ImportList imports = ParseHelper.createImportList("import org.apache.log4j.Logger;");
@@ -130,7 +134,7 @@ public class TypeFinderTest {
     public void testDetermineTypeNonStandardClassFieldAccess() throws Exception {
         Expression expr = ParseHelper.createExpression("LogLevel.DEBUG");
 
-        HashMap<String, Class> varTypes = new HashMap<String, Class> ();
+        VariableList varTypes = createEmptyVariableList();
         varTypes.put("str", String.class);
 
         ImportList imports = ParseHelper.createImportList("import org.apache.log4j.lf5.LogLevel;");
