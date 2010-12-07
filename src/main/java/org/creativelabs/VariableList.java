@@ -42,5 +42,10 @@ class VariableList {
         fieldNames.add(fieldName);
         fieldTypes.put(fieldName, fieldType);
     }
+
+    void addAll(VariableList list) {
+        fieldNames.addAll(list.fieldNames);
+        fieldTypes.putAll(list.fieldTypes);
+    }
  
 }

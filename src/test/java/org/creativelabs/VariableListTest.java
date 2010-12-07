@@ -65,4 +65,15 @@ public class VariableListTest {
         varList.put("name", "String");
         assertEquals("String", varList.getFieldTypeAsString("name"));
     }
+
+    @Test
+    public void testAddAll() throws Exception {
+        VariableList varList = new VariableList();
+        VariableList fullList = new VariableList();
+        fullList.put("name", "String");
+
+        varList.addAll(fullList);
+
+        assertEquals("String", varList.getFieldTypeAsString("name"));
+    }
 }

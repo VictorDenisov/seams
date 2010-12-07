@@ -93,6 +93,5 @@ class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
     }
 }
 
-
 // vim: set ts=4 sw=4 et:
 
