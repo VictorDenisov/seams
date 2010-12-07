@@ -4,10 +4,9 @@ import java.io.*;
 import java.util.*;
 
 import japa.parser.ast.*;
-import japa.parser.ast.visitor.*;
 import japa.parser.ast.body.*;
-import japa.parser.ast.type.*;
 import japa.parser.*;
+import org.creativelabs.ui.JungDrawer;
 
 final class MainApp {
 
@@ -28,6 +27,7 @@ final class MainApp {
         ClassProcessor classProcessor = new ClassProcessor(typeDeclaration, imports);
         classProcessor.compute();
         outData(classProcessor, fileName);
+//        new JungDrawer(classProcessor.getDependencies(), fileName);
     }
 
     private static void outData(ClassProcessor classProcessor, String fileName) {
