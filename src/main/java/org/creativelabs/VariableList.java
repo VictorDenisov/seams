@@ -1,5 +1,6 @@
 package org.creativelabs;
 
+import japa.parser.ast.expr.*;
 import japa.parser.ast.body.*;
 import java.util.*;
 
@@ -9,6 +10,8 @@ class VariableList {
     private List<String> fieldNames = new ArrayList<String>();
 
     private Map<String, String> fieldTypes = new HashMap<String, String>();
+
+    private ImportList imports = null;
 
     VariableList() {
     }
@@ -24,6 +27,7 @@ class VariableList {
                 }
             }
         }
+        this.imports = imports;
     }
 
     List<String> getNames() {
@@ -32,6 +36,13 @@ class VariableList {
 
     String getFieldTypeAsString(String fieldName) {
         return fieldTypes.get(fieldName);
+    }
+
+    Class getFieldTypeAsClass(String fieldName) throws Exception {
+        Expression expr = ParseHelper.createExpression(fieldTypes.get(fieldName));
+        String className = new TypeFinder().determineType(expr, null, imports);
+        Class clazz = Class.forName(className);
+        return clazz;
     }
 
     boolean hasName(String fieldName) {

@@ -76,4 +76,12 @@ public class VariableListTest {
 
         assertEquals("String", varList.getFieldTypeAsString("name"));
     }
+
+    @Test
+    public void testTypeAsClass() throws Exception {
+        VariableList varList = new VariableList();
+        varList.put("name", "String");
+
+        assertEquals(String.class, varList.getFieldTypeAsClass("name"));
+    }
 }
