@@ -35,8 +35,7 @@ final class MainApp {
             File file = new File(fileName + ".deps");
             if (file.createNewFile()) {
                 PrintWriter writer = new PrintWriter(file);
-                printDeps("Dependencies", classProcessor.getDependencies(), writer);
-                printDepsUponType("UponType", classProcessor.getDependencies(), writer);
+                printDeps(classProcessor.getDependencies(), writer);
                 writer.flush();
                 writer.close();
             }
@@ -51,34 +50,17 @@ final class MainApp {
         }
     }
 
-    private static void printDeps(String depsName, Map<String, Set<Dependency>> deps, PrintWriter writer) {
+    private static void printDeps(Map<String, Set<Dependency>> deps, PrintWriter writer) {
         for (Map.Entry<String, Set<Dependency>> entry : deps.entrySet()) {
             writer.print(entry.getKey() + " -> ");
-            outputSet(depsName, entry.getValue(), writer);
+            outputSet(entry.getValue(), writer);
         }
     }
 
-    private static void outputSet(String depsName, Set<Dependency> set, PrintWriter writer) {
-        writer.println(depsName + "(");
+    private static void outputSet(Set<Dependency> set, PrintWriter writer) {
+        writer.println("Dependencies (");
         for (Dependency value : set) {
-            writer.println(value.getExpression());
-        }
-        writer.println(")");
-    }
-
-    private static void printDepsUponType(String depsName, Map<String, Set<Dependency>> deps, PrintWriter writer) {
-        for (Map.Entry<String, Set<Dependency>> entry : deps.entrySet()) {
-            writer.print(entry.getKey() + " -> ");
-            outputSetUponType(depsName, entry.getValue(), writer);
-        }
-    }
-
-    private static void outputSetUponType(String depsName, Set<Dependency> set, PrintWriter writer) {
-        writer.println(depsName + "(");
-        for (Dependency value : set) {
-            if (value.getType() != null) {
-                writer.println(value.getType());
-            }
+            writer.println(value.getExpression() + " -- " + value.getType());
         }
         writer.println(")");
     }
