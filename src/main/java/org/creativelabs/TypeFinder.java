@@ -7,8 +7,6 @@ import japa.parser.ast.expr.FieldAccessExpr;
 import japa.parser.ast.expr.Expression;
 import japa.parser.ast.expr.NameExpr;
 
-import java.util.Map;
-
 class TypeFinder {
 
     static class UnsupportedExpressionException extends RuntimeException {

@@ -49,11 +49,27 @@ class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
         dependencies.add(new Dependency(n.getName(), dependencyUponType));
     }
 
+    private String runTypeFinder(Expression n) {
+        VariableList vList = new VariableList();
+        vList.addAll(classFields);
+        vList.addAll(localVariables);
+        String type = null;
+        try {
+            type = new TypeFinder().determineType(n, vList, imports);
+        } catch (Exception e) {
+            type = e.toString();
+        }
+        return type;
+    }
+
     @Override
     public void visit(MethodCallExpr n, Object o) {
         ScopeDetectorVisitor scopeDetector = new ScopeDetectorVisitor();
         scopeDetector.visit(n, o);
-        dependencies.add(new Dependency(n.toString(), null));
+
+        String type = runTypeFinder(n);
+
+        dependencies.add(new Dependency(n.toString(), type));
         super.visit(n, o);
     }
 
@@ -61,7 +77,10 @@ class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
     public void visit(FieldAccessExpr n, Object o) {
         ScopeDetectorVisitor scopeDetector = new ScopeDetectorVisitor();
         scopeDetector.visit(n, o);
-        dependencies.add(new Dependency(n.toString(), null));
+
+        String type = runTypeFinder(n);
+
+        dependencies.add(new Dependency(n.toString(), type));
         super.visit(n, o);
     }
 

@@ -10,23 +10,26 @@ import japa.parser.ast.CompilationUnit;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
-public class ParseHelper {
+public final class ParseHelper {
+
+    private ParseHelper() {
+    }
 
     /**
      * data - one expression, which ast should be returned.
      */
     public static Expression createExpression(String data) throws ParseException {
-        InputStream sr = new ByteArrayInputStream(("public class Sample {" +
-                "public static void main(String[] args) {" +
-                data + ";" +
-                "}" + 
-                "}").getBytes());
+        InputStream sr = new ByteArrayInputStream(("public class Sample {"
+                    + "public static void main(String[] args) {"
+                    + data + ";" 
+                    + "}" 
+                    + "}").getBytes());
 
         CompilationUnit cu = JavaParser.parse(sr);
 
-        ClassOrInterfaceDeclaration cd = (ClassOrInterfaceDeclaration)cu.getTypes().get(0);
+        ClassOrInterfaceDeclaration cd = (ClassOrInterfaceDeclaration) cu.getTypes().get(0);
         MethodDeclaration md = (MethodDeclaration) cd.getMembers().get(0);
-        Expression expr = ((ExpressionStmt)md.getBody().getStmts().get(0)).getExpression();
+        Expression expr = ((ExpressionStmt) md.getBody().getStmts().get(0)).getExpression();
 
         return expr;
     }
@@ -48,17 +51,17 @@ public class ParseHelper {
 
     public static ClassOrInterfaceDeclaration createClassDeclaration(String data) throws Exception {
         CompilationUnit cu = ParseHelper.createCompilationUnit(data);
-        return (ClassOrInterfaceDeclaration)cu.getTypes().get(0);
+        return (ClassOrInterfaceDeclaration) cu.getTypes().get(0);
     }
 
     public static BlockStmt createBlockStmt(String data) throws ParseException {
-        InputStream sr = new ByteArrayInputStream(("public class Sample {" +
-                data +
-                "}").getBytes());
+        InputStream sr = new ByteArrayInputStream(("public class Sample {" 
+                    + data 
+                    + "}").getBytes());
 
         CompilationUnit cu = JavaParser.parse(sr);
 
-        ClassOrInterfaceDeclaration cd = (ClassOrInterfaceDeclaration)cu.getTypes().get(0);
+        ClassOrInterfaceDeclaration cd = (ClassOrInterfaceDeclaration) cu.getTypes().get(0);
         return ((MethodDeclaration) cd.getMembers().get(0)).getBody();
     }
 }

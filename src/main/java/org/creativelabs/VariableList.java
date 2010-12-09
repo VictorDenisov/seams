@@ -44,6 +44,7 @@ class VariableList {
             if (fieldType.equals("int")) {
                 return int.class;
             }
+            /* TODO
             if (fieldType.equals("double")) {
                 return double.class;
             }
@@ -68,6 +69,7 @@ class VariableList {
             if (fieldType.equals("void")) {
                 return void.class;
             }
+            */
         }
         Expression expr = ParseHelper.createExpression(fieldType);
         String className = new TypeFinder().determineType(expr, null, imports);
