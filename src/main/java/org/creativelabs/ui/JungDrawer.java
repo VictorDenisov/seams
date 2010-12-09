@@ -27,28 +27,29 @@ import java.util.Set;
  */
 public class JungDrawer {
 
-    public JungDrawer(Map<String, Set<Dependency>> dependencies, String fileName) {
+    public JungDrawer(Map<String, Set<String>> dependencies, String fileName) {
         // Graph<V, E> where V is the type of the vertices and E is the type of the edges
         Graph<Vertex<String>, String> g = new SparseMultigraph<Vertex<String>, String>();
-        for (Map.Entry<String, Set<Dependency>> entry : dependencies.entrySet()) {
+        for (Map.Entry<String, Set<String>> entry : dependencies.entrySet()) {
             String depsName = entry.getKey();
             Vertex<String> root = new Vertex<String>(depsName, depsName);
-            g.addVertex(root);
-            for (Dependency value : entry.getValue()) {
-                if (value.getType() != null) {
-                    String type = value.getType();
-                    Vertex<String> node = new Vertex<String>(depsName + type, type);
-                    if (!g.getVertices().contains(node)){
+            if (!entry.getValue().isEmpty()) {
+                g.addVertex(root);
+            }
+            for (String value : entry.getValue()) {
+                if (value != null) {
+                    Vertex<String> node = new Vertex<String>(depsName + value, value);
+                    if (!g.getVertices().contains(node)) {
                         g.addVertex(node);
                         g.addEdge(root.getId() + node.getId(), root, node, EdgeType.DIRECTED);
-                    }
-                    else{
-                        if (!g.getEdges(EdgeType.DIRECTED).contains(root.getId() + node.getId())){
+                    } else {
+                        if (!g.getEdges(EdgeType.DIRECTED).contains(root.getId() + node.getId())) {
                             g.addEdge(root.getId() + node.getId(), root, node, EdgeType.DIRECTED);
                         }
                     }
 
                 }
+
             }
         }
         // The Layout<V, E> is parameterized by the vertex and edge types
