@@ -1,12 +1,7 @@
 package org.creativelabs;
 
-import java.io.*;
-import japa.parser.ast.*;
-import japa.parser.ast.visitor.*;
 import japa.parser.ast.body.*;
-import japa.parser.ast.type.*;
 import japa.parser.ast.stmt.*;
-import japa.parser.*;
 import org.creativelabs.graph.InternalInstancesGraph;
 
 import java.util.*;

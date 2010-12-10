@@ -6,7 +6,6 @@ import java.util.*;
 import japa.parser.ast.*;
 import japa.parser.ast.body.*;
 import japa.parser.*;
-import org.creativelabs.ui.JungDrawer;
 
 final class MainApp {
 
@@ -24,7 +23,7 @@ final class MainApp {
     }
 
     private static void processClass(ClassOrInterfaceDeclaration typeDeclaration, String fileName) {
-        ClassProcessor classProcessor = new ClassProcessor(typeDeclaration, imports, fileName);
+        ClassProcessor classProcessor = new ClassProcessor(typeDeclaration, imports, fileName.substring(fileName.lastIndexOf("/")));
         classProcessor.compute();
         classProcessor.getInternalInstancesGraph().draw();
         outData(classProcessor, fileName);

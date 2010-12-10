@@ -4,12 +4,9 @@ import edu.uci.ics.jung.algorithms.layout.*;
 import edu.uci.ics.jung.algorithms.layout.SpringLayout;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.SparseMultigraph;
-import edu.uci.ics.jung.graph.event.GraphEvent;
 import edu.uci.ics.jung.graph.util.EdgeType;
 import edu.uci.ics.jung.visualization.BasicVisualizationServer;
 import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
-import edu.uci.ics.jung.visualization.renderers.*;
-import org.creativelabs.Dependency;
 import org.creativelabs.ui.jung.Vertex;
 
 import javax.swing.*;
@@ -27,7 +24,7 @@ import java.util.Set;
  */
 public class JungDrawer {
 
-    public JungDrawer(Map<String, Set<String>> dependencies, String fileName) {
+    public JungDrawer(Map<String, Set<String>> dependencies, JFrame frame, int width, int height) {
         // Graph<V, E> where V is the type of the vertices and E is the type of the edges
         Graph<Vertex<String>, String> g = new SparseMultigraph<Vertex<String>, String>();
         for (Map.Entry<String, Set<String>> entry : dependencies.entrySet()) {
@@ -54,15 +51,13 @@ public class JungDrawer {
         }
         // The Layout<V, E> is parameterized by the vertex and edge types
         Layout<Vertex<String>, String> layout = new SpringLayout<Vertex<String>, String>(g);
-        layout.setSize(new Dimension(300, 300)); // sets the initial size of the space
+        layout.setSize(new Dimension(width, height)); // sets the initial size of the space
         // The BasicVisualizationServer<V,E> is parameterized by the edge types
         BasicVisualizationServer<Vertex<String>, String> vv =
                 new BasicVisualizationServer<Vertex<String>, String>(layout);
-        vv.setPreferredSize(new Dimension(350, 350)); //Sets the viewing area size
+        vv.setPreferredSize(new Dimension(width, height)); //Sets the viewing area size
         vv.getRenderContext().setVertexLabelTransformer(new ToStringLabeller<Vertex<String>>());
 
-        JFrame frame = new JFrame(fileName.substring(fileName.lastIndexOf("/")));
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().add(vv);
         frame.pack();
         frame.setVisible(true);
