@@ -1,6 +1,6 @@
 package org.creativelabs;
 
-class Dependency {
+public class Dependency {
 
     private String expression;
 
@@ -15,7 +15,7 @@ class Dependency {
         return expression;
     }
 
-    String getType() {
+    public String getType() {
         return type;
     }
 }

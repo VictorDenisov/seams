@@ -10,9 +10,9 @@ public class ExpressionSeparatorVisitor extends VoidVisitorAdapter<Object> {
 
     private boolean assignedInternalInstance = false;
 
-    private Map<String, Boolean> internalInstances;
+    private Set<String> internalInstances;
 
-    public ExpressionSeparatorVisitor(Map<String, Boolean> internalInstances) {
+    public ExpressionSeparatorVisitor(Set<String> internalInstances) {
         this.internalInstances = internalInstances;
     }
 
@@ -23,7 +23,7 @@ public class ExpressionSeparatorVisitor extends VoidVisitorAdapter<Object> {
     @Override
     public void visit(NameExpr n, Object o) {
         String name = n.getName();
-        if (internalInstances.containsKey(name)) {
+        if (internalInstances.contains(name)) {
             assignedInternalInstance = true;
         }
     }
@@ -33,7 +33,7 @@ public class ExpressionSeparatorVisitor extends VoidVisitorAdapter<Object> {
         ScopeDetectorVisitor scopeDetector = new ScopeDetectorVisitor();
         scopeDetector.visit(n, o);
         String name = scopeDetector.getName();
-        if (internalInstances.containsKey(name)) {
+        if (internalInstances.contains(name)) {
             assignedInternalInstance = true;
         }
     }
@@ -43,7 +43,7 @@ public class ExpressionSeparatorVisitor extends VoidVisitorAdapter<Object> {
         ScopeDetectorVisitor scopeDetector = new ScopeDetectorVisitor();
         scopeDetector.visit(n, o);
         String name = scopeDetector.getName();
-        if (internalInstances.containsKey(name)) {
+        if (internalInstances.contains(name)) {
             assignedInternalInstance = true;
         }
     }
