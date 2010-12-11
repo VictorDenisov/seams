@@ -4,7 +4,7 @@ import java.util.*;
 
 class NewInternalInstancesGraph {
 
-    HashMap<String, String> edges = new HashMap<String, String>();
+    private HashMap<String, String> edges = new HashMap<String, String>();
 
     void add(String source, String target) {
         edges.put(source, target);

@@ -1,8 +1,9 @@
 package org.creativelabs.ui.jung;
 
 public class Vertex<IdType> {
-    IdType id;
-    String label;
+
+    private IdType id;
+    private String label;
 
     public Vertex() {
     }
@@ -30,13 +31,21 @@ public class Vertex<IdType> {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         Vertex vertex = (Vertex) o;
 
-        if (id != null ? !id.equals(vertex.id) : vertex.id != null) return false;
-        if (label != null ? !label.equals(vertex.label) : vertex.label != null) return false;
+        if (id != null ? !id.equals(vertex.id) : vertex.id != null) {
+            return false;
+        }
+        if (label != null ? !label.equals(vertex.label) : vertex.label != null) {
+            return false;
+        }
 
         return true;
     }

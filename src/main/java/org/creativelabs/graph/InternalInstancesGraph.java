@@ -8,8 +8,8 @@ import java.util.Set;
 
 public class InternalInstancesGraph {
 
-    private final int FRAME_WIDTH = 350;
-    private final int FRAME_HEIGHT = 350;
+    private static final int FRAME_WIDTH = 350;
+    private static final int FRAME_HEIGHT = 350;
 
     //TODO think about internal instances in init static block
     //TODO delete JungDrawer class
@@ -40,7 +40,7 @@ public class InternalInstancesGraph {
         return methodInternalInstances;
     }
 
-    public void draw(){
+    public void draw() {
         JFrame frame = new JFrame(className);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         new JungDrawer(methodInternalInstances, frame, FRAME_WIDTH, FRAME_HEIGHT);

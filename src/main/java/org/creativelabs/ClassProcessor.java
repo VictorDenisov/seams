@@ -52,7 +52,8 @@ class ClassProcessor {
         DependencyCounterVisitor dependencyCounter = new DependencyCounterVisitor(fieldList, imports);
         dependencyCounter.visit(body, null);
         dependencies.put(md.getName(), dependencyCounter.getDependencies());
-        internalInstancesGraph.addMethodInternalInstances(md.getName(), dependencyCounter.getInternalInstances().toSet());
+        internalInstancesGraph.addMethodInternalInstances(md.getName(), 
+                dependencyCounter.getInternalInstances().toSet());
     }
 
     private void findFields() {
