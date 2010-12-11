@@ -28,17 +28,7 @@ class TypeFinder {
     String determineType(Expression expr, VariableList varType, 
             ImportList imports) throws Exception {
         if (expr instanceof NameExpr) {
-            String name = ((NameExpr) expr).getName();
-            if (Character.isUpperCase(name.charAt(0))) {
-                if (imports != null && imports.containsKey(name)) {
-                    return imports.get(name);
-                } else {
-                    //TODO check that java.lang contains name type.
-                    return "java.lang." + name;
-                }
-            } else {
-                return varType.getFieldTypeAsClass(name).getName();
-            }
+            return determineType((NameExpr) expr, varType, imports);
         } else if (expr instanceof MethodCallExpr) {
             return determineType((MethodCallExpr) expr, varType, imports);
         } else if (expr instanceof FieldAccessExpr) {
@@ -46,6 +36,21 @@ class TypeFinder {
         }
 
         throw new UnsupportedExpressionException();
+    }
+
+    private String determineType(NameExpr expr, VariableList varType,
+            ImportList imports) throws Exception {
+        String name = expr.getName();
+        if (Character.isUpperCase(name.charAt(0))) {
+            if (imports != null && imports.containsKey(name)) {
+                return imports.get(name);
+            } else {
+                //TODO check that java.lang contains name type.
+                return "java.lang." + name;
+            }
+        } else {
+            return varType.getFieldTypeAsClass(name).getName();
+        }
     }
 
     private String determineType(FieldAccessExpr expr, VariableList varType,
