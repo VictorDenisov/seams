@@ -6,13 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Created by IntelliJ IDEA.
- * User: azotcsit
- * Date: 09.12.2010
- * Time: 18:53:18
- * To change this template use File | Settings | File Templates.
- */
 public class InternalInstancesGraph {
 
     private final int FRAME_WIDTH = 350;

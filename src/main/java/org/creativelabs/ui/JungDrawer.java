@@ -1,7 +1,6 @@
 package org.creativelabs.ui;
 
 import edu.uci.ics.jung.algorithms.layout.*;
-import edu.uci.ics.jung.algorithms.layout.SpringLayout;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.SparseMultigraph;
 import edu.uci.ics.jung.graph.util.EdgeType;
@@ -14,14 +13,6 @@ import java.awt.*;
 import java.util.Map;
 import java.util.Set;
 
-
-/**
- * Created by IntelliJ IDEA.
- * User: azotcsit
- * Date: 05.12.2010
- * Time: 17:32:22
- * To change this template use File | Settings | File Templates.
- */
 public class JungDrawer {
 
     public JungDrawer(Map<String, Set<String>> dependencies, JFrame frame, int width, int height) {
@@ -50,7 +41,7 @@ public class JungDrawer {
             }
         }
         // The Layout<V, E> is parameterized by the vertex and edge types
-        Layout<Vertex<String>, String> layout = new SpringLayout<Vertex<String>, String>(g);
+        Layout<Vertex<String>, String> layout = new KKLayout<Vertex<String>, String>(g);
         layout.setSize(new Dimension(width, height)); // sets the initial size of the space
         // The BasicVisualizationServer<V,E> is parameterized by the edge types
         BasicVisualizationServer<Vertex<String>, String> vv =

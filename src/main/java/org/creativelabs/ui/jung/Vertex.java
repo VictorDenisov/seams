@@ -1,12 +1,5 @@
 package org.creativelabs.ui.jung;
 
-/**
- * Created by IntelliJ IDEA.
- * User: azotcsit
- * Date: 07.12.2010
- * Time: 13:33:52
- * To change this template use File | Settings | File Templates.
- */
 public class Vertex<IdType> {
     IdType id;
     String label;
