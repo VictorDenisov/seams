@@ -9,8 +9,20 @@
 
     <name>seams</name>
 
+    <repositories>
+        <repository>
+            <id>javaparser</id>
+            <name>JavaParser Repository</name>
+            <url>http://javaparser.googlecode.com/svn/maven2</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding> <compileSource>1.6</compileSource>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <compileSource>1.6</compileSource>
     </properties>
 
     <build>
@@ -41,8 +53,8 @@
     </build>
 
     <dependencies>
-  	<dependency>
-            <groupId>javaparser</groupId>
+        <dependency>
+            <groupId>com.google.code.javaparser</groupId>
             <artifactId>javaparser</artifactId>
             <version>1.0.8</version>
         </dependency>
@@ -78,10 +90,10 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-                <groupId>colt</groupId>
-                <artifactId>colt</artifactId>
-                <version>1.2.0</version>
-            </dependency>
+            <groupId>colt</groupId>
+            <artifactId>colt</artifactId>
+            <version>1.2.0</version>
+        </dependency>
         <dependency>
             <groupId>concurrent</groupId>
             <artifactId>concurrent</artifactId>
