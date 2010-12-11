@@ -21,13 +21,13 @@ class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
 
     private VariableList localVariables = new VariableList();
 
-    private Set<String> internalInstances = new HashSet<String>();
+    private NewInternalInstancesGraph internalInstances = new NewInternalInstancesGraph();
 
     Set<Dependency> getDependencies() {
         return Collections.unmodifiableSet(dependencies);
     }
 
-    public Set<String> getInternalInstances() {
+    public NewInternalInstancesGraph getInternalInstances() {
         return internalInstances;
     }
 
@@ -94,7 +94,7 @@ class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
             ExpressionSeparatorVisitor esv = new ExpressionSeparatorVisitor(internalInstances);
             n.getValue().accept(esv, null);
             if (esv.isAssignedInternalInstance()) {
-                internalInstances.add(n.getTarget().toString());
+                internalInstances.add(n.getTarget().toString(), esv.getValue());
             }
         }
         super.visit(n, o);
@@ -108,7 +108,7 @@ class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
             if (v.getInit() != null) {
                 v.getInit().accept(esv, null);
                 if (esv.isAssignedInternalInstance()) {
-                    internalInstances.add(v.getId().getName());
+                    internalInstances.add(v.getId().getName(), esv.getValue());
                 }
             }
         }

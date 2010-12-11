@@ -9,10 +9,12 @@ import java.util.*;
 public class ExpressionSeparatorVisitor extends VoidVisitorAdapter<Object> {
 
     private boolean assignedInternalInstance = false;
+    
+    private String value = null;
 
-    private Set<String> internalInstances;
+    private NewInternalInstancesGraph internalInstances;
 
-    public ExpressionSeparatorVisitor(Set<String> internalInstances) {
+    public ExpressionSeparatorVisitor(NewInternalInstancesGraph internalInstances) {
         this.internalInstances = internalInstances;
     }
 
@@ -20,11 +22,16 @@ public class ExpressionSeparatorVisitor extends VoidVisitorAdapter<Object> {
         return assignedInternalInstance;
     }
 
+    public String getValue() {
+        return value;
+    }
+
     @Override
     public void visit(NameExpr n, Object o) {
         String name = n.getName();
         if (internalInstances.contains(name)) {
             assignedInternalInstance = true;
+            value = name;
         }
     }
 
@@ -35,6 +42,7 @@ public class ExpressionSeparatorVisitor extends VoidVisitorAdapter<Object> {
         String name = scopeDetector.getName();
         if (internalInstances.contains(name)) {
             assignedInternalInstance = true;
+            value = name;
         }
     }
 
@@ -45,20 +53,17 @@ public class ExpressionSeparatorVisitor extends VoidVisitorAdapter<Object> {
         String name = scopeDetector.getName();
         if (internalInstances.contains(name)) {
             assignedInternalInstance = true;
+            value = name;
         }
     }
 
     @Override
     public void visit(ExplicitConstructorInvocationStmt n, Object o) {
-        //TODO Redirect to file
-        System.out.println("Processing constructor invocation");
     }
 
     @Override
     public void visit(ObjectCreationExpr n, Object o) {
         assignedInternalInstance = true;
-        //TODO Redirect to file
-        System.out.println("Construction of " + n.getType().getName());
     }
 
 }
