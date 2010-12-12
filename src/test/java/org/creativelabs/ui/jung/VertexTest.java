@@ -3,7 +3,7 @@ package org.creativelabs.ui.jung;
 import org.creativelabs.Dependency;
 import org.testng.annotations.Test;
 
-import static org.testng.AssertJUnit.assertEquals;
+import static org.testng.AssertJUnit.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -13,16 +13,18 @@ import static org.testng.AssertJUnit.assertEquals;
  * To change this template use File | Settings | File Templates.
  */
 public class VertexTest {
+
     @Test
     public void testConstructor() throws Exception {
-        Vertex<String> firstVertex = new Vertex<String>("id", "label");
+        Vertex firstVertex = new Vertex("label");
 
-        assertEquals("id", firstVertex.getId());
-        assertEquals("label", firstVertex.getLabel());
-
-        Vertex<Integer> secondVertex = new Vertex<Integer>(0, "label");
-
-        assertEquals(new Integer(0), secondVertex.getId());
-        assertEquals("label", secondVertex.getLabel());
+        assertEquals("label", firstVertex.toString());
+    }
+    
+    @Test
+    public void testTwoInstancesAreDifferent() throws Exception {
+        Vertex one = new Vertex("label");
+        Vertex two = new Vertex("label");
+        assertFalse(one.equals(two));
     }
 }
