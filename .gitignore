@@ -3,4 +3,5 @@ target
 .idea
 *.deps
 seams.iml
+*.jpg
 

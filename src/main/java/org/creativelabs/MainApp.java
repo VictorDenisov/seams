@@ -24,9 +24,10 @@ final class MainApp {
 
     private static void processClass(ClassOrInterfaceDeclaration typeDeclaration, String fileName) {
         ClassProcessor classProcessor = new ClassProcessor(typeDeclaration, imports,
-                fileName.substring(fileName.lastIndexOf("/")));
+                fileName);
         classProcessor.compute();
-        classProcessor.getInternalInstancesGraph().draw();
+//        classProcessor.getInternalInstancesGraph().draw();
+        classProcessor.getInternalInstancesGraph().saveToFile();
         outData(classProcessor, fileName);
     }
 

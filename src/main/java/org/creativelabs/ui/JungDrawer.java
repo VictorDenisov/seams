@@ -8,16 +8,22 @@ import edu.uci.ics.jung.visualization.BasicVisualizationServer;
 import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
 import org.creativelabs.ui.jung.Vertex;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
 public class JungDrawer {
 
-    public JungDrawer(Map<String, Set<String>> dependencies, JFrame frame, int width, int height) {
-        // Graph<V, E> where V is the type of the vertices and E is the type of the edges
-        Graph<Vertex, String> g = new SparseMultigraph<Vertex, String>();
+    // Graph<V, E> where V is the type of the vertices and E is the type of the edges
+    private Graph<Vertex, String> g = new SparseMultigraph<Vertex, String>();
+
+    public JungDrawer(Map<String, Set<String>> dependencies) {
+
         for (Map.Entry<String, Set<String>> entry : dependencies.entrySet()) {
             String depsName = entry.getKey();
             Vertex root = new Vertex(depsName);
@@ -37,9 +43,11 @@ public class JungDrawer {
                     }
 
                 }
-
             }
         }
+    }
+
+    private BasicVisualizationServer<Vertex, String> addContentToFrame(JFrame frame, int width, int height) {
         // The Layout<V, E> is parameterized by the vertex and edge types
         Layout<Vertex, String> layout = new KKLayout<Vertex, String>(g);
         layout.setSize(new Dimension(width, height)); // sets the initial size of the space
@@ -51,6 +59,25 @@ public class JungDrawer {
 
         frame.getContentPane().add(vv);
         frame.pack();
+        return vv;
+    }
+
+    public void draw(JFrame frame, int width, int height) {
+        addContentToFrame(frame, width, height);
         frame.setVisible(true);
+    }
+
+    public void saveToFile(JFrame frame, int width, int height, String fileName) {
+        JPanel panel = addContentToFrame(frame, width, height);
+
+        BufferedImage image = new BufferedImage(width, height, 1);
+        Graphics graphics = image.getGraphics();
+        panel.paint(graphics);
+         try {
+            ImageIO.write(image, "jpg", new File(fileName + ".jpg"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        frame.dispose();
     }
 }

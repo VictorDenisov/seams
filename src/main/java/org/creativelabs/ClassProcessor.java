@@ -17,10 +17,10 @@ class ClassProcessor {
 
     private InternalInstancesGraph internalInstancesGraph;
 
-    public ClassProcessor(ClassOrInterfaceDeclaration typeDeclaration, ImportList imports, String className) {
+    public ClassProcessor(ClassOrInterfaceDeclaration typeDeclaration, ImportList imports, String fileName) {
         this.imports = imports;
         this.typeDeclaration = typeDeclaration;
-        internalInstancesGraph = new InternalInstancesGraph(className);
+        internalInstancesGraph = new InternalInstancesGraph(fileName);
         findFields();
     }
 

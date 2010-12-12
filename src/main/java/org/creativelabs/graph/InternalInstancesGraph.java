@@ -16,10 +16,10 @@ public class InternalInstancesGraph {
 
     private Map<String, Set<String>> methodInternalInstances = new HashMap<String, Set<String>>();
 
-    private String className;
+    private String fileName;
 
-    public InternalInstancesGraph(String className) {
-        this.className = className;
+    public InternalInstancesGraph(String fileName) {
+        this.fileName = fileName;
     }
 
     public void addMethodInternalInstances(String methodName, Set<String> dependencies) {
@@ -41,9 +41,16 @@ public class InternalInstancesGraph {
     }
 
     public void draw() {
-        JFrame frame = new JFrame(className);
+        JFrame frame = new JFrame(fileName);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        new JungDrawer(methodInternalInstances, frame, FRAME_WIDTH, FRAME_HEIGHT);
+        JungDrawer drawer = new JungDrawer(methodInternalInstances);
+        drawer.draw(frame, FRAME_WIDTH, FRAME_HEIGHT);
+    }
+
+    public void saveToFile() {
+        JFrame frame = new JFrame(fileName);
+        JungDrawer drawer = new JungDrawer(methodInternalInstances);
+        drawer.saveToFile(frame, FRAME_WIDTH, FRAME_HEIGHT, fileName);
     }
 
     @Override
