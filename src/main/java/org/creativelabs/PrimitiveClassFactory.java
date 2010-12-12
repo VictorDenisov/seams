@@ -28,7 +28,7 @@ public class PrimitiveClassFactory {
         if ("char".equals(className) || "Char".equals(className)) return char.class;
         if ("boolean".equals(className) || "Boolean".equals(className)) return boolean.class;
         if ("void".equals(className) || "Void".equals(className)) return void.class;
-        if ("String".equals(className)) return String.class;
+        if ("String".equals(className) || "java.lang.String".equals(className)) return String.class;
         throw new TypeFinder.UnsupportedExpressionException();
     }
 

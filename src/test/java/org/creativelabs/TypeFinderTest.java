@@ -161,7 +161,7 @@ public class TypeFinderTest {
     }
 
     @Test
-    public void testDetermineTypeOfMethodWithArgumentAsLiteral() throws Exception {
+    public void testDetermineTypeOfMethodWithLiteralsAsArgument() throws Exception {
         MethodCallExpr expr = (MethodCallExpr) ParseHelper.createExpression("str.compareTo(\"string\")");
 
         VariableList varTypes = createEmptyVariableList();
@@ -200,5 +200,34 @@ public class TypeFinderTest {
         assertEquals("java.lang.String", type);
 
     }
+
+    @Test
+    public void testDetermineTypeStringLiteral() throws Exception {
+
+        MethodCallExpr expr = (MethodCallExpr) ParseHelper.createExpression("\"string\".compareTo(str)");
+
+        VariableList varTypes = createEmptyVariableList();
+        varTypes.put("str", String.class);
+
+        String type = new TypeFinder().determineType(expr, varTypes, null);
+
+        assertEquals("int", type);
+
+    }
+
+    @Test
+    public void testDetermineTypeOfAssignExpressionWithStringLiteral() throws Exception {
+
+        AssignExpr expr = (AssignExpr) ParseHelper.createExpression("str = \"string\"");
+
+        VariableList varTypes = createEmptyVariableList();
+        varTypes.put("str", String.class);
+
+        String type = new TypeFinder().determineType(expr, varTypes, null);
+
+        assertEquals("java.lang.String", type);
+
+    }
+
 
 }
