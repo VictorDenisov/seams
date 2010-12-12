@@ -2,6 +2,7 @@ package org.creativelabs;
 
 import japa.parser.ast.expr.*;
 import japa.parser.ast.body.*;
+
 import java.util.*;
 
 
@@ -40,41 +41,20 @@ class VariableList {
 
     Class getFieldTypeAsClass(String fieldName) throws Exception {
         String fieldType = fieldTypes.get(fieldName);
-        if (Character.isLowerCase(fieldType.charAt(0))) {
-            if (fieldType.equals("int")) {
-                return int.class;
-            }
-            /* TODO
-            if (fieldType.equals("double")) {
-                return double.class;
-            }
-            if (fieldType.equals("boolean")) {
-                return boolean.class;
-            }
-            if (fieldType.equals("char")) {
-                return char.class;
-            }
-            if (fieldType.equals("byte")) {
-                return byte.class;
-            }
-            if (fieldType.equals("short")) {
-                return short.class;
-            }
-            if (fieldType.equals("long")) {
-                return long.class;
-            }
-            if (fieldType.equals("float")) {
-                return float.class;
-            }
-            if (fieldType.equals("void")) {
-                return void.class;
-            }
-            */
+        //TODO check if fieldName is not contain in fieldTypes
+//        if (fieldType == null) {
+//            fieldType = fieldName;
+//        }
+        if (PrimitiveClassFactory.getFactory().classIsPrimitive(fieldType)) {
+            return PrimitiveClassFactory.getFactory().getPrimitiveClass(fieldType);
+        } else {
+            Expression expr = ParseHelper.createExpression(fieldType);
+            String className = new TypeFinder().determineType(expr, null, imports);
+            Class clazz = Class.forName(className);
+            return clazz;
         }
-        Expression expr = ParseHelper.createExpression(fieldType);
-        String className = new TypeFinder().determineType(expr, null, imports);
-        Class clazz = Class.forName(className);
-        return clazz;
+
+
     }
 
     boolean hasName(String fieldName) {
@@ -95,5 +75,5 @@ class VariableList {
         fieldNames.addAll(list.fieldNames);
         fieldTypes.putAll(list.fieldTypes);
     }
- 
+
 }

@@ -1,5 +1,8 @@
-package org.creativelabs; 
+package org.creativelabs;
 
+import japa.parser.ast.body.ClassOrInterfaceDeclaration;
+import japa.parser.ast.body.MethodDeclaration;
+import japa.parser.ast.stmt.ExpressionStmt;
 import org.testng.annotations.Test;
 import org.testng.annotations.Configuration;
 import org.creativelabs.TypeFinder;
@@ -41,7 +44,7 @@ public class TypeFinderTest {
 
     @Test
     public void testGetReturnTypeComment() throws Exception {
-        String returnType = new TypeFinder().getReturnType("japa.parser.ast.Comment", 
+        String returnType = new TypeFinder().getReturnType("japa.parser.ast.Comment",
                 "getContent", new Class[0]);
         assertEquals("java.lang.String", returnType);
     }
@@ -50,7 +53,7 @@ public class TypeFinderTest {
     public void testGetReturnTypeCommentVoid() throws Exception {
         Class[] types = new Class[1];
         types[0] = String.class;
-        String returnType = new TypeFinder().getReturnType("japa.parser.ast.Comment", 
+        String returnType = new TypeFinder().getReturnType("japa.parser.ast.Comment",
                 "setContent", types);
         assertEquals("void", returnType);
     }
@@ -69,7 +72,7 @@ public class TypeFinderTest {
 
     @Test
     public void testDetermineTypeNameExprClass() throws Exception {
-        NameExpr expr = (NameExpr)ParseHelper.createExpression("String");
+        NameExpr expr = (NameExpr) ParseHelper.createExpression("String");
 
         VariableList varTypes = createEmptyVariableList();
         varTypes.put("string", String.class);
@@ -81,11 +84,11 @@ public class TypeFinderTest {
 
     @Test
     public void testDetermineTypeMethodCallStatic() throws Exception {
-        MethodCallExpr expr = (MethodCallExpr)ParseHelper.createExpression("String.valueOf(x)");
+        MethodCallExpr expr = (MethodCallExpr) ParseHelper.createExpression("String.valueOf(x)");
 
         VariableList varTypes = createEmptyVariableList();
         varTypes.put("x", int.class);
-        
+
         String type = new TypeFinder().determineType(expr, varTypes, null);
 
         assertEquals("java.lang.String", type);
@@ -93,12 +96,12 @@ public class TypeFinderTest {
 
     @Test
     public void testDetermineTypeMethodExprVariable() throws Exception {
-        MethodCallExpr expr = (MethodCallExpr)ParseHelper.createExpression("str.compareTo(x)");
+        MethodCallExpr expr = (MethodCallExpr) ParseHelper.createExpression("str.compareTo(x)");
 
         VariableList varTypes = createEmptyVariableList();
         varTypes.put("x", String.class);
         varTypes.put("str", String.class);
-        
+
         String type = new TypeFinder().determineType(expr, varTypes, null);
 
         assertEquals("int", type);
@@ -106,8 +109,8 @@ public class TypeFinderTest {
 
     @Test
     public void testDetermineTypeFieldAccessExpr() throws Exception {
-        FieldAccessExpr expr = (FieldAccessExpr)ParseHelper
-            .createExpression("str.CASE_INSENSITIVE_ORDER");
+        FieldAccessExpr expr = (FieldAccessExpr) ParseHelper
+                .createExpression("str.CASE_INSENSITIVE_ORDER");
 
         VariableList varTypes = createEmptyVariableList();
         varTypes.put("str", String.class);
@@ -156,4 +159,46 @@ public class TypeFinderTest {
         }
         assertEquals("UnsupportedExpressionException", result);
     }
+
+    @Test
+    public void testDetermineTypeOfMethodWithArgumentAsLiteral() throws Exception {
+        MethodCallExpr expr = (MethodCallExpr) ParseHelper.createExpression("str.compareTo(\"string\")");
+
+        VariableList varTypes = createEmptyVariableList();
+        varTypes.put("str", String.class);
+
+        String type = new TypeFinder().determineType(expr, varTypes, null);
+
+        assertEquals("int", type);
+
+
+        expr = (MethodCallExpr) ParseHelper.createExpression("str.substring(1)");
+
+        varTypes = createEmptyVariableList();
+        varTypes.put("str", String.class);
+
+        type = new TypeFinder().determineType(expr, varTypes, null);
+
+        assertEquals("java.lang.String", type);
+
+
+        expr = (MethodCallExpr) ParseHelper.createExpression("String.valueOf(true)");
+
+        varTypes = createEmptyVariableList();
+
+        type = new TypeFinder().determineType(expr, varTypes, null);
+
+        assertEquals("java.lang.String", type);
+
+
+        expr = (MethodCallExpr) ParseHelper.createExpression("String.valueOf(1.5)");
+
+        varTypes = createEmptyVariableList();
+
+        type = new TypeFinder().determineType(expr, varTypes, null);
+
+        assertEquals("java.lang.String", type);
+
+    }
+
 }

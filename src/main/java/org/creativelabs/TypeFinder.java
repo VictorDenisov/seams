@@ -2,10 +2,9 @@ package org.creativelabs;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Field;
-import japa.parser.ast.expr.MethodCallExpr;
-import japa.parser.ast.expr.FieldAccessExpr;
-import japa.parser.ast.expr.Expression;
-import japa.parser.ast.expr.NameExpr;
+import java.util.List;
+
+import japa.parser.ast.expr.*;
 
 class TypeFinder {
 
@@ -64,11 +63,25 @@ class TypeFinder {
             ImportList imports) throws Exception {
         String scopeClassName = determineType(expr.getScope(), varType, imports);
 
-        Class[] argType = new Class[1];
+        List<Expression> arguments = expr.getArgs();
+        int countOfArguments = arguments.size();
 
-        NameExpr arg = (NameExpr) expr.getArgs().get(0);
+        Class[] argType = new Class[countOfArguments];
 
-        argType[0] = varType.getFieldTypeAsClass(arg.getName());
+        for (int i = 0; i < countOfArguments; i++){
+            if (arguments.get(i) instanceof NameExpr){
+                argType[i] = varType.getFieldTypeAsClass(((NameExpr)arguments.get(i)).getName());
+            } else if (arguments.get(i) instanceof LiteralExpr){
+                argType[i] = PrimitiveClassFactory.getFactory().getPrimitiveClass(determineType((LiteralExpr) arguments.get(i)));
+            }
+        }
         return getReturnType(scopeClassName, expr.getName(), argType);
+    }
+
+    private String determineType(LiteralExpr expr) throws Exception {
+        String className = expr.getClass().getSimpleName();
+        //All javaparser's literals have the special class names : Type + "LiteralExpr"
+        String typeOfExpression = className.substring(0, className.indexOf("Literal"));
+        return typeOfExpression;
     }
 }
