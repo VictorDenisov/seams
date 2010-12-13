@@ -36,4 +36,14 @@ public class NewInternalInstancesGraphTest {
 
         assertEqualsList(Arrays.asList(new String[]{"source"}), res);
     }
+
+    @Test
+    public void testBuildGraph() {
+        NewInternalInstancesGraph graph = new NewInternalInstancesGraph();
+        graph.add("source", "target");
+
+        ToStringGraphBuilder gb = new ToStringGraphBuilder();
+        graph.buildGraph(gb);
+        assertEquals("{source -> target, }", gb.toString());
+    }
 }
