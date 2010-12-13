@@ -1,7 +1,8 @@
 *~
 target
+patches
 .idea
-*.deps
 seams.iml
+*.deps
 *.jpg
 
