@@ -71,9 +71,6 @@ class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
 
     @Override
     public void visit(MethodCallExpr n, Object o) {
-        ScopeDetectorVisitor scopeDetector = new ScopeDetectorVisitor();
-        scopeDetector.visit(n, o);
-
         String type = runTypeFinder(n);
 
         dependencies.add(new Dependency(n.toString(), type));
@@ -82,9 +79,6 @@ class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
 
     @Override
     public void visit(FieldAccessExpr n, Object o) {
-        ScopeDetectorVisitor scopeDetector = new ScopeDetectorVisitor();
-        scopeDetector.visit(n, o);
-
         String type = runTypeFinder(n);
 
         dependencies.add(new Dependency(n.toString(), type));
