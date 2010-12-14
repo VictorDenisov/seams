@@ -7,13 +7,15 @@ import java.util.*;
 
 class ImportList {
 
-    private List<ImportDeclaration> list;
+    private List<ImportDeclaration> list = new ArrayList<ImportDeclaration>();
 
     private Map<String, String> map;
 
     ImportList(CompilationUnit cu) {
+        if (cu.getImports() != null) {
+            list = cu.getImports();
+        }
         map = new HashMap<String, String>();
-        this.list = cu.getImports();
         for (ImportDeclaration d : list) {
             map.put(d.getName().getName(), d.getName().toString());
         }

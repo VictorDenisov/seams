@@ -30,8 +30,7 @@ final class MainApp {
     }
 
     private static void processClass(ClassOrInterfaceDeclaration typeDeclaration, String fileName) {
-        ClassProcessor classProcessor = new ClassProcessor(typeDeclaration, imports,
-                fileName);
+        ClassProcessor classProcessor = new ClassProcessor(typeDeclaration, imports);
         classProcessor.compute();
 
         for (Map.Entry<String, NewInternalInstancesGraph> entry
@@ -89,6 +88,7 @@ final class MainApp {
             if (fileName.endsWith(".java")) {
                 FileInputStream fis = new FileInputStream(fileOrDirectory);
                 CompilationUnit cu = JavaParser.parse(fis);
+                imports = new ImportList(cu);
                 for (TypeDeclaration typeDeclaration : cu.getTypes()) {
                     if (typeDeclaration instanceof ClassOrInterfaceDeclaration) {
                         processClass((ClassOrInterfaceDeclaration) typeDeclaration, fileOrDirectory.getAbsolutePath());

@@ -34,7 +34,7 @@ class TypeFinder {
         } else if (expr instanceof FieldAccessExpr) {
             return determineType((FieldAccessExpr) expr, varType, imports);
         }  else if (expr instanceof LiteralExpr){
-            return determineType((LiteralExpr) expr, varType, imports);
+            return determineType((LiteralExpr) expr);
         } else if (expr instanceof AssignExpr){
             return determineType((AssignExpr) expr, varType, imports);
         }
@@ -89,8 +89,7 @@ class TypeFinder {
         return getReturnType(scopeClassName, expr.getName(), argType);
     }
 
-    private String determineType(LiteralExpr expr, VariableList varType,
-            ImportList imports) throws Exception {
+    private String determineType(LiteralExpr expr) throws Exception {
         String className = expr.getClass().getSimpleName();
         //All javaparser's literals have the special class names : Type + "LiteralExpr"
         String typeOfExpression = className.substring(0, className.indexOf("Literal"));

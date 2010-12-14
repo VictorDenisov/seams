@@ -17,7 +17,7 @@ class ClassProcessor {
     private HashMap<String, NewInternalInstancesGraph> internalInstances 
         = new HashMap<String, NewInternalInstancesGraph>();
 
-    public ClassProcessor(ClassOrInterfaceDeclaration typeDeclaration, ImportList imports, String fileName) {
+    public ClassProcessor(ClassOrInterfaceDeclaration typeDeclaration, ImportList imports) {
         this.imports = imports;
         this.typeDeclaration = typeDeclaration;
         findFields();

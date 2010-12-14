@@ -4,7 +4,7 @@ import java.util.*;
 
 class ToStringGraphBuilder implements GraphBuilder {
 
-    private final class StringVertex implements Vertex {
+    private static final class StringVertex implements Vertex {
         private String label;
 
         private StringVertex(String label) {

@@ -50,4 +50,16 @@ public class ImportListTest {
 
         assertTrue(imports.containsKey("Logger"));
     }
+
+    @Test
+    public void testImportsEmpty() throws Exception {
+		String exception = "NoException";
+		try {
+			ImportList imports = ParseHelper.createImportList("");
+		} catch (Exception e) {
+			exception = e.toString();
+		}
+
+        assertEquals("NoException", exception);
+    }
 }
