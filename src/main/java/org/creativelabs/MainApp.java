@@ -7,9 +7,16 @@ import japa.parser.ast.*;
 import japa.parser.ast.body.*;
 import japa.parser.*;
 
+import org.creativelabs.ui.JungDrawer;
+import javax.swing.*;
+
 final class MainApp {
 
     private static ImportList imports;
+
+    private static final int IMAGE_WIDTH = 300;
+
+    private static final int IMAGE_HEIGHT = 300;
 
     private MainApp() {
 
@@ -26,8 +33,17 @@ final class MainApp {
         ClassProcessor classProcessor = new ClassProcessor(typeDeclaration, imports,
                 fileName);
         classProcessor.compute();
-//        classProcessor.getInternalInstancesGraph().draw();
-        classProcessor.getInternalInstancesGraph().saveToFile();
+
+        for (Map.Entry<String, NewInternalInstancesGraph> entry
+                : classProcessor.getInternalInstances().entrySet()) {
+            NewInternalInstancesGraph graph = entry.getValue();
+            String methodName = entry.getKey();
+            JFrame frame = new JFrame(fileName + " -- " + methodName);
+            JungGraphBuilder builder = new JungGraphBuilder();
+            graph.buildGraph(builder);
+            new JungDrawer(builder.getGraph()).saveToFile(frame, IMAGE_WIDTH, IMAGE_HEIGHT, 
+                    fileName + "." + methodName);
+        }
         outData(classProcessor, fileName);
     }
 
@@ -42,12 +58,6 @@ final class MainApp {
             }
         } catch (IOException e) {
             e.printStackTrace();
-        }
-    }
-
-    private static void printFields(Map<String, String> fields, PrintWriter writer) {
-        for (Map.Entry<String, String> entry : fields.entrySet()) {
-            writer.println(entry.getKey() + " -> " + entry.getValue());
         }
     }
 

@@ -2,11 +2,9 @@ package org.creativelabs.ui;
 
 import edu.uci.ics.jung.algorithms.layout.*;
 import edu.uci.ics.jung.graph.Graph;
-import edu.uci.ics.jung.graph.SparseMultigraph;
-import edu.uci.ics.jung.graph.util.EdgeType;
 import edu.uci.ics.jung.visualization.BasicVisualizationServer;
 import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
-import org.creativelabs.ui.jung.Vertex;
+import org.creativelabs.Vertex;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -14,37 +12,14 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
-import java.util.Set;
 
 public class JungDrawer {
 
     // Graph<V, E> where V is the type of the vertices and E is the type of the edges
-    private Graph<Vertex, String> g = new SparseMultigraph<Vertex, String>();
+    private Graph<Vertex, String> g = null;
 
-    public JungDrawer(Map<String, Set<String>> dependencies) {
-
-        for (Map.Entry<String, Set<String>> entry : dependencies.entrySet()) {
-            String depsName = entry.getKey();
-            Vertex root = new Vertex(depsName);
-            if (!entry.getValue().isEmpty()) {
-                g.addVertex(root);
-            }
-            for (String value : entry.getValue()) {
-                if (value != null) {
-                    Vertex node = new Vertex(value);
-                    if (!g.getVertices().contains(node)) {
-                        g.addVertex(node);
-                        g.addEdge(root.toString() + node.toString(), root, node, EdgeType.DIRECTED);
-                    } else {
-                        if (!g.getEdges(EdgeType.DIRECTED).contains(root.toString() + node.toString())) {
-                            g.addEdge(root.toString() + node.toString(), root, node, EdgeType.DIRECTED);
-                        }
-                    }
-
-                }
-            }
-        }
+    public JungDrawer(Graph<Vertex, String> g) {
+        this.g = g;
     }
 
     private BasicVisualizationServer<Vertex, String> addContentToFrame(JFrame frame, int width, int height) {

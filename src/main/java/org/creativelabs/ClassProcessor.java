@@ -2,7 +2,6 @@ package org.creativelabs;
 
 import japa.parser.ast.body.*;
 import japa.parser.ast.stmt.*;
-import org.creativelabs.graph.InternalInstancesGraph;
 
 import java.util.*;
 
@@ -15,17 +14,17 @@ class ClassProcessor {
 
     private Map<String, Set<Dependency>> dependencies = new HashMap<String, Set<Dependency>>();
 
-    private InternalInstancesGraph internalInstancesGraph;
+    private HashMap<String, NewInternalInstancesGraph> internalInstances 
+        = new HashMap<String, NewInternalInstancesGraph>();
 
     public ClassProcessor(ClassOrInterfaceDeclaration typeDeclaration, ImportList imports, String fileName) {
         this.imports = imports;
         this.typeDeclaration = typeDeclaration;
-        internalInstancesGraph = new InternalInstancesGraph(fileName);
         findFields();
     }
 
-    public InternalInstancesGraph getInternalInstancesGraph() {
-        return internalInstancesGraph;
+    public Map<String, NewInternalInstancesGraph> getInternalInstances() {
+        return internalInstances;
     }
 
     public Map<String, Set<Dependency>> getDependencies() {
@@ -47,13 +46,12 @@ class ClassProcessor {
         }
     }
 
-    private void findOutgoingDependencies(MethodDeclaration md) {
+    void findOutgoingDependencies(MethodDeclaration md) {
         BlockStmt body = md.getBody();
         DependencyCounterVisitor dependencyCounter = new DependencyCounterVisitor(fieldList, imports);
         dependencyCounter.visit(body, null);
         dependencies.put(md.getName(), dependencyCounter.getDependencies());
-        internalInstancesGraph.addMethodInternalInstances(md.getName(), 
-                dependencyCounter.getInternalInstances().toSet());
+        internalInstances.put(md.getName(), dependencyCounter.getInternalInstances());
     }
 
     private void findFields() {

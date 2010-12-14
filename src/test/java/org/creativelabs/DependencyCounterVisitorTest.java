@@ -44,4 +44,19 @@ public class DependencyCounterVisitorTest {
         }
         assertEquals("noException", result);
     }
+
+    @Test
+    public void testVisitBlockStmtForInterfaceMethod() throws Exception {
+        BlockStmt blockStmt = ParseHelper.createBlockStmt("public void method();");
+
+        DependencyCounterVisitor dependencyCounter = new DependencyCounterVisitor(null, null);
+
+        String result = "noException";
+        try {
+            dependencyCounter.visit(blockStmt, null);
+        } catch (NullPointerException e) {
+            result = "NullPointerException";
+        }
+        assertEquals("noException", result);
+    }
 }

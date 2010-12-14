@@ -16,15 +16,15 @@ public class VertexTest {
 
     @Test
     public void testConstructor() throws Exception {
-        Vertex firstVertex = new Vertex("label");
+        JungVertex firstVertex = new JungVertex("label");
 
         assertEquals("label", firstVertex.toString());
     }
     
     @Test
     public void testTwoInstancesAreDifferent() throws Exception {
-        Vertex one = new Vertex("label");
-        Vertex two = new Vertex("label");
+        JungVertex one = new JungVertex("label");
+        JungVertex two = new JungVertex("label");
         assertFalse(one.equals(two));
     }
 }

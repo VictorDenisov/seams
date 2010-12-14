@@ -33,6 +33,9 @@ class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
 
     @Override
     public void visit(BlockStmt n, Object o) {
+        if (n == null) {
+            return;
+        }
         if (n.getStmts() != null) {
             for (Statement statement : n.getStmts()) {
                 statement.accept(this, o);
