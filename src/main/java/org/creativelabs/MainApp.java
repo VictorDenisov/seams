@@ -7,6 +7,9 @@ import japa.parser.ast.*;
 import japa.parser.ast.body.*;
 import japa.parser.*;
 
+import org.creativelabs.ui.JungDrawer;
+import javax.swing.*;
+
 final class MainApp {
 
     private static ImportList imports;
@@ -26,8 +29,16 @@ final class MainApp {
         ClassProcessor classProcessor = new ClassProcessor(typeDeclaration, imports,
                 fileName);
         classProcessor.compute();
-//        classProcessor.getInternalInstancesGraph().draw();
-        classProcessor.getInternalInstancesGraph().saveToFile();
+
+        for (Map.Entry<String, NewInternalInstancesGraph> entry : 
+                classProcessor.getInternalInstances().entrySet()) {
+            NewInternalInstancesGraph graph = entry.getValue();
+            String methodName = entry.getKey();
+            JFrame frame = new JFrame(fileName + " -- " + methodName);
+            JungGraphBuilder builder = new JungGraphBuilder();
+            graph.buildGraph(builder);
+            new JungDrawer(builder.getGraph()).saveToFile(frame, 300, 300, fileName + "." + methodName);
+        }
         outData(classProcessor, fileName);
     }
 
