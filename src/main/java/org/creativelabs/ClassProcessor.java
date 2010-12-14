@@ -20,7 +20,7 @@ class ClassProcessor {
     public ClassProcessor(ClassOrInterfaceDeclaration typeDeclaration, ImportList imports) {
         this.imports = imports;
         this.typeDeclaration = typeDeclaration;
-        findFields();
+        this.fieldList = new VariableList(typeDeclaration, imports);
     }
 
     public Map<String, NewInternalInstancesGraph> getInternalInstances() {
@@ -52,10 +52,6 @@ class ClassProcessor {
         dependencyCounter.visit(body, null);
         dependencies.put(md.getName(), dependencyCounter.getDependencies());
         internalInstances.put(md.getName(), dependencyCounter.getInternalInstances());
-    }
-
-    private void findFields() {
-        fieldList = new VariableList(typeDeclaration, imports);
     }
 
 }
