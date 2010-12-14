@@ -1,6 +1,6 @@
 package org.creativelabs;
 
-interface Vertex {
+public interface Vertex {
 
     String getLabel();
 }

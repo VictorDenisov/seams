@@ -6,7 +6,7 @@ import edu.uci.ics.jung.graph.SparseMultigraph;
 import edu.uci.ics.jung.graph.util.EdgeType;
 import edu.uci.ics.jung.visualization.BasicVisualizationServer;
 import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
-import org.creativelabs.ui.jung.Vertex;
+import org.creativelabs.ui.jung.JungVertex;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -20,19 +20,19 @@ import java.util.Set;
 public class JungDrawer {
 
     // Graph<V, E> where V is the type of the vertices and E is the type of the edges
-    private Graph<Vertex, String> g = new SparseMultigraph<Vertex, String>();
+    private Graph<JungVertex, String> g = new SparseMultigraph<JungVertex, String>();
 
     public JungDrawer(Map<String, Set<String>> dependencies) {
 
         for (Map.Entry<String, Set<String>> entry : dependencies.entrySet()) {
             String depsName = entry.getKey();
-            Vertex root = new Vertex(depsName);
+            JungVertex root = new JungVertex(depsName);
             if (!entry.getValue().isEmpty()) {
                 g.addVertex(root);
             }
             for (String value : entry.getValue()) {
                 if (value != null) {
-                    Vertex node = new Vertex(value);
+                    JungVertex node = new JungVertex(value);
                     if (!g.getVertices().contains(node)) {
                         g.addVertex(node);
                         g.addEdge(root.toString() + node.toString(), root, node, EdgeType.DIRECTED);
@@ -47,15 +47,15 @@ public class JungDrawer {
         }
     }
 
-    private BasicVisualizationServer<Vertex, String> addContentToFrame(JFrame frame, int width, int height) {
+    private BasicVisualizationServer<JungVertex, String> addContentToFrame(JFrame frame, int width, int height) {
         // The Layout<V, E> is parameterized by the vertex and edge types
-        Layout<Vertex, String> layout = new KKLayout<Vertex, String>(g);
+        Layout<JungVertex, String> layout = new KKLayout<JungVertex, String>(g);
         layout.setSize(new Dimension(width, height)); // sets the initial size of the space
         // The BasicVisualizationServer<V,E> is parameterized by the edge types
-        BasicVisualizationServer<Vertex, String> vv =
-                new BasicVisualizationServer<Vertex, String>(layout);
+        BasicVisualizationServer<JungVertex, String> vv =
+                new BasicVisualizationServer<JungVertex, String>(layout);
         vv.setPreferredSize(new Dimension(width, height)); //Sets the viewing area size
-        vv.getRenderContext().setVertexLabelTransformer(new ToStringLabeller<Vertex>());
+        vv.getRenderContext().setVertexLabelTransformer(new ToStringLabeller<JungVertex>());
 
         frame.getContentPane().add(vv);
         frame.pack();

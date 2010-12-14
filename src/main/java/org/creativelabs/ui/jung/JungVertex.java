@@ -1,6 +1,8 @@
 package org.creativelabs.ui.jung;
 
-public class Vertex {
+import org.creativelabs.Vertex;
+
+public class JungVertex implements Vertex {
 
     private static int idCount = 0;
 
@@ -8,12 +10,16 @@ public class Vertex {
 
     private String label;
 
-    public Vertex() {
+    public JungVertex() {
     }
 
-    public Vertex(String label) {
+    public JungVertex(String label) {
         this.id = id;
         this.label = label;
+    }
+
+    public String getLabel() {
+        return label;
     }
 
     @Override
