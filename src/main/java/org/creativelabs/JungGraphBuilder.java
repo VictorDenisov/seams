@@ -7,7 +7,7 @@ import org.creativelabs.ui.jung.JungVertex;
 
 public class JungGraphBuilder implements GraphBuilder {
 
-    Graph<Vertex, String> graph = new SparseMultigraph<Vertex, String> ();
+    private Graph<Vertex, String> graph = new SparseMultigraph<Vertex, String>();
 
     public Vertex addVertex(String label) {
         JungVertex vertex = new JungVertex(label);

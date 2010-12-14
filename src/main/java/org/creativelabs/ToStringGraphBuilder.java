@@ -4,7 +4,7 @@ import java.util.*;
 
 class ToStringGraphBuilder implements GraphBuilder {
 
-    private class StringVertex implements Vertex {
+    private final class StringVertex implements Vertex {
         private String label;
 
         private StringVertex(String label) {
@@ -16,7 +16,7 @@ class ToStringGraphBuilder implements GraphBuilder {
         }
     }
 
-    HashMap<Vertex, Vertex> map = new HashMap<Vertex, Vertex> ();
+    private HashMap<Vertex, Vertex> map = new HashMap<Vertex, Vertex>();
 
     public Vertex addVertex(String label) {
         return new StringVertex(label);
