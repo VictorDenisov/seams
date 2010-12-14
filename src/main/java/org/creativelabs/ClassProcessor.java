@@ -14,8 +14,8 @@ class ClassProcessor {
 
     private Map<String, Set<Dependency>> dependencies = new HashMap<String, Set<Dependency>>();
 
-    private HashMap<String, NewInternalInstancesGraph> internalInstances 
-        = new HashMap<String, NewInternalInstancesGraph>();
+    private HashMap<String, InternalInstancesGraph> internalInstances 
+        = new HashMap<String, InternalInstancesGraph>();
 
     public ClassProcessor(ClassOrInterfaceDeclaration typeDeclaration, ImportList imports) {
         this.imports = imports;
@@ -23,7 +23,7 @@ class ClassProcessor {
         this.fieldList = new VariableList(typeDeclaration, imports);
     }
 
-    public Map<String, NewInternalInstancesGraph> getInternalInstances() {
+    public Map<String, InternalInstancesGraph> getInternalInstances() {
         return internalInstances;
     }
 

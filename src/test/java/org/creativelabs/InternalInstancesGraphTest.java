@@ -7,9 +7,9 @@ import java.util.*;
 import static org.testng.AssertJUnit.*;
 import static org.creativelabs.AssertHelper.*;
 
-public class NewInternalInstancesGraphTest {
+public class InternalInstancesGraphTest {
 
-    private String internalInstancesToString(NewInternalInstancesGraph graph) {
+    private String internalInstancesToString(InternalInstancesGraph graph) {
         ToStringGraphBuilder gb = new ToStringGraphBuilder();
         graph.buildGraph(gb);
         return gb.toString();
@@ -17,12 +17,12 @@ public class NewInternalInstancesGraphTest {
 
     @Test
     public void testConstructor() {
-        NewInternalInstancesGraph graph = new NewInternalInstancesGraph();
+        InternalInstancesGraph graph = new InternalInstancesGraph();
     }
 
     @Test
     public void testAdd() {
-        NewInternalInstancesGraph graph = new NewInternalInstancesGraph();
+        InternalInstancesGraph graph = new InternalInstancesGraph();
         graph.add("source", "target");
         String resultValue = internalInstancesToString(graph);
         assertEquals("{source -> target, }", resultValue);
@@ -30,14 +30,14 @@ public class NewInternalInstancesGraphTest {
 
     @Test
     public void testContains() {
-        NewInternalInstancesGraph graph = new NewInternalInstancesGraph();
+        InternalInstancesGraph graph = new InternalInstancesGraph();
         graph.add("source", "target");
         assertTrue(graph.contains("source"));
     }
 
     @Test
     public void testToSet() {
-        NewInternalInstancesGraph graph = new NewInternalInstancesGraph();
+        InternalInstancesGraph graph = new InternalInstancesGraph();
         graph.add("source", "target");
         ArrayList<String> res = new ArrayList<String> (graph.toSet());
 
@@ -46,7 +46,7 @@ public class NewInternalInstancesGraphTest {
 
     @Test
     public void testBuildGraph() {
-        NewInternalInstancesGraph graph = new NewInternalInstancesGraph();
+        InternalInstancesGraph graph = new InternalInstancesGraph();
         graph.add("source", "target");
 
         ToStringGraphBuilder gb = new ToStringGraphBuilder();

@@ -21,13 +21,13 @@ class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
 
     private VariableList localVariables = new VariableList();
 
-    private NewInternalInstancesGraph internalInstances = new NewInternalInstancesGraph();
+    private InternalInstancesGraph internalInstances = new InternalInstancesGraph();
 
     Set<Dependency> getDependencies() {
         return Collections.unmodifiableSet(dependencies);
     }
 
-    public NewInternalInstancesGraph getInternalInstances() {
+    public InternalInstancesGraph getInternalInstances() {
         return internalInstances;
     }
 

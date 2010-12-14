@@ -12,9 +12,9 @@ public class ExpressionSeparatorVisitor extends VoidVisitorAdapter<Object> {
     
     private String value = null;
 
-    private NewInternalInstancesGraph internalInstances;
+    private InternalInstancesGraph internalInstances;
 
-    public ExpressionSeparatorVisitor(NewInternalInstancesGraph internalInstances) {
+    public ExpressionSeparatorVisitor(InternalInstancesGraph internalInstances) {
         this.internalInstances = internalInstances;
     }
 

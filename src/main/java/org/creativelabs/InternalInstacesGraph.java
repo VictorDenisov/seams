@@ -2,7 +2,7 @@ package org.creativelabs;
 
 import java.util.*;
 
-class NewInternalInstancesGraph {
+class InternalInstancesGraph {
 
     private HashMap<String, String> edges = new HashMap<String, String>();
 

@@ -33,9 +33,9 @@ final class MainApp {
         ClassProcessor classProcessor = new ClassProcessor(typeDeclaration, imports);
         classProcessor.compute();
 
-        for (Map.Entry<String, NewInternalInstancesGraph> entry
+        for (Map.Entry<String, InternalInstancesGraph> entry
                 : classProcessor.getInternalInstances().entrySet()) {
-            NewInternalInstancesGraph graph = entry.getValue();
+            InternalInstancesGraph graph = entry.getValue();
             String methodName = entry.getKey();
             JFrame frame = new JFrame(fileName + " -- " + methodName);
             JungGraphBuilder builder = new JungGraphBuilder();
