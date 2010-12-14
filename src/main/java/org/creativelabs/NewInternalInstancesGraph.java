@@ -10,14 +10,6 @@ class NewInternalInstancesGraph {
         edges.put(source, target);
     }
 
-    public String toString() {
-        StringBuffer result = new StringBuffer("{");
-        for (Map.Entry<String, String> entry : edges.entrySet()) {
-            result.append(entry.getKey() + " -> " + entry.getValue() + ",");
-        }
-        return result.toString() + "}";
-    }
-
     public boolean contains(String variable) {
         return edges.containsKey(variable);
     }
