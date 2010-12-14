@@ -1,6 +1,5 @@
-package org.creativelabs;
+package org.creativelabs.graph;
 
-import org.creativelabs.ui.jung.JungVertex;
 import edu.uci.ics.jung.graph.*;
 import edu.uci.ics.jung.graph.util.EdgeType;
 
@@ -20,15 +19,22 @@ public class JungGraphBuilderTest {
     @Test
     public void testAddVertex() {
         JungGraphBuilder builder = new JungGraphBuilder();
-        JungVertex v = (JungVertex)builder.addVertex("label");
+        Vertex v = builder.addVertex("label");
         assertEquals("label", v.getLabel());
+    }
+
+    @Test
+    public void testToStringReturnsLabel() {
+        JungGraphBuilder builder = new JungGraphBuilder();
+        Vertex v = builder.addVertex("label");
+        assertEquals("label", v.toString());
     }
 
     @Test
     public void testAddEdge() {
         JungGraphBuilder builder = new JungGraphBuilder();
-        JungVertex a = (JungVertex)builder.addVertex("a");
-        JungVertex b = (JungVertex)builder.addVertex("b");
+        Vertex a = builder.addVertex("a");
+        Vertex b = builder.addVertex("b");
         builder.addEdge(a, b);
         Graph graph = builder.getGraph();
         assertEquals(2, graph.getVertices().size());

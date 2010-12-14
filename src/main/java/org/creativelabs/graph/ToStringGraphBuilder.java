@@ -1,8 +1,8 @@
-package org.creativelabs;
+package org.creativelabs.graph;
 
 import java.util.*;
 
-class ToStringGraphBuilder implements GraphBuilder {
+public class ToStringGraphBuilder implements GraphBuilder {
 
     private static final class StringVertex implements Vertex {
         private String label;

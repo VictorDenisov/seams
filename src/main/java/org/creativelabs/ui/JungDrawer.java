@@ -4,7 +4,7 @@ import edu.uci.ics.jung.algorithms.layout.*;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.visualization.BasicVisualizationServer;
 import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
-import org.creativelabs.Vertex;
+import org.creativelabs.graph.Vertex;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;

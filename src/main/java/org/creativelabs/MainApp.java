@@ -8,6 +8,7 @@ import japa.parser.ast.body.*;
 import japa.parser.*;
 
 import org.creativelabs.ui.JungDrawer;
+import org.creativelabs.graph.JungGraphBuilder;
 import javax.swing.*;
 
 final class MainApp {

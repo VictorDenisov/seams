@@ -1,4 +1,4 @@
-package org.creativelabs;
+package org.creativelabs.graph;
 
 import org.testng.annotations.Test;
 import org.testng.annotations.Configuration;

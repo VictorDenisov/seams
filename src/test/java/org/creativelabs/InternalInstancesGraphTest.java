@@ -4,6 +4,8 @@ import org.testng.annotations.Test;
 
 import java.util.*;
 
+import org.creativelabs.graph.ToStringGraphBuilder;
+
 import static org.testng.AssertJUnit.*;
 import static org.creativelabs.AssertHelper.*;
 

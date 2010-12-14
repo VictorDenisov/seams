@@ -1,4 +1,4 @@
-package org.creativelabs;
+package org.creativelabs.graph;
 
 public interface GraphBuilder {
     Vertex addVertex(String label);

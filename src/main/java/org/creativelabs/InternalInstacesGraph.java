@@ -1,5 +1,6 @@
 package org.creativelabs;
 
+import org.creativelabs.graph.*;
 import java.util.*;
 
 class InternalInstancesGraph {

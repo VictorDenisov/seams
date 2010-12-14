@@ -1,13 +1,29 @@
-package org.creativelabs;
+package org.creativelabs.graph;
 
 import edu.uci.ics.jung.graph.*;
 import edu.uci.ics.jung.graph.util.*;
 
-import org.creativelabs.ui.jung.JungVertex;
-
 public class JungGraphBuilder implements GraphBuilder {
 
     private Graph<Vertex, String> graph = new SparseMultigraph<Vertex, String>();
+
+    private static class JungVertex implements Vertex {
+
+        private String label;
+
+        public JungVertex(String label) {
+            this.label = label;
+        }
+
+        public String getLabel() {
+            return label;
+        }
+
+        @Override
+        public String toString() {
+            return label;
+        }
+    }
 
     public Vertex addVertex(String label) {
         JungVertex vertex = new JungVertex(label);
