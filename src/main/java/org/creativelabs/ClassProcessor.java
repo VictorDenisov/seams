@@ -32,12 +32,7 @@ class ClassProcessor {
     }
 
     public void compute() {            
-        processMethods(typeDeclaration);
-    }
-
-    private void processMethods(ClassOrInterfaceDeclaration n) {
-
-        for (BodyDeclaration bd : n.getMembers()) {
+        for (BodyDeclaration bd : typeDeclaration.getMembers()) {
             if (bd instanceof MethodDeclaration) {
                 MethodDeclaration md = (MethodDeclaration) bd;
 
