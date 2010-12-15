@@ -42,9 +42,6 @@ class VariableList {
     Class getFieldTypeAsClass(String fieldName) throws Exception {
         String fieldType = fieldTypes.get(fieldName);
         //TODO check if fieldName is not contain in fieldTypes
-//        if (fieldType == null) {
-//            fieldType = fieldName;
-//        }
         if (PrimitiveClassFactory.getFactory().classIsPrimitive(fieldType)) {
             return PrimitiveClassFactory.getFactory().getPrimitiveClass(fieldType);
         } else {
