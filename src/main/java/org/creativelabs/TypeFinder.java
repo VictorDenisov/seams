@@ -9,7 +9,7 @@ import japa.parser.ast.expr.*;
 
 class TypeFinder {
 
-    private String className = null;
+    private String processingClassName = null;
 
     static class UnsupportedExpressionException extends RuntimeException {
     }
@@ -31,13 +31,13 @@ class TypeFinder {
 
     String determineType(Expression expr, VariableList varType, MethodList methodList,
                          ImportList imports, String className) throws Exception {
-        this.className = className;
+        this.processingClassName = className;
         return determineType(expr, varType, methodList, imports);
     }
 
     String determineType(Expression expr, VariableList varType,
                          ImportList imports, String className) throws Exception {
-        this.className = className;
+        this.processingClassName = className;
         return determineType(expr, varType, null, imports);
     }
 
@@ -107,10 +107,8 @@ class TypeFinder {
 
         String scopeClassName = determineType(scope, varType, methodList, imports);
 
-        List<Expression> arguments =
-                expr.getArgs() == null ?
-                        new ArrayList<Expression>() :
-                        expr.getArgs();
+        ArrayList<Expression> emptyExpressionsList = new ArrayList<Expression>();
+        List<Expression> arguments = expr.getArgs() == null ? emptyExpressionsList : expr.getArgs();
         int countOfArguments = arguments.size();
 
         Class[] argType = new Class[countOfArguments];
@@ -121,15 +119,15 @@ class TypeFinder {
             } else if (arguments.get(i) instanceof LiteralExpr) {
                 String type = determineType((LiteralExpr) arguments.get(i), varType, methodList, imports);
                 if (!"null".equals(type)) {
-                    argType[i] = PrimitiveClassFactory.getFactory().getPrimitiveClass(type);
+                    argType[i] = getPrimitiveClass(type);
                 } else {
                     //TODO check correctness of Object type creation
                     argType[i] = Class.forName("java.lang.Object");
                 }
             } else if (arguments.get(i) instanceof ObjectCreationExpr) {
                 String simpleType = determineType((ObjectCreationExpr) arguments.get(i), varType, methodList, imports);
-                if (PrimitiveClassFactory.getFactory().classIsPrimitive(simpleType)) {
-                    argType[i] = PrimitiveClassFactory.getFactory().getPrimitiveClass(simpleType);
+                if (classIsPrimitive(simpleType)) {
+                    argType[i] = getPrimitiveClass(simpleType);
                 } else {
                     String type = imports.get(simpleType);
                     argType[i] = Class.forName(type);
@@ -163,7 +161,7 @@ class TypeFinder {
         String className = expr.getClass().getSimpleName();
         //All javaparser's literals have the special class names : Type + "LiteralExpr"
         String typeOfExpression = className.substring(0, className.indexOf("Literal"));
-        return PrimitiveClassFactory.getFactory().getPrimitiveClass(typeOfExpression).getName();
+        return getPrimitiveClass(typeOfExpression).getName();
     }
 
     private String determineType(AssignExpr expr, VariableList varType, MethodList methodList,
@@ -178,10 +176,10 @@ class TypeFinder {
 
     private String determineType(ThisExpr expr, VariableList varType, MethodList methodList,
                                  ImportList imports) throws Exception {
-        if (className == null) {
+        if (processingClassName == null) {
             throw new UnsupportedExpressionException();
         }
-        return className;
+        return processingClassName;
     }
 
     private String determineType(ObjectCreationExpr expr, VariableList varType, MethodList methodList,
@@ -192,6 +190,58 @@ class TypeFinder {
     private String determineType(CastExpr expr, VariableList varType, MethodList methodList,
                                  ImportList imports) throws Exception {
         return determineType(new NameExpr(expr.getType().toString()), varType, methodList, imports);
+    }
+
+
+    //TODO think about String as a primitive class...
+    public static Class getPrimitiveClass(String className) {
+        if ("byte".equals(className)
+                || "Byte".equals(className)
+                || "java.lang.Byte".equals(className)) {
+            return byte.class;
+        }
+        if ("short".equals(className) || "Short".equals(className) || "java.lang.Short".equals(className)) {
+            return short.class;
+        }
+        if ("int".equals(className) || "Integer".equals(className) || "java.lang.Integer".equals(className)) {
+            return int.class;
+        }
+        if ("long".equals(className) || "Long".equals(className) || "java.lang.Long".equals(className)) {
+            return long.class;
+        }
+        if ("float".equals(className) || "Float".equals(className) || "java.lang.Float".equals(className)) {
+            return float.class;
+        }
+        if ("double".equals(className) || "Double".equals(className) || "java.lang.Double".equals(className)) {
+            return double.class;
+        }
+        if ("char".equals(className) || "Char".equals(className) || "java.lang.Char".equals(className)) {
+            return char.class;
+        }
+        if ("boolean".equals(className) || "Boolean".equals(className) || "java.lang.Boolean".equals(className)) {
+            return boolean.class;
+        }
+        if ("void".equals(className) || "Void".equals(className) || "java.lang.Void".equals(className)) {
+            return void.class;
+        }
+        if ("String".equals(className) || "java.lang.String".equals(className)){
+            return String.class;
+        }
+        throw new TypeFinder.UnsupportedExpressionException();
+    }
+
+    public static boolean classIsPrimitive(String className) {
+        return "byte".equals(className)
+                || "short".equals(className)
+                || "int".equals(className)
+                || "long".equals(className)
+                || "float".equals(className)
+                || "double".equals(className)
+                || "char".equals(className)
+                || "boolean".equals(className)
+                || "void".equals(className)
+                || "String".equals(className)
+                || "java.lang.String".equals(className);
     }
 
 }

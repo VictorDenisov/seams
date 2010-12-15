@@ -1,18 +1,15 @@
 package org.creativelabs;
 
-import japa.parser.ast.TypeParameter;
-import japa.parser.ast.body.*;
-import japa.parser.ast.expr.Expression;
+import japa.parser.ast.body.BodyDeclaration;
+import japa.parser.ast.body.ClassOrInterfaceDeclaration;
+import japa.parser.ast.body.MethodDeclaration;
+import japa.parser.ast.body.Parameter;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-/**
- * Created by IntelliJ IDEA.
- * User: azotcsit
- * Date: 14.12.10
- * Time: 16:47
- * To change this template use File | Settings | File Templates.
- */
 public class MethodList {
 
     private List<String> methodNames = new ArrayList<String>();
@@ -44,11 +41,12 @@ public class MethodList {
     }
 
     String getMethodTypeAsString(String methodName, List<String> argumentTypes, ImportList importList) {
-        if (!methodArgumentTypes.get(methodName).containsAll(argumentTypes))
+        if (!methodArgumentTypes.get(methodName).containsAll(argumentTypes)) {
             throw new TypeFinder.UnsupportedExpressionException();
+        }
         String type = methodTypes.get(methodName);
-        if (PrimitiveClassFactory.getFactory().classIsPrimitive(type)){
-            return PrimitiveClassFactory.getFactory().getPrimitiveClass(type).getName();
+        if (TypeFinder.classIsPrimitive(type)) {
+            return TypeFinder.getPrimitiveClass(type).getName();
         }
         return importList.get(type);
     }

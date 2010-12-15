@@ -23,6 +23,7 @@ class ClassProcessor {
         this.imports = imports;
         this.typeDeclaration = typeDeclaration;
         this.fieldList = new VariableList(typeDeclaration, imports);
+        this.className = className;
     }
 
     public Map<String, NewInternalInstancesGraph> getInternalInstances() {

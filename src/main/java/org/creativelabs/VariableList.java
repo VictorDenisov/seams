@@ -42,8 +42,8 @@ class VariableList {
     Class getFieldTypeAsClass(String fieldName) throws Exception {
         String fieldType = fieldTypes.get(fieldName);
         //TODO check if fieldName is not contain in fieldTypes
-        if (PrimitiveClassFactory.getFactory().classIsPrimitive(fieldType)) {
-            return PrimitiveClassFactory.getFactory().getPrimitiveClass(fieldType);
+        if (TypeFinder.classIsPrimitive(fieldType)) {
+            return TypeFinder.getPrimitiveClass(fieldType);
         } else {
             Expression expr = ParseHelper.createExpression(fieldType);
             String className = new TypeFinder().determineType(expr, null, imports);
