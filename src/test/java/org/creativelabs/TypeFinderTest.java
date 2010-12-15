@@ -374,5 +374,31 @@ public class TypeFinderTest {
         assertEquals("int", type);
     }
 
+    @Test
+    public void testNullLiteralAsArgument() throws Exception {
 
+        MethodCallExpr expr = (MethodCallExpr) ParseHelper.createExpression("\"string\".compareTo(null)");
+
+        VariableList varTypes = createEmptyVariableList();
+        varTypes.put("str", String.class);
+
+        String type = new TypeFinder().determineType(expr, varTypes, null);
+
+        assertEquals("int", type);
+
+    }
+
+    @Test
+    public void testNullLiteral() throws Exception {
+
+        AssignExpr expr = (AssignExpr) ParseHelper.createExpression("str = null");
+
+        VariableList varTypes = createEmptyVariableList();
+        varTypes.put("str", String.class);
+
+        String type = new TypeFinder().determineType(expr, varTypes, null);
+
+        assertEquals("java.lang.String", type);
+
+    }
 }

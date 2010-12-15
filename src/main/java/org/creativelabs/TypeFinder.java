@@ -119,7 +119,13 @@ class TypeFinder {
             if (arguments.get(i) instanceof NameExpr) {
                 argType[i] = varType.getFieldTypeAsClass(((NameExpr) arguments.get(i)).getName());
             } else if (arguments.get(i) instanceof LiteralExpr) {
-                argType[i] = PrimitiveClassFactory.getFactory().getPrimitiveClass(determineType((LiteralExpr) arguments.get(i), varType, methodList, imports));
+                String type = determineType((LiteralExpr) arguments.get(i), varType, methodList, imports);
+                if (!"null".equals(type)) {
+                    argType[i] = PrimitiveClassFactory.getFactory().getPrimitiveClass(type);
+                } else {
+                    //TODO check correctness Object type creation
+                    argType[i] = Class.forName("java.lang.Object");
+                }
             }
             if (arguments.get(i) instanceof ObjectCreationExpr) {
                 String simpleType = determineType((ObjectCreationExpr) arguments.get(i), varType, methodList, imports);
@@ -148,6 +154,9 @@ class TypeFinder {
 
     private String determineType(LiteralExpr expr, VariableList varType, MethodList methodList,
                                  ImportList imports) throws Exception {
+        if (expr instanceof NullLiteralExpr) {
+            return "null";
+        }
         String className = expr.getClass().getSimpleName();
         //All javaparser's literals have the special class names : Type + "LiteralExpr"
         String typeOfExpression = className.substring(0, className.indexOf("Literal"));
