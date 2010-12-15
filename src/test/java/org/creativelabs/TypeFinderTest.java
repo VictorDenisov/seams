@@ -375,7 +375,7 @@ public class TypeFinderTest {
     }
 
     @Test
-    public void testNullLiteralAsArgument() throws Exception {
+    public void testNullLiteralAsArgumentOfSimpleArgumentMethod() throws Exception {
 
         MethodCallExpr expr = (MethodCallExpr) ParseHelper.createExpression("\"string\".compareTo(null)");
 
@@ -385,6 +385,38 @@ public class TypeFinderTest {
         String type = new TypeFinder().determineType(expr, varTypes, null);
 
         assertEquals("int", type);
+
+    }
+
+    @Test
+    public void testNullLiteralAsArgumentOfOverloadedArgumentsMethod() throws Exception {
+
+        MethodCallExpr expr = (MethodCallExpr) ParseHelper.createExpression("\"string\".getBytes((String)null)");
+
+        VariableList varTypes = createEmptyVariableList();
+        varTypes.put("str", String.class);
+
+        String result = "noException";
+        String type = null;
+        try {
+            type = new TypeFinder().determineType(expr, varTypes, null);
+        } catch (java.lang.NoSuchMethodException e) {
+            result = "java.lang.NoSuchMethodException";
+        }
+        assertEquals("noException", result);
+        assertEquals("[B", type);
+
+        expr = (MethodCallExpr) ParseHelper.createExpression("\"string\".contentEquals((StringBuffer)null)");
+
+        result = "noException";
+        type = null;
+        try {
+            type = new TypeFinder().determineType(expr, varTypes, null);
+        } catch (java.lang.NoSuchMethodException e) {
+            result = "java.lang.NoSuchMethodException";
+        }
+        assertEquals("noException", result);
+        assertEquals("boolean", type);
 
     }
 

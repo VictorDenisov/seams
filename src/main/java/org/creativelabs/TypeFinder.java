@@ -123,11 +123,10 @@ class TypeFinder {
                 if (!"null".equals(type)) {
                     argType[i] = PrimitiveClassFactory.getFactory().getPrimitiveClass(type);
                 } else {
-                    //TODO check correctness Object type creation
+                    //TODO check correctness of Object type creation
                     argType[i] = Class.forName("java.lang.Object");
                 }
-            }
-            if (arguments.get(i) instanceof ObjectCreationExpr) {
+            } else if (arguments.get(i) instanceof ObjectCreationExpr) {
                 String simpleType = determineType((ObjectCreationExpr) arguments.get(i), varType, methodList, imports);
                 if (PrimitiveClassFactory.getFactory().classIsPrimitive(simpleType)) {
                     argType[i] = PrimitiveClassFactory.getFactory().getPrimitiveClass(simpleType);
@@ -135,10 +134,14 @@ class TypeFinder {
                     String type = imports.get(simpleType);
                     argType[i] = Class.forName(type);
                 }
-            }
-            if (arguments.get(i) instanceof MethodCallExpr) {
+            } else if (arguments.get(i) instanceof MethodCallExpr) {
                 String type = determineType((MethodCallExpr) arguments.get(i), varType, methodList, imports);
                 argType[i] = Class.forName(type);
+            } else {
+                if (arguments.get(i) instanceof CastExpr) {
+                    String type = determineType((CastExpr) arguments.get(i), varType, methodList, imports);
+                    argType[i] = Class.forName(type);
+                }
             }
         }
 
@@ -185,4 +188,10 @@ class TypeFinder {
                                  ImportList imports) throws Exception {
         return expr.getType().getName();
     }
+
+    private String determineType(CastExpr expr, VariableList varType, MethodList methodList,
+                                 ImportList imports) throws Exception {
+        return determineType(new NameExpr(expr.getType().toString()), varType, methodList, imports);
+    }
+
 }
