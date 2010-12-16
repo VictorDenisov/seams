@@ -1,18 +1,12 @@
 package org.creativelabs;
 
+import japa.parser.ast.CompilationUnit;
 import japa.parser.ast.body.ClassOrInterfaceDeclaration;
 import japa.parser.ast.body.MethodDeclaration;
+import japa.parser.ast.expr.*;
 import japa.parser.ast.stmt.ExpressionStmt;
 import org.testng.annotations.Test;
-import org.testng.annotations.Configuration;
-import org.creativelabs.TypeFinder;
 
-import java.util.HashMap;
-
-import japa.parser.ast.expr.*;
-import japa.parser.ast.CompilationUnit;
-
-import static org.testng.AssertJUnit.*;
 import static org.testng.AssertJUnit.assertEquals;
 
 public class TypeFinderTest {
