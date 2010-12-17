@@ -62,4 +62,40 @@ public class ImportListTest {
 
         assertEquals("NoException", exception);
     }
+
+    @Test
+    public void testGetClass() throws Exception {
+        ImportList imports = ParseHelper.createImportList("import java.util.ArrayList;");
+        assertEquals("java.util.ArrayList", imports.getClassByShortName("ArrayList").getName());
+    }
+
+    @Test
+    public void testGetClassFromAsterisk() throws Exception {
+        ImportList imports = ParseHelper.createImportList("import java.util.*;");
+        assertEquals("java.util.ArrayList", imports.getClassByShortName("ArrayList").getName());
+    }
+
+    @Test
+    public void testGetClassFromAsteriskTwoImports() throws Exception {
+        ImportList imports = ParseHelper.createImportList("import java.io.*; import java.util.*;");
+        assertEquals("java.util.ArrayList", imports.getClassByShortName("ArrayList").getName());
+    }
+
+    @Test
+    public void testGetClassFromAsteriskFirstConcreteImport() throws Exception {
+        ImportList imports = ParseHelper.createImportList("import java.io.File; import java.util.*;");
+        assertEquals("java.util.ArrayList", imports.getClassByShortName("ArrayList").getName());
+    }
+
+    @Test
+    public void testEmptyImportList() throws Exception {
+        ImportList imports = ParseHelper.createImportList("");
+        String message = "noException";
+        try {
+            imports.getClassByShortName("ArrayList");
+        } catch (RuntimeException e) {
+            message = "RuntimeException";
+        }
+        assertEquals("RuntimeException", message);
+    }
 }

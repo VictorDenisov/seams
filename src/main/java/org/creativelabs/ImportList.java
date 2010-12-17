@@ -33,6 +33,23 @@ class ImportList {
         return map.get(key);
     }
 
+    Class getClassByShortName(String shortName) throws ClassNotFoundException {
+        for (ImportDeclaration id : list) {
+            if (id.isAsterisk()) {
+                try {
+                    return Class.forName(id.getName().toString() + "." + shortName);
+                } catch (ClassNotFoundException e) {
+
+                }
+            } else {
+                if (id.getName().getName().equals(shortName)) {
+                    return Class.forName(id.getName().toString());
+                }
+            }
+        }
+        throw new RuntimeException("import list can't be empty");
+    }
+
     boolean containsKey(String key) {
         return map.containsKey(key);
     }
