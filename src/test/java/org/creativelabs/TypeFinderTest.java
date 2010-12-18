@@ -158,9 +158,9 @@ public class TypeFinderTest {
         assertEquals("UnsupportedExpressionException", result);
     }
 
-    @Test
-    public void testDetermineTypeOfMethodWithLiteralsAsArgumentString() throws Exception {
-        MethodCallExpr expr = (MethodCallExpr) ParseHelper.createExpression("str.compareTo(\"string\")");
+    private void testDetermineTypeOfMethodWithLiteralsAsArgument(String expression,
+            String expectedValue) throws Exception {
+        MethodCallExpr expr = (MethodCallExpr) ParseHelper.createExpression(expression);
         ImportList imports = ParseHelper.createImportList("");
 
         VariableList varTypes = createEmptyVariableList();
@@ -168,47 +168,27 @@ public class TypeFinderTest {
 
         String type = new TypeFinder().determineType(expr, varTypes, imports);
 
-        assertEquals("int", type);
+        assertEquals(expectedValue, type);
+    }
+
+    @Test
+    public void testDetermineTypeOfMethodWithLiteralsAsArgumentString() throws Exception {
+        testDetermineTypeOfMethodWithLiteralsAsArgument("str.compareTo(\"string\")", "int");
     }
 
     @Test
     public void testDetermineTypeOfMethodWithLiteralsAsArgumentInt() throws Exception {
-        MethodCallExpr expr = (MethodCallExpr) ParseHelper.createExpression("str.substring(1)");
-
-        ImportList imports = ParseHelper.createImportList("");
-
-        VariableList varTypes = createEmptyVariableList();
-        varTypes.put("str", String.class);
-
-        String type = new TypeFinder().determineType(expr, varTypes, imports);
-
-        assertEquals("java.lang.String", type);
+        testDetermineTypeOfMethodWithLiteralsAsArgument("str.substring(1)", "java.lang.String");
     }
 
     @Test
     public void testDetermineTypeOfMethodWithLiteralsAsArgumentBoolean() throws Exception {
-        MethodCallExpr expr = (MethodCallExpr) ParseHelper.createExpression("String.valueOf(true)");
-
-        ImportList imports = ParseHelper.createImportList("");
-
-        VariableList varTypes = createEmptyVariableList();
-
-        String type = new TypeFinder().determineType(expr, varTypes, imports);
-assertEquals("java.lang.String", type);
+        testDetermineTypeOfMethodWithLiteralsAsArgument("String.valueOf(true)", "java.lang.String");
     }
 
     @Test
     public void testDetermineTypeOfMethodWithLiteralsAsArgumentDouble() throws Exception {
-        MethodCallExpr expr = (MethodCallExpr) ParseHelper.createExpression("String.valueOf(1.5)");
-
-        ImportList imports = ParseHelper.createImportList("");
-
-        VariableList varTypes = createEmptyVariableList();
-
-        String type = new TypeFinder().determineType(expr, varTypes, imports);
-
-        assertEquals("java.lang.String", type);
-
+        testDetermineTypeOfMethodWithLiteralsAsArgument("String.valueOf(1.5)", "java.lang.String");
     }
 
     @Test
