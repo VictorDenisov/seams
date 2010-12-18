@@ -58,8 +58,4 @@ class ImportList {
         }
         throw new RuntimeException("import list can't be empty");
     }
-
-    boolean containsKey(String key) {
-        return map.containsKey(key);
-    }
 }

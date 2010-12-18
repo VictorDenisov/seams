@@ -39,13 +39,6 @@ public class ImportListTest {
     }
 
     @Test
-    public void testImportsContainsKey() throws Exception {
-        ImportList imports = ParseHelper.createImportList("import org.apache.log4j.Logger;");
-
-        assertTrue(imports.containsKey("Logger"));
-    }
-
-    @Test
     public void testImportsEmpty() throws Exception {
 		String exception = "NoException";
 		try {
