@@ -82,10 +82,12 @@ public class TypeFinderTest {
     public void testDetermineTypeMethodCallStatic() throws Exception {
         MethodCallExpr expr = (MethodCallExpr) ParseHelper.createExpression("String.valueOf(x)");
 
+        ImportList imports = ParseHelper.createImportList("");
+
         VariableList varTypes = createEmptyVariableList();
         varTypes.put("x", int.class);
 
-        String type = new TypeFinder().determineType(expr, varTypes, null);
+        String type = new TypeFinder().determineType(expr, varTypes, imports);
 
         assertEquals("java.lang.String", type);
     }
@@ -157,7 +159,7 @@ public class TypeFinderTest {
     }
 
     @Test
-    public void testDetermineTypeOfMethodWithLiteralsAsArgument() throws Exception {
+    public void testDetermineTypeOfMethodWithLiteralsAsArgumentString() throws Exception {
         MethodCallExpr expr = (MethodCallExpr) ParseHelper.createExpression("str.compareTo(\"string\")");
         ImportList imports = ParseHelper.createImportList("");
 
@@ -167,32 +169,43 @@ public class TypeFinderTest {
         String type = new TypeFinder().determineType(expr, varTypes, imports);
 
         assertEquals("int", type);
+    }
 
+    @Test
+    public void testDetermineTypeOfMethodWithLiteralsAsArgumentInt() throws Exception {
+        MethodCallExpr expr = (MethodCallExpr) ParseHelper.createExpression("str.substring(1)");
 
-        expr = (MethodCallExpr) ParseHelper.createExpression("str.substring(1)");
+        ImportList imports = ParseHelper.createImportList("");
 
-        varTypes = createEmptyVariableList();
+        VariableList varTypes = createEmptyVariableList();
         varTypes.put("str", String.class);
 
-        type = new TypeFinder().determineType(expr, varTypes, null);
+        String type = new TypeFinder().determineType(expr, varTypes, imports);
 
         assertEquals("java.lang.String", type);
+    }
 
+    @Test
+    public void testDetermineTypeOfMethodWithLiteralsAsArgumentBoolean() throws Exception {
+        MethodCallExpr expr = (MethodCallExpr) ParseHelper.createExpression("String.valueOf(true)");
 
-        expr = (MethodCallExpr) ParseHelper.createExpression("String.valueOf(true)");
+        ImportList imports = ParseHelper.createImportList("");
 
-        varTypes = createEmptyVariableList();
+        VariableList varTypes = createEmptyVariableList();
 
-        type = new TypeFinder().determineType(expr, varTypes, null);
+        String type = new TypeFinder().determineType(expr, varTypes, imports);
+assertEquals("java.lang.String", type);
+    }
 
-        assertEquals("java.lang.String", type);
+    @Test
+    public void testDetermineTypeOfMethodWithLiteralsAsArgumentDouble() throws Exception {
+        MethodCallExpr expr = (MethodCallExpr) ParseHelper.createExpression("String.valueOf(1.5)");
 
+        ImportList imports = ParseHelper.createImportList("");
 
-        expr = (MethodCallExpr) ParseHelper.createExpression("String.valueOf(1.5)");
+        VariableList varTypes = createEmptyVariableList();
 
-        varTypes = createEmptyVariableList();
-
-        type = new TypeFinder().determineType(expr, varTypes, null);
+        String type = new TypeFinder().determineType(expr, varTypes, imports);
 
         assertEquals("java.lang.String", type);
 
@@ -384,9 +397,10 @@ public class TypeFinderTest {
     }
 
     @Test
-    public void testNullLiteralAsArgumentOfOverloadedArgumentsMethod() throws Exception {
+    public void testNullLiteralAsArgumentOfOverloadedArgumentsMethodCastToString() throws Exception {
 
         MethodCallExpr expr = (MethodCallExpr) ParseHelper.createExpression("\"string\".getBytes((String)null)");
+        ImportList imports = ParseHelper.createImportList("");
 
         VariableList varTypes = createEmptyVariableList();
         varTypes.put("str", String.class);
@@ -394,25 +408,32 @@ public class TypeFinderTest {
         String result = "noException";
         String type = null;
         try {
-            type = new TypeFinder().determineType(expr, varTypes, null);
+            type = new TypeFinder().determineType(expr, varTypes, imports);
         } catch (java.lang.NoSuchMethodException e) {
             result = "java.lang.NoSuchMethodException";
         }
         assertEquals("noException", result);
         assertEquals("[B", type);
+    }
 
-        expr = (MethodCallExpr) ParseHelper.createExpression("\"string\".contentEquals((StringBuffer)null)");
+    @Test
+    public void testNullLiteralAsArgumentOfOverloadedArgumentsMethodCastToStringBuffer() 
+            throws Exception {
+        MethodCallExpr expr = (MethodCallExpr) ParseHelper.createExpression("\"string\".contentEquals((StringBuffer)null)");
+        ImportList imports = ParseHelper.createImportList("");
 
-        result = "noException";
-        type = null;
+        VariableList varTypes = createEmptyVariableList();
+        varTypes.put("str", String.class);
+
+        String result = "noException";
+        String type = null;
         try {
-            type = new TypeFinder().determineType(expr, varTypes, null);
+            type = new TypeFinder().determineType(expr, varTypes, imports);
         } catch (java.lang.NoSuchMethodException e) {
             result = "java.lang.NoSuchMethodException";
         }
         assertEquals("noException", result);
         assertEquals("boolean", type);
-
     }
 
     @Test

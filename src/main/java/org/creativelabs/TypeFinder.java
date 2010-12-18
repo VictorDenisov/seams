@@ -71,12 +71,7 @@ class TypeFinder {
                                  ImportList imports) throws Exception {
         String name = expr.getName();
         if (Character.isUpperCase(name.charAt(0))) {
-            if (imports != null && imports.containsKey(name)) {
-                return imports.get(name);
-            } else {
-                //TODO check that java.lang contains name type.
-                return "java.lang." + name;
-            }
+            return imports.getClassByShortName(name).getName();
         } else {
             if (varType != null && varType.getFieldTypeAsClass(name) != null) {
                 return varType.getFieldTypeAsClass(name).getName();
