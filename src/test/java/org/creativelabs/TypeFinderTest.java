@@ -396,10 +396,9 @@ assertEquals("java.lang.String", type);
 
     }
 
-    @Test
-    public void testNullLiteralAsArgumentOfOverloadedArgumentsMethodCastToString() throws Exception {
-
-        MethodCallExpr expr = (MethodCallExpr) ParseHelper.createExpression("\"string\".getBytes((String)null)");
+    private void testNullLiteralAsArgumentOfOverloadedArgumentsMethod(String expression, 
+            String expectedValue) throws Exception {
+        MethodCallExpr expr = (MethodCallExpr) ParseHelper.createExpression(expression);
         ImportList imports = ParseHelper.createImportList("");
 
         VariableList varTypes = createEmptyVariableList();
@@ -413,27 +412,19 @@ assertEquals("java.lang.String", type);
             result = "java.lang.NoSuchMethodException";
         }
         assertEquals("noException", result);
-        assertEquals("[B", type);
+        assertEquals(expectedValue, type);
+    }
+
+    @Test
+    public void testNullLiteralAsArgumentOfOverloadedArgumentsMethodCastToString() throws Exception {
+        testNullLiteralAsArgumentOfOverloadedArgumentsMethod("\"string\".getBytes((String)null)", "[B");
     }
 
     @Test
     public void testNullLiteralAsArgumentOfOverloadedArgumentsMethodCastToStringBuffer() 
             throws Exception {
-        MethodCallExpr expr = (MethodCallExpr) ParseHelper.createExpression("\"string\".contentEquals((StringBuffer)null)");
-        ImportList imports = ParseHelper.createImportList("");
-
-        VariableList varTypes = createEmptyVariableList();
-        varTypes.put("str", String.class);
-
-        String result = "noException";
-        String type = null;
-        try {
-            type = new TypeFinder().determineType(expr, varTypes, imports);
-        } catch (java.lang.NoSuchMethodException e) {
-            result = "java.lang.NoSuchMethodException";
-        }
-        assertEquals("noException", result);
-        assertEquals("boolean", type);
+        testNullLiteralAsArgumentOfOverloadedArgumentsMethod(
+                "\"string\".contentEquals((StringBuffer)null)", "boolean");
     }
 
     @Test
