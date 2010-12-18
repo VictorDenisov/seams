@@ -38,7 +38,8 @@ public class ParseHelperTest {
     @Test
     public void testCreateImportList() throws Exception {
         ImportList imports = ParseHelper.createImportList("import org.apache.log4j.Logger;");
-        assertEqualsList(Arrays.asList(new String[]{"org.apache.log4j.Logger"}), imports.getImports());
+        assertEqualsList(Arrays.asList(new String[]{"java.lang", "org.apache.log4j.Logger"}), 
+                imports.getImports());
     }
 
     @Test

@@ -40,7 +40,8 @@ public class MethodList {
         }
     }
 
-    String getMethodTypeAsString(String methodName, List<String> argumentTypes, ImportList importList) {
+    String getMethodTypeAsString(String methodName, List<String> argumentTypes, 
+            ImportList importList) {
         if (!methodArgumentTypes.get(methodName).containsAll(argumentTypes)) {
             throw new TypeFinder.UnsupportedExpressionException();
         }

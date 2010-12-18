@@ -13,11 +13,11 @@ public class ImportListTest {
 
     @Test
     public void testImportsConstruction() throws Exception {
-        ImportList importList = ParseHelper.createImportList("import java.lang.*;");
+        ImportList importList = ParseHelper.createImportList("import java.util.*;");
 
         List<String> imports = importList.getImports();
 
-        assertEqualsList(Arrays.asList(new String[]{"java.lang"}), imports);
+        assertEqualsList(Arrays.asList(new String[]{"java.lang", "java.util"}), imports);
     }
 
     @Test
@@ -26,7 +26,8 @@ public class ImportListTest {
 
         List<String> imports = importList.getImports();
 
-        assertEqualsList(Arrays.asList(new String[]{"org.apache.log4j"}), imports); }
+        assertEqualsList(Arrays.asList(new String[]{"java.lang", "org.apache.log4j"}), imports);
+    }
 
     @Test
     public void testImportsConstructionConcreteClass() throws Exception {
@@ -34,14 +35,7 @@ public class ImportListTest {
 
         List<String> imports = importList.getImports();
 
-        assertEqualsList(Arrays.asList(new String[]{"org.apache.log4j.Logger"}), imports);
-    }
-
-    @Test
-    public void testImportsPut() throws Exception {
-        ImportList imports = ParseHelper.createImportList("import org.apache.log4j.Logger;");
-
-        assertEquals("org.apache.log4j.Logger", imports.get("Logger"));
+        assertEqualsList(Arrays.asList(new String[]{"java.lang", "org.apache.log4j.Logger"}), imports);
     }
 
     @Test
@@ -85,6 +79,12 @@ public class ImportListTest {
     public void testGetClassFromAsteriskFirstConcreteImport() throws Exception {
         ImportList imports = ParseHelper.createImportList("import java.io.File; import java.util.*;");
         assertEquals("java.util.ArrayList", imports.getClassByShortName("ArrayList").getName());
+    }
+
+    @Test
+    public void testGetClassFromJavaLang() throws Exception {
+        ImportList imports = ParseHelper.createImportList("");
+        assertEquals("java.lang.String", imports.getClassByShortName("String").getName());
     }
 
     @Test

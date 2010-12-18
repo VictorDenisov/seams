@@ -68,11 +68,12 @@ public class TypeFinderTest {
     @Test
     public void testDetermineTypeNameExprClass() throws Exception {
         NameExpr expr = (NameExpr) ParseHelper.createExpression("String");
+        ImportList imports = ParseHelper.createImportList("");
 
         VariableList varTypes = createEmptyVariableList();
         varTypes.put("string", String.class);
 
-        String type = new TypeFinder().determineType(expr, varTypes, null);
+        String type = new TypeFinder().determineType(expr, varTypes, imports);
 
         assertEquals("java.lang.String", type);
     }
@@ -158,11 +159,12 @@ public class TypeFinderTest {
     @Test
     public void testDetermineTypeOfMethodWithLiteralsAsArgument() throws Exception {
         MethodCallExpr expr = (MethodCallExpr) ParseHelper.createExpression("str.compareTo(\"string\")");
+        ImportList imports = ParseHelper.createImportList("");
 
         VariableList varTypes = createEmptyVariableList();
         varTypes.put("str", String.class);
 
-        String type = new TypeFinder().determineType(expr, varTypes, null);
+        String type = new TypeFinder().determineType(expr, varTypes, imports);
 
         assertEquals("int", type);
 
@@ -335,7 +337,6 @@ public class TypeFinderTest {
 
         ImportList importList = ParseHelper.createImportList(
                 "import org.creativelabs.A;");
-
 
         String result = "noException";
         String type = null;
