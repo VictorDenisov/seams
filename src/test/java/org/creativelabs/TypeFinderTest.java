@@ -68,11 +68,12 @@ public class TypeFinderTest {
     @Test
     public void testDetermineTypeNameExprClass() throws Exception {
         NameExpr expr = (NameExpr) ParseHelper.createExpression("String");
+        ImportList imports = ParseHelper.createImportList("");
 
         VariableList varTypes = createEmptyVariableList();
         varTypes.put("string", String.class);
 
-        String type = new TypeFinder().determineType(expr, varTypes, null);
+        String type = new TypeFinder().determineType(expr, varTypes, imports);
 
         assertEquals("java.lang.String", type);
     }
@@ -81,10 +82,12 @@ public class TypeFinderTest {
     public void testDetermineTypeMethodCallStatic() throws Exception {
         MethodCallExpr expr = (MethodCallExpr) ParseHelper.createExpression("String.valueOf(x)");
 
+        ImportList imports = ParseHelper.createImportList("");
+
         VariableList varTypes = createEmptyVariableList();
         varTypes.put("x", int.class);
 
-        String type = new TypeFinder().determineType(expr, varTypes, null);
+        String type = new TypeFinder().determineType(expr, varTypes, imports);
 
         assertEquals("java.lang.String", type);
     }
@@ -155,45 +158,37 @@ public class TypeFinderTest {
         assertEquals("UnsupportedExpressionException", result);
     }
 
-    @Test
-    public void testDetermineTypeOfMethodWithLiteralsAsArgument() throws Exception {
-        MethodCallExpr expr = (MethodCallExpr) ParseHelper.createExpression("str.compareTo(\"string\")");
+    private void testDetermineTypeOfMethodWithLiteralsAsArgument(String expression,
+            String expectedValue) throws Exception {
+        MethodCallExpr expr = (MethodCallExpr) ParseHelper.createExpression(expression);
+        ImportList imports = ParseHelper.createImportList("");
 
         VariableList varTypes = createEmptyVariableList();
         varTypes.put("str", String.class);
 
-        String type = new TypeFinder().determineType(expr, varTypes, null);
+        String type = new TypeFinder().determineType(expr, varTypes, imports);
 
-        assertEquals("int", type);
+        assertEquals(expectedValue, type);
+    }
 
+    @Test
+    public void testDetermineTypeOfMethodWithLiteralsAsArgumentString() throws Exception {
+        testDetermineTypeOfMethodWithLiteralsAsArgument("str.compareTo(\"string\")", "int");
+    }
 
-        expr = (MethodCallExpr) ParseHelper.createExpression("str.substring(1)");
+    @Test
+    public void testDetermineTypeOfMethodWithLiteralsAsArgumentInt() throws Exception {
+        testDetermineTypeOfMethodWithLiteralsAsArgument("str.substring(1)", "java.lang.String");
+    }
 
-        varTypes = createEmptyVariableList();
-        varTypes.put("str", String.class);
+    @Test
+    public void testDetermineTypeOfMethodWithLiteralsAsArgumentBoolean() throws Exception {
+        testDetermineTypeOfMethodWithLiteralsAsArgument("String.valueOf(true)", "java.lang.String");
+    }
 
-        type = new TypeFinder().determineType(expr, varTypes, null);
-
-        assertEquals("java.lang.String", type);
-
-
-        expr = (MethodCallExpr) ParseHelper.createExpression("String.valueOf(true)");
-
-        varTypes = createEmptyVariableList();
-
-        type = new TypeFinder().determineType(expr, varTypes, null);
-
-        assertEquals("java.lang.String", type);
-
-
-        expr = (MethodCallExpr) ParseHelper.createExpression("String.valueOf(1.5)");
-
-        varTypes = createEmptyVariableList();
-
-        type = new TypeFinder().determineType(expr, varTypes, null);
-
-        assertEquals("java.lang.String", type);
-
+    @Test
+    public void testDetermineTypeOfMethodWithLiteralsAsArgumentDouble() throws Exception {
+        testDetermineTypeOfMethodWithLiteralsAsArgument("String.valueOf(1.5)", "java.lang.String");
     }
 
     @Test
@@ -336,7 +331,6 @@ public class TypeFinderTest {
         ImportList importList = ParseHelper.createImportList(
                 "import org.creativelabs.A;");
 
-
         String result = "noException";
         String type = null;
         try {
@@ -382,10 +376,10 @@ public class TypeFinderTest {
 
     }
 
-    @Test
-    public void testNullLiteralAsArgumentOfOverloadedArgumentsMethod() throws Exception {
-
-        MethodCallExpr expr = (MethodCallExpr) ParseHelper.createExpression("\"string\".getBytes((String)null)");
+    private void testNullLiteralAsArgumentOfOverloadedArgumentsMethod(String expression, 
+            String expectedValue) throws Exception {
+        MethodCallExpr expr = (MethodCallExpr) ParseHelper.createExpression(expression);
+        ImportList imports = ParseHelper.createImportList("");
 
         VariableList varTypes = createEmptyVariableList();
         varTypes.put("str", String.class);
@@ -393,25 +387,24 @@ public class TypeFinderTest {
         String result = "noException";
         String type = null;
         try {
-            type = new TypeFinder().determineType(expr, varTypes, null);
+            type = new TypeFinder().determineType(expr, varTypes, imports);
         } catch (java.lang.NoSuchMethodException e) {
             result = "java.lang.NoSuchMethodException";
         }
         assertEquals("noException", result);
-        assertEquals("[B", type);
+        assertEquals(expectedValue, type);
+    }
 
-        expr = (MethodCallExpr) ParseHelper.createExpression("\"string\".contentEquals((StringBuffer)null)");
+    @Test
+    public void testNullLiteralAsArgumentOfOverloadedArgumentsMethodCastToString() throws Exception {
+        testNullLiteralAsArgumentOfOverloadedArgumentsMethod("\"string\".getBytes((String)null)", "[B");
+    }
 
-        result = "noException";
-        type = null;
-        try {
-            type = new TypeFinder().determineType(expr, varTypes, null);
-        } catch (java.lang.NoSuchMethodException e) {
-            result = "java.lang.NoSuchMethodException";
-        }
-        assertEquals("noException", result);
-        assertEquals("boolean", type);
-
+    @Test
+    public void testNullLiteralAsArgumentOfOverloadedArgumentsMethodCastToStringBuffer() 
+            throws Exception {
+        testNullLiteralAsArgumentOfOverloadedArgumentsMethod(
+                "\"string\".contentEquals((StringBuffer)null)", "boolean");
     }
 
     @Test

@@ -71,12 +71,7 @@ class TypeFinder {
                                  ImportList imports) throws Exception {
         String name = expr.getName();
         if (Character.isUpperCase(name.charAt(0))) {
-            if (imports != null && imports.containsKey(name)) {
-                return imports.get(name);
-            } else {
-                //TODO check that java.lang contains name type.
-                return "java.lang." + name;
-            }
+            return imports.getClassByShortName(name).getName();
         } else {
             if (varType != null && varType.getFieldTypeAsClass(name) != null) {
                 return varType.getFieldTypeAsClass(name).getName();
@@ -129,7 +124,7 @@ class TypeFinder {
                 if (classIsPrimitive(simpleType)) {
                     argType[i] = getPrimitiveClass(simpleType);
                 } else {
-                    String type = imports.get(simpleType);
+                    String type = imports.getClassByShortName(simpleType).getName();
                     argType[i] = Class.forName(type);
                 }
             } else if (arguments.get(i) instanceof MethodCallExpr) {
@@ -224,7 +219,7 @@ class TypeFinder {
         if ("void".equals(className) || "Void".equals(className) || "java.lang.Void".equals(className)) {
             return void.class;
         }
-        if ("String".equals(className) || "java.lang.String".equals(className)){
+        if ("String".equals(className) || "java.lang.String".equals(className)) {
             return String.class;
         }
         throw new TypeFinder.UnsupportedExpressionException();
