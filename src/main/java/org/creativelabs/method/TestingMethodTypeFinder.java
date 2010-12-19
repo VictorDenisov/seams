@@ -15,13 +15,20 @@ public class TestingMethodTypeFinder implements MethodTypeFinderBuilder {
 
     private class Wrapper {
 
+        String className;
+
         String methodName;
 
         List<String> argumentsTypes;
 
-        private Wrapper(String methodName, List<String> argumentsTypes) {
+        private Wrapper(String className, String methodName, List<String> argumentsTypes) {
+            this.className = className;
             this.methodName = methodName;
             this.argumentsTypes = argumentsTypes;
+        }
+
+        public String getClassName() {
+            return className;
         }
 
         public String getMethodName() {
@@ -31,12 +38,38 @@ public class TestingMethodTypeFinder implements MethodTypeFinderBuilder {
         public List<String> getArgumentsTypes() {
             return argumentsTypes;
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            Wrapper wrapper = (Wrapper) o;
+
+            if (argumentsTypes != null ? !argumentsTypes.equals(wrapper.argumentsTypes) : wrapper.argumentsTypes != null)
+                return false;
+            if (className != null ? !className.equals(wrapper.className) : wrapper.className != null) return false;
+            if (methodName != null ? !methodName.equals(wrapper.methodName) : wrapper.methodName != null) return false;
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = className != null ? className.hashCode() : 0;
+            result = 31 * result + (methodName != null ? methodName.hashCode() : 0);
+            result = 31 * result + (argumentsTypes != null ? argumentsTypes.hashCode() : 0);
+            return result;
+        }
     }
+
+
 
     private Map<Wrapper, String> methods = new HashMap<Wrapper, String>();
 
 
     public TestingMethodTypeFinder(ClassOrInterfaceDeclaration classDeclaration) {
+        String className = classDeclaration.getName();
         for (BodyDeclaration bd : classDeclaration.getMembers()) {
             if (bd instanceof MethodDeclaration) {
                 MethodDeclaration methodDeclaration = (MethodDeclaration) bd;
@@ -48,7 +81,7 @@ public class TestingMethodTypeFinder implements MethodTypeFinderBuilder {
                         argumentsTypes.add(parameter.getType().toString());
                     }
                 }
-                methods.put(new Wrapper(methodName, argumentsTypes), returnType);
+                methods.put(new Wrapper(className, methodName, argumentsTypes), returnType);
             }
         }
     }
@@ -60,7 +93,7 @@ public class TestingMethodTypeFinder implements MethodTypeFinderBuilder {
         for (Class argumentType : types) {
             argumentsTypes.add(argumentType.getName());
         }
-        return methods.get(new Wrapper(methodName, argumentsTypes));
+        return methods.get(new Wrapper(className, methodName, argumentsTypes));
     }
 
     @Override
@@ -69,7 +102,7 @@ public class TestingMethodTypeFinder implements MethodTypeFinderBuilder {
         for (Class argumentType : types) {
             argumentsTypes.add(argumentType.getName());
         }
-        String argumentTypeName = methods.get(new Wrapper(methodName, argumentsTypes));
+        String argumentTypeName = methods.get(new Wrapper(className, methodName, argumentsTypes));
         return Class.forName(argumentTypeName);
     }
 
