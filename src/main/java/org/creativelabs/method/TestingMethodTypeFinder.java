@@ -63,10 +63,14 @@ public class TestingMethodTypeFinder implements MethodTypeFinderBuilder {
         return methods.get(new Wrapper(methodName, argumentsTypes));
     }
 
-//    @Override
-//    public Class getMethodTypeAsClass(String className, String methodName, Class[] types) throws Exception {
-//
-//        return null;  //To change body of implemented methods use File | Settings | File Templates.
-//    }
+    @Override
+    public Class getMethodTypeAsClass(String className, String methodName, Class[] types) throws Exception {
+        List<String> argumentsTypes = new ArrayList<String>();
+        for (Class argumentType : types) {
+            argumentsTypes.add(argumentType.getName());
+        }
+        String argumentTypeName = methods.get(new Wrapper(methodName, argumentsTypes));
+        return Class.forName(argumentTypeName);
+    }
 
 }

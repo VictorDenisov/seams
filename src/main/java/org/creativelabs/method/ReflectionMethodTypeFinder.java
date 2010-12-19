@@ -18,10 +18,10 @@ public class ReflectionMethodTypeFinder implements MethodTypeFinderBuilder {
         return myCl.getName();
     }
 
-//    @Override
-//    public Class getMethodTypeAsClass(String className, String methodName, Class[] types) throws Exception {
-//        Class cl = Class.forName(className);
-//        Method method = cl.getMethod(methodName, types);
-//        return method.getReturnType();
-//    }
+    @Override
+    public Class getMethodTypeAsClass(String className, String methodName, Class[] types) throws Exception {
+        Class cl = Class.forName(className);
+        Method method = cl.getMethod(methodName, types);
+        return method.getReturnType();
+    }
 }
