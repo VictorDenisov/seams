@@ -4,7 +4,6 @@ import japa.parser.ast.body.BodyDeclaration;
 import japa.parser.ast.body.ClassOrInterfaceDeclaration;
 import japa.parser.ast.body.MethodDeclaration;
 import japa.parser.ast.body.Parameter;
-import org.creativelabs.ImportList;
 
 import java.util.ArrayList;
 import java.util.HashMap;
