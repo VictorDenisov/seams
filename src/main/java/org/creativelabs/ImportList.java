@@ -4,6 +4,8 @@ import japa.parser.ast.CompilationUnit;
 import japa.parser.ast.ImportDeclaration;
 import japa.parser.ast.expr.NameExpr;
 
+import org.creativelabs.introspection.ReflectionAbstractionImpl;
+
 import java.util.*;
 
 class ImportList {
@@ -35,24 +37,18 @@ class ImportList {
         return map.get(key);
     }
 
-    private Class getClassForName(String name) {
-        try {
-            return Class.forName(name);
-        } catch (ClassNotFoundException e) {
-            return null;
-        }
-    }
-
-    Class getClassByShortName(String shortName) throws ClassNotFoundException {
+    String getClassByShortName(String shortName) {
         for (ImportDeclaration id : list) {
             if (id.isAsterisk()) {
-                Class clazz =  getClassForName(id.getName().toString() + "." + shortName);
-                if (clazz != null) {
-                    return clazz;
+                String className = id.getName().toString() + "." + shortName;
+                boolean isClassExists = new ReflectionAbstractionImpl().classWithNameExists(className);
+                if (isClassExists) {
+                    return className;
                 }
             } else {
+                String className = id.getName().toString();
                 if (id.getName().getName().equals(shortName)) {
-                    return Class.forName(id.getName().toString());
+                    return className;
                 }
             }
         }

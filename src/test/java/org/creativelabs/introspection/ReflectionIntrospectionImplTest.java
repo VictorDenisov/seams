@@ -33,8 +33,7 @@ public class ReflectionIntrospectionImplTest {
     @Test
     public void testGetReturnTypeComment() throws Exception {
         String returnType = new ReflectionAbstractionImpl().getReturnType("japa.parser.ast.Comment",
-                "getContent", new String[0]);
-        assertEquals("java.lang.String", returnType);
+                "getContent", new String[0]); assertEquals("java.lang.String", returnType);
     }
 
     @Test
@@ -44,5 +43,15 @@ public class ReflectionIntrospectionImplTest {
         String returnType = new ReflectionAbstractionImpl().getReturnType("japa.parser.ast.Comment",
                 "setContent", types);
         assertEquals("void", returnType);
+    }
+
+    @Test
+    public void testClassWithNameExists() throws Exception {
+        assertTrue(new ReflectionAbstractionImpl().classWithNameExists("java.lang.String"));
+    }
+
+    @Test
+    public void testClassWithNameExistsAbsent() throws Exception {
+        assertFalse(new ReflectionAbstractionImpl().classWithNameExists("far.far.away.UnExisting"));
     }
 }

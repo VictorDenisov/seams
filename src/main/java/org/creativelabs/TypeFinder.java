@@ -71,7 +71,7 @@ class TypeFinder {
                                  ImportList imports) throws Exception {
         String name = expr.getName();
         if (Character.isUpperCase(name.charAt(0))) {
-            return imports.getClassByShortName(name).getName();
+            return imports.getClassByShortName(name);
         } else {
             if (varType != null && varType.getFieldTypeAsClass(name) != null) {
                 return varType.getFieldTypeAsClass(name).getName();
@@ -139,7 +139,7 @@ class TypeFinder {
                 if (classIsPrimitive(simpleType)) {
                     argType[i] = getPrimitiveClass(simpleType);
                 } else {
-                    String type = imports.getClassByShortName(simpleType).getName();
+                    String type = imports.getClassByShortName(simpleType);
                     argType[i] = Class.forName(type);
                 }
             } else if (arguments.get(i) instanceof MethodCallExpr) {

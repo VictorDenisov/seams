@@ -26,4 +26,13 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         Field field = cl.getField(fieldName);
         return field.getType().getName();
     }
+
+    public boolean classWithNameExists(String className) {
+        try {
+            Class.forName(className);
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+    }
 }
