@@ -102,8 +102,23 @@ class TypeFinder {
 
         String scopeClassName = determineType(scope, varType, methodList, imports);
 
+        Class[] argType = getArguments(expr.getArgs(), varType, methodList, imports);
+
+        if (scope instanceof ThisExpr && methodList != null) {
+            List<String> argumentTypes = new ArrayList<String>();
+            for (Class argument : argType) {
+                argumentTypes.add(argument.getName());
+            }
+            return methodList.getMethodTypeAsString(expr.getName(), argumentTypes, imports);
+        }
+        return getReturnType(scopeClassName, expr.getName(), argType);
+    }
+
+    private Class[] getArguments(List<Expression> args, VariableList varType, MethodList methodList,
+                                 ImportList imports) throws Exception{
         ArrayList<Expression> emptyExpressionsList = new ArrayList<Expression>();
-        List<Expression> arguments = expr.getArgs() == null ? emptyExpressionsList : expr.getArgs();
+        List<Expression> arguments = args == null ? emptyExpressionsList : args;
+
         int countOfArguments = arguments.size();
 
         Class[] argType = new Class[countOfArguments];
@@ -138,14 +153,7 @@ class TypeFinder {
             }
         }
 
-        if (scope instanceof ThisExpr && methodList != null) {
-            List<String> argumentTypes = new ArrayList<String>();
-            for (Class argument : argType) {
-                argumentTypes.add(argument.getName());
-            }
-            return methodList.getMethodTypeAsString(expr.getName(), argumentTypes, imports);
-        }
-        return getReturnType(scopeClassName, expr.getName(), argType);
+        return argType;
     }
 
     private String determineType(LiteralExpr expr, VariableList varType, MethodList methodList,
