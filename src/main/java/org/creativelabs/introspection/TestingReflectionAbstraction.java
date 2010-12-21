@@ -17,8 +17,7 @@ public class TestingReflectionAbstraction implements ReflectionAbstraction {
         private MethodWrapper(String className, String methodName, String[] argumentsTypes) {
             this.className = className;
             this.methodName = methodName;
-            this.argumentsTypes = argumentsTypes;
-        }
+            this.argumentsTypes = argumentsTypes; }
 
         @Override
         public boolean equals(Object o) {
@@ -127,4 +126,24 @@ public class TestingReflectionAbstraction implements ReflectionAbstraction {
     public String getClassType(String className) throws Exception {
         return classes.get(className);
     }
+	
+	@Override
+	public ClassType getReturnType(ClassType className, String methodName, ClassType[] types) throws Exception {
+		return null;
+	}
+
+    @Override
+	public ClassType getFieldType(ClassType className, String fieldName) throws Exception {
+		return null;
+	}
+
+	@Override
+    public ClassType getClassTypeByName(String className) throws Exception {
+		return null;
+	}
+
+	@Override
+    public boolean classWithNameExists(String className) {
+		return false;
+	}
 }

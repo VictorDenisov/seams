@@ -72,4 +72,31 @@ public class ReflectionIntrospectionImplTest {
         String type = new ReflectionAbstractionImpl().getClassType("java.lang.Integer");
         assertEquals("int", type);
     }
+
+	@Test
+	public void testGetClassTypeByName() throws Exception {
+		ClassType type = new ReflectionAbstractionImpl().getClassTypeByName("java.lang.String");
+		assertEquals("java.lang.String", type.toStringRepresentation());
+	}
+
+    @Test
+    public void testGetReturnTypeClassType() throws Exception {
+		ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
+        ClassType[] types = new ClassType[1];
+        types[0] = ra.getClassTypeByName("java.lang.String");
+		ClassType myClass = ra.getClassTypeByName("java.lang.String");
+        ClassType returnType = ra.getReturnType(myClass, "matches", types);
+
+        assertEquals("boolean", returnType.toStringRepresentation());
+    }
+
+    @Test
+    public void testGetFieldTypeClassType() throws Exception {
+		ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
+
+		ClassType myClass = ra.getClassTypeByName("java.lang.String");
+        ClassType fieldType = new ReflectionAbstractionImpl().getFieldType(myClass, "CASE_INSENSITIVE_ORDER");
+
+        assertEquals("java.util.Comparator", fieldType.toStringRepresentation());
+    }
 }

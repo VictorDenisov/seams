@@ -7,6 +7,16 @@ import java.util.Map;
 
 public class ReflectionAbstractionImpl implements ReflectionAbstraction {
 
+	private static class ClassTypeImpl implements ClassType {
+
+		private Class clazz;
+
+		@Override
+		public String toStringRepresentation() {
+			return clazz.getName();
+		}
+	}
+
     private Class[] getTypeClasses(String[] types) throws Exception {
         Class[] result = new Class[types.length];
         for (int i = 0; i < types.length; ++i) {
@@ -55,6 +65,7 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         return Class.forName(type);
     }
 
+	@Override
     public String getReturnType(String className, String methodName, String[] types) throws Exception {
         Class[] classTypes = getTypeClasses(types);
         Class cl = Class.forName(className);
@@ -63,6 +74,7 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         return myCl.getName();
     }
 
+	@Override
     public String getFieldType(String className, String fieldName) throws Exception {
         Class cl = Class.forName(className);
         Field field = cl.getField(fieldName);
@@ -74,6 +86,7 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         return getClass(className).getName();
     }
 
+	@Override
     public boolean classWithNameExists(String className) {
         try {
             Class.forName(className);
@@ -82,4 +95,41 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
             return false;
         }
     }
+
+    private Class[] getTypeClasses(ClassType[] types) throws Exception {
+        Class[] result = new Class[types.length];
+        for (int i = 0; i < types.length; ++i) {
+            result[i] = ((ClassTypeImpl) types[i]).clazz;
+        }
+        return result;
+    }
+
+	@Override
+	public ClassType getReturnType(ClassType className, String methodName, ClassType[] types) throws Exception {
+        Class[] classTypes = getTypeClasses(types);
+        Class cl = ((ClassTypeImpl) className).clazz;
+        Method method = cl.getMethod(methodName, classTypes);
+        Class myCl = method.getReturnType();
+
+		ClassTypeImpl result = new ClassTypeImpl();
+		result.clazz = myCl;
+		return result;
+	}
+
+	@Override
+	public ClassType getFieldType(ClassType className, String fieldName) throws Exception {
+        Class cl = ((ClassTypeImpl)className).clazz;
+        Field field = cl.getField(fieldName);
+
+		ClassTypeImpl result = new ClassTypeImpl();
+		result.clazz = field.getType();
+		return result;
+	}
+
+	@Override
+	public ClassType getClassTypeByName(String className) throws Exception {
+		ClassTypeImpl c = new ClassTypeImpl();
+		c.clazz = Class.forName(className);
+		return c;
+	}
 }
