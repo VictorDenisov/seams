@@ -41,6 +41,15 @@ public class TestingReflectionAbstraction implements ReflectionAbstraction {
             result = 31 * result + (argumentsTypes != null ? Arrays.hashCode(argumentsTypes) : 0);
             return result;
         }
+
+        @Override
+        public String toString() {
+            return "MethodWrapper{" +
+                    "className='" + className + '\'' +
+                    ", methodName='" + methodName + '\'' +
+                    ", argumentsTypes=" + (argumentsTypes == null ? null : Arrays.asList(argumentsTypes)) +
+                    '}';
+        }
     }
 
     private class FieldWrapper {
@@ -73,11 +82,21 @@ public class TestingReflectionAbstraction implements ReflectionAbstraction {
             result = 31 * result + (fieldName != null ? fieldName.hashCode() : 0);
             return result;
         }
+
+        @Override
+        public String toString() {
+            return "FieldWrapper{" +
+                    "className='" + className + '\'' +
+                    ", fieldName='" + fieldName + '\'' +
+                    '}';
+        }
     }
 
     private Map<MethodWrapper, String> methods = new HashMap<MethodWrapper, String>();
 
     private Map<FieldWrapper, String> fields = new HashMap<FieldWrapper, String>();
+
+    private Map<String, String> classes = new HashMap<String, String>();
 
     public TestingReflectionAbstraction() {
     }
@@ -90,6 +109,10 @@ public class TestingReflectionAbstraction implements ReflectionAbstraction {
         fields.put(new FieldWrapper(className, fieldName), fieldType);
     }
 
+    public void addClass(String className, String classType){
+        classes.put(className, classType);
+    }
+
     @Override
     public String getReturnType(String className, String methodName, String[] types) throws Exception {
         return methods.get(new MethodWrapper(className, methodName, types));
@@ -98,5 +121,10 @@ public class TestingReflectionAbstraction implements ReflectionAbstraction {
     @Override
     public String getFieldType(String className, String fieldName) throws Exception {
         return fields.get(new FieldWrapper(className, fieldName));
+    }
+
+    @Override
+    public String getClassType(String className) throws Exception {
+        return classes.get(className);
     }
 }

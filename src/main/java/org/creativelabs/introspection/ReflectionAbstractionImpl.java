@@ -10,16 +10,20 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
     private Class[] getTypeClasses(String[] types) throws Exception {
         Class[] result = new Class[types.length];
         for (int i = 0; i < types.length; ++i) {
-            if (builtInMap.containsKey(types[i])) {
-                result[i] = builtInMap.get(types[i]);
-            } else {
-                result[i] = Class.forName(types[i]);
-            }
+            result[i] = getClass(types[i]);
         }
         return result;
     }
 
-   private Map<String, Class> builtInMap = new HashMap<String, Class>(){{
+    private Class getClass(String type) throws Exception {
+        if (builtInMap.containsKey(type)) {
+            return builtInMap.get(type);
+        } else {
+            return Class.forName(type);
+        }
+    }
+
+    private Map<String, Class> builtInMap = new HashMap<String, Class>() {{
         put("int", Integer.TYPE);
         put("long", Long.TYPE);
         put("double", Double.TYPE);
@@ -43,6 +47,11 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         Class cl = Class.forName(className);
         Field field = cl.getField(fieldName);
         return field.getType().getName();
+    }
+
+    @Override
+    public String getClassType(String className) throws Exception {
+        return getClass(className).getName();
     }
 
     public boolean classWithNameExists(String className) {

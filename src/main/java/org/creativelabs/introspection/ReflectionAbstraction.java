@@ -6,4 +6,6 @@ public interface ReflectionAbstraction {
 
     String getFieldType(String className, String fieldName) throws Exception;
 
+    String getClassType(String className) throws Exception;
+
 }

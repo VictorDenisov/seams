@@ -54,4 +54,16 @@ public class ReflectionIntrospectionImplTest {
     public void testClassWithNameExistsAbsent() throws Exception {
         assertFalse(new ReflectionAbstractionImpl().classWithNameExists("far.far.away.UnExisting"));
     }
+
+    @Test
+    public void testGetClassForReferenceClass() throws Exception {
+        String type = new ReflectionAbstractionImpl().getClassType("java.lang.String");
+        assertEquals("java.lang.String", type);
+    }
+
+    @Test
+    public void testGetClassForPrimitiveClass() throws Exception {
+        String type = new ReflectionAbstractionImpl().getClassType("int");
+        assertEquals("int", type);
+    }
 }
