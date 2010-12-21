@@ -89,7 +89,7 @@ public class VariableListTest {
         VariableList varList = new VariableList();
         varList.put("name", "String");
 
-        assertEquals(String.class, varList.getFieldTypeAsClass("name"));
+        assertEquals("java.lang.String", varList.getFieldTypeAsClass("name"));
     }
 
     @Test
@@ -97,8 +97,8 @@ public class VariableListTest {
         VariableList varList = new VariableList();
         varList.put("name", "int");
 
-        Class clazz = varList.getFieldTypeAsClass("name");
-        assertEquals(int.class, clazz);
+        String clazz = varList.getFieldTypeAsClass("name");
+        assertEquals("int", clazz);
     }
 
 }

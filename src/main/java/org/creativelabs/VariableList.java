@@ -39,19 +39,17 @@ class VariableList {
         return fieldTypes.get(fieldName);
     }
 
-    Class getFieldTypeAsClass(String fieldName) throws Exception {
+    String getFieldTypeAsClass(String fieldName) throws Exception {
         String fieldType = fieldTypes.get(fieldName);
         //TODO check if fieldName is not contain in fieldTypes
         if (TypeFinder.classIsPrimitive(fieldType)) {
-            return TypeFinder.getPrimitiveClass(fieldType);
+            return TypeFinder.getPrimitiveClass(fieldType).getName();
         } else {
             Expression expr = ParseHelper.createExpression(fieldType);
             String className = new TypeFinder().determineType(expr, null, imports);
             Class clazz = Class.forName(className);
-            return clazz;
+            return clazz.getName();
         }
-
-
     }
 
     boolean hasName(String fieldName) {
