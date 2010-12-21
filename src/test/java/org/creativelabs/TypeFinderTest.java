@@ -167,9 +167,6 @@ public class TypeFinderTest {
         VariableList varTypes = createEmptyVariableList();
         varTypes.put("str", String.class);
 
-        TestingReflectionAbstraction reflectionAbstraction = new TestingReflectionAbstraction();
-//        reflectionAbstraction.addClass();
-
         String type = new TypeFinder().determineType(expr, varTypes, imports);
 
         assertEquals(expectedValue, type);
