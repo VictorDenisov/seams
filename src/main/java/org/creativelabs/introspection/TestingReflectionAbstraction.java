@@ -17,7 +17,8 @@ public class TestingReflectionAbstraction implements ReflectionAbstraction {
         private MethodWrapper(String className, String methodName, String[] argumentsTypes) {
             this.className = className;
             this.methodName = methodName;
-            this.argumentsTypes = argumentsTypes; }
+            this.argumentsTypes = argumentsTypes; 
+        }
 
         @Override
         public boolean equals(Object o) {
@@ -44,10 +45,10 @@ public class TestingReflectionAbstraction implements ReflectionAbstraction {
         @Override
         public String toString() {
             return "MethodWrapper{" +
-                    "className='" + className + '\'' +
-                    ", methodName='" + methodName + '\'' +
-                    ", argumentsTypes=" + (argumentsTypes == null ? null : Arrays.asList(argumentsTypes)) +
-                    '}';
+                "className='" + className + '\'' +
+                ", methodName='" + methodName + '\'' +
+                ", argumentsTypes=" + (argumentsTypes == null ? null : Arrays.asList(argumentsTypes)) +
+                '}';
         }
     }
 
@@ -71,7 +72,6 @@ public class TestingReflectionAbstraction implements ReflectionAbstraction {
 
             if (className != null ? !className.equals(that.className) : that.className != null) return false;
             if (fieldName != null ? !fieldName.equals(that.fieldName) : that.fieldName != null) return false;
-
             return true;
         }
 
@@ -85,9 +85,9 @@ public class TestingReflectionAbstraction implements ReflectionAbstraction {
         @Override
         public String toString() {
             return "FieldWrapper{" +
-                    "className='" + className + '\'' +
-                    ", fieldName='" + fieldName + '\'' +
-                    '}';
+                "className='" + className + '\'' +
+                ", fieldName='" + fieldName + '\'' +
+                '}';
         }
     }
 
@@ -126,24 +126,24 @@ public class TestingReflectionAbstraction implements ReflectionAbstraction {
     public String getClassType(String className) throws Exception {
         return classes.get(className);
     }
-	
-	@Override
-	public ClassType getReturnType(ClassType className, String methodName, ClassType[] types) throws Exception {
-		return null;
-	}
 
     @Override
-	public ClassType getFieldType(ClassType className, String fieldName) throws Exception {
-		return null;
-	}
+    public ClassType getReturnType(ClassType className, String methodName, ClassType[] types) throws Exception {
+        return null;
+    }
 
-	@Override
+    @Override
+    public ClassType getFieldType(ClassType className, String fieldName) throws Exception {
+        return null;
+    }
+
+    @Override
     public ClassType getClassTypeByName(String className) throws Exception {
-		return null;
-	}
+        return null;
+    }
 
-	@Override
+    @Override
     public boolean classWithNameExists(String className) {
-		return false;
-	}
+        return false;
+    }
 }

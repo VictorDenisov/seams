@@ -8,8 +8,6 @@ import java.util.*;
 class ClassProcessor {
     private ClassOrInterfaceDeclaration typeDeclaration;
 
-    private VariableList fieldList;
-
     private Map<String, Set<Dependency>> dependencies = new HashMap<String, Set<Dependency>>();
 
     private DependencyCounterVisitor dependencyCounter;
@@ -19,8 +17,14 @@ class ClassProcessor {
 
     public ClassProcessor(ClassOrInterfaceDeclaration typeDeclaration, ImportList imports) {
         this.typeDeclaration = typeDeclaration;
-        this.fieldList = new VariableList(typeDeclaration, imports);
+        VariableList fieldList = new VariableList(typeDeclaration, imports);
         this.dependencyCounter = new DependencyCounterVisitor(fieldList, imports);
+    }
+    
+    ClassProcessor(ClassOrInterfaceDeclaration typeDeclaration,
+            DependencyCounterVisitor dependencyCounter) {
+        this.typeDeclaration = typeDeclaration;
+        this.dependencyCounter = dependencyCounter;
     }
 
     public Map<String, InternalInstancesGraph> getInternalInstances() {
@@ -35,7 +39,6 @@ class ClassProcessor {
         for (BodyDeclaration bd : typeDeclaration.getMembers()) {
             if (bd instanceof MethodDeclaration) {
                 MethodDeclaration md = (MethodDeclaration) bd;
-
                 findOutgoingDependencies(md);
             }
         }

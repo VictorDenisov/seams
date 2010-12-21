@@ -45,7 +45,7 @@ class VariableList {
         if (TypeFinder.classIsPrimitive(fieldType)) {
             return TypeFinder.getPrimitiveClass(fieldType).getName();
         } else {
-			return imports.getClassByShortName(fieldType);
+            return imports.getClassByShortName(fieldType);
         }
     }
 

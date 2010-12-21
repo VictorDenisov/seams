@@ -32,7 +32,10 @@ final class MainApp {
     }
 
     private static void processClass(ClassOrInterfaceDeclaration typeDeclaration, String fileName) {
-        ClassProcessor classProcessor = new ClassProcessor(typeDeclaration, imports);
+        ClassProcessor classProcessor = new ClassProcessorBuilder()
+            .setTypeDeclaration(typeDeclaration)
+            .setImportList(imports)
+            .buildClassProcessor();
         classProcessor.compute();
 
         for (Map.Entry<String, InternalInstancesGraph> entry
