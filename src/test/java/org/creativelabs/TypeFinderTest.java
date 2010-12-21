@@ -238,13 +238,15 @@ public class TypeFinderTest {
 
         ImportList importList = ParseHelper.createImportList(
                 "import org.creativelabs.A;");
-        importList.put("this", cd.getName());
+
+        VariableList varTypes = createEmptyVariableList();
+        varTypes.put("this", cd.getName());
 
         TestingReflectionAbstraction reflectionAbstraction = new TestingReflectionAbstraction();
         reflectionAbstraction.addMethod("Sample", "methodCall", new String[]{"int"}, "org.creativelabs.A");
         reflectionAbstraction.addClass("java.lang.Integer", "int");
 
-        String type = new TypeFinder().determineType(expr, null, reflectionAbstraction, importList);
+        String type = new TypeFinder().determineType(expr, varTypes, reflectionAbstraction, importList);
 
         assertEquals("org.creativelabs.A", type);
     }
@@ -263,13 +265,15 @@ public class TypeFinderTest {
 
         ImportList importList = ParseHelper.createImportList(
                 "import org.creativelabs.A;");
-        importList.put("this", cd.getName());
+
+        VariableList varTypes = createEmptyVariableList();
+        varTypes.put("this", cd.getName());
 
         TestingReflectionAbstraction reflectionAbstraction = new TestingReflectionAbstraction();
         reflectionAbstraction.addMethod("Sample", "methodCall", new String[]{"int"}, "org.creativelabs.A");
         reflectionAbstraction.addClass("java.lang.Integer", "int");
 
-        String type = new TypeFinder().determineType(expr, null, reflectionAbstraction, importList);
+        String type = new TypeFinder().determineType(expr, varTypes, reflectionAbstraction, importList);
 
         assertEquals("org.creativelabs.A", type);
     }
@@ -286,12 +290,12 @@ public class TypeFinderTest {
         MethodDeclaration md = (MethodDeclaration) cd.getMembers().get(1);
         Expression expr = ((ExpressionStmt) md.getBody().getStmts().get(0)).getExpression();
 
-        VariableList varTypes = createEmptyVariableList();
-        varTypes.put("str", String.class);
-
         ImportList importList = ParseHelper.createImportList(
                 "import org.creativelabs.A;");
-        importList.put("this", cd.getName());
+
+        VariableList varTypes = createEmptyVariableList();
+        varTypes.put("str", String.class);
+        varTypes.put("this", cd.getName());
 
         TestingReflectionAbstraction reflectionAbstraction = new TestingReflectionAbstraction();
         reflectionAbstraction.addMethod("Sample", "methodCall", new String[]{"int"}, "java.lang.String");
@@ -314,12 +318,12 @@ public class TypeFinderTest {
         MethodDeclaration md = (MethodDeclaration) cd.getMembers().get(0);
         Expression expr = ((ExpressionStmt) md.getBody().getStmts().get(0)).getExpression();
 
-        VariableList varTypes = createEmptyVariableList();
-        varTypes.put("a", "org.creativelabs.A");
-
         ImportList importList = ParseHelper.createImportList(
                 "import org.creativelabs.A;");
-        importList.put("this", cd.getName());
+
+        VariableList varTypes = createEmptyVariableList();
+        varTypes.put("a", "org.creativelabs.A");
+        varTypes.put("this", cd.getName());
 
         String type = new TypeFinder().determineType(expr, varTypes, importList);
 
@@ -393,10 +397,10 @@ public class TypeFinderTest {
     public void testSuperLiteralInFieldAccessExpression() throws Exception {
         SuperExpr expr = (SuperExpr) ((FieldAccessExpr) ParseHelper.createExpression("super.someField")).getScope();
 
-        ImportList importList = ParseHelper.createImportList("");
-        importList.put("super", "org.creativelabs.A");
+        VariableList varTypes = createEmptyVariableList();
+        varTypes.put("super", "org.creativelabs.A");
 
-        String type = new TypeFinder().determineType(expr, null, importList);
+        String type = new TypeFinder().determineType(expr, varTypes, null);
 
         assertEquals("org.creativelabs.A", type);
     }
@@ -405,10 +409,22 @@ public class TypeFinderTest {
     public void testSuperLiteralInMethodCallExpression() throws Exception {
         SuperExpr expr = (SuperExpr) ((MethodCallExpr) ParseHelper.createExpression("super.methodCall()")).getScope();
 
-        ImportList importList = ParseHelper.createImportList("");
-        importList.put("super", "org.creativelabs.A");
+        VariableList varTypes = createEmptyVariableList();
+        varTypes.put("super", "org.creativelabs.A");
 
-        String type = new TypeFinder().determineType(expr, null, importList);
+        String type = new TypeFinder().determineType(expr, varTypes, null);
+
+        assertEquals("org.creativelabs.A", type);
+    }
+
+    @Test
+    public void testBinaryExpression() throws Exception {
+        SuperExpr expr = (SuperExpr) ((MethodCallExpr) ParseHelper.createExpression("super.methodCall()")).getScope();
+
+        VariableList varTypes = createEmptyVariableList();
+        varTypes.put("super", "org.creativelabs.A");
+
+        String type = new TypeFinder().determineType(expr, varTypes, null);
 
         assertEquals("org.creativelabs.A", type);
     }
