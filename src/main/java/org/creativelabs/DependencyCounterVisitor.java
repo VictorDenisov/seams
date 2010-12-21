@@ -64,7 +64,7 @@ class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
         vList.addAll(localVariables);
         String type = null;
         try {
-            type = new TypeFinder().determineType(n, vList, imports);
+            type = new TypeFinder(vList, imports).determineType(n);
         } catch (Exception e) {
             type = e.toString();
         }
