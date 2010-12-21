@@ -45,10 +45,7 @@ class VariableList {
         if (TypeFinder.classIsPrimitive(fieldType)) {
             return TypeFinder.getPrimitiveClass(fieldType).getName();
         } else {
-            Expression expr = ParseHelper.createExpression(fieldType);
-            String className = new TypeFinder().determineType(expr, null, imports);
-            Class clazz = Class.forName(className);
-            return clazz.getName();
+			return imports.getClassByShortName(fieldType);
         }
     }
 

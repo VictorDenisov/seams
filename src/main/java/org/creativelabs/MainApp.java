@@ -93,11 +93,6 @@ final class MainApp {
                 imports = new ImportList(cu);
                 for (TypeDeclaration typeDeclaration : cu.getTypes()) {
                     if (typeDeclaration instanceof ClassOrInterfaceDeclaration) {
-                        imports.put("this", cu.getPackage() + typeDeclaration.getName());
-                        List<ClassOrInterfaceType> extendsList = ((ClassOrInterfaceDeclaration) typeDeclaration).getExtends();
-                        if (extendsList != null && !extendsList.isEmpty()){
-                            imports.put("super", imports.get(extendsList.get(0).getName()));
-                        }
                         processClass((ClassOrInterfaceDeclaration) typeDeclaration,
                                 fileOrDirectory.getAbsolutePath());
                     }
