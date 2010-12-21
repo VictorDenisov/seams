@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import japa.parser.ast.expr.*;
+import org.creativelabs.introspection.ReflectionAbstraction;
+import org.creativelabs.introspection.ReflectionAbstractionImpl;
 
 class TypeFinder {
 
@@ -27,33 +29,35 @@ class TypeFinder {
 
     String determineType(Expression expr, VariableList varType,
                          ImportList imports) throws Exception {
-        return determineType(expr, varType, null, imports);
+        return determineType(expr, varType, new ReflectionAbstractionImpl(), imports);
     }
 
-    String determineType(Expression expr, VariableList varType, MethodList methodList,
+    String determineType(Expression expr, VariableList varType, ReflectionAbstraction reflectionAbstraction,
                          ImportList imports) throws Exception {
         if (expr instanceof NameExpr) {
-            return determineType((NameExpr) expr, varType, methodList, imports);
+            return determineType((NameExpr) expr, varType, reflectionAbstraction, imports);
         } else if (expr instanceof MethodCallExpr) {
-            return determineType((MethodCallExpr) expr, varType, methodList, imports);
+            return determineType((MethodCallExpr) expr, varType, reflectionAbstraction, imports);
         } else if (expr instanceof FieldAccessExpr) {
-            return determineType((FieldAccessExpr) expr, varType, methodList, imports);
+            return determineType((FieldAccessExpr) expr, varType, reflectionAbstraction, imports);
         } else if (expr instanceof LiteralExpr) {
-            return determineType((LiteralExpr) expr, varType, methodList, imports);
+            return determineType((LiteralExpr) expr, varType, reflectionAbstraction, imports);
         } else if (expr instanceof AssignExpr) {
-            return determineType((AssignExpr) expr, varType, methodList, imports);
+            return determineType((AssignExpr) expr, varType, reflectionAbstraction, imports);
         } else if (expr instanceof ThisExpr) {
-            return determineType((ThisExpr) expr, varType, methodList, imports);
+            return determineType((ThisExpr) expr, varType, reflectionAbstraction, imports);
         } else if (expr instanceof ObjectCreationExpr) {
-            return determineType((ObjectCreationExpr) expr, varType, methodList, imports);
+            return determineType((ObjectCreationExpr) expr, varType, reflectionAbstraction, imports);
         } else if (expr instanceof SuperExpr) {
-            return determineType((SuperExpr) expr, varType, methodList, imports);
+            return determineType((SuperExpr) expr, varType, reflectionAbstraction, imports);
+        } else if (expr instanceof CastExpr) {
+            return determineType((CastExpr) expr, varType, reflectionAbstraction, imports);
         }
 
         throw new UnsupportedExpressionException();
     }
 
-    private String determineType(NameExpr expr, VariableList varType, MethodList methodList,
+    private String determineType(NameExpr expr, VariableList varType, ReflectionAbstraction reflectionAbstraction,
                                  ImportList imports) throws Exception {
         String name = expr.getName();
         if (Character.isUpperCase(name.charAt(0))) {
@@ -66,19 +70,19 @@ class TypeFinder {
         throw new UnsupportedExpressionException();
     }
 
-    private String determineType(FieldAccessExpr expr, VariableList varType, MethodList methodList,
-                                 ImportList imports) throws Exception {
+    private String determineType(FieldAccessExpr expr, VariableList varType,
+                                 ReflectionAbstraction reflectionAbstraction, ImportList imports) throws Exception {
         String fieldName = expr.getField();
         if (varType.hasName(fieldName)) {
             return varType.getFieldTypeAsString(fieldName);
         } else {
 
-            String scopeClassName = determineType(expr.getScope(), varType, methodList, imports);
+            String scopeClassName = determineType(expr.getScope(), varType, reflectionAbstraction, imports);
             return getFieldType(scopeClassName, expr.getField());
         }
     }
 
-    private String determineType(MethodCallExpr expr, VariableList varType, MethodList methodList,
+    private String determineType(MethodCallExpr expr, VariableList varType, ReflectionAbstraction reflectionAbstraction,
                                  ImportList imports) throws Exception {
 
         Expression scope = expr.getScope();
@@ -86,101 +90,60 @@ class TypeFinder {
             scope = new ThisExpr();
         }
 
-        String scopeClassName = determineType(scope, varType, methodList, imports);
+        String scopeClassName = determineType(scope, varType, reflectionAbstraction, imports);
 
-        Class[] argType = getArguments(expr.getArgs(), varType, methodList, imports);
-
-        if (scope instanceof ThisExpr && methodList != null) {
-            List<String> argumentTypes = new ArrayList<String>();
-            for (Class argument : argType) {
-                argumentTypes.add(argument.getName());
-            }
-            return methodList.getMethodTypeAsString(expr.getName(), argumentTypes, imports);
-        }
-        return getReturnType(scopeClassName, expr.getName(), argType);
-    }
-
-    private Class[] getArguments(List<Expression> args, VariableList varType, MethodList methodList,
-                                 ImportList imports) throws Exception{
         ArrayList<Expression> emptyExpressionsList = new ArrayList<Expression>();
-        List<Expression> arguments = args == null ? emptyExpressionsList : args;
+        List<Expression> arguments = expr.getArgs() == null ? emptyExpressionsList : expr.getArgs();
 
         int countOfArguments = arguments.size();
 
-        Class[] argType = new Class[countOfArguments];
+        String[] argType = new String[countOfArguments];
 
         for (int i = 0; i < countOfArguments; i++) {
-            if (arguments.get(i) instanceof NameExpr) {
-                argType[i] = varType.getFieldTypeAsClass(((NameExpr) arguments.get(i)).getName());
-            } else if (arguments.get(i) instanceof LiteralExpr) {
-                String type = determineType((LiteralExpr) arguments.get(i), varType, methodList, imports);
-                if (!"null".equals(type)) {
-                    argType[i] = getPrimitiveClass(type);
-                } else {
-                    //TODO check correctness of Object type creation
-                    argType[i] = Class.forName("java.lang.Object");
-                }
-            } else if (arguments.get(i) instanceof ObjectCreationExpr) {
-                String simpleType = determineType((ObjectCreationExpr) arguments.get(i), varType, methodList, imports);
-                if (classIsPrimitive(simpleType)) {
-                    argType[i] = getPrimitiveClass(simpleType);
-                } else {
-                    String type = imports.getClassByShortName(simpleType);
-                    argType[i] = Class.forName(type);
-                }
-            } else if (arguments.get(i) instanceof MethodCallExpr) {
-                String type = determineType((MethodCallExpr) arguments.get(i), varType, methodList, imports);
-                argType[i] = Class.forName(type);
-            } else {
-                if (arguments.get(i) instanceof CastExpr) {
-                    String type = determineType((CastExpr) arguments.get(i), varType, methodList, imports);
-                    argType[i] = Class.forName(type);
-                }
-            }
+            argType[i] = determineType(arguments.get(i), varType, reflectionAbstraction, imports);
         }
-
-        return argType;
+        return reflectionAbstraction.getReturnType(scopeClassName, expr.getName(), argType);
     }
 
-    private String determineType(LiteralExpr expr, VariableList varType, MethodList methodList,
+    private String determineType(LiteralExpr expr, VariableList varType, ReflectionAbstraction reflectionAbstraction,
                                  ImportList imports) throws Exception {
         if (expr instanceof NullLiteralExpr) {
-            return "null";
+            return "java.lang.Object";
         }
         String className = expr.getClass().getSimpleName();
         //All javaparser's literals have the special class names : Type + "LiteralExpr"
         String typeOfExpression = className.substring(0, className.indexOf("Literal"));
-        return getPrimitiveClass(typeOfExpression).getName();
+        return reflectionAbstraction.getClassType("java.lang." + typeOfExpression);
     }
 
-    private String determineType(AssignExpr expr, VariableList varType, MethodList methodList,
+    private String determineType(AssignExpr expr, VariableList varType, ReflectionAbstraction reflectionAbstraction,
                                  ImportList imports) throws Exception {
         if (expr.getTarget() instanceof FieldAccessExpr) {
-            return determineType((FieldAccessExpr) expr.getTarget(), varType, methodList, imports);
+            return determineType((FieldAccessExpr) expr.getTarget(), varType, reflectionAbstraction, imports);
         } else if (expr.getTarget() instanceof NameExpr) {
-            return determineType((NameExpr) expr.getTarget(), varType, methodList, imports);
+            return determineType((NameExpr) expr.getTarget(), varType, reflectionAbstraction, imports);
         }
         throw new UnsupportedExpressionException();
     }
 
-    private String determineType(ThisExpr expr, VariableList varType, MethodList methodList,
+    private String determineType(ThisExpr expr, VariableList varType, ReflectionAbstraction reflectionAbstraction,
                                  ImportList imports) throws Exception {
         return  imports.get("this");
     }
 
-    private String determineType(SuperExpr expr, VariableList varType, MethodList methodList,
+    private String determineType(SuperExpr expr, VariableList varType, ReflectionAbstraction reflectionAbstraction,
                                  ImportList imports) throws Exception {
         return  imports.get("super");
     }
 
-    private String determineType(ObjectCreationExpr expr, VariableList varType, MethodList methodList,
+    private String determineType(ObjectCreationExpr expr, VariableList varType, ReflectionAbstraction reflectionAbstraction,
                                  ImportList imports) throws Exception {
         return expr.getType().getName();
     }
 
-    private String determineType(CastExpr expr, VariableList varType, MethodList methodList,
+    private String determineType(CastExpr expr, VariableList varType, ReflectionAbstraction reflectionAbstraction,
                                  ImportList imports) throws Exception {
-        return determineType(new NameExpr(expr.getType().toString()), varType, methodList, imports);
+        return determineType(new NameExpr(expr.getType().toString()), varType, reflectionAbstraction, imports);
     }
 
 

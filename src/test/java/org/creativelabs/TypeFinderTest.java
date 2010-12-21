@@ -5,6 +5,7 @@ import japa.parser.ast.body.ClassOrInterfaceDeclaration;
 import japa.parser.ast.body.MethodDeclaration;
 import japa.parser.ast.expr.*;
 import japa.parser.ast.stmt.ExpressionStmt;
+import org.creativelabs.introspection.TestingReflectionAbstraction;
 import org.testng.annotations.Test;
 
 import static org.testng.AssertJUnit.assertEquals;
@@ -166,6 +167,9 @@ public class TypeFinderTest {
         VariableList varTypes = createEmptyVariableList();
         varTypes.put("str", String.class);
 
+        TestingReflectionAbstraction reflectionAbstraction = new TestingReflectionAbstraction();
+//        reflectionAbstraction.addClass();
+
         String type = new TypeFinder().determineType(expr, varTypes, imports);
 
         assertEquals(expectedValue, type);
@@ -236,9 +240,11 @@ public class TypeFinderTest {
                 "import org.creativelabs.A;");
         importList.put("this", cd.getName());
 
-        MethodList methodList = new MethodList(cd);
+        TestingReflectionAbstraction reflectionAbstraction = new TestingReflectionAbstraction();
+        reflectionAbstraction.addMethod("Sample", "methodCall", new String[]{"int"}, "org.creativelabs.A");
+        reflectionAbstraction.addClass("java.lang.Integer", "int");
 
-        String type = new TypeFinder().determineType(expr, null, methodList, importList);
+        String type = new TypeFinder().determineType(expr, null, reflectionAbstraction, importList);
 
         assertEquals("org.creativelabs.A", type);
     }
@@ -252,7 +258,6 @@ public class TypeFinderTest {
                 + "}"
                 + "}");
         ClassOrInterfaceDeclaration cd = (ClassOrInterfaceDeclaration) cu.getTypes().get(0);
-        String className = cd.getName();
         MethodDeclaration md = (MethodDeclaration) cd.getMembers().get(1);
         Expression expr = ((ExpressionStmt) md.getBody().getStmts().get(0)).getExpression();
 
@@ -260,9 +265,11 @@ public class TypeFinderTest {
                 "import org.creativelabs.A;");
         importList.put("this", cd.getName());
 
-        MethodList methodList = new MethodList(cd);
+        TestingReflectionAbstraction reflectionAbstraction = new TestingReflectionAbstraction();
+        reflectionAbstraction.addMethod("Sample", "methodCall", new String[]{"int"}, "org.creativelabs.A");
+        reflectionAbstraction.addClass("java.lang.Integer", "int");
 
-        String type = new TypeFinder().determineType(expr, null, methodList, importList);
+        String type = new TypeFinder().determineType(expr, null, reflectionAbstraction, importList);
 
         assertEquals("org.creativelabs.A", type);
     }
@@ -276,7 +283,6 @@ public class TypeFinderTest {
                 + "}"
                 + "}");
         ClassOrInterfaceDeclaration cd = (ClassOrInterfaceDeclaration) cu.getTypes().get(0);
-        String className = cd.getName();
         MethodDeclaration md = (MethodDeclaration) cd.getMembers().get(1);
         Expression expr = ((ExpressionStmt) md.getBody().getStmts().get(0)).getExpression();
 
@@ -287,9 +293,12 @@ public class TypeFinderTest {
                 "import org.creativelabs.A;");
         importList.put("this", cd.getName());
 
-        MethodList methodList = new MethodList(cd);
+        TestingReflectionAbstraction reflectionAbstraction = new TestingReflectionAbstraction();
+        reflectionAbstraction.addMethod("Sample", "methodCall", new String[]{"int"}, "java.lang.String");
+        reflectionAbstraction.addMethod("java.lang.String", "compareTo", new String[]{"java.lang.String"}, "int");
+        reflectionAbstraction.addClass("java.lang.Integer", "int");
 
-        String type = new TypeFinder().determineType(expr, varTypes, methodList, importList);
+        String type = new TypeFinder().determineType(expr, varTypes, reflectionAbstraction, importList);
 
         assertEquals("int", type);
     }
@@ -302,7 +311,6 @@ public class TypeFinderTest {
                 + "}"
                 + "}");
         ClassOrInterfaceDeclaration cd = (ClassOrInterfaceDeclaration) cu.getTypes().get(0);
-        String className = cd.getName();
         MethodDeclaration md = (MethodDeclaration) cd.getMembers().get(0);
         Expression expr = ((ExpressionStmt) md.getBody().getStmts().get(0)).getExpression();
 
@@ -326,6 +334,9 @@ public class TypeFinderTest {
 
         VariableList varTypes = createEmptyVariableList();
         varTypes.put("str", String.class);
+
+        TestingReflectionAbstraction reflectionAbstraction = new TestingReflectionAbstraction();
+        reflectionAbstraction.addMethod("java.lang.String", "compareTo", new String[]{"java.lang.String"}, "int");
 
         String type = new TypeFinder().determineType(expr, varTypes, null);
 
