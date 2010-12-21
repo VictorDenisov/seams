@@ -159,7 +159,7 @@ public class TypeFinderTest {
     }
 
     private void testDetermineTypeOfMethodWithLiteralsAsArgument(String expression,
-            String expectedValue) throws Exception {
+                                                                 String expectedValue) throws Exception {
         MethodCallExpr expr = (MethodCallExpr) ParseHelper.createExpression(expression);
         ImportList imports = ParseHelper.createImportList("");
 
@@ -238,14 +238,8 @@ public class TypeFinderTest {
 
         MethodList methodList = new MethodList(cd);
 
-        String result = "noException";
-        String type = null;
-        try {
-             type = new TypeFinder().determineType(expr, null, methodList, importList);
-        } catch (TypeFinder.UnsupportedExpressionException e) {
-            result = "UnsupportedExpressionException";
-        }
-        assertEquals("noException", result);
+        String type = new TypeFinder().determineType(expr, null, methodList, importList);
+
         assertEquals("org.creativelabs.A", type);
     }
 
@@ -268,14 +262,8 @@ public class TypeFinderTest {
 
         MethodList methodList = new MethodList(cd);
 
-        String result = "noException";
-        String type = null;
-        try {
-            type = new TypeFinder().determineType(expr, null, methodList, importList);
-        } catch (TypeFinder.UnsupportedExpressionException e) {
-            result = "UnsupportedExpressionException";
-        }
-        assertEquals("noException", result);
+        String type = new TypeFinder().determineType(expr, null, methodList, importList);
+
         assertEquals("org.creativelabs.A", type);
     }
 
@@ -301,14 +289,8 @@ public class TypeFinderTest {
 
         MethodList methodList = new MethodList(cd);
 
-        String result = "noException";
-        String type = null;
-        try {
-            type = new TypeFinder().determineType(expr, varTypes, methodList, importList);
-        } catch (TypeFinder.UnsupportedExpressionException e) {
-            result = "UnsupportedExpressionException";
-        }
-        assertEquals("noException", result);
+        String type = new TypeFinder().determineType(expr, varTypes, methodList, importList);
+
         assertEquals("int", type);
     }
 
@@ -317,8 +299,6 @@ public class TypeFinderTest {
         CompilationUnit cu = ParseHelper.createCompilationUnit("public class Sample {"
                 + "public static void main(String[] args) {"
                 + "this.a = new A();"
-                + "this.b = 3;"
-                + "c = this.b;"
                 + "}"
                 + "}");
         ClassOrInterfaceDeclaration cd = (ClassOrInterfaceDeclaration) cu.getTypes().get(0);
@@ -328,42 +308,15 @@ public class TypeFinderTest {
 
         VariableList varTypes = createEmptyVariableList();
         varTypes.put("a", "org.creativelabs.A");
-        varTypes.put("b", int.class);
-        varTypes.put("c", int.class);
 
         ImportList importList = ParseHelper.createImportList(
                 "import org.creativelabs.A;");
         importList.put("this", cd.getName());
 
-        String result = "noException";
-        String type = null;
-        try {
-            type = new TypeFinder().determineType(expr, varTypes, importList);
-        } catch (TypeFinder.UnsupportedExpressionException e) {
-            result = "UnsupportedExpressionException";
-        }
-        assertEquals("noException", result);
+        String type = new TypeFinder().determineType(expr, varTypes, importList);
+
         assertEquals("org.creativelabs.A", type);
 
-        expr = ((ExpressionStmt) md.getBody().getStmts().get(1)).getExpression();
-        type = null;
-        try {
-            type = new TypeFinder().determineType(expr, varTypes, importList);
-        } catch (TypeFinder.UnsupportedExpressionException e) {
-            result = "UnsupportedExpressionException";
-        }
-        assertEquals("noException", result);
-        assertEquals("int", type);
-
-        expr = ((ExpressionStmt) md.getBody().getStmts().get(2)).getExpression();
-        type = null;
-        try {
-            type = new TypeFinder().determineType(expr, varTypes, importList);
-        } catch (TypeFinder.UnsupportedExpressionException e) {
-            result = "UnsupportedExpressionException";
-        }
-        assertEquals("noException", result);
-        assertEquals("int", type);
     }
 
     @Test
@@ -380,8 +333,8 @@ public class TypeFinderTest {
 
     }
 
-    private void testNullLiteralAsArgumentOfOverloadedArgumentsMethod(String expression, 
-            String expectedValue) throws Exception {
+    private void testNullLiteralAsArgumentOfOverloadedArgumentsMethod(String expression,
+                                                                      String expectedValue) throws Exception {
         MethodCallExpr expr = (MethodCallExpr) ParseHelper.createExpression(expression);
         ImportList imports = ParseHelper.createImportList("");
 
@@ -405,7 +358,7 @@ public class TypeFinderTest {
     }
 
     @Test
-    public void testNullLiteralAsArgumentOfOverloadedArgumentsMethodCastToStringBuffer() 
+    public void testNullLiteralAsArgumentOfOverloadedArgumentsMethodCastToStringBuffer()
             throws Exception {
         testNullLiteralAsArgumentOfOverloadedArgumentsMethod(
                 "\"string\".contentEquals((StringBuffer)null)", "boolean");
@@ -426,27 +379,26 @@ public class TypeFinderTest {
     }
 
     @Test
-    public void testSuperLiteral() throws Exception{
-        CompilationUnit cu = ParseHelper.createCompilationUnit("public class Sample extends A {"
-                + "public static void main(String[] args) {"
-                + "super.methodCall();"
-                + "}"
-                + "}");
-        ClassOrInterfaceDeclaration cd = (ClassOrInterfaceDeclaration) cu.getTypes().get(0);
-        MethodDeclaration md = (MethodDeclaration) cd.getMembers().get(0);
-        Expression expr = ((MethodCallExpr)((ExpressionStmt) md.getBody().getStmts().get(0)).getExpression()).getScope();
+    public void testSuperLiteralInFieldAccessExpression() throws Exception {
+        SuperExpr expr = (SuperExpr) ((FieldAccessExpr) ParseHelper.createExpression("super.someField")).getScope();
 
-        ImportList importList = ParseHelper.createImportList(
-                "import org.creativelabs.A;");
-        importList.put("super", importList.get(cd.getExtends().get(0).getName()));
-        String result = "noException";
-        String type = null;
-        try {
-            type = new TypeFinder().determineType(expr, null, importList);
-        } catch (TypeFinder.UnsupportedExpressionException e) {
-            result = "UnsupportedExpressionException";
-        }
-        assertEquals("noException", result);
+        ImportList importList = ParseHelper.createImportList("");
+        importList.put("super", "org.creativelabs.A");
+
+        String type = new TypeFinder().determineType(expr, null, importList);
+
+        assertEquals("org.creativelabs.A", type);
+    }
+
+    @Test
+    public void testSuperLiteralInMethodCallExpression() throws Exception {
+        SuperExpr expr = (SuperExpr) ((MethodCallExpr) ParseHelper.createExpression("super.methodCall()")).getScope();
+
+        ImportList importList = ParseHelper.createImportList("");
+        importList.put("super", "org.creativelabs.A");
+
+        String type = new TypeFinder().determineType(expr, null, importList);
+
         assertEquals("org.creativelabs.A", type);
     }
 }
