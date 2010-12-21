@@ -128,12 +128,12 @@ class TypeFinder {
 
     private String determineType(ThisExpr expr, VariableList varType, ReflectionAbstraction reflectionAbstraction,
                                  ImportList imports) throws Exception {
-        return  imports.get("this");
+        return  varType.getFieldTypeAsString("this");
     }
 
     private String determineType(SuperExpr expr, VariableList varType, ReflectionAbstraction reflectionAbstraction,
                                  ImportList imports) throws Exception {
-        return  imports.get("super");
+        return  varType.getFieldTypeAsString("super");
     }
 
     private String determineType(ObjectCreationExpr expr, VariableList varType, ReflectionAbstraction reflectionAbstraction,
