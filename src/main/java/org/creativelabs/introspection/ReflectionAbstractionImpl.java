@@ -16,24 +16,44 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
     }
 
     private Class getClass(String type) throws Exception {
-        if (builtInMap.containsKey(type)) {
-            return builtInMap.get(type);
-        } else {
-            return Class.forName(type);
+        if ("byte".equals(type)
+                || "java.lang.Byte".equals(type)) {
+            return byte.class;
         }
+        if ("short".equals(type)
+                || "java.lang.Short".equals(type)) {
+            return short.class;
+        }
+        if ("int".equals(type)
+                || "java.lang.Integer".equals(type)) {
+            return int.class;
+        }
+        if ("long".equals(type)
+                || "java.lang.Long".equals(type)) {
+            return long.class;
+        }
+        if ("float".equals(type)
+                || "java.lang.Float".equals(type)) {
+            return float.class;
+        }
+        if ("double".equals(type)
+                || "java.lang.Double".equals(type)) {
+            return double.class;
+        }
+        if ("char".equals(type)
+                || "java.lang.Char".equals(type)) {
+            return char.class;
+        }
+        if ("boolean".equals(type)
+                || "java.lang.Boolean".equals(type)) {
+            return boolean.class;
+        }
+        if ("void".equals(type)
+                || "java.lang.Void".equals(type)) {
+            return void.class;
+        }
+        return Class.forName(type);
     }
-
-    private Map<String, Class> builtInMap = new HashMap<String, Class>() {{
-        put("int", Integer.TYPE);
-        put("long", Long.TYPE);
-        put("double", Double.TYPE);
-        put("float", Float.TYPE);
-        put("boolean", Boolean.TYPE);
-        put("char", Character.TYPE);
-        put("byte", Byte.TYPE);
-        put("void", Void.TYPE);
-        put("short", Short.TYPE);
-    }};
 
     public String getReturnType(String className, String methodName, String[] types) throws Exception {
         Class[] classTypes = getTypeClasses(types);

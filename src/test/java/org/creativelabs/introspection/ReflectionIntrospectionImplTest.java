@@ -66,4 +66,10 @@ public class ReflectionIntrospectionImplTest {
         String type = new ReflectionAbstractionImpl().getClassType("int");
         assertEquals("int", type);
     }
+
+    @Test
+    public void testGetClassForPrimitiveClassFromReferencesClass() throws Exception {
+        String type = new ReflectionAbstractionImpl().getClassType("java.lang.Integer");
+        assertEquals("int", type);
+    }
 }
