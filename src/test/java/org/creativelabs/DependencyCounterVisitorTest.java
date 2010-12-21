@@ -19,7 +19,7 @@ public class DependencyCounterVisitorTest {
 
         VariableList fieldList = new VariableList(classDeclaration, null);
 
-        DependencyCounterVisitor dc = new DependencyCounterVisitor(fieldList, null, null);
+        DependencyCounterVisitor dc = new DependencyCounterVisitor(fieldList, null);
 
         NameExpr expr = (NameExpr)ParseHelper.createExpression("name");
 
@@ -34,7 +34,7 @@ public class DependencyCounterVisitorTest {
     public void testVisitBlockStmtForEmptyMethod() throws Exception {
         BlockStmt blockStmt = ParseHelper.createBlockStmt("public void method(){}");
 
-        DependencyCounterVisitor dependencyCounter = new DependencyCounterVisitor(null, null, null);
+        DependencyCounterVisitor dependencyCounter = new DependencyCounterVisitor(null, null);
 
         String result = "noException";
         try {
@@ -49,7 +49,7 @@ public class DependencyCounterVisitorTest {
     public void testVisitBlockStmtForInterfaceMethod() throws Exception {
         BlockStmt blockStmt = ParseHelper.createBlockStmt("public void method();");
 
-        DependencyCounterVisitor dependencyCounter = new DependencyCounterVisitor(null, null, null);
+        DependencyCounterVisitor dependencyCounter = new DependencyCounterVisitor(null, null);
 
         String result = "noException";
         try {

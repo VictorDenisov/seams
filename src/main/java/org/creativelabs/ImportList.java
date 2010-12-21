@@ -37,6 +37,10 @@ class ImportList {
         return map.get(key);
     }
 
+    void  put(String key, String value){
+        map.put(key, value);
+    }
+
     String getClassByShortName(String shortName) {
         for (ImportDeclaration id : list) {
             if (id.isAsterisk()) {

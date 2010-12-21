@@ -7,6 +7,7 @@ import japa.parser.ast.*;
 import japa.parser.ast.body.*;
 import japa.parser.*;
 
+import japa.parser.ast.type.ClassOrInterfaceType;
 import org.creativelabs.ui.JungDrawer;
 import org.creativelabs.graph.JungGraphBuilder;
 import javax.swing.*;
@@ -30,9 +31,8 @@ final class MainApp {
         }
     }
 
-    private static void processClass(ClassOrInterfaceDeclaration typeDeclaration, String fileName, String className) {
-        ClassProcessor classProcessor = new ClassProcessor(typeDeclaration, imports,
-                className);
+    private static void processClass(ClassOrInterfaceDeclaration typeDeclaration, String fileName) {
+        ClassProcessor classProcessor = new ClassProcessor(typeDeclaration, imports);
         classProcessor.compute();
 
         for (Map.Entry<String, InternalInstancesGraph> entry
@@ -93,9 +93,13 @@ final class MainApp {
                 imports = new ImportList(cu);
                 for (TypeDeclaration typeDeclaration : cu.getTypes()) {
                     if (typeDeclaration instanceof ClassOrInterfaceDeclaration) {
+                        imports.put("this", cu.getPackage() + typeDeclaration.getName());
+                        List<ClassOrInterfaceType> extendsList = ((ClassOrInterfaceDeclaration) typeDeclaration).getExtends();
+                        if (extendsList != null && !extendsList.isEmpty()){
+                            imports.put("super", imports.get(extendsList.get(0).getName()));
+                        }
                         processClass((ClassOrInterfaceDeclaration) typeDeclaration,
-                                fileOrDirectory.getAbsolutePath(),
-                                cu.getPackage().getName().toString() + "." + typeDeclaration.getName());
+                                fileOrDirectory.getAbsolutePath());
                     }
                 }
             }

@@ -234,13 +234,14 @@ public class TypeFinderTest {
 
         ImportList importList = ParseHelper.createImportList(
                 "import org.creativelabs.A;");
+        importList.put("this", cd.getName());
 
         MethodList methodList = new MethodList(cd);
 
         String result = "noException";
         String type = null;
         try {
-             type = new TypeFinder().determineType(expr, null, methodList, importList, className);
+             type = new TypeFinder().determineType(expr, null, methodList, importList);
         } catch (TypeFinder.UnsupportedExpressionException e) {
             result = "UnsupportedExpressionException";
         }
@@ -263,13 +264,14 @@ public class TypeFinderTest {
 
         ImportList importList = ParseHelper.createImportList(
                 "import org.creativelabs.A;");
+        importList.put("this", cd.getName());
 
         MethodList methodList = new MethodList(cd);
 
         String result = "noException";
         String type = null;
         try {
-            type = new TypeFinder().determineType(expr, null, methodList, importList, className);
+            type = new TypeFinder().determineType(expr, null, methodList, importList);
         } catch (TypeFinder.UnsupportedExpressionException e) {
             result = "UnsupportedExpressionException";
         }
@@ -295,13 +297,14 @@ public class TypeFinderTest {
 
         ImportList importList = ParseHelper.createImportList(
                 "import org.creativelabs.A;");
+        importList.put("this", cd.getName());
 
         MethodList methodList = new MethodList(cd);
 
         String result = "noException";
         String type = null;
         try {
-            type = new TypeFinder().determineType(expr, varTypes, methodList, importList, className);
+            type = new TypeFinder().determineType(expr, varTypes, methodList, importList);
         } catch (TypeFinder.UnsupportedExpressionException e) {
             result = "UnsupportedExpressionException";
         }
@@ -330,11 +333,12 @@ public class TypeFinderTest {
 
         ImportList importList = ParseHelper.createImportList(
                 "import org.creativelabs.A;");
+        importList.put("this", cd.getName());
 
         String result = "noException";
         String type = null;
         try {
-            type = new TypeFinder().determineType(expr, varTypes, importList, className);
+            type = new TypeFinder().determineType(expr, varTypes, importList);
         } catch (TypeFinder.UnsupportedExpressionException e) {
             result = "UnsupportedExpressionException";
         }
@@ -344,7 +348,7 @@ public class TypeFinderTest {
         expr = ((ExpressionStmt) md.getBody().getStmts().get(1)).getExpression();
         type = null;
         try {
-            type = new TypeFinder().determineType(expr, varTypes, importList, className);
+            type = new TypeFinder().determineType(expr, varTypes, importList);
         } catch (TypeFinder.UnsupportedExpressionException e) {
             result = "UnsupportedExpressionException";
         }
@@ -354,7 +358,7 @@ public class TypeFinderTest {
         expr = ((ExpressionStmt) md.getBody().getStmts().get(2)).getExpression();
         type = null;
         try {
-            type = new TypeFinder().determineType(expr, varTypes, importList, className);
+            type = new TypeFinder().determineType(expr, varTypes, importList);
         } catch (TypeFinder.UnsupportedExpressionException e) {
             result = "UnsupportedExpressionException";
         }
@@ -419,5 +423,30 @@ public class TypeFinderTest {
 
         assertEquals("java.lang.String", type);
 
+    }
+
+    @Test
+    public void testSuperLiteral() throws Exception{
+        CompilationUnit cu = ParseHelper.createCompilationUnit("public class Sample extends A {"
+                + "public static void main(String[] args) {"
+                + "super.methodCall();"
+                + "}"
+                + "}");
+        ClassOrInterfaceDeclaration cd = (ClassOrInterfaceDeclaration) cu.getTypes().get(0);
+        MethodDeclaration md = (MethodDeclaration) cd.getMembers().get(0);
+        Expression expr = ((MethodCallExpr)((ExpressionStmt) md.getBody().getStmts().get(0)).getExpression()).getScope();
+
+        ImportList importList = ParseHelper.createImportList(
+                "import org.creativelabs.A;");
+        importList.put("super", importList.get(cd.getExtends().get(0).getName()));
+        String result = "noException";
+        String type = null;
+        try {
+            type = new TypeFinder().determineType(expr, null, importList);
+        } catch (TypeFinder.UnsupportedExpressionException e) {
+            result = "UnsupportedExpressionException";
+        }
+        assertEquals("noException", result);
+        assertEquals("org.creativelabs.A", type);
     }
 }

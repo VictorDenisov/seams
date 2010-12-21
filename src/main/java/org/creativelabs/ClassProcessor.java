@@ -12,18 +12,15 @@ class ClassProcessor {
 
     private ImportList imports;
 
-    private String className;
-
     private Map<String, Set<Dependency>> dependencies = new HashMap<String, Set<Dependency>>();
 
     private HashMap<String, InternalInstancesGraph> internalInstances
         = new HashMap<String, InternalInstancesGraph>();
 
-    public ClassProcessor(ClassOrInterfaceDeclaration typeDeclaration, ImportList imports, String className) {
+    public ClassProcessor(ClassOrInterfaceDeclaration typeDeclaration, ImportList imports) {
         this.imports = imports;
         this.typeDeclaration = typeDeclaration;
         this.fieldList = new VariableList(typeDeclaration, imports);
-        this.className = className;
     }
 
     public Map<String, InternalInstancesGraph> getInternalInstances() {
@@ -46,7 +43,7 @@ class ClassProcessor {
 
     void findOutgoingDependencies(MethodDeclaration md) {
         BlockStmt body = md.getBody();
-        DependencyCounterVisitor dependencyCounter = new DependencyCounterVisitor(fieldList, imports, className);
+        DependencyCounterVisitor dependencyCounter = new DependencyCounterVisitor(fieldList, imports);
         dependencyCounter.visit(body, null);
         if (dependencyCounter.getDependencies() != null) {
             dependencies.put(md.getName(), dependencyCounter.getDependencies());

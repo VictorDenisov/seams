@@ -9,8 +9,6 @@ import japa.parser.ast.expr.*;
 
 class TypeFinder {
 
-    private String processingClassName = null;
-
     static class UnsupportedExpressionException extends RuntimeException {
     }
 
@@ -25,20 +23,6 @@ class TypeFinder {
         Class cl = Class.forName(className);
         Field field = cl.getField(fieldName);
         return field.getType().getName();
-    }
-
-    //TODO delete some determineType methods
-
-    String determineType(Expression expr, VariableList varType, MethodList methodList,
-                         ImportList imports, String className) throws Exception {
-        this.processingClassName = className;
-        return determineType(expr, varType, methodList, imports);
-    }
-
-    String determineType(Expression expr, VariableList varType,
-                         ImportList imports, String className) throws Exception {
-        this.processingClassName = className;
-        return determineType(expr, varType, null, imports);
     }
 
     String determineType(Expression expr, VariableList varType,
@@ -62,6 +46,8 @@ class TypeFinder {
             return determineType((ThisExpr) expr, varType, methodList, imports);
         } else if (expr instanceof ObjectCreationExpr) {
             return determineType((ObjectCreationExpr) expr, varType, methodList, imports);
+        } else if (expr instanceof SuperExpr) {
+            return determineType((SuperExpr) expr, varType, methodList, imports);
         }
 
         throw new UnsupportedExpressionException();
@@ -179,10 +165,12 @@ class TypeFinder {
 
     private String determineType(ThisExpr expr, VariableList varType, MethodList methodList,
                                  ImportList imports) throws Exception {
-        if (processingClassName == null) {
-            throw new UnsupportedExpressionException();
-        }
-        return processingClassName;
+        return  imports.get("this");
+    }
+
+    private String determineType(SuperExpr expr, VariableList varType, MethodList methodList,
+                                 ImportList imports) throws Exception {
+        return  imports.get("super");
     }
 
     private String determineType(ObjectCreationExpr expr, VariableList varType, MethodList methodList,

@@ -14,10 +14,9 @@ class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
 
     private String className;
 
-    DependencyCounterVisitor(VariableList classFields, ImportList imports, String className) {
+    DependencyCounterVisitor(VariableList classFields, ImportList imports) {
         this.classFields = classFields;
         this.imports = imports;
-        this.className = className;
     }
 
     private Set<Dependency> dependencies = new HashSet<Dependency>();
@@ -65,7 +64,7 @@ class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
         vList.addAll(localVariables);
         String type = null;
         try {
-            type = new TypeFinder().determineType(n, vList, imports, className);
+            type = new TypeFinder().determineType(n, vList, imports);
         } catch (Exception e) {
             type = e.toString();
         }
