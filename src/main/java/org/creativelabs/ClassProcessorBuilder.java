@@ -40,7 +40,7 @@ public class ClassProcessorBuilder {
         }
         fieldList = constructVariableList();
         fieldList.put("this", typeDeclaration.getName());
-        fieldList.put("super", typeDeclaration.getExtends().get(0).getName());
+        fieldList.put("super", imports.getClassByShortName(typeDeclaration.getExtends().get(0).getName()));
         dependencyCounter = constructDependencyCounterVisitor();
         return new ClassProcessor(typeDeclaration, dependencyCounter);
     }

@@ -37,12 +37,12 @@ public class ClassProcessorBuilderTest {
     public void testClassProcessorConstruction() throws Exception {
         ClassProcessorBuilderTestSpecific builder = new ClassProcessorBuilderTestSpecific();
         ClassProcessor classProcessor = builder
-            .setImports(ParseHelper.createImportList(""))
+            .setImports(ParseHelper.createImportList("import org.creativelabs.Bar;"))
             .setTypeDeclaration(ParseHelper.createClassDeclaration("class Foo extends Bar {}"))
             .buildClassProcessor();
 
         assertEquals("Foo", builder.thisValue);
-        assertEquals("Bar", builder.superValue);
+        assertEquals("org.creativelabs.Bar", builder.superValue);
     }
 
 }
