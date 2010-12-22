@@ -12,8 +12,6 @@ class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
 
     private ImportList imports;
 
-    private String className;
-
     DependencyCounterVisitor(VariableList classFields, ImportList imports) {
         this.classFields = classFields;
         this.imports = imports;

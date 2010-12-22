@@ -16,8 +16,7 @@ public class ClassProcessorBuilderTest {
         String superValue = null;
 
         @Override
-        DependencyCounterVisitor constructDependencyCounterVisitor(VariableList fieldList,
-                ImportList imports) {
+        DependencyCounterVisitor constructDependencyCounterVisitor() {
 
             if (fieldList.hasName("this")) {
                 thisValue = fieldList.getFieldTypeAsString("this");
@@ -29,8 +28,7 @@ public class ClassProcessorBuilderTest {
         }
 
         @Override
-        VariableList constructVariableList(ClassOrInterfaceDeclaration typeDeclaration, 
-                ImportList imports) {
+        VariableList constructVariableList() {
             return new VariableList();
         }
     }
@@ -39,7 +37,7 @@ public class ClassProcessorBuilderTest {
     public void testClassProcessorConstruction() throws Exception {
         ClassProcessorBuilderTestSpecific builder = new ClassProcessorBuilderTestSpecific();
         ClassProcessor classProcessor = builder
-            .setImportList(ParseHelper.createImportList(""))
+            .setImports(ParseHelper.createImportList(""))
             .setTypeDeclaration(ParseHelper.createClassDeclaration("class Foo extends Bar {}"))
             .buildClassProcessor();
 

@@ -7,7 +7,6 @@ import japa.parser.ast.*;
 import japa.parser.ast.body.*;
 import japa.parser.*;
 
-import japa.parser.ast.type.ClassOrInterfaceType;
 import org.creativelabs.ui.JungDrawer;
 import org.creativelabs.graph.JungGraphBuilder;
 import javax.swing.*;
@@ -34,7 +33,7 @@ final class MainApp {
     private static void processClass(ClassOrInterfaceDeclaration typeDeclaration, String fileName) {
         ClassProcessor classProcessor = new ClassProcessorBuilder()
             .setTypeDeclaration(typeDeclaration)
-            .setImportList(imports)
+            .setImports(imports)
             .buildClassProcessor();
         classProcessor.compute();
 

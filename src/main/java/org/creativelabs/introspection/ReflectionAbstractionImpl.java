@@ -2,20 +2,18 @@ package org.creativelabs.introspection;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
 
 public class ReflectionAbstractionImpl implements ReflectionAbstraction {
 
-	private static class ClassTypeImpl implements ClassType {
+    private static class ClassTypeImpl implements ClassType {
 
-		private Class clazz;
+        private Class clazz;
 
-		@Override
-		public String toStringRepresentation() {
-			return clazz.getName();
-		}
-	}
+        @Override
+        public String toStringRepresentation() {
+            return clazz.getName();
+        }
+    }
 
     private Class[] getTypeClasses(String[] types) throws Exception {
         Class[] result = new Class[types.length];
@@ -61,10 +59,11 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         if ("void".equals(type)
                 || "java.lang.Void".equals(type)) {
             return void.class;
-        } return Class.forName(type);
+        }
+        return Class.forName(type);
     }
 
-	@Override
+    @Override
     public String getReturnType(String className, String methodName, String[] types) throws Exception {
         Class[] classTypes = getTypeClasses(types);
         Class cl = Class.forName(className);
@@ -117,7 +116,7 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
 
     @Override
     public ClassType getFieldType(ClassType className, String fieldName) throws Exception {
-        Class cl = ((ClassTypeImpl)className).clazz;
+        Class cl = ((ClassTypeImpl) className).clazz;
         Field field = cl.getField(fieldName);
 
         ClassTypeImpl result = new ClassTypeImpl();

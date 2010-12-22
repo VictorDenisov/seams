@@ -27,21 +27,21 @@ class TypeFinder {
         return field.getType().getName();
     }
 
-	private ReflectionAbstraction reflectionAbstraction;
-	
-	private VariableList varType;
+    private ReflectionAbstraction reflectionAbstraction;
 
-	private ImportList imports;
-	
-	public TypeFinder(ReflectionAbstraction reflectionAbstraction, VariableList varType, ImportList imports) {
-		this.reflectionAbstraction = reflectionAbstraction;
-		this.varType = varType;
-		this.imports = imports;
-	}
+    private VariableList varType;
 
-	public TypeFinder(VariableList varType, ImportList imports) {
-		this(new ReflectionAbstractionImpl(), varType, imports);
-	}
+    private ImportList imports;
+
+    public TypeFinder(ReflectionAbstraction reflectionAbstraction, VariableList varType, ImportList imports) {
+        this.reflectionAbstraction = reflectionAbstraction;
+        this.varType = varType;
+        this.imports = imports;
+    }
+
+    public TypeFinder(VariableList varType, ImportList imports) {
+        this(new ReflectionAbstractionImpl(), varType, imports);
+    }
 
     String determineType(Expression expr) throws Exception {
         if (expr instanceof NameExpr) {
@@ -132,11 +132,11 @@ class TypeFinder {
     }
 
     private String determineType(ThisExpr expr) throws Exception {
-        return  varType.getFieldTypeAsString("this");
+        return varType.getFieldTypeAsString("this");
     }
 
     private String determineType(SuperExpr expr) throws Exception {
-        return  varType.getFieldTypeAsString("super");
+        return varType.getFieldTypeAsString("super");
     }
 
     private String determineType(ObjectCreationExpr expr) throws Exception {

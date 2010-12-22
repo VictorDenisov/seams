@@ -8,7 +8,7 @@ public interface ReflectionAbstraction {
 
     String getClassType(String className) throws Exception;
 
-	ClassType getReturnType(ClassType className, String methodName, ClassType[] types) throws Exception;
+    ClassType getReturnType(ClassType className, String methodName, ClassType[] types) throws Exception;
 
     ClassType getFieldType(ClassType className, String fieldName) throws Exception;
 
