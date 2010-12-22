@@ -38,11 +38,25 @@ public class ClassProcessorBuilderTest {
         ClassProcessorBuilderTestSpecific builder = new ClassProcessorBuilderTestSpecific();
         ClassProcessor classProcessor = builder
             .setImports(ParseHelper.createImportList("import org.creativelabs.Bar;"))
+            .setPackage("org.sample")
             .setTypeDeclaration(ParseHelper.createClassDeclaration("class Foo extends Bar {}"))
             .buildClassProcessor();
 
-        assertEquals("Foo", builder.thisValue);
+        assertEquals("org.sample.Foo", builder.thisValue);
         assertEquals("org.creativelabs.Bar", builder.superValue);
+    }
+
+    @Test
+    public void testClassProcessorConstructionNoExtends() throws Exception {
+        ClassProcessorBuilderTestSpecific builder = new ClassProcessorBuilderTestSpecific();
+        ClassProcessor classProcessor = builder
+            .setImports(ParseHelper.createImportList("import org.creativelabs.Bar;"))
+            .setPackage("org.sample")
+            .setTypeDeclaration(ParseHelper.createClassDeclaration("class Foo {}"))
+            .buildClassProcessor();
+
+        assertEquals("org.sample.Foo", builder.thisValue);
+        assertEquals("java.lang.Object", builder.superValue);
     }
 
 }

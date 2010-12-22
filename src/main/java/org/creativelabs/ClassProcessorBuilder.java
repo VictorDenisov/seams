@@ -11,10 +11,17 @@ public class ClassProcessorBuilder {
 
     protected VariableList fieldList;
 
+    protected String packageName;
+
     protected DependencyCounterVisitor dependencyCounter;
 
     public ClassProcessorBuilder setImports(ImportList importsVal) {
         this.imports = importsVal;
+        return this;
+    }
+
+    public ClassProcessorBuilder setPackage(String packageVal) {
+        this.packageName = packageVal;
         return this;
     }
 
@@ -38,9 +45,16 @@ public class ClassProcessorBuilder {
         if (typeDeclaration == null) {
             throw new IllegalStateException();
         }
+        if (packageName == null) {
+            throw new IllegalStateException();
+        }
         fieldList = constructVariableList();
-        fieldList.put("this", typeDeclaration.getName());
-        fieldList.put("super", imports.getClassByShortName(typeDeclaration.getExtends().get(0).getName()));
+        fieldList.put("this", packageName + "." + typeDeclaration.getName());
+        if (typeDeclaration.getExtends() != null) {
+            fieldList.put("super", imports.getClassByShortName(typeDeclaration.getExtends().get(0).getName()));
+        } else {
+            fieldList.put("super", "java.lang.Object");
+        }
         dependencyCounter = constructDependencyCounterVisitor();
         return new ClassProcessor(typeDeclaration, dependencyCounter);
     }
