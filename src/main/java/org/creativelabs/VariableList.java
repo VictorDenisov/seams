@@ -39,7 +39,7 @@ class VariableList {
         return fieldTypes.get(fieldName);
     }
 
-    String getFieldTypeAsClass(String fieldName) throws Exception {
+    String getFieldTypeAsClass(String fieldName) {
         String fieldType = fieldTypes.get(fieldName);
         //TODO check if fieldName is not contain in fieldTypes
         if (TypeFinder.classIsPrimitive(fieldType)) {

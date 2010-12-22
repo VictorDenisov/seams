@@ -27,7 +27,20 @@ public class DependencyCounterVisitorTest {
 
         Set<Dependency> deps = dc.getDependencies();
         assertEquals("name", deps.iterator().next().getExpression());
-        assertEquals("String", deps.iterator().next().getType());
+        assertEquals("java.lang.String", deps.iterator().next().getType());
+    }
+
+    @Test
+    public void testVisitNameExprClass() throws Exception {
+        ImportList importList = ParseHelper.createImportList("");
+        DependencyCounterVisitor dc = new DependencyCounterVisitor(new VariableList(), importList);
+
+        MethodCallExpr expr = (MethodCallExpr)ParseHelper.createExpression("String.valueOf(true)");
+
+        dc.visit(expr, null);
+
+        Set<Dependency> deps = dc.getDependencies();
+        assertEquals("java.lang.String", deps.iterator().next().getType());
     }
 
     @Test
