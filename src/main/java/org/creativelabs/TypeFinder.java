@@ -73,7 +73,7 @@ class TypeFinder {
     private String determineType(NameExpr expr) throws Exception {
         String name = expr.getName();
         if (Character.isUpperCase(name.charAt(0))) {
-            return imports.getClassByShortName(name);
+            return imports.getClassByShortName(name).toStringRepresentation();
         } else {
             if (varType != null && varType.getFieldTypeAsClass(name) != null) {
                 return varType.getFieldTypeAsClass(name);

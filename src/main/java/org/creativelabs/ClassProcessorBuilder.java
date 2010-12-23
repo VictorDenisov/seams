@@ -51,7 +51,9 @@ public class ClassProcessorBuilder {
         fieldList = constructVariableList();
         fieldList.put("this", packageName + "." + typeDeclaration.getName());
         if (typeDeclaration.getExtends() != null) {
-            fieldList.put("super", imports.getClassByShortName(typeDeclaration.getExtends().get(0).getName()));
+            String classShortName = typeDeclaration.getExtends().get(0).getName();
+            String classValue = imports.getClassByShortName(classShortName).toStringRepresentation();
+            fieldList.put("super", classValue);
         } else {
             fieldList.put("super", "java.lang.Object");
         }
