@@ -5,6 +5,7 @@ import japa.parser.ast.ImportDeclaration;
 import japa.parser.ast.expr.NameExpr;
 
 import org.creativelabs.introspection.ReflectionAbstractionImpl;
+import org.creativelabs.introspection.ClassType;
 
 import java.util.*;
 
@@ -27,18 +28,19 @@ class ImportList {
         return result;
     }
 
-    String getClassByShortName(String shortName) {
+    ClassType getClassByShortName(String shortName) {
+        ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
         for (ImportDeclaration id : list) {
             if (id.isAsterisk()) {
                 String className = id.getName().toString() + "." + shortName;
-                boolean isClassExists = new ReflectionAbstractionImpl().classWithNameExists(className);
+                boolean isClassExists = ra.classWithNameExists(className);
                 if (isClassExists) {
-                    return className;
+                    return ra.getClassTypeByName(className);
                 }
             } else {
                 String className = id.getName().toString();
                 if (id.getName().getName().equals(shortName)) {
-                    return className;
+                    return ra.getClassTypeByName(className);
                 }
             }
         }
