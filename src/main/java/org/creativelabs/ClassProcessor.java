@@ -21,6 +21,17 @@ class ClassProcessor {
         this.dependencyCounter = dependencyCounter;
     }
 
+    public DependenciesChart getDependenciesChart(){
+        DependenciesChart chart = new DependenciesChart();
+        for (Map.Entry<String, InternalInstancesGraph> entry : internalInstances.entrySet()){
+            chart.addInternalInstancesCountForClass(entry.getKey(), entry.getValue().toSet().size());
+        }
+        for (Map.Entry<String, Set<Dependency>> entry : dependencies.entrySet()){
+            chart.addDependenciesCountForClass(entry.getKey(), entry.getValue().size());
+        }
+        return chart;
+    }
+
     public Map<String, InternalInstancesGraph> getInternalInstances() {
         return internalInstances;
     }

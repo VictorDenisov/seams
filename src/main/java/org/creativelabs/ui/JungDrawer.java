@@ -13,7 +13,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-public class JungDrawer {
+public class JungDrawer implements Drawer{
 
     // Graph<V, E> where V is the type of the vertices and E is the type of the edges
     private Graph<Vertex, String> g = null;
@@ -37,12 +37,15 @@ public class JungDrawer {
         return vv;
     }
 
-    public void draw(JFrame frame, int width, int height) {
+    @Override
+    public void draw(int width, int height, JFrame frame) {
         addContentToFrame(frame, width, height);
         frame.setVisible(true);
     }
 
-    public void saveToFile(JFrame frame, int width, int height, String fileName) {
+    @Override
+    public void saveToFile(int width, int height, String fileName) {
+        JFrame frame = new JFrame(fileName);
         JPanel panel = addContentToFrame(frame, width, height);
 
         BufferedImage image = new BufferedImage(width, height, 1);

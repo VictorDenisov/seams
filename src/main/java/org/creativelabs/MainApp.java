@@ -7,9 +7,10 @@ import japa.parser.ast.*;
 import japa.parser.ast.body.*;
 import japa.parser.*;
 
+import org.creativelabs.chart.BarChartBuilder;
+import org.creativelabs.ui.ChartDrawer;
 import org.creativelabs.ui.JungDrawer;
 import org.creativelabs.graph.JungGraphBuilder;
-import javax.swing.*;
 
 final class MainApp {
 
@@ -42,12 +43,15 @@ final class MainApp {
                 : classProcessor.getInternalInstances().entrySet()) {
             InternalInstancesGraph graph = entry.getValue();
             String methodName = entry.getKey();
-            JFrame frame = new JFrame(fileName + " -- " + methodName);
-            JungGraphBuilder builder = new JungGraphBuilder();
-            graph.buildGraph(builder);
-            new JungDrawer(builder.getGraph()).saveToFile(frame, IMAGE_WIDTH, IMAGE_HEIGHT, 
+            JungGraphBuilder graphBuilder = new JungGraphBuilder();
+            graph.buildGraph(graphBuilder);
+            new JungDrawer(graphBuilder.getGraph()).saveToFile(IMAGE_WIDTH, IMAGE_HEIGHT,
                     fileName + "." + methodName);
         }
+        BarChartBuilder chartBuilder = new BarChartBuilder();
+        DependenciesChart chart = classProcessor.getDependenciesChart();
+        chart.buildChart(chartBuilder);
+        new ChartDrawer(chartBuilder.getChart());
         outData(classProcessor, fileName);
     }
 
