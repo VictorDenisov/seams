@@ -35,7 +35,7 @@ public class JungGraphBuilder implements GraphBuilder {
         graph.addEdge(from.getLabel() + " -- " + to.getLabel(), from, to, EdgeType.DIRECTED);
     }
 
-    public Graph getGraph() {
+    public Graph<Vertex, String> getGraph() {
         return graph;
     }
 }

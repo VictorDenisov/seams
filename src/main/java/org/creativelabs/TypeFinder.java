@@ -143,7 +143,7 @@ class TypeFinder {
     }
 
     private String determineType(ObjectCreationExpr expr) throws Exception {
-        return imports.getClassByShortName(expr.getType().getName());
+        return imports.getClassByShortName(expr.getType().getName()).toStringRepresentation();
     }
 
     private String determineType(CastExpr expr) throws Exception {
