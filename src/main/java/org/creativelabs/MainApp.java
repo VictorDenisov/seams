@@ -51,7 +51,7 @@ final class MainApp {
         BarChartBuilder chartBuilder = new BarChartBuilder();
         DependenciesChart chart = classProcessor.getDependenciesChart();
         chart.buildChart(chartBuilder);
-        new ChartDrawer(chartBuilder.getChart());
+        new ChartDrawer(chartBuilder.getChart()).saveToFile(IMAGE_WIDTH, IMAGE_HEIGHT, fileName);
         outData(classProcessor, fileName);
     }
 
