@@ -33,10 +33,6 @@ class ImportList {
         return result;
     }
 
-    String get(String key) {
-        return map.get(key);
-    }
-
     String getClassByShortName(String shortName) {
         for (ImportDeclaration id : list) {
             if (id.isAsterisk()) {
