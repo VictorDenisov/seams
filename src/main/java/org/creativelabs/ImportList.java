@@ -12,16 +12,10 @@ class ImportList {
 
     private List<ImportDeclaration> list = new ArrayList<ImportDeclaration>();
 
-    private Map<String, String> map;
-
     ImportList(CompilationUnit cu) {
         list.add(new ImportDeclaration(new NameExpr("java.lang"), false, true));
         if (cu.getImports() != null) {
             list.addAll(cu.getImports());
-        }
-        map = new HashMap<String, String>();
-        for (ImportDeclaration d : list) {
-            map.put(d.getName().getName(), d.getName().toString());
         }
     }
 
