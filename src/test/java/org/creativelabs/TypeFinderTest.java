@@ -16,6 +16,10 @@ public class TypeFinderTest {
         return new VariableList();
     }
 
+    private ImportList createEmptyImportList() throws Exception{
+        return ParseHelper.createImportList("");
+    }
+
     @Test
     public void testGetReturnType() throws Exception {
         Class[] types = new Class[1];
@@ -413,14 +417,114 @@ public class TypeFinderTest {
     }
 
     @Test
-    public void testBinaryExpression() throws Exception {
-        SuperExpr expr = (SuperExpr) ((MethodCallExpr) ParseHelper.createExpression("super.methodCall()")).getScope();
+    public void testPlusBinaryExpressionIntInt() throws Exception {
+        testBinaryExpression("i = 1 + 1;", "int", createEmptyImportList());
 
-        VariableList varTypes = createEmptyVariableList();
-        varTypes.put("super", "org.creativelabs.A");
+    }
 
-        String type = new TypeFinder(varTypes, null).determineType(expr);
+    @Test
+    public void testPlusBinaryExpressionIntChar() throws Exception {
+        testBinaryExpression("i = 1 + '1';", "char", createEmptyImportList());
+    }
 
-        assertEquals("org.creativelabs.A", type);
+    @Test
+    public void testPlusBinaryExpressionIntString() throws Exception {
+        testBinaryExpression("i = 1 + \"1\";", "java.lang.String", createEmptyImportList());
+    }
+
+    @Test
+    public void testPlusBinaryExpressionIntFloat() throws Exception {
+        testBinaryExpression("i = 1 + new Float(1.5);", "float", createEmptyImportList());
+    }
+
+    @Test
+    public void testPlusBinaryExpressionIntShort() throws Exception {
+        testBinaryExpression("i = 1 + new Short(1);", "int", createEmptyImportList());
+    }
+
+    @Test
+    public void testPlusBinaryExpressionIntLong() throws Exception {
+        testBinaryExpression("i = 1 + new Long(1);", "long", createEmptyImportList());
+    }
+
+    @Test
+    public void testPlusBinaryExpressionFloatLong() throws Exception {
+        testBinaryExpression("i = new Float(1.1) + new Long(1);", "float", createEmptyImportList());
+    }
+
+    @Test
+    public void testPlusBinaryExpressionIntDouble() throws Exception {
+        testBinaryExpression("i = 1 + 1.5;", "double", createEmptyImportList());
+    }
+
+    @Test
+    public void testMinusBinaryExpressionIntFloat() throws Exception {
+        testBinaryExpression("i = 1 - new Float(1.5);", "float", createEmptyImportList());
+    }
+
+    @Test
+    public void testMinusBinaryExpressionIntShort() throws Exception {
+        testBinaryExpression("i = 1 - new Short(1);", "int", createEmptyImportList());
+    }
+
+    @Test
+    public void testMinusBinaryExpressionIntLong() throws Exception {
+        testBinaryExpression("i = 1 - new Long(1);", "long", createEmptyImportList());
+    }
+
+    @Test
+    public void testMinusBinaryExpressionFloatLong() throws Exception {
+        testBinaryExpression("i = new Float(1.1) - new Long(1);", "float", createEmptyImportList());
+    }
+
+    @Test
+    public void testMinusBinaryExpressionIntDouble() throws Exception {
+        testBinaryExpression("i = 1 - 1.5;", "double", createEmptyImportList());
+    }
+
+    @Test
+    public void testDivideBinaryExpressionIntInt() throws Exception {
+        testBinaryExpression("i = 1 / 1;", "double", createEmptyImportList());
+    }
+
+    @Test
+    public void testDivideBinaryExpressionIntDouble() throws Exception {
+        testBinaryExpression("i = 1 / new Double(1.5);", "double", createEmptyImportList());
+    }
+
+    @Test
+    public void testDivideBinaryExpressionFloatInt() throws Exception {
+        testBinaryExpression("i = new Float(1) / 1;", "double", createEmptyImportList());
+    }
+
+    @Test
+    public void testRemainderBinaryExpressionFloatInt() throws Exception {
+        testBinaryExpression("i = new Float(1) % 1;", "float", createEmptyImportList());
+    }
+
+    @Test
+    public void testRemainderBinaryExpressionDoubleInt() throws Exception {
+        testBinaryExpression("i = new Double(1) % 1;", "double", createEmptyImportList());
+    }
+
+    @Test
+    public void testRemainderBinaryExpressionLongInt() throws Exception {
+        testBinaryExpression("i = new Long(1) % 1;", "long", createEmptyImportList());
+    }
+
+    @Test
+    public void testRemainderBinaryExpressionIntInt() throws Exception {
+        testBinaryExpression("i = 2 % 1;", "int", createEmptyImportList());
+    }
+
+    @Test
+    public void testRemainderBinaryExpressionShortInt() throws Exception {
+        testBinaryExpression("i = new Short(1) % 1;", "int", createEmptyImportList());
+    }
+
+    private void testBinaryExpression(String expression, String expectedType, ImportList imports) throws Exception{
+        BinaryExpr expr = (BinaryExpr) ((AssignExpr) ParseHelper.createExpression(expression)).getValue();
+        String type = new TypeFinder(null, imports).determineType(expr);
+        assertEquals(expectedType, type);
     }
 }
