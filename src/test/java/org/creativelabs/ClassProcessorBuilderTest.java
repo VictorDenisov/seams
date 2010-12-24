@@ -37,12 +37,13 @@ public class ClassProcessorBuilderTest {
     public void testClassProcessorConstruction() throws Exception {
         ClassProcessorBuilderTestSpecific builder = new ClassProcessorBuilderTestSpecific();
         ClassProcessor classProcessor = builder
-            .setImports(ParseHelper.createImportList("import org.creativelabs.Dependency;"))
-            .setPackage("org.sample")
-            .setTypeDeclaration(ParseHelper.createClassDeclaration("class Foo extends Dependency {}"))
+            .setImports(ParseHelper.createImportList(
+                        "package org.creativelabs; import org.creativelabs.Dependency;"))
+            .setTypeDeclaration(ParseHelper.createClassDeclaration(
+                        "class ImportList extends Dependency {}"))
             .buildClassProcessor();
 
-        assertEquals("org.sample.Foo", builder.thisValue);
+        assertEquals("org.creativelabs.ImportList", builder.thisValue);
         assertEquals("org.creativelabs.Dependency", builder.superValue);
     }
 
@@ -50,12 +51,12 @@ public class ClassProcessorBuilderTest {
     public void testClassProcessorConstructionNoExtends() throws Exception {
         ClassProcessorBuilderTestSpecific builder = new ClassProcessorBuilderTestSpecific();
         ClassProcessor classProcessor = builder
-            .setImports(ParseHelper.createImportList("import org.creativelabs.Bar;"))
-            .setPackage("org.sample")
-            .setTypeDeclaration(ParseHelper.createClassDeclaration("class Foo {}"))
+            .setImports(ParseHelper.createImportList(
+                        "package org.creativelabs; import org.creativelabs.Bar;"))
+            .setTypeDeclaration(ParseHelper.createClassDeclaration("class ImportList {}"))
             .buildClassProcessor();
 
-        assertEquals("org.sample.Foo", builder.thisValue);
+        assertEquals("org.creativelabs.ImportList", builder.thisValue);
         assertEquals("java.lang.Object", builder.superValue);
     }
 

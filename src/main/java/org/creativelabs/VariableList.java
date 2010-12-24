@@ -52,10 +52,6 @@ class VariableList {
         return fieldTypes.keySet().contains(fieldName);
     }
 
-    void put(String fieldName, String fieldType) {
-        fieldTypes.put(fieldName, new ClassTypeStub(fieldType));
-    }
-
     void put(String fieldName, ClassType clazz) {
         fieldTypes.put(fieldName, clazz);
     }

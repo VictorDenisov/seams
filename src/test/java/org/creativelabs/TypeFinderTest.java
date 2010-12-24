@@ -239,7 +239,7 @@ public class TypeFinderTest {
                 "import org.creativelabs.A;");
 
         VariableList varTypes = createEmptyVariableList();
-        varTypes.put("this", cd.getName());
+        varTypes.put("this", new ClassTypeStub(cd.getName()));
 
         TestingReflectionAbstraction reflectionAbstraction = new TestingReflectionAbstraction();
         reflectionAbstraction.addMethod("Sample", "methodCall", new String[]{"int"}, "org.creativelabs.A");
@@ -266,7 +266,7 @@ public class TypeFinderTest {
                 "import org.creativelabs.A;");
 
         VariableList varTypes = createEmptyVariableList();
-        varTypes.put("this", cd.getName());
+        varTypes.put("this", new ClassTypeStub(cd.getName()));
 
         TestingReflectionAbstraction reflectionAbstraction = new TestingReflectionAbstraction();
         reflectionAbstraction.addMethod("Sample", "methodCall", new String[]{"int"}, "org.creativelabs.A");
@@ -321,8 +321,8 @@ public class TypeFinderTest {
                 "import org.creativelabs.A;");
 
         VariableList varTypes = createEmptyVariableList();
-        varTypes.put("a", "org.creativelabs.A");
-        varTypes.put("this", cd.getName());
+        varTypes.put("a", new ClassTypeStub("org.creativelabs.A"));
+        varTypes.put("this", new ClassTypeStub(cd.getName()));
 
         String type = new TypeFinder(varTypes, importList).determineType(expr);
 
@@ -397,7 +397,7 @@ public class TypeFinderTest {
         SuperExpr expr = (SuperExpr) ((FieldAccessExpr) ParseHelper.createExpression("super.someField")).getScope();
 
         VariableList varTypes = createEmptyVariableList();
-        varTypes.put("super", "org.creativelabs.A");
+        varTypes.put("super", new ClassTypeStub("org.creativelabs.A"));
 
         String type = new TypeFinder(varTypes, null).determineType(expr);
 
@@ -409,7 +409,7 @@ public class TypeFinderTest {
         SuperExpr expr = (SuperExpr) ((MethodCallExpr) ParseHelper.createExpression("super.methodCall()")).getScope();
 
         VariableList varTypes = createEmptyVariableList();
-        varTypes.put("super", "org.creativelabs.A");
+        varTypes.put("super", new ClassTypeStub("org.creativelabs.A"));
 
         String type = new TypeFinder(varTypes, null).determineType(expr);
 

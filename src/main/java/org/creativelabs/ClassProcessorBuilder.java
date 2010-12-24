@@ -3,6 +3,8 @@ package org.creativelabs;
 import japa.parser.ast.body.*;
 import japa.parser.ast.stmt.*;
 
+import org.creativelabs.introspection.*;
+
 public class ClassProcessorBuilder {
 
     protected ClassOrInterfaceDeclaration typeDeclaration;
@@ -10,8 +12,6 @@ public class ClassProcessorBuilder {
     protected ImportList imports;
 
     protected VariableList fieldList;
-
-    protected String packageName;
 
     protected DependencyCounterVisitor dependencyCounter;
 
@@ -21,7 +21,6 @@ public class ClassProcessorBuilder {
     }
 
     public ClassProcessorBuilder setPackage(String packageVal) {
-        this.packageName = packageVal;
         return this;
     }
 
@@ -45,18 +44,20 @@ public class ClassProcessorBuilder {
         if (typeDeclaration == null) {
             throw new IllegalStateException();
         }
-        if (packageName == null) {
-            throw new IllegalStateException();
-        }
         fieldList = constructVariableList();
-        fieldList.put("this", packageName + "." + typeDeclaration.getName());
+        fieldList.put("this", imports.getClassByShortName(typeDeclaration.getName()));
+
+        ClassType classValue = null;
+
         if (typeDeclaration.getExtends() != null) {
             String classShortName = typeDeclaration.getExtends().get(0).getName();
-            String classValue = imports.getClassByShortName(classShortName).toStringRepresentation();
-            fieldList.put("super", classValue);
+            classValue = imports.getClassByShortName(classShortName);
         } else {
-            fieldList.put("super", "java.lang.Object");
+            classValue = imports.getClassByShortName("Object");
         }
+
+        fieldList.put("super", classValue);
+
         dependencyCounter = constructDependencyCounterVisitor();
         return new ClassProcessor(typeDeclaration, dependencyCounter);
     }

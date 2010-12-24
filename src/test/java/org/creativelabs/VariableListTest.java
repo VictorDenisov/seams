@@ -63,7 +63,7 @@ public class VariableListTest {
     @Test
     public void testPut() throws Exception {
         VariableList varList = new VariableList();
-        varList.put("name", "String");
+        varList.put("name", new ClassTypeStub("String"));
         assertEquals("String", varList.getFieldTypeAsString("name"));
     }
 
@@ -78,7 +78,7 @@ public class VariableListTest {
     public void testAddAll() throws Exception {
         VariableList varList = new VariableList();
         VariableList fullList = new VariableList();
-        fullList.put("name", "String");
+        fullList.put("name", new ClassTypeStub("String"));
 
         varList.addAll(fullList);
 
@@ -88,7 +88,7 @@ public class VariableListTest {
     @Test
     public void testTypeAsClass() throws Exception {
         VariableList varList = new VariableList();
-        varList.put("name", "String");
+        varList.put("name", new ClassTypeStub("String"));
 
         assertEquals("java.lang.String", varList.getFieldTypeAsClass("name"));
     }
@@ -96,7 +96,7 @@ public class VariableListTest {
     @Test
     public void testTypeAsClassInt() throws Exception {
         VariableList varList = new VariableList();
-        varList.put("name", "int");
+        varList.put("name", new ClassTypeStub("int"));
 
         String clazz = varList.getFieldTypeAsClass("name");
         assertEquals("int", clazz);

@@ -34,7 +34,6 @@ final class MainApp {
     private static void processClass(String packageName, ClassOrInterfaceDeclaration typeDeclaration, String fileName) {
         ClassProcessor classProcessor = new ClassProcessorBuilder()
             .setTypeDeclaration(typeDeclaration)
-            .setPackage(packageName)
             .setImports(imports)
             .buildClassProcessor();
         classProcessor.compute();

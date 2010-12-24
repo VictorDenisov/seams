@@ -5,6 +5,8 @@ import japa.parser.ast.expr.*;
 import japa.parser.ast.body.*;
 import japa.parser.ast.visitor.*;
 
+import org.creativelabs.introspection.*;
+
 import java.util.*;
 
 class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
@@ -106,7 +108,9 @@ class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
     @Override
     public void visit(VariableDeclarationExpr n, Object o) {
         for (VariableDeclarator v : n.getVars()) {
-            localVariables.put(v.getId().getName(), n.getType().toString());
+            ClassType classType = imports.getClassByShortName(n.getType().toString());
+
+            localVariables.put(v.getId().getName(), classType);
             ExpressionSeparatorVisitor esv = new ExpressionSeparatorVisitor(internalInstances);
             if (v.getInit() != null) {
                 v.getInit().accept(esv, null);
