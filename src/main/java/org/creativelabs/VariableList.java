@@ -1,5 +1,7 @@
 package org.creativelabs;
 
+import org.creativelabs.introspection.*;
+
 import japa.parser.ast.expr.*;
 import japa.parser.ast.body.*;
 
@@ -8,7 +10,7 @@ import java.util.*;
 
 class VariableList {
 
-    private Map<String, String> fieldTypes = new HashMap<String, String>();
+    private Map<String, ClassType> fieldTypes = new HashMap<String, ClassType>();
 
     private ImportList imports = null;
 
@@ -21,7 +23,7 @@ class VariableList {
                 FieldDeclaration fd = (FieldDeclaration) bd;
                 String type = fd.getType().toString();
                 for (VariableDeclarator vardecl : fd.getVariables()) {
-                    fieldTypes.put(vardecl.getId().getName(), type);
+                    fieldTypes.put(vardecl.getId().getName(), new ClassTypeStub(type));
                 }
             }
         }
@@ -33,11 +35,11 @@ class VariableList {
     }
 
     String getFieldTypeAsString(String fieldName) {
-        return fieldTypes.get(fieldName);
+        return fieldTypes.get(fieldName).toStringRepresentation();
     }
 
     String getFieldTypeAsClass(String fieldName) {
-        String fieldType = fieldTypes.get(fieldName);
+        String fieldType = fieldTypes.get(fieldName).toStringRepresentation();
         //TODO check if fieldName is not contain in fieldTypes
         if (TypeFinder.classIsPrimitive(fieldType)) {
             return TypeFinder.getPrimitiveClass(fieldType).getName();
@@ -51,11 +53,11 @@ class VariableList {
     }
 
     void put(String fieldName, String fieldType) {
-        fieldTypes.put(fieldName, fieldType);
+        fieldTypes.put(fieldName, new ClassTypeStub(fieldType));
     }
 
-    void put(String fieldName, Class clazz) {
-        fieldTypes.put(fieldName, clazz.getSimpleName());
+    void put(String fieldName, ClassType clazz) {
+        fieldTypes.put(fieldName, clazz);
     }
 
     void addAll(VariableList list) {

@@ -3,6 +3,7 @@ import japa.parser.ast.expr.*;
 import japa.parser.ast.body.*;
 
 import org.testng.annotations.Test;
+import org.creativelabs.introspection.*;
 
 import java.util.*;
 
@@ -69,8 +70,8 @@ public class VariableListTest {
     @Test
     public void testPutClass() throws Exception {
         VariableList varList = new VariableList();
-        varList.put("name", String.class);
-        assertEquals("String", varList.getFieldTypeAsString("name"));
+        varList.put("name", new ClassTypeStub(String.class.getName()));
+        assertEquals("java.lang.String", varList.getFieldTypeAsString("name"));
     }
 
     @Test
