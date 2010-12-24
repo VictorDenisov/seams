@@ -28,7 +28,7 @@ public class DependenciesChartTest {
     @Test
     public void testAddInternalInstancesCountForClass() {
         DependenciesChart chart = new DependenciesChart();
-        chart.addInternalInstancesCountForClass("methodName", 2);
+        chart.addInternalInstancesCountForMethod("methodName", 2);
         assertEquals("{} {methodName -> 2, }", dependenciesChartToString(chart));
     }
 
@@ -36,7 +36,7 @@ public class DependenciesChartTest {
     public void testAddDependenciesCountForClassAndAddInternalInstancesCountForClass() {
         DependenciesChart chart = new DependenciesChart();
         chart.addDependenciesCountForClass("className", 2);
-        chart.addInternalInstancesCountForClass("methodName", 2);
+        chart.addInternalInstancesCountForMethod("methodName", 2);
         assertEquals("{className -> 2, } {methodName -> 2, }", dependenciesChartToString(chart));
     }
 }

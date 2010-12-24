@@ -15,7 +15,7 @@ public class DependenciesChart {
         dependenciesCountOfClass.put(className, count);
     }
 
-    public void addInternalInstancesCountForClass(String methodName, int count){
+    public void addInternalInstancesCountForMethod(String methodName, int count){
         internalInstancesCountOfMethod.put(methodName, count);
     }
 

@@ -24,11 +24,15 @@ class ClassProcessor {
     public DependenciesChart getDependenciesChart(){
         DependenciesChart chart = new DependenciesChart();
         for (Map.Entry<String, InternalInstancesGraph> entry : internalInstances.entrySet()){
-            chart.addInternalInstancesCountForClass(entry.getKey(), entry.getValue().toSet().size());
+            chart.addInternalInstancesCountForMethod(entry.getKey(), entry.getValue().toSet().size());
         }
-        for (Map.Entry<String, Set<Dependency>> entry : dependencies.entrySet()){
-            chart.addDependenciesCountForClass(entry.getKey(), entry.getValue().size());
+        Set<String> classDependencies = new HashSet<String>();
+        for (Set<Dependency> dependencySet : dependencies.values()){
+            for (Dependency dependency : dependencySet){
+                classDependencies.add(dependency.getType());
+            }
         }
+        chart.addDependenciesCountForClass(typeDeclaration.getName(), classDependencies.size());
         return chart;
     }
 

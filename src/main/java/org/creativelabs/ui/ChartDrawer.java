@@ -1,10 +1,13 @@
 package org.creativelabs.ui;
 
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.ChartRenderingInfo;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
@@ -18,7 +21,9 @@ public class ChartDrawer implements Drawer{
 
     @Override
     public void draw(int width, int height, JFrame frame) {
-        chart.draw((Graphics2D) frame.getGraphics(), new Rectangle(0, 0, width, height));
+        ChartPanel chartPanel = new ChartPanel(chart);
+        chartPanel.setPreferredSize(new Dimension(width, height));
+        frame.getContentPane().add(chartPanel);
         frame.pack();
         frame.setVisible(true);
     }
