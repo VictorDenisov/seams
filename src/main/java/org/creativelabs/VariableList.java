@@ -8,8 +8,6 @@ import java.util.*;
 
 class VariableList {
 
-    private List<String> fieldNames = new ArrayList<String>();
-
     private Map<String, String> fieldTypes = new HashMap<String, String>();
 
     private ImportList imports = null;
@@ -23,7 +21,6 @@ class VariableList {
                 FieldDeclaration fd = (FieldDeclaration) bd;
                 String type = fd.getType().toString();
                 for (VariableDeclarator vardecl : fd.getVariables()) {
-                    fieldNames.add(vardecl.getId().getName());
                     fieldTypes.put(vardecl.getId().getName(), type);
                 }
             }
@@ -32,7 +29,7 @@ class VariableList {
     }
 
     List<String> getNames() {
-        return Collections.unmodifiableList(fieldNames);
+        return new ArrayList<String>(fieldTypes.keySet());
     }
 
     String getFieldTypeAsString(String fieldName) {
@@ -54,17 +51,14 @@ class VariableList {
     }
 
     void put(String fieldName, String fieldType) {
-        fieldNames.add(fieldName);
         fieldTypes.put(fieldName, fieldType);
     }
 
     void put(String fieldName, Class clazz) {
-        fieldNames.add(fieldName);
         fieldTypes.put(fieldName, clazz.getSimpleName());
     }
 
     void addAll(VariableList list) {
-        fieldNames.addAll(list.fieldNames);
         fieldTypes.putAll(list.fieldTypes);
     }
 
