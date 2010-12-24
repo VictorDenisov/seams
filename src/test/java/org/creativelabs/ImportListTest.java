@@ -91,4 +91,34 @@ public class ImportListTest {
         }
         assertEquals("RuntimeException", message);
     }
+
+    @Test
+    public void testGetClassFromLocalPackage() throws Exception {
+        ImportList imports = ParseHelper.createImportList("package java.util;");
+        assertEquals("java.util.ArrayList", imports.getClassByShortName("ArrayList").toStringRepresentation());
+    }
+
+    @Test
+    public void testGetClassFromLocalPackageAsterisk() throws Exception {
+        ImportList imports = ParseHelper.createImportList("package java.util; import java.io.*;");
+        assertEquals("java.util.ArrayList", imports.getClassByShortName("ArrayList").toStringRepresentation());
+    }
+
+    @Test
+    public void testGetClassFromAsteriskLocalPackage() throws Exception {
+        ImportList imports = ParseHelper.createImportList("package java.util; import java.io.*;");
+        assertEquals("java.io.File", imports.getClassByShortName("File").toStringRepresentation());
+    }
+
+    @Test
+    public void testGetClassFromLocalPackageConcreteImport() throws Exception {
+        ImportList imports = ParseHelper.createImportList("package java.util; import java.io.File;");
+        assertEquals("java.util.ArrayList", imports.getClassByShortName("ArrayList").toStringRepresentation());
+    }
+
+    @Test
+    public void testGetClassFromConcreteImportLocalPackage() throws Exception {
+        ImportList imports = ParseHelper.createImportList("package java.util; import java.io.*;");
+        assertEquals("java.io.File", imports.getClassByShortName("File").toStringRepresentation());
+    }
 }

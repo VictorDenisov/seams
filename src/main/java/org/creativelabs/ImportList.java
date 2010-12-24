@@ -14,6 +14,9 @@ class ImportList {
     private List<ImportDeclaration> list = new ArrayList<ImportDeclaration>();
 
     ImportList(CompilationUnit cu) {
+        if (cu.getPackage() != null){
+            list.add(new ImportDeclaration(new NameExpr(cu.getPackage().getName().toString()), false, true));
+        }
         list.add(new ImportDeclaration(new NameExpr("java.lang"), false, true));
         if (cu.getImports() != null) {
             list.addAll(cu.getImports());
