@@ -159,8 +159,7 @@ class TypeFinder {
             return getReturnTypeIfBothArgumentsHaveAnyType(leftOperatorType, rightOperatorType, reflectionAbstraction);
         }
         if (BinaryExpr.Operator.divide.equals(operator)){
-            //TODO think why we return double;
-            return reflectionAbstraction.getClassType("double");
+            return getReturnTypeIfBothArgumentsHaveAnyType(leftOperatorType, rightOperatorType, reflectionAbstraction);
         }
         if (BinaryExpr.Operator.minus.equals(operator)
                 || BinaryExpr.Operator.times.equals(operator)

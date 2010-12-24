@@ -484,7 +484,7 @@ public class TypeFinderTest {
 
     @Test
     public void testDivideBinaryExpressionIntInt() throws Exception {
-        testBinaryExpression("i = 1 / 1;", "double", createEmptyImportList());
+        testBinaryExpression("i = 1 / 1;", "int", createEmptyImportList());
     }
 
     @Test
@@ -494,7 +494,7 @@ public class TypeFinderTest {
 
     @Test
     public void testDivideBinaryExpressionFloatInt() throws Exception {
-        testBinaryExpression("i = new Float(1) / 1;", "double", createEmptyImportList());
+        testBinaryExpression("i = new Float(1) / 1;", "float", createEmptyImportList());
     }
 
     @Test
