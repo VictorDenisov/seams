@@ -79,6 +79,12 @@ public class ReflectionIntrospectionImplTest {
 		assertEquals("java.lang.String", type.toStringRepresentation());
 	}
 
+	@Test
+	public void testGetClassTypeByNamePrimitive() throws Exception {
+		ClassType type = new ReflectionAbstractionImpl().getClassTypeByName("int");
+		assertEquals("int", type.toStringRepresentation());
+	}
+
     @Test
     public void testGetReturnTypeClassType() throws Exception {
 		ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();

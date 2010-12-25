@@ -38,13 +38,14 @@ class VariableList {
         return fieldTypes.get(fieldName).toStringRepresentation();
     }
 
-    String getFieldTypeAsClass(String fieldName) {
+    ClassType getFieldTypeAsClass(String fieldName) {
         String fieldType = fieldTypes.get(fieldName).toStringRepresentation();
         //TODO check if fieldName is not contain in fieldTypes
         if (TypeFinder.classIsPrimitive(fieldType)) {
-            return TypeFinder.getPrimitiveClass(fieldType).getName();
+            return new ReflectionAbstractionImpl()
+                .getClassTypeByName(TypeFinder.getPrimitiveClass(fieldType).getName());
         } else {
-            return imports.getClassByShortName(fieldType).toStringRepresentation();
+            return imports.getClassByShortName(fieldType);
         }
     }
 

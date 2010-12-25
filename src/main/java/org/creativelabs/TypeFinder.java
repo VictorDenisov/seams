@@ -76,7 +76,7 @@ class TypeFinder {
             return imports.getClassByShortName(name).toStringRepresentation();
         } else {
             if (varType != null && varType.getFieldTypeAsClass(name) != null) {
-                return varType.getFieldTypeAsClass(name);
+                return varType.getFieldTypeAsClass(name).toStringRepresentation();
             }
         }
         throw new UnsupportedExpressionException();

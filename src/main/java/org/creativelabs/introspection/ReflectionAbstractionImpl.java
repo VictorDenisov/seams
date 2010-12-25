@@ -128,7 +128,7 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
     public ClassType getClassTypeByName(String className) {
         try {
             ClassTypeImpl c = new ClassTypeImpl();
-            c.clazz = Class.forName(className);
+            c.clazz = getClass(className);
             return c;
         } catch (Exception e) {
             throw new RuntimeException("Class " + className + " doesn't exist in classpath.");
