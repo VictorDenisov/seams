@@ -118,16 +118,6 @@ public class TestingReflectionAbstraction implements ReflectionAbstraction {
     }
 
     @Override
-    public String getFieldType(String className, String fieldName) throws Exception {
-        return fields.get(new FieldWrapper(className, fieldName));
-    }
-
-    @Override
-    public String getClassType(String className) throws Exception {
-        return classes.get(className);
-    }
-
-    @Override
     public ClassType getReturnType(ClassType className, String methodName, ClassType[] types) throws Exception {
         return null;
     }
@@ -139,7 +129,7 @@ public class TestingReflectionAbstraction implements ReflectionAbstraction {
 
     @Override
     public ClassType getClassTypeByName(String className) throws Exception {
-        return null;
+        return new ClassTypeStub(classes.get(className));
     }
 
     @Override

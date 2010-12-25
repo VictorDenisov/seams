@@ -121,7 +121,7 @@ class TypeFinder {
         String className = expr.getClass().getSimpleName();
         //All javaparser's literals have the special class names : Type + "LiteralExpr"
         String typeOfExpression = className.substring(0, className.indexOf("Literal"));
-        return reflectionAbstraction.getClassType("java.lang." + typeOfExpression);
+        return reflectionAbstraction.getClassTypeByName("java.lang." + typeOfExpression).toStringRepresentation();
     }
 
     private String determineType(AssignExpr expr) throws Exception {
@@ -179,34 +179,34 @@ class TypeFinder {
                                                        String secondArgType) throws Exception {
         if (oneOfArgumentsHaveType("double", firstArgType, secondArgType)
                 || oneOfArgumentsHaveType("java.lang.Double", firstArgType, secondArgType)) {
-                return reflectionAbstraction.getClassType("double");
+                return reflectionAbstraction.getClassTypeByName("double").toStringRepresentation();
             }
             if (oneOfArgumentsHaveType("float", firstArgType, secondArgType)
                     || oneOfArgumentsHaveType("java.lang.Float", firstArgType, secondArgType)) {
-                return reflectionAbstraction.getClassType("float");
+                return reflectionAbstraction.getClassTypeByName("float").toStringRepresentation();
             }
             if (oneOfArgumentsHaveType("long", firstArgType, secondArgType)
                     || oneOfArgumentsHaveType("java.lang.Long", firstArgType, secondArgType)) {
-                return reflectionAbstraction.getClassType("long");
+                return reflectionAbstraction.getClassTypeByName("long").toStringRepresentation();
             }
             if (oneOfArgumentsHaveType("int", firstArgType, secondArgType)
                     || oneOfArgumentsHaveType("java.lang.Integer", firstArgType, secondArgType)) {
-                return reflectionAbstraction.getClassType("int");
+                return reflectionAbstraction.getClassTypeByName("int").toStringRepresentation();
             }
             if (oneOfArgumentsHaveType("short", firstArgType, secondArgType)
                     || oneOfArgumentsHaveType("java.lang.Short", firstArgType, secondArgType)) {
-                return reflectionAbstraction.getClassType("short");
+                return reflectionAbstraction.getClassTypeByName("short").toStringRepresentation();
             }
         return null;
     }
 
     private String getReturnTypeIfBothArgumentsIsChar(String firstArgType, String secondArgType) throws Exception {
         if (oneOfArgumentsHaveType("java.lang.String", firstArgType, secondArgType)) {
-            return reflectionAbstraction.getClassType("java.lang.String");
+            return reflectionAbstraction.getClassTypeByName("java.lang.String").toStringRepresentation();
         }
         if (oneOfArgumentsHaveType("char", firstArgType, secondArgType)
                 || oneOfArgumentsHaveType("java.lang.Char", firstArgType, secondArgType)) {
-            return reflectionAbstraction.getClassType("char");
+            return reflectionAbstraction.getClassTypeByName("char").toStringRepresentation();
         }
         return null;
     }

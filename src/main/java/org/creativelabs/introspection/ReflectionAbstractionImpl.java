@@ -73,18 +73,6 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
     }
 
     @Override
-    public String getFieldType(String className, String fieldName) throws Exception {
-        Class cl = Class.forName(className);
-        Field field = cl.getField(fieldName);
-        return field.getType().getName();
-    }
-
-    @Override
-    public String getClassType(String className) throws Exception {
-        return getClass(className).getName();
-    }
-
-    @Override
     public boolean classWithNameExists(String className) {
         try {
             Class.forName(className);

@@ -17,12 +17,6 @@ public class ReflectionIntrospectionImplTest {
     }
 
     @Test
-    public void testGetFieldType() throws Exception {
-        String fieldType = new ReflectionAbstractionImpl().getFieldType("java.lang.String", "CASE_INSENSITIVE_ORDER");
-        assertEquals("java.util.Comparator", fieldType);
-    }
-
-    @Test
     public void testGetReturnTypeArray() throws Exception {
         String[] types = new String[1];
         types[0] = "java.lang.String";
@@ -55,24 +49,6 @@ public class ReflectionIntrospectionImplTest {
         assertFalse(new ReflectionAbstractionImpl().classWithNameExists("far.far.away.UnExisting"));
     }
 
-    @Test
-    public void testGetClassForReferenceClass() throws Exception {
-        String type = new ReflectionAbstractionImpl().getClassType("java.lang.String");
-        assertEquals("java.lang.String", type);
-    }
-
-    @Test
-    public void testGetClassForPrimitiveClass() throws Exception {
-        String type = new ReflectionAbstractionImpl().getClassType("int");
-        assertEquals("int", type);
-    }
-
-    @Test
-    public void testGetClassForPrimitiveClassFromReferencesClass() throws Exception {
-        String type = new ReflectionAbstractionImpl().getClassType("java.lang.Integer");
-        assertEquals("int", type);
-    }
-
 	@Test
 	public void testGetClassTypeByName() throws Exception {
 		ClassType type = new ReflectionAbstractionImpl().getClassTypeByName("java.lang.String");
@@ -82,6 +58,12 @@ public class ReflectionIntrospectionImplTest {
 	@Test
 	public void testGetClassTypeByNamePrimitive() throws Exception {
 		ClassType type = new ReflectionAbstractionImpl().getClassTypeByName("int");
+		assertEquals("int", type.toStringRepresentation());
+	}
+
+	@Test
+	public void testGetClassTypeByNameFromReferenceClass() throws Exception {
+		ClassType type = new ReflectionAbstractionImpl().getClassTypeByName("java.lang.Integer");
 		assertEquals("int", type.toStringRepresentation());
 	}
 
