@@ -81,6 +81,12 @@ public class ImportListTest {
     }
 
     @Test
+    public void testGetClassFromPrimitiveInt() throws Exception {
+        ImportList imports = ParseHelper.createImportList("");
+        assertEquals("int", imports.getClassByShortName("int").toStringRepresentation());
+    }
+
+    @Test
     public void testEmptyImportList() throws Exception {
         ImportList imports = ParseHelper.createImportList("");
         String message = "noException";

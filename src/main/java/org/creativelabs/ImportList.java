@@ -31,8 +31,23 @@ class ImportList {
         return result;
     }
 
+    private static boolean classIsPrimitive(String className) {
+        return "byte".equals(className)
+                || "short".equals(className)
+                || "int".equals(className)
+                || "long".equals(className)
+                || "float".equals(className)
+                || "double".equals(className)
+                || "char".equals(className)
+                || "boolean".equals(className)
+                || "void".equals(className);
+    }
+
     ClassType getClassByShortName(String shortName) {
         ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
+        if (classIsPrimitive(shortName)) {
+            return ra.getClassTypeByName(shortName);
+        }
         for (ImportDeclaration id : list) {
             if (id.isAsterisk()) {
                 String className = id.getName().toString() + "." + shortName;
