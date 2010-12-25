@@ -17,13 +17,23 @@ class VariableList {
     VariableList() {
     }
 
+    private ClassType getByClass(String fieldType) {
+        //TODO check if fieldName is not contain in fieldTypes
+        if (TypeFinder.classIsPrimitive(fieldType)) {
+            return new ReflectionAbstractionImpl()
+                .getClassTypeByName(TypeFinder.getPrimitiveClass(fieldType).getName());
+        } else {
+            return imports.getClassByShortName(fieldType);
+        }
+    }
+
     VariableList(ClassOrInterfaceDeclaration classDeclaration, ImportList imports) {
         for (BodyDeclaration bd : classDeclaration.getMembers()) {
             if (bd instanceof FieldDeclaration) {
                 FieldDeclaration fd = (FieldDeclaration) bd;
                 String type = fd.getType().toString();
                 for (VariableDeclarator vardecl : fd.getVariables()) {
-                    fieldTypes.put(vardecl.getId().getName(), new ClassTypeStub(type));
+                    fieldTypes.put(vardecl.getId().getName(), getByClass(type));
                 }
             }
         }
@@ -34,19 +44,8 @@ class VariableList {
         return new ArrayList<String>(fieldTypes.keySet());
     }
 
-    String getFieldTypeAsString(String fieldName) {
-        return fieldTypes.get(fieldName).toStringRepresentation();
-    }
-
     ClassType getFieldTypeAsClass(String fieldName) {
-        String fieldType = fieldTypes.get(fieldName).toStringRepresentation();
-        //TODO check if fieldName is not contain in fieldTypes
-        if (TypeFinder.classIsPrimitive(fieldType)) {
-            return new ReflectionAbstractionImpl()
-                .getClassTypeByName(TypeFinder.getPrimitiveClass(fieldType).getName());
-        } else {
-            return imports.getClassByShortName(fieldType);
-        }
+        return fieldTypes.get(fieldName);
     }
 
     boolean hasName(String fieldName) {

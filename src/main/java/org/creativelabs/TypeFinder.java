@@ -85,7 +85,7 @@ class TypeFinder {
     private String determineType(FieldAccessExpr expr) throws Exception {
         String fieldName = expr.getField();
         if (varType.hasName(fieldName)) {
-            return varType.getFieldTypeAsString(fieldName);
+            return varType.getFieldTypeAsClass(fieldName).toStringRepresentation();
         } else {
 
             String scopeClassName = determineType(expr.getScope());
@@ -135,11 +135,11 @@ class TypeFinder {
     }
 
     private String determineType(ThisExpr expr) throws Exception {
-        return varType.getFieldTypeAsString("this");
+        return varType.getFieldTypeAsClass("this").toStringRepresentation();
     }
 
     private String determineType(SuperExpr expr) throws Exception {
-        return varType.getFieldTypeAsString("super");
+        return varType.getFieldTypeAsClass("super").toStringRepresentation();
     }
 
     private String determineType(ObjectCreationExpr expr) throws Exception {

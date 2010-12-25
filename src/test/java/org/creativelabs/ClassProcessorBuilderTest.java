@@ -19,10 +19,10 @@ public class ClassProcessorBuilderTest {
         DependencyCounterVisitor constructDependencyCounterVisitor() {
 
             if (fieldList.hasName("this")) {
-                thisValue = fieldList.getFieldTypeAsString("this");
+                thisValue = fieldList.getFieldTypeAsClass("this").toStringRepresentation();
             }
             if (fieldList.hasName("super")) {
-                superValue = fieldList.getFieldTypeAsString("super");
+                superValue = fieldList.getFieldTypeAsClass("super").toStringRepresentation();
             }
             return null;
         }

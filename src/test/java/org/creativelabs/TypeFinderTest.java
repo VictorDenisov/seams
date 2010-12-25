@@ -575,7 +575,7 @@ public class TypeFinderTest {
                 + "import java.io.File;");
 
         VariableList varTypes = new VariableList(cd, importList);
-        varTypes.put("file", new ClassTypeStub("File"));
+        varTypes.put("file", new ClassTypeStub("java.io.File"));
 
         TestingReflectionAbstraction reflectionAbstraction = new TestingReflectionAbstraction();
         reflectionAbstraction.addMethod("Sample", "methodCall", new String[]{File.class.getName()}, String.class.getName());
