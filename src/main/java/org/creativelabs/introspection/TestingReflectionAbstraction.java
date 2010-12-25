@@ -6,7 +6,7 @@ import java.util.*;
 
 public class TestingReflectionAbstraction implements ReflectionAbstraction {
 
-    private class MethodWrapper {
+    private static class MethodWrapper {
 
         String className;
 
@@ -52,7 +52,7 @@ public class TestingReflectionAbstraction implements ReflectionAbstraction {
         }
     }
 
-    private class FieldWrapper {
+    private static class FieldWrapper {
 
         String className;
 

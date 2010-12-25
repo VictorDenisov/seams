@@ -1,13 +1,9 @@
 package org.creativelabs.ui;
 
-import org.jfree.chart.ChartPanel;
-import org.jfree.chart.ChartRenderingInfo;
-import org.jfree.chart.ChartUtilities;
-import org.jfree.chart.JFreeChart;
+import org.jfree.chart.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 

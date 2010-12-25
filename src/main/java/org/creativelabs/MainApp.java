@@ -31,7 +31,7 @@ final class MainApp {
         }
     }
 
-    private static void processClass(String packageName, ClassOrInterfaceDeclaration typeDeclaration, String fileName) {
+    private static void processClass(ClassOrInterfaceDeclaration typeDeclaration, String fileName) {
         ClassProcessor classProcessor = new ClassProcessorBuilder()
             .setTypeDeclaration(typeDeclaration)
             .setImports(imports)
@@ -99,7 +99,7 @@ final class MainApp {
                 imports = new ImportList(cu);
                 for (TypeDeclaration typeDeclaration : cu.getTypes()) {
                     if (typeDeclaration instanceof ClassOrInterfaceDeclaration) {
-                        processClass(cu.getPackage().getName().toString(), (ClassOrInterfaceDeclaration) typeDeclaration,
+                        processClass((ClassOrInterfaceDeclaration) typeDeclaration,
                                 fileOrDirectory.getAbsolutePath());
                     }
                 }
