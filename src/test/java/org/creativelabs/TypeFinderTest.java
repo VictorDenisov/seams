@@ -5,8 +5,11 @@ import japa.parser.ast.body.ClassOrInterfaceDeclaration;
 import japa.parser.ast.body.MethodDeclaration;
 import japa.parser.ast.expr.*;
 import japa.parser.ast.stmt.ExpressionStmt;
+import japa.parser.ast.stmt.Statement;
 import org.creativelabs.introspection.*;
 import org.testng.annotations.Test;
+
+import java.io.File;
 
 import static org.testng.AssertJUnit.assertEquals;
 
@@ -526,5 +529,59 @@ public class TypeFinderTest {
         BinaryExpr expr = (BinaryExpr) ((AssignExpr) ParseHelper.createExpression(expression)).getValue();
         String type = new TypeFinder(null, imports).determineType(expr);
         assertEquals(expectedType, type);
+    }
+
+    @Test
+    public void testProcessingArgumentOfMethodSelectClassField() throws Exception{
+        CompilationUnit cu = ParseHelper.createCompilationUnit("public class Sample {"
+                + "String file;"
+                + "String methodCall(File file){"
+                + "this.file = new File();"
+                + "}"
+                + "}");
+        ClassOrInterfaceDeclaration cd = (ClassOrInterfaceDeclaration) cu.getTypes().get(0);
+        MethodDeclaration md = (MethodDeclaration) cd.getMembers().get(1);
+        FieldAccessExpr expr = (FieldAccessExpr) ((AssignExpr) ((ExpressionStmt) md.getBody().getStmts().get(0)).getExpression()).getTarget();
+
+        ImportList importList = ParseHelper.createImportList(
+                "package java.util;"
+                + "import java.io.File;");
+
+        VariableList varTypes = createEmptyVariableList();
+        varTypes.put("file", new ClassTypeStub(String.class.getName()));
+
+        TestingReflectionAbstraction reflectionAbstraction = new TestingReflectionAbstraction();
+        reflectionAbstraction.addMethod("Sample", "methodCall", new String[]{File.class.getName()}, String.class.getName());
+
+        String type = new TypeFinder(reflectionAbstraction, varTypes, importList).determineType(expr);
+
+        assertEquals("java.lang.String", type);
+    }
+
+    @Test
+    public void testProcessingArgumentOfMethodSelectMethodArgument() throws Exception{
+        CompilationUnit cu = ParseHelper.createCompilationUnit("public class Sample {"
+                + "String file;"
+                + "String methodCall(File file){"
+                + "file = new File();"
+                + "}"
+                + "}");
+        ClassOrInterfaceDeclaration cd = (ClassOrInterfaceDeclaration) cu.getTypes().get(0);
+        MethodDeclaration md = (MethodDeclaration) cd.getMembers().get(1);
+        NameExpr expr = (NameExpr) ((AssignExpr) ((ExpressionStmt) md.getBody().getStmts().get(0)).getExpression()).getTarget();
+
+        ImportList importList = ParseHelper.createImportList(
+                "package java.util;"
+                + "import java.io.File;");
+
+        VariableList varTypes = new VariableList(cd, importList);
+        varTypes.put("file", new ClassTypeStub("File"));
+
+        TestingReflectionAbstraction reflectionAbstraction = new TestingReflectionAbstraction();
+        reflectionAbstraction.addMethod("Sample", "methodCall", new String[]{File.class.getName()}, String.class.getName());
+
+        String type = new TypeFinder(reflectionAbstraction, varTypes, importList).determineType(expr);
+
+        assertEquals("java.io.File", type);
     }
 }
