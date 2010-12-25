@@ -2,7 +2,6 @@ package org.creativelabs;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Field;
-import java.rmi.UnexpectedException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -156,15 +155,15 @@ class TypeFinder {
         BinaryExpr.Operator operator = expr.getOperator();
 
         if (BinaryExpr.Operator.plus.equals(operator)) {
-            return getReturnTypeIfBothArgumentsHaveAnyType(leftOperatorType, rightOperatorType, reflectionAbstraction);
+            return getReturnTypeIfBothArgumentsHaveAnyType(leftOperatorType, rightOperatorType);
         }
         if (BinaryExpr.Operator.divide.equals(operator)) {
-            return getReturnTypeIfBothArgumentsHaveAnyType(leftOperatorType, rightOperatorType, reflectionAbstraction);
+            return getReturnTypeIfBothArgumentsHaveAnyType(leftOperatorType, rightOperatorType);
         }
         if (BinaryExpr.Operator.minus.equals(operator)
                 || BinaryExpr.Operator.times.equals(operator)
                 || BinaryExpr.Operator.remainder.equals(operator)) {
-            return getReturnTypeIfBothArgumentsHaveAnyType(leftOperatorType, rightOperatorType, reflectionAbstraction);
+            return getReturnTypeIfBothArgumentsHaveAnyType(leftOperatorType, rightOperatorType);
         }
         throw new UnsupportedExpressionException();
     }
@@ -177,8 +176,7 @@ class TypeFinder {
     }
 
     private String getReturnTypeIfBothArgumentsIsDigit(String firstArgType,
-                                                       String secondArgType,
-                                                       ReflectionAbstraction reflectionAbstraction) throws Exception {
+                                                       String secondArgType) throws Exception {
         if (oneOfArgumentsHaveType("double", firstArgType, secondArgType)
                 || oneOfArgumentsHaveType("java.lang.Double", firstArgType, secondArgType)) {
                 return reflectionAbstraction.getClassType("double");
@@ -202,8 +200,7 @@ class TypeFinder {
         return null;
     }
 
-    private String getReturnTypeIfBothArgumentsIsChar(String firstArgType, String secondArgType,
-                                        ReflectionAbstraction reflectionAbstraction) throws Exception {
+    private String getReturnTypeIfBothArgumentsIsChar(String firstArgType, String secondArgType) throws Exception {
         if (oneOfArgumentsHaveType("java.lang.String", firstArgType, secondArgType)) {
             return reflectionAbstraction.getClassType("java.lang.String");
         }
@@ -214,13 +211,12 @@ class TypeFinder {
         return null;
     }
 
-    private String getReturnTypeIfBothArgumentsHaveAnyType(String firstArgType, String secondArgType,
-            ReflectionAbstraction reflectionAbstraction) throws Exception {
-        String type = getReturnTypeIfBothArgumentsIsChar(firstArgType, secondArgType, reflectionAbstraction);
+    private String getReturnTypeIfBothArgumentsHaveAnyType(String firstArgType, String secondArgType) throws Exception {
+        String type = getReturnTypeIfBothArgumentsIsChar(firstArgType, secondArgType);
         if (type != null) {
             return type;
         } else {
-            type = getReturnTypeIfBothArgumentsIsDigit(firstArgType, secondArgType, reflectionAbstraction);
+            type = getReturnTypeIfBothArgumentsIsDigit(firstArgType, secondArgType);
             if (type != null) {
                 return type;
             }
