@@ -17,9 +17,11 @@ public class DependencyCounterVisitorTest {
         ClassOrInterfaceDeclaration classDeclaration = 
             ParseHelper.createClassDeclaration("class Main { String name; }");
 
-        VariableList fieldList = new VariableList(classDeclaration, null);
+        ImportList imports = ParseHelper.createImportList("");
 
-        DependencyCounterVisitor dc = new DependencyCounterVisitor(fieldList, null);
+        VariableList fieldList = new VariableList(classDeclaration, imports);
+
+        DependencyCounterVisitor dc = new DependencyCounterVisitor(fieldList, imports);
 
         NameExpr expr = (NameExpr)ParseHelper.createExpression("name");
 

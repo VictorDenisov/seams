@@ -19,15 +19,11 @@ class VariableList {
 
     private ClassType getByClass(String fieldType) {
         //TODO check if fieldName is not contain in fieldTypes
-        if (TypeFinder.classIsPrimitive(fieldType)) {
-            return new ReflectionAbstractionImpl()
-                .getClassTypeByName(TypeFinder.getPrimitiveClass(fieldType).getName());
-        } else {
-            return imports.getClassByShortName(fieldType);
-        }
+        return imports.getClassByShortName(fieldType);
     }
 
     VariableList(ClassOrInterfaceDeclaration classDeclaration, ImportList imports) {
+        this.imports = imports;
         for (BodyDeclaration bd : classDeclaration.getMembers()) {
             if (bd instanceof FieldDeclaration) {
                 FieldDeclaration fd = (FieldDeclaration) bd;
@@ -37,7 +33,6 @@ class VariableList {
                 }
             }
         }
-        this.imports = imports;
     }
 
     List<String> getNames() {

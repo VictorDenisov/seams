@@ -17,7 +17,7 @@ public class VariableListTest {
         ClassOrInterfaceDeclaration classDeclaration = 
             ParseHelper.createClassDeclaration("class Main { int v; }");
 
-        ImportList imports = null;
+        ImportList imports = ParseHelper.createImportList("");
 
         VariableList fieldList = new VariableList(classDeclaration, imports);
 
@@ -29,7 +29,7 @@ public class VariableListTest {
         ClassOrInterfaceDeclaration classDeclaration = 
             ParseHelper.createClassDeclaration("class Main { int v; }");
 
-        ImportList imports = null;
+        ImportList imports = ParseHelper.createImportList("");
 
         VariableList fieldList = new VariableList(classDeclaration, imports);
 
@@ -41,7 +41,7 @@ public class VariableListTest {
         ClassOrInterfaceDeclaration classDeclaration = 
             ParseHelper.createClassDeclaration("class Main { String str; }");
 
-        ImportList imports = null;
+        ImportList imports = ParseHelper.createImportList("");
 
         VariableList fieldList = new VariableList(classDeclaration, imports);
 
@@ -53,7 +53,7 @@ public class VariableListTest {
         ClassOrInterfaceDeclaration classDeclaration = 
             ParseHelper.createClassDeclaration("class Main { String str; }");
 
-        ImportList imports = null;
+        ImportList imports = ParseHelper.createImportList("");
 
         VariableList fieldList = new VariableList(classDeclaration, imports);
 
