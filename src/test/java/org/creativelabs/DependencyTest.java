@@ -1,6 +1,7 @@
 package org.creativelabs; 
 
 import org.testng.annotations.Test;
+import org.creativelabs.introspection.*;
 
 import static org.testng.AssertJUnit.*;
 
@@ -8,10 +9,10 @@ public class DependencyTest {
 
     @Test
     public void testConstructor() throws Exception {
-        Dependency dependency = new Dependency("value", "type");
+        Dependency dependency = new Dependency("value", new ClassTypeStub("type"));
 
         assertEquals("value", dependency.getExpression());
-        assertEquals("type", dependency.getType());
+        assertEquals("type", dependency.getType().toStringRepresentation());
 
     }
 }

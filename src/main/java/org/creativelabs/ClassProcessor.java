@@ -29,7 +29,7 @@ class ClassProcessor {
         Set<String> classDependencies = new HashSet<String>();
         for (Set<Dependency> dependencySet : dependencies.values()){
             for (Dependency dependency : dependencySet){
-                classDependencies.add(dependency.getType());
+                classDependencies.add(dependency.getType().toStringRepresentation());
             }
         }
         chart.addDependenciesCountForClass(typeDeclaration.getName(), classDependencies.size());

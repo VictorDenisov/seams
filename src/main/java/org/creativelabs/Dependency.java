@@ -1,12 +1,14 @@
 package org.creativelabs;
 
+import org.creativelabs.introspection.*;
+
 public class Dependency {
 
     private String expression;
 
-    private String type;
+    private ClassType type;
 
-    Dependency(String expression, String type) {
+    Dependency(String expression, ClassType type) {
         this.expression = expression;
         this.type = type;
     }
@@ -15,7 +17,7 @@ public class Dependency {
         return expression;
     }
 
-    public String getType() {
+    public ClassType getType() {
         return type;
     }
 }

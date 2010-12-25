@@ -53,13 +53,13 @@ class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
 
     @Override
     public void visit(NameExpr n, Object o) {
-        String dependencyUponType = null;
+        ClassType dependencyUponType = null;
         if (localVariables.hasName(n.getName())) {
-            dependencyUponType = localVariables.getFieldTypeAsClass(n.getName()).toStringRepresentation();
+            dependencyUponType = localVariables.getFieldTypeAsClass(n.getName());
         } else if (classFields.hasName(n.getName())) {
-            dependencyUponType = classFields.getFieldTypeAsClass(n.getName()).toStringRepresentation();
+            dependencyUponType = classFields.getFieldTypeAsClass(n.getName());
         } else if (Character.isUpperCase(n.getName().charAt(0))) {
-            dependencyUponType = imports.getClassByShortName(n.getName()).toStringRepresentation();
+            dependencyUponType = imports.getClassByShortName(n.getName());
         }
         dependencies.add(new Dependency(n.getName(), dependencyUponType));
     }
@@ -81,7 +81,7 @@ class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
     public void visit(MethodCallExpr n, Object o) {
         String type = runTypeFinder(n);
 
-        dependencies.add(new Dependency(n.toString(), type));
+        dependencies.add(new Dependency(n.toString(), new ClassTypeStub(type)));
         super.visit(n, o);
     }
 
@@ -89,7 +89,7 @@ class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
     public void visit(FieldAccessExpr n, Object o) {
         String type = runTypeFinder(n);
 
-        dependencies.add(new Dependency(n.toString(), type));
+        dependencies.add(new Dependency(n.toString(), new ClassTypeStub(type)));
         super.visit(n, o);
     }
 
