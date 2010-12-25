@@ -14,13 +14,6 @@ class TypeFinder {
     static class UnsupportedExpressionException extends RuntimeException {
     }
 
-    String getReturnType(String className, String methodName, Class[] types) throws Exception {
-        Class cl = Class.forName(className);
-        Method method = cl.getMethod(methodName, types);
-        Class myCl = method.getReturnType();
-        return myCl.getName();
-    }
-
     String getFieldType(String className, String fieldName) throws Exception {
         Class cl = Class.forName(className);
         Field field = cl.getField(fieldName);
