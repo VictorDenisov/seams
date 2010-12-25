@@ -150,27 +150,27 @@ class TypeFinder {
         return determineType(new NameExpr(expr.getType().toString()));
     }
 
-        private String determineType(BinaryExpr expr) throws Exception {
+    private String determineType(BinaryExpr expr) throws Exception {
         String leftOperatorType = determineType(expr.getLeft());
         String rightOperatorType = determineType(expr.getRight());
         BinaryExpr.Operator operator = expr.getOperator();
 
-        if (BinaryExpr.Operator.plus.equals(operator)){
+        if (BinaryExpr.Operator.plus.equals(operator)) {
             return getReturnTypeIfBothArgumentsHaveAnyType(leftOperatorType, rightOperatorType, reflectionAbstraction);
         }
-        if (BinaryExpr.Operator.divide.equals(operator)){
+        if (BinaryExpr.Operator.divide.equals(operator)) {
             return getReturnTypeIfBothArgumentsHaveAnyType(leftOperatorType, rightOperatorType, reflectionAbstraction);
         }
         if (BinaryExpr.Operator.minus.equals(operator)
                 || BinaryExpr.Operator.times.equals(operator)
-                || BinaryExpr.Operator.remainder.equals(operator)){
+                || BinaryExpr.Operator.remainder.equals(operator)) {
             return getReturnTypeIfBothArgumentsHaveAnyType(leftOperatorType, rightOperatorType, reflectionAbstraction);
         }
-            throw new UnsupportedExpressionException();
+        throw new UnsupportedExpressionException();
     }
 
-    private boolean oneOfArgumentsHaveType(String type, String firstArgType, String secondArgType){
-        if (firstArgType.equals(type) || secondArgType.equals(type)){
+    private boolean oneOfArgumentsHaveType(String type, String firstArgType, String secondArgType) {
+        if (firstArgType.equals(type) || secondArgType.equals(type)) {
             return true;
         }
         return false;
@@ -178,58 +178,55 @@ class TypeFinder {
 
     private String getReturnTypeIfBothArgumentsIsDigit(String firstArgType,
                                                        String secondArgType,
-                                                       ReflectionAbstraction reflectionAbstraction) throws Exception{
+                                                       ReflectionAbstraction reflectionAbstraction) throws Exception {
         if (oneOfArgumentsHaveType("double", firstArgType, secondArgType)
-                || oneOfArgumentsHaveType("java.lang.Double", firstArgType, secondArgType)){
+                || oneOfArgumentsHaveType("java.lang.Double", firstArgType, secondArgType)) {
                 return reflectionAbstraction.getClassType("double");
             }
             if (oneOfArgumentsHaveType("float", firstArgType, secondArgType)
-                    || oneOfArgumentsHaveType("java.lang.Float", firstArgType, secondArgType)){
+                    || oneOfArgumentsHaveType("java.lang.Float", firstArgType, secondArgType)) {
                 return reflectionAbstraction.getClassType("float");
             }
             if (oneOfArgumentsHaveType("long", firstArgType, secondArgType)
-                    || oneOfArgumentsHaveType("java.lang.Long", firstArgType, secondArgType)){
+                    || oneOfArgumentsHaveType("java.lang.Long", firstArgType, secondArgType)) {
                 return reflectionAbstraction.getClassType("long");
             }
             if (oneOfArgumentsHaveType("int", firstArgType, secondArgType)
-                    || oneOfArgumentsHaveType("java.lang.Integer", firstArgType, secondArgType)){
+                    || oneOfArgumentsHaveType("java.lang.Integer", firstArgType, secondArgType)) {
                 return reflectionAbstraction.getClassType("int");
             }
             if (oneOfArgumentsHaveType("short", firstArgType, secondArgType)
-                    || oneOfArgumentsHaveType("java.lang.Short", firstArgType, secondArgType)){
+                    || oneOfArgumentsHaveType("java.lang.Short", firstArgType, secondArgType)) {
                 return reflectionAbstraction.getClassType("short");
             }
         return null;
     }
 
-    private String getReturnTypeIfBothArgumentsIsChar(String firstArgType,
-                                                       String secondArgType,
-                                                       ReflectionAbstraction reflectionAbstraction) throws Exception{
-        if (oneOfArgumentsHaveType("java.lang.String", firstArgType, secondArgType)){
-                return reflectionAbstraction.getClassType("java.lang.String");
-            }
-            if (oneOfArgumentsHaveType("char", firstArgType, secondArgType)
-                    || oneOfArgumentsHaveType("java.lang.Char", firstArgType, secondArgType)){
-                return reflectionAbstraction.getClassType("char");
-            }
+    private String getReturnTypeIfBothArgumentsIsChar(String firstArgType, String secondArgType,
+                                        ReflectionAbstraction reflectionAbstraction) throws Exception {
+        if (oneOfArgumentsHaveType("java.lang.String", firstArgType, secondArgType)) {
+            return reflectionAbstraction.getClassType("java.lang.String");
+        }
+        if (oneOfArgumentsHaveType("char", firstArgType, secondArgType)
+                || oneOfArgumentsHaveType("java.lang.Char", firstArgType, secondArgType)) {
+            return reflectionAbstraction.getClassType("char");
+        }
         return null;
     }
 
-    private String getReturnTypeIfBothArgumentsHaveAnyType(String firstArgType, String secondArgType, ReflectionAbstraction reflectionAbstraction) throws Exception {
+    private String getReturnTypeIfBothArgumentsHaveAnyType(String firstArgType, String secondArgType,
+            ReflectionAbstraction reflectionAbstraction) throws Exception {
         String type = getReturnTypeIfBothArgumentsIsChar(firstArgType, secondArgType, reflectionAbstraction);
-        if (type != null){
+        if (type != null) {
             return type;
-        } else{
+        } else {
             type = getReturnTypeIfBothArgumentsIsDigit(firstArgType, secondArgType, reflectionAbstraction);
-            if (type != null){
+            if (type != null) {
                 return type;
             }
         }
         throw new UnsupportedExpressionException();
     }
-
-
-
 
     //TODO delete this method
     public static Class getPrimitiveClass(String className) {
