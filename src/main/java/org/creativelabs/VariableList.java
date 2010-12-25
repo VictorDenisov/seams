@@ -18,7 +18,6 @@ class VariableList {
     }
 
     private ClassType getByClass(String fieldType) {
-        //TODO check if fieldName is not contain in fieldTypes
         return imports.getClassByShortName(fieldType);
     }
 
