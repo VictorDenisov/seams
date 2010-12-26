@@ -22,8 +22,7 @@ class ImportList {
             list.addAll(cu.getImports());
         }
     }
-
-    List<String> getImports() {
+List<String> getImports() {
         List<String> result = new ArrayList<String>();
         for (ImportDeclaration d : list) {
             result.add(d.getName().toString());
@@ -43,8 +42,18 @@ class ImportList {
                 || "void".equals(className);
     }
 
+    private String stripGeneric(String shortName) {
+        int v = shortName.indexOf("<");
+        if (v < 0) {
+            return shortName;
+        } else {
+            return shortName.substring(0, v);
+        }
+    }
+
     ClassType getClassByShortName(String shortName) {
         ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
+        shortName = stripGeneric(shortName);
         if (classIsPrimitive(shortName)) {
             return ra.getClassTypeByName(shortName);
         }

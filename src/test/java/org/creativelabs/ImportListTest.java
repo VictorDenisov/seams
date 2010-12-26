@@ -127,4 +127,10 @@ public class ImportListTest {
         ImportList imports = ParseHelper.createImportList("package java.util; import java.io.*;");
         assertEquals("java.io.File", imports.getClassByShortName("File").toStringRepresentation());
     }
+
+    @Test
+    public void testGetClassFromGeneric() throws Exception {
+        ImportList imports = ParseHelper.createImportList("package org.sample; import java.util.*;");
+        assertEquals("java.util.Map", imports.getClassByShortName("Map<String, String>").toStringRepresentation());
+    }
 }
