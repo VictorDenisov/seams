@@ -26,12 +26,6 @@ public class TypeFinderTest {
     }
 
     @Test
-    public void testGetFieldType() throws Exception {
-        String fieldType = new TypeFinder(null, null).getFieldType("java.lang.String", "CASE_INSENSITIVE_ORDER");
-        assertEquals("java.util.Comparator", fieldType);
-    }
-
-    @Test
     public void testDetermineTypeNameExprVariable() throws Exception {
         Expression expr = ParseHelper.createExpression("string");
 

@@ -64,15 +64,6 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
     }
 
     @Override
-    public String getReturnType(String className, String methodName, String[] types) throws Exception {
-        Class[] classTypes = getTypeClasses(types);
-        Class cl = Class.forName(className);
-        Method method = cl.getMethod(methodName, classTypes);
-        Class myCl = method.getReturnType();
-        return myCl.getName();
-    }
-
-    @Override
     public boolean classWithNameExists(String className) {
         try {
             Class.forName(className);

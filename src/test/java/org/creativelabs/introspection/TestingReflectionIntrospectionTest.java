@@ -15,7 +15,7 @@ public class TestingReflectionIntrospectionTest {
 
         reflectionAbstraction.addMethod("Sample", "methodCall", new String[]{"int"}, "org.creativelabs.A");
 
-        String type = reflectionAbstraction.getReturnType("Sample", "methodCall", new String[]{"int"});
+        String type = reflectionAbstraction.getReturnType(new ClassTypeStub("Sample"), "methodCall", new ClassTypeStub[]{new ClassTypeStub("int")}).toStringRepresentation();
 
         assertEquals("org.creativelabs.A", type);
     }

@@ -13,12 +13,6 @@ class TypeFinder {
     static class UnsupportedExpressionException extends RuntimeException {
     }
 
-    String getFieldType(String className, String fieldName) throws Exception {
-        Class cl = Class.forName(className);
-        Field field = cl.getField(fieldName);
-        return field.getType().getName();
-    }
-
     private ReflectionAbstraction reflectionAbstraction;
 
     private VariableList varType;

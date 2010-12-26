@@ -113,11 +113,6 @@ public class TestingReflectionAbstraction implements ReflectionAbstraction {
     }
 
     @Override
-    public String getReturnType(String className, String methodName, String[] types) throws Exception {
-        return methods.get(new MethodWrapper(className, methodName, types));
-    }
-
-    @Override
     public ClassType getReturnType(ClassType className, String methodName, ClassType[] types) throws Exception {
         String[] args = new String[types.length];
         for (int i = 0; i < types.length; ++i) {
