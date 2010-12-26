@@ -165,23 +165,23 @@ class TypeFinder {
         if (oneOfArgumentsHaveType("double", firstArgType, secondArgType)
                 || oneOfArgumentsHaveType("java.lang.Double", firstArgType, secondArgType)) {
                 return reflectionAbstraction.getClassTypeByName("double");
-            }
-            if (oneOfArgumentsHaveType("float", firstArgType, secondArgType)
-                    || oneOfArgumentsHaveType("java.lang.Float", firstArgType, secondArgType)) {
-                return reflectionAbstraction.getClassTypeByName("float");
-            }
-            if (oneOfArgumentsHaveType("long", firstArgType, secondArgType)
-                    || oneOfArgumentsHaveType("java.lang.Long", firstArgType, secondArgType)) {
-                return reflectionAbstraction.getClassTypeByName("long");
-            }
-            if (oneOfArgumentsHaveType("int", firstArgType, secondArgType)
-                    || oneOfArgumentsHaveType("java.lang.Integer", firstArgType, secondArgType)) {
-                return reflectionAbstraction.getClassTypeByName("int");
-            }
-            if (oneOfArgumentsHaveType("short", firstArgType, secondArgType)
-                    || oneOfArgumentsHaveType("java.lang.Short", firstArgType, secondArgType)) {
-                return reflectionAbstraction.getClassTypeByName("short");
-            }
+        }
+        if (oneOfArgumentsHaveType("float", firstArgType, secondArgType)
+                || oneOfArgumentsHaveType("java.lang.Float", firstArgType, secondArgType)) {
+            return reflectionAbstraction.getClassTypeByName("float");
+        }
+        if (oneOfArgumentsHaveType("long", firstArgType, secondArgType)
+                || oneOfArgumentsHaveType("java.lang.Long", firstArgType, secondArgType)) {
+            return reflectionAbstraction.getClassTypeByName("long");
+        }
+        if (oneOfArgumentsHaveType("int", firstArgType, secondArgType)
+                || oneOfArgumentsHaveType("java.lang.Integer", firstArgType, secondArgType)) {
+            return reflectionAbstraction.getClassTypeByName("int");
+        }
+        if (oneOfArgumentsHaveType("short", firstArgType, secondArgType)
+                || oneOfArgumentsHaveType("java.lang.Short", firstArgType, secondArgType)) {
+            return reflectionAbstraction.getClassTypeByName("short");
+        }
         return null;
     }
 
