@@ -6,7 +6,7 @@ import java.util.*;
 
 import static org.testng.AssertJUnit.*;
 
-public class ReflectionIntrospectionImplTest {
+public class ReflectionAbstractionImplTest {
 
     private ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
 
