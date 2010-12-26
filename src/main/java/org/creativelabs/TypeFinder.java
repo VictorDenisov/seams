@@ -6,8 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import japa.parser.ast.expr.*;
-import org.creativelabs.introspection.ReflectionAbstraction;
-import org.creativelabs.introspection.ReflectionAbstractionImpl;
+import org.creativelabs.introspection.*;
 
 class TypeFinder {
 
@@ -36,7 +35,7 @@ class TypeFinder {
         this(new ReflectionAbstractionImpl(), varType, imports);
     }
 
-    String determineType(Expression expr) throws Exception {
+    ClassType determineType(Expression expr) throws Exception {
         if (expr instanceof NameExpr) {
             return determineType((NameExpr) expr);
         } else if (expr instanceof MethodCallExpr) {
@@ -62,44 +61,43 @@ class TypeFinder {
         throw new UnsupportedExpressionException();
     }
 
-    private String determineType(NameExpr expr) throws Exception {
+    private ClassType determineType(NameExpr expr) throws Exception {
         String name = expr.getName();
         if (Character.isUpperCase(name.charAt(0))) {
-            return imports.getClassByShortName(name).toStringRepresentation();
+            return imports.getClassByShortName(name);
         } else {
             if (varType != null && varType.getFieldTypeAsClass(name) != null) {
-                return varType.getFieldTypeAsClass(name).toStringRepresentation();
+                return varType.getFieldTypeAsClass(name);
             }
         }
         throw new UnsupportedExpressionException();
     }
 
-    private String determineType(FieldAccessExpr expr) throws Exception {
+    private ClassType determineType(FieldAccessExpr expr) throws Exception {
         String fieldName = expr.getField();
         if (varType.hasName(fieldName)) {
-            return varType.getFieldTypeAsClass(fieldName).toStringRepresentation();
+            return varType.getFieldTypeAsClass(fieldName);
         } else {
-
-            String scopeClassName = determineType(expr.getScope());
-            return getFieldType(scopeClassName, expr.getField());
+            ClassType scopeClassName = determineType(expr.getScope());
+            return reflectionAbstraction.getFieldType(scopeClassName, expr.getField());
         }
     }
 
-    private String determineType(MethodCallExpr expr) throws Exception {
+    private ClassType determineType(MethodCallExpr expr) throws Exception {
 
         Expression scope = expr.getScope();
         if (scope == null) {
             scope = new ThisExpr();
         }
 
-        String scopeClassName = determineType(scope);
+        ClassType scopeClassName = determineType(scope);
 
         ArrayList<Expression> emptyExpressionsList = new ArrayList<Expression>();
         List<Expression> arguments = expr.getArgs() == null ? emptyExpressionsList : expr.getArgs();
 
         int countOfArguments = arguments.size();
 
-        String[] argType = new String[countOfArguments];
+        ClassType[] argType = new ClassType[countOfArguments];
 
         for (int i = 0; i < countOfArguments; i++) {
             argType[i] = determineType(arguments.get(i));
@@ -107,17 +105,17 @@ class TypeFinder {
         return reflectionAbstraction.getReturnType(scopeClassName, expr.getName(), argType);
     }
 
-    private String determineType(LiteralExpr expr) throws Exception {
+    private ClassType determineType(LiteralExpr expr) throws Exception {
         if (expr instanceof NullLiteralExpr) {
-            return "java.lang.Object";
+            return imports.getClassByShortName("Object");
         }
         String className = expr.getClass().getSimpleName();
         //All javaparser's literals have the special class names : Type + "LiteralExpr"
         String typeOfExpression = className.substring(0, className.indexOf("Literal"));
-        return reflectionAbstraction.getClassTypeByName("java.lang." + typeOfExpression).toStringRepresentation();
+        return reflectionAbstraction.getClassTypeByName("java.lang." + typeOfExpression);
     }
 
-    private String determineType(AssignExpr expr) throws Exception {
+    private ClassType determineType(AssignExpr expr) throws Exception {
         if (expr.getTarget() instanceof FieldAccessExpr) {
             return determineType((FieldAccessExpr) expr.getTarget());
         } else if (expr.getTarget() instanceof NameExpr) {
@@ -126,25 +124,25 @@ class TypeFinder {
         throw new UnsupportedExpressionException();
     }
 
-    private String determineType(ThisExpr expr) throws Exception {
-        return varType.getFieldTypeAsClass("this").toStringRepresentation();
+    private ClassType determineType(ThisExpr expr) throws Exception {
+        return varType.getFieldTypeAsClass("this");
     }
 
-    private String determineType(SuperExpr expr) throws Exception {
-        return varType.getFieldTypeAsClass("super").toStringRepresentation();
+    private ClassType determineType(SuperExpr expr) throws Exception {
+        return varType.getFieldTypeAsClass("super");
     }
 
-    private String determineType(ObjectCreationExpr expr) throws Exception {
-        return imports.getClassByShortName(expr.getType().getName()).toStringRepresentation();
+    private ClassType determineType(ObjectCreationExpr expr) throws Exception {
+        return imports.getClassByShortName(expr.getType().getName());
     }
 
-    private String determineType(CastExpr expr) throws Exception {
+    private ClassType determineType(CastExpr expr) throws Exception {
         return determineType(new NameExpr(expr.getType().toString()));
     }
 
-    private String determineType(BinaryExpr expr) throws Exception {
-        String leftOperatorType = determineType(expr.getLeft());
-        String rightOperatorType = determineType(expr.getRight());
+    private ClassType determineType(BinaryExpr expr) throws Exception {
+        ClassType leftOperatorType = determineType(expr.getLeft());
+        ClassType rightOperatorType = determineType(expr.getRight());
         BinaryExpr.Operator operator = expr.getOperator();
 
         if (BinaryExpr.Operator.plus.equals(operator)) {
@@ -161,51 +159,51 @@ class TypeFinder {
         throw new UnsupportedExpressionException();
     }
 
-    private boolean oneOfArgumentsHaveType(String type, String firstArgType, String secondArgType) {
-        if (firstArgType.equals(type) || secondArgType.equals(type)) {
+    private boolean oneOfArgumentsHaveType(String type, ClassType firstArgType, ClassType secondArgType) {
+        if (firstArgType.toStringRepresentation().equals(type) || secondArgType.toStringRepresentation().equals(type)) {
             return true;
         }
         return false;
     }
 
-    private String getReturnTypeIfBothArgumentsIsDigit(String firstArgType,
-                                                       String secondArgType) throws Exception {
+    private ClassType getReturnTypeIfBothArgumentsIsDigit(ClassType firstArgType,
+                                                       ClassType secondArgType) throws Exception {
         if (oneOfArgumentsHaveType("double", firstArgType, secondArgType)
                 || oneOfArgumentsHaveType("java.lang.Double", firstArgType, secondArgType)) {
-                return reflectionAbstraction.getClassTypeByName("double").toStringRepresentation();
+                return reflectionAbstraction.getClassTypeByName("double");
             }
             if (oneOfArgumentsHaveType("float", firstArgType, secondArgType)
                     || oneOfArgumentsHaveType("java.lang.Float", firstArgType, secondArgType)) {
-                return reflectionAbstraction.getClassTypeByName("float").toStringRepresentation();
+                return reflectionAbstraction.getClassTypeByName("float");
             }
             if (oneOfArgumentsHaveType("long", firstArgType, secondArgType)
                     || oneOfArgumentsHaveType("java.lang.Long", firstArgType, secondArgType)) {
-                return reflectionAbstraction.getClassTypeByName("long").toStringRepresentation();
+                return reflectionAbstraction.getClassTypeByName("long");
             }
             if (oneOfArgumentsHaveType("int", firstArgType, secondArgType)
                     || oneOfArgumentsHaveType("java.lang.Integer", firstArgType, secondArgType)) {
-                return reflectionAbstraction.getClassTypeByName("int").toStringRepresentation();
+                return reflectionAbstraction.getClassTypeByName("int");
             }
             if (oneOfArgumentsHaveType("short", firstArgType, secondArgType)
                     || oneOfArgumentsHaveType("java.lang.Short", firstArgType, secondArgType)) {
-                return reflectionAbstraction.getClassTypeByName("short").toStringRepresentation();
+                return reflectionAbstraction.getClassTypeByName("short");
             }
         return null;
     }
 
-    private String getReturnTypeIfBothArgumentsIsChar(String firstArgType, String secondArgType) throws Exception {
+    private ClassType getReturnTypeIfBothArgumentsIsChar(ClassType firstArgType, ClassType secondArgType) throws Exception {
         if (oneOfArgumentsHaveType("java.lang.String", firstArgType, secondArgType)) {
-            return reflectionAbstraction.getClassTypeByName("java.lang.String").toStringRepresentation();
+            return reflectionAbstraction.getClassTypeByName("java.lang.String");
         }
         if (oneOfArgumentsHaveType("char", firstArgType, secondArgType)
                 || oneOfArgumentsHaveType("java.lang.Char", firstArgType, secondArgType)) {
-            return reflectionAbstraction.getClassTypeByName("char").toStringRepresentation();
+            return reflectionAbstraction.getClassTypeByName("char");
         }
         return null;
     }
 
-    private String getReturnTypeIfBothArgumentsHaveAnyType(String firstArgType, String secondArgType) throws Exception {
-        String type = getReturnTypeIfBothArgumentsIsChar(firstArgType, secondArgType);
+    private ClassType getReturnTypeIfBothArgumentsHaveAnyType(ClassType firstArgType, ClassType secondArgType) throws Exception {
+        ClassType type = getReturnTypeIfBothArgumentsIsChar(firstArgType, secondArgType);
         if (type != null) {
             return type;
         } else {
