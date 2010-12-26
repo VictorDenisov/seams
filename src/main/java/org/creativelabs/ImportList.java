@@ -51,9 +51,14 @@ List<String> getImports() {
         }
     }
 
+    private String processForNested(String shortName) {
+        return shortName.replace('.', '$');
+    }
+
     ClassType getClassByShortName(String shortName) {
         ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
         shortName = stripGeneric(shortName);
+        shortName = processForNested(shortName);
         if (classIsPrimitive(shortName)) {
             return ra.getClassTypeByName(shortName);
         }
