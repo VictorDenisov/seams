@@ -13,6 +13,11 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         public String toStringRepresentation() {
             return clazz.getName();
         }
+
+        @Override
+        public String toString() {
+            return toStringRepresentation();
+        }
     }
 
     private Class[] getTypeClasses(String[] types) throws Exception {
