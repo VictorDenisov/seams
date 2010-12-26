@@ -64,6 +64,12 @@ public class ReflectionAbstractionImplTest {
 		assertEquals("int", type.toStringRepresentation());
 	}
 
+    @Test
+    public void testGetClassTypeByNameInnerClass() throws Exception {
+        ClassType type = new ReflectionAbstractionImpl().getClassTypeByName("java.util.Map$Entry");
+        assertEquals("java.util.Map$Entry", type.toStringRepresentation());
+    }
+
 	@Test
 	public void testGetClassTypeByNameFromReferenceClass() throws Exception {
 		ClassType type = new ReflectionAbstractionImpl().getClassTypeByName("java.lang.Integer");
