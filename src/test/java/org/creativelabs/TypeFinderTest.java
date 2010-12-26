@@ -164,6 +164,15 @@ public class TypeFinderTest {
     }
 
     @Test
+    public void testDetermineTypeIntLiteral() throws Exception {
+        Expression expr = ParseHelper.createExpression("1");
+
+        ClassType type = new TypeFinder(null, null).determineType(expr);
+
+        assertEquals("int", type.toStringRepresentation());
+    }
+
+    @Test
     public void testDetermineTypeStringLiteral() throws Exception {
 
         MethodCallExpr expr = (MethodCallExpr) ParseHelper.createExpression("\"string\".compareTo(str)");
