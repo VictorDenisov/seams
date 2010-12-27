@@ -7,7 +7,7 @@ import japa.parser.ast.expr.*;
 import japa.parser.ast.stmt.ExpressionStmt;
 import japa.parser.ast.stmt.Statement;
 import org.creativelabs.introspection.*;
-import org.testng.annotations.Test;
+import org.testng.annotations.*;
 
 import java.io.File;
 
@@ -130,7 +130,19 @@ public class TypeFinderTest {
         assertEquals("UnsupportedExpressionException", result);
     }
 
-    private void testDetermineTypeOfMethodWithLiteralsAsArgument(String expression,
+    @DataProvider(name = "literals-provider")
+    public Object[][] createLiteralsAsArgumentList() {
+        return new Object[][] {
+            // Input data, Answer data
+            { "str.compareTo(\"string\")", "int" },
+            { "str.substring(1)", "java.lang.String" }, 
+            { "String.valueOf(true)", "java.lang.String" },
+            { "String.valueOf(1.5)", "java.lang.String" },
+        };
+    }
+
+    @Test(dataProvider = "literals-provider") 
+    public void testDetermineTypeOfMethodWithLiteralsAsArgument(String expression,
                                                                  String expectedValue) throws Exception {
         MethodCallExpr expr = (MethodCallExpr) ParseHelper.createExpression(expression);
         ImportList imports = ParseHelper.createImportList("");
@@ -141,26 +153,6 @@ public class TypeFinderTest {
         ClassType type = new TypeFinder(varTypes, imports).determineType(expr);
 
         assertEquals(expectedValue, type.toStringRepresentation());
-    }
-
-    @Test
-    public void testDetermineTypeOfMethodWithLiteralsAsArgumentString() throws Exception {
-        testDetermineTypeOfMethodWithLiteralsAsArgument("str.compareTo(\"string\")", "int");
-    }
-
-    @Test
-    public void testDetermineTypeOfMethodWithLiteralsAsArgumentInt() throws Exception {
-        testDetermineTypeOfMethodWithLiteralsAsArgument("str.substring(1)", "java.lang.String");
-    }
-
-    @Test
-    public void testDetermineTypeOfMethodWithLiteralsAsArgumentBoolean() throws Exception {
-        testDetermineTypeOfMethodWithLiteralsAsArgument("String.valueOf(true)", "java.lang.String");
-    }
-
-    @Test
-    public void testDetermineTypeOfMethodWithLiteralsAsArgumentDouble() throws Exception {
-        testDetermineTypeOfMethodWithLiteralsAsArgument("String.valueOf(1.5)", "java.lang.String");
     }
 
     @Test
