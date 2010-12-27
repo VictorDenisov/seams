@@ -1,6 +1,6 @@
 package org.creativelabs.introspection;
 
-import org.testng.annotations.Test;
+import org.testng.annotations.*;
 
 import java.util.*;
 
@@ -24,8 +24,7 @@ public class ReflectionAbstractionImplTest {
         types[0] = ra.getClassTypeByName("java.lang.String");
         String returnType = ra.getReturnType(ra.getClassTypeByName("java.lang.String"), "split", types).toStringRepresentation();
         assertEquals("[Ljava.lang.String;", returnType);
-    }
-
+    } 
     @Test
     public void testGetReturnTypeComment() throws Exception {
         String returnType = ra.getReturnType(ra.getClassTypeByName("japa.parser.ast.Comment"),
@@ -52,28 +51,30 @@ public class ReflectionAbstractionImplTest {
         assertFalse(new ReflectionAbstractionImpl().classWithNameExists("far.far.away.UnExisting"));
     }
 
-	@Test
-	public void testGetClassTypeByName() throws Exception {
-		ClassType type = new ReflectionAbstractionImpl().getClassTypeByName("java.lang.String");
-		assertEquals("java.lang.String", type.toStringRepresentation());
-	}
-
-	@Test
-	public void testGetClassTypeByNamePrimitive() throws Exception {
-		ClassType type = new ReflectionAbstractionImpl().getClassTypeByName("int");
-		assertEquals("int", type.toStringRepresentation());
-	}
-
-    @Test
-    public void testGetClassTypeByNameInnerClass() throws Exception {
-        ClassType type = new ReflectionAbstractionImpl().getClassTypeByName("java.util.Map$Entry");
-        assertEquals("java.util.Map$Entry", type.toStringRepresentation());
+    @DataProvider(name = "type-provider")
+    public Object[][] createTypeList() {
+        // Input data, Answer data
+        return new Object[][] {
+            { "java.lang.String", "java.lang.String" },
+            { "int", "int" },
+            { "short", "short" },
+            { "byte", "byte" },
+            { "long", "long" },
+            { "float", "float" },
+            { "double", "double" },
+            { "char", "char" },
+            { "boolean", "boolean" },
+            { "void", "void" },
+            { "java.util.Map$Entry", "java.util.Map$Entry" },
+            { "java.lang.Integer", "int" },
+        };
     }
 
-	@Test
-	public void testGetClassTypeByNameFromReferenceClass() throws Exception {
-		ClassType type = new ReflectionAbstractionImpl().getClassTypeByName("java.lang.Integer");
-		assertEquals("int", type.toStringRepresentation());
+	@Test(dataProvider = "type-provider")
+	public void testGetClassTypeByName(String input, String answer) throws Exception {
+		ClassType type = new ReflectionAbstractionImpl().getClassTypeByName(input);
+
+		assertEquals(answer, type.toStringRepresentation());
 	}
 
     @Test
