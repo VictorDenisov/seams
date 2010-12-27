@@ -17,11 +17,12 @@ import static org.mockito.Mockito.*;
 public class ClassProcessorTest {
 
     private static class DependencyCounterVisitorToStringLogger extends DependencyCounterVisitor {
+        private StringBuffer logString;
 
-        private StringBuffer logString = new StringBuffer();
-
-        DependencyCounterVisitorToStringLogger(VariableList classFields, ImportList imports) {
+        DependencyCounterVisitorToStringLogger(StringBuffer logString, 
+                VariableList classFields, ImportList imports) {
             super(classFields, imports);
+            this.logString = logString;
         }
 
         @Override
@@ -31,16 +32,41 @@ public class ClassProcessorTest {
 
     }
 
+    private static class DependencyCounterVisitorToStringLoggerBuilder 
+            extends DependencyCounterVisitorBuilder {
+        private StringBuffer logString;
+        @Override
+        public DependencyCounterVisitor build() {
+            super.build();
+            return new DependencyCounterVisitorToStringLogger(logString,
+                    null, null);
+        }
+    }
+    
+    private DependencyCounterVisitorBuilder 
+        createEmptyDependencyCounterBuilder(StringBuffer logString) throws Exception {
+
+        DependencyCounterVisitorToStringLoggerBuilder dependencyVisitorBuilder 
+            = new DependencyCounterVisitorToStringLoggerBuilder();
+        dependencyVisitorBuilder.logString = logString;
+        dependencyVisitorBuilder
+            .setImports(ParseHelper.createImportList(""))
+            .setClassFields(new VariableList());
+
+        return dependencyVisitorBuilder;
+    }
+
     @Test
     public void testCompute() throws Exception {
         ClassOrInterfaceDeclaration classDecl = ParseHelper.createClassDeclaration("class Test { void method() {}}");
-        StringBuffer answer = new StringBuffer();
-        DependencyCounterVisitorToStringLogger dependencyVisitor = new DependencyCounterVisitorToStringLogger(null, null);
+        StringBuffer logBuffer = new StringBuffer();
+
+        DependencyCounterVisitorBuilder builder = createEmptyDependencyCounterBuilder(logBuffer);
         
-        ClassProcessor classProcessor = new ClassProcessor(classDecl, dependencyVisitor);
+        ClassProcessor classProcessor = new ClassProcessor(classDecl, builder);
         classProcessor.compute();
 
-        assertEquals("visit BlockStmt; ", dependencyVisitor.logString.toString());
+        assertEquals("visit BlockStmt; ", logBuffer.toString());
     }
 
 }

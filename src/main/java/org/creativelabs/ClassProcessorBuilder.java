@@ -13,7 +13,7 @@ public class ClassProcessorBuilder {
 
     protected VariableList fieldList;
 
-    protected DependencyCounterVisitor dependencyCounter;
+    protected DependencyCounterVisitorBuilder dependencyCounterBuilder;
 
     public ClassProcessorBuilder setImports(ImportList importsVal) {
         this.imports = importsVal;
@@ -29,8 +29,11 @@ public class ClassProcessorBuilder {
         return this;
     }
 
-    DependencyCounterVisitor constructDependencyCounterVisitor() {
-        return new DependencyCounterVisitor(fieldList, imports);
+    DependencyCounterVisitorBuilder constructDependencyCounterVisitor() {
+        DependencyCounterVisitorBuilder builder = new DependencyCounterVisitorBuilder();
+        return builder
+            .setClassFields(fieldList)
+            .setImports(imports);
     }
 
     VariableList constructVariableList() {
@@ -58,7 +61,7 @@ public class ClassProcessorBuilder {
 
         fieldList.put("super", classValue);
 
-        dependencyCounter = constructDependencyCounterVisitor();
-        return new ClassProcessor(typeDeclaration, dependencyCounter);
+        dependencyCounterBuilder = constructDependencyCounterVisitor();
+        return new ClassProcessor(typeDeclaration, dependencyCounterBuilder);
     }
 }

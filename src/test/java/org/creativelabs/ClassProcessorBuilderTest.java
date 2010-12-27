@@ -16,7 +16,7 @@ public class ClassProcessorBuilderTest {
         String superValue = null;
 
         @Override
-        DependencyCounterVisitor constructDependencyCounterVisitor() {
+        DependencyCounterVisitorBuilder constructDependencyCounterVisitor() {
 
             if (fieldList.hasName("this")) {
                 thisValue = fieldList.getFieldTypeAsClass("this").toStringRepresentation();

@@ -21,6 +21,9 @@ class VariableList {
         return imports.getClassByShortName(fieldType);
     }
 
+    VariableList(MethodDeclaration methodDeclaration, ImportList imports) {
+    }
+
     VariableList(ClassOrInterfaceDeclaration classDeclaration, ImportList imports) {
         this.imports = imports;
         for (BodyDeclaration bd : classDeclaration.getMembers()) {

@@ -10,15 +10,15 @@ class ClassProcessor {
 
     private Map<String, Set<Dependency>> dependencies = new HashMap<String, Set<Dependency>>();
 
-    private DependencyCounterVisitor dependencyCounter;
+    private DependencyCounterVisitorBuilder dependencyCounterBuilder;
 
     private HashMap<String, InternalInstancesGraph> internalInstances
         = new HashMap<String, InternalInstancesGraph>();
 
     ClassProcessor(ClassOrInterfaceDeclaration typeDeclaration,
-            DependencyCounterVisitor dependencyCounter) {
+            DependencyCounterVisitorBuilder dependencyCounterBuilder) {
         this.typeDeclaration = typeDeclaration;
-        this.dependencyCounter = dependencyCounter;
+        this.dependencyCounterBuilder = dependencyCounterBuilder;
     }
 
     public DependenciesChart getDependenciesChart(){
@@ -55,13 +55,15 @@ class ClassProcessor {
 
     void findOutgoingDependencies(MethodDeclaration md) {
         BlockStmt body = md.getBody();
-        dependencyCounter.cleanUp();
-        dependencyCounter.visit(body, null);
-        if (dependencyCounter.getDependencies() != null) {
-            dependencies.put(md.getName(), dependencyCounter.getDependencies());
+        dependencyCounterBuilder.setMethodArguments(new VariableList());
+        DependencyCounterVisitor dependencyCounterVisitor = dependencyCounterBuilder.build();
+        dependencyCounterVisitor.visit(body, null);
+
+        if (dependencyCounterVisitor.getDependencies() != null) {
+            dependencies.put(md.getName(), dependencyCounterVisitor.getDependencies());
         }
-        if (dependencyCounter.getInternalInstances() != null) {
-            internalInstances.put(md.getName(), dependencyCounter.getInternalInstances());
+        if (dependencyCounterVisitor.getInternalInstances() != null) {
+            internalInstances.put(md.getName(), dependencyCounterVisitor.getInternalInstances());
         }
     }
 
