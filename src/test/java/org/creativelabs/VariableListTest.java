@@ -113,4 +113,15 @@ public class VariableListTest {
         assertEquals("java.lang.String", varList.getFieldTypeAsClass("arg").toStringRepresentation());
     }
 
+    @Test(groups="variable-list.method-construction", dependsOnGroups="parse-helper.create-method")
+    public void testConstructionFromMethodEmptyArgList() throws Exception {
+        MethodDeclaration md = ParseHelper.createMethodDeclaration("void method() {}");
+
+        ImportList imports = ParseHelper.createImportList("");
+
+        VariableList varList = new VariableList(md, imports);
+
+        assertEquals(0, varList.getNames().size());
+    }
+
 }

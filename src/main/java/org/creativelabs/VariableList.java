@@ -23,6 +23,9 @@ class VariableList {
 
     VariableList(MethodDeclaration methodDeclaration, ImportList imports) {
         this.imports = imports;
+        if (methodDeclaration.getParameters() == null) {
+            return;
+        }
         for (Parameter parameter : methodDeclaration.getParameters()) {
             String type = parameter.getType().toString();
             String name = parameter.getId().getName();
