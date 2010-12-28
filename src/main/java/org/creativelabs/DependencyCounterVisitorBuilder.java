@@ -1,12 +1,16 @@
 package org.creativelabs;
 
+import japa.parser.ast.body.*;
+import japa.parser.ast.stmt.*;
+import japa.parser.ast.expr.*;
+
 public class DependencyCounterVisitorBuilder {
 
-    private ImportList imports;
+    protected ImportList imports;
 
-    private VariableList classFields;
+    protected VariableList classFields;
 
-    private VariableList methodArguments;
+    protected VariableList methodArguments;
 
     public DependencyCounterVisitorBuilder setImports(ImportList importsArg) {
         this.imports = importsArg;
@@ -20,6 +24,14 @@ public class DependencyCounterVisitorBuilder {
 
     public DependencyCounterVisitorBuilder setMethodArguments(VariableList methodArgsArg) {
         this.methodArguments = methodArgsArg;
+        return this;
+    }
+
+    public DependencyCounterVisitorBuilder setConstructedMethodArguments(MethodDeclaration md) {
+        //if (imports == null) {
+            //throw new IllegalStateException("Imports should be not null for this operation");
+        //}
+        this.methodArguments = new VariableList(md, imports);
         return this;
     }
 

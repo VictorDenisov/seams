@@ -2,6 +2,10 @@ package org.creativelabs;
 
 import org.testng.annotations.Test;
 
+import japa.parser.ast.body.*;
+import japa.parser.ast.stmt.*;
+import japa.parser.ast.expr.*;
+
 import static org.testng.AssertJUnit.*;
 
 public class DependencyCounterVisitorBuilderTest {
@@ -78,6 +82,23 @@ public class DependencyCounterVisitorBuilderTest {
             hasException = e.getMessage();
         }
         assertEquals("Method arguments can't be null", hasException);
+    }
+
+    @Test(dependsOnGroups="parse-helper.create-method")
+    public void testBuilderConstructMethodList() throws Exception {
+        MethodDeclaration md = ParseHelper.createMethodDeclaration("void method(String arg) {}");
+        DependencyCounterVisitorBuilder builder = new DependencyCounterVisitorBuilder();
+
+        ImportList imports = ParseHelper.createImportList("");
+        VariableList classFields = new VariableList();
+
+        builder.setImports(imports);
+        builder.setClassFields(classFields);
+        builder.setConstructedMethodArguments(md);
+
+        DependencyCounterVisitor dependencyVisitor = builder.build();
+
+        assertNotNull(dependencyVisitor);
     }
 
 }

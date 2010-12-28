@@ -22,6 +22,12 @@ class VariableList {
     }
 
     VariableList(MethodDeclaration methodDeclaration, ImportList imports) {
+        this.imports = imports;
+        for (Parameter parameter : methodDeclaration.getParameters()) {
+            String type = parameter.getType().toString();
+            String name = parameter.getId().getName();
+            fieldTypes.put(name, getByClass(type));
+        }
     }
 
     VariableList(ClassOrInterfaceDeclaration classDeclaration, ImportList imports) {

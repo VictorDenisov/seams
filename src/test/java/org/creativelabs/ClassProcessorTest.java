@@ -16,6 +16,8 @@ import static org.mockito.Mockito.*;
 
 public class ClassProcessorTest {
 
+    private static VariableList methodArgumentsList;
+
     private static class DependencyCounterVisitorToStringLogger extends DependencyCounterVisitor {
         private StringBuffer logString;
 
@@ -38,11 +40,13 @@ public class ClassProcessorTest {
         @Override
         public DependencyCounterVisitor build() {
             super.build();
+            methodArgumentsList = methodArguments;
+            logString.append("build; ");
             return new DependencyCounterVisitorToStringLogger(logString,
                     null, null);
         }
     }
-    
+
     private DependencyCounterVisitorBuilder 
         createEmptyDependencyCounterBuilder(StringBuffer logString) throws Exception {
 
@@ -56,17 +60,22 @@ public class ClassProcessorTest {
         return dependencyVisitorBuilder;
     }
 
-    @Test
+    @Test(dependsOnGroups="variable-list.method-construction")
     public void testCompute() throws Exception {
-        ClassOrInterfaceDeclaration classDecl = ParseHelper.createClassDeclaration("class Test { void method() {}}");
+        ClassOrInterfaceDeclaration classDecl = ParseHelper.createClassDeclaration("class Test { void method(String arg) {}}");
         StringBuffer logBuffer = new StringBuffer();
+        methodArgumentsList = null;
 
         DependencyCounterVisitorBuilder builder = createEmptyDependencyCounterBuilder(logBuffer);
         
         ClassProcessor classProcessor = new ClassProcessor(classDecl, builder);
         classProcessor.compute();
 
-        assertEquals("visit BlockStmt; ", logBuffer.toString());
+        assertEquals("build; visit BlockStmt; ", logBuffer.toString());
+
+        assertEquals(1, methodArgumentsList.getNames().size());
+        assertEquals("arg", methodArgumentsList.getNames().get(0));
+
     }
 
 }

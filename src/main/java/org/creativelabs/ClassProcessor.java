@@ -55,7 +55,7 @@ class ClassProcessor {
 
     void findOutgoingDependencies(MethodDeclaration md) {
         BlockStmt body = md.getBody();
-        dependencyCounterBuilder.setMethodArguments(new VariableList());
+        dependencyCounterBuilder.setConstructedMethodArguments(md);
         DependencyCounterVisitor dependencyCounterVisitor = dependencyCounterBuilder.build();
         dependencyCounterVisitor.visit(body, null);
 

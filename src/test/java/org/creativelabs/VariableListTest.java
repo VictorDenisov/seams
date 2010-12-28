@@ -1,7 +1,6 @@
 package org.creativelabs;
 import japa.parser.ast.expr.*;
-import japa.parser.ast.body.*;
-
+import japa.parser.ast.body.*; 
 import org.testng.annotations.Test;
 import org.creativelabs.introspection.*;
 
@@ -100,6 +99,18 @@ public class VariableListTest {
 
         String clazz = varList.getFieldTypeAsClass("name").toStringRepresentation();
         assertEquals("int", clazz);
+    }
+
+    @Test(groups="variable-list.method-construction", dependsOnGroups="parse-helper.create-method")
+    public void testConstructionFromMethod() throws Exception {
+        MethodDeclaration md = ParseHelper.createMethodDeclaration("void method(String arg) {}");
+
+        ImportList imports = ParseHelper.createImportList("");
+
+        VariableList varList = new VariableList(md, imports);
+
+        assertEquals(1, varList.getNames().size());
+        assertEquals("java.lang.String", varList.getFieldTypeAsClass("arg").toStringRepresentation());
     }
 
 }

@@ -18,14 +18,14 @@ import static org.creativelabs.AssertHelper.*;
 
 public class ParseHelperTest {
 
-    @Test
+    @Test(groups="parse-helper")
     public void testCreateExpression() throws Exception {
         Expression expr = ParseHelper.createExpression("main.methodCall()");
 
         assertEquals("class japa.parser.ast.expr.MethodCallExpr", expr.getClass().toString());
     }
 
-    @Test
+    @Test(groups="parse-helper")
     public void testCreateCompilationUnit() throws Exception {
         CompilationUnit cu = ParseHelper.createCompilationUnit("package org.sample;"
                 + "import org.apache.log4j.Logger;"
@@ -35,18 +35,25 @@ public class ParseHelperTest {
         assertEquals("org.apache.log4j.Logger", cu.getImports().get(0).getName().toString());
     }
 
-    @Test
+    @Test(groups="parse-helper")
     public void testCreateImportList() throws Exception {
         ImportList imports = ParseHelper.createImportList("import org.apache.log4j.Logger;");
         assertEqualsList(Arrays.asList(new String[]{"java.lang", "org.apache.log4j.Logger"}), 
                 imports.getImports());
     }
 
-    @Test
+    @Test(groups="parse-helper")
     public void testCreateClassDeclaration() throws Exception {
         ClassOrInterfaceDeclaration classDeclaration = 
             ParseHelper.createClassDeclaration("class Main { int v; }");
         assertEquals("Main", classDeclaration.getName());
+    }
+
+    @Test(groups="parse-helper.create-method")
+    public void testCreateMethodDeclaration() throws Exception {
+        MethodDeclaration md = ParseHelper.createMethodDeclaration("void method(String arg) {}");
+
+        assertEquals("method", md.getName());
     }
 
 }

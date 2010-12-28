@@ -36,8 +36,7 @@ public final class ParseHelper {
 
     public static CompilationUnit createCompilationUnit(String data) throws ParseException {
         InputStream sr = new ByteArrayInputStream(data.getBytes());
-
-        CompilationUnit cu = JavaParser.parse(sr);
+CompilationUnit cu = JavaParser.parse(sr);
 
         return cu;
     }
@@ -52,6 +51,11 @@ public final class ParseHelper {
     public static ClassOrInterfaceDeclaration createClassDeclaration(String data) throws Exception {
         CompilationUnit cu = ParseHelper.createCompilationUnit(data);
         return (ClassOrInterfaceDeclaration) cu.getTypes().get(0);
+    }
+
+    public static MethodDeclaration createMethodDeclaration(String data) throws Exception {
+        ClassOrInterfaceDeclaration cd = ParseHelper.createClassDeclaration("class Main { " + data + "}");
+        return (MethodDeclaration)cd.getMembers().get(0);
     }
 
     public static BlockStmt createBlockStmt(String data) throws ParseException {
