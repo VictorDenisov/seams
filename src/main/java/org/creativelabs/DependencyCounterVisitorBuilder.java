@@ -28,9 +28,9 @@ public class DependencyCounterVisitorBuilder {
     }
 
     public DependencyCounterVisitorBuilder setConstructedMethodArguments(MethodDeclaration md) {
-        //if (imports == null) {
-            //throw new IllegalStateException("Imports should be not null for this operation");
-        //}
+        if (imports == null) {
+            throw new IllegalStateException("Imports should be not null for this operation");
+        }
         this.methodArguments = new VariableList(md, imports);
         return this;
     }

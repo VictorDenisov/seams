@@ -101,4 +101,23 @@ public class DependencyCounterVisitorBuilderTest {
         assertNotNull(dependencyVisitor);
     }
 
+    @Test(dependsOnGroups="parse-helper.create-method")
+    public void testBuilderConstructMethodListNullImports() throws Exception {
+        MethodDeclaration md = ParseHelper.createMethodDeclaration("void method(String arg) {}");
+        DependencyCounterVisitorBuilder builder = new DependencyCounterVisitorBuilder();
+
+        VariableList classFields = new VariableList();
+
+        builder.setClassFields(classFields);
+
+        String result = null;
+        try {
+            builder.setConstructedMethodArguments(md);
+        } catch (IllegalStateException e) {
+            result = e.getMessage();
+        }
+
+        assertEquals("Imports should be not null for this operation", result);
+    }
+
 }
