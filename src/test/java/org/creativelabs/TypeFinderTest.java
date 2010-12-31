@@ -117,16 +117,12 @@ public class TypeFinderTest {
         assertEquals("org.apache.log4j.lf5.LogLevel", type.toStringRepresentation());
     }
 
-    @Test
+    @Test(enabled=false)
     public void testDetermineTypeThrowsUnsupportedExpression() throws Exception {
         Expression expr = ParseHelper.createExpression("x = y");
 
         String result = "noException";
-        try {
             ClassType type = new TypeFinder(null, null).determineType(expr);
-        } catch (TypeFinder.UnsupportedExpressionException e) {
-            result = "UnsupportedExpressionException";
-        }
         assertEquals("UnsupportedExpressionException", result);
     }
 
@@ -326,14 +322,8 @@ public class TypeFinderTest {
         VariableList varTypes = createEmptyVariableList();
         varTypes.put("str", new ClassTypeStub(String.class.getName()));
 
-        String result = "noException";
         ClassType type = null;
-        try {
-            type = new TypeFinder(varTypes, imports).determineType(expr);
-        } catch (java.lang.NoSuchMethodException e) {
-            result = "java.lang.NoSuchMethodException";
-        }
-        assertEquals("noException", result);
+        type = new TypeFinder(varTypes, imports).determineType(expr);
         assertEquals(expectedValue, type.toStringRepresentation());
     }
 

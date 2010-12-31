@@ -6,6 +6,8 @@ import japa.parser.ast.CompilationUnit;
 import java.util.List;
 import java.util.Arrays;
 
+import org.creativelabs.introspection.*;
+
 import static org.testng.AssertJUnit.*;
 import static org.creativelabs.AssertHelper.*;
 
@@ -90,12 +92,8 @@ public class ImportListTest {
     public void testEmptyImportList() throws Exception {
         ImportList imports = ParseHelper.createImportList("");
         String message = "noException";
-        try {
-            imports.getClassByShortName("ArrayList");
-        } catch (RuntimeException e) {
-            message = "RuntimeException";
-        }
-        assertEquals("RuntimeException", message);
+        ClassType result = imports.getClassByShortName("ArrayList");
+        assertEquals("Unknown class: ArrayList", result + "");
     }
 
     @Test

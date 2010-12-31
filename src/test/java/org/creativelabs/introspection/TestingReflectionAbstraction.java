@@ -113,7 +113,7 @@ public class TestingReflectionAbstraction implements ReflectionAbstraction {
     }
 
     @Override
-    public ClassType getReturnType(ClassType className, String methodName, ClassType[] types) throws Exception {
+    public ClassType getReturnType(ClassType className, String methodName, ClassType[] types) {
         String[] args = new String[types.length];
         for (int i = 0; i < types.length; ++i) {
             args[i] = types[i].toStringRepresentation();
@@ -122,17 +122,22 @@ public class TestingReflectionAbstraction implements ReflectionAbstraction {
     }
 
     @Override
-    public ClassType getFieldType(ClassType className, String fieldName) throws Exception {
+    public ClassType getFieldType(ClassType className, String fieldName) {
         return null;
     }
 
     @Override
-    public ClassType getClassTypeByName(String className) throws Exception {
+    public ClassType getClassTypeByName(String className) {
         return new ClassTypeStub(classes.get(className));
     }
 
     @Override
     public boolean classWithNameExists(String className) {
         return false;
+    }
+
+    @Override
+    public ClassType createErrorClassType(String message) {
+        return new ClassTypeStub(message);
     }
 }

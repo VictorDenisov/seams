@@ -51,7 +51,11 @@ class VariableList {
     }
 
     ClassType getFieldTypeAsClass(String fieldName) {
-        return fieldTypes.get(fieldName);
+        ClassType result = fieldTypes.get(fieldName);
+        if (result == null) {
+            result = new ReflectionAbstractionImpl().createErrorClassType(fieldName + " doesn't exist");
+        }
+        return result;
     }
 
     boolean hasName(String fieldName) {

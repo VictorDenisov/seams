@@ -76,6 +76,6 @@ List<String> getImports() {
                 }
             }
         }
-        throw new RuntimeException("import list can't be empty");
+        return ra.createErrorClassType("Unknown class: " + shortName);
     }
 }

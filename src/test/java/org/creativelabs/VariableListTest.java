@@ -101,6 +101,16 @@ public class VariableListTest {
         assertEquals("int", clazz);
     }
 
+    @Test
+    public void testIfNameIsAbsentReturnNotNull() throws Exception {
+        VariableList varList = new VariableList();
+
+        ClassType value = varList.getFieldTypeAsClass("name");
+
+        assertNotNull(value);
+        assertEquals("name doesn't exist", value.toStringRepresentation());
+    }
+
     @Test(groups="variable-list.method-construction", dependsOnGroups="parse-helper.create-method")
     public void testConstructionFromMethod() throws Exception {
         MethodDeclaration md = ParseHelper.createMethodDeclaration("void method(String arg) {}");

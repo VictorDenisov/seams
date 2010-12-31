@@ -29,7 +29,7 @@ class TypeFinder {
         this(new ReflectionAbstractionImpl(), varType, imports);
     }
 
-    ClassType determineType(Expression expr) throws Exception {
+    ClassType determineType(Expression expr) {
         if (expr instanceof NameExpr) {
             return determineType((NameExpr) expr);
         } else if (expr instanceof MethodCallExpr) {
@@ -52,22 +52,22 @@ class TypeFinder {
             return determineType((BinaryExpr) expr);
         }
 
-        throw new UnsupportedExpressionException();
+        return reflectionAbstraction.createErrorClassType("unsupported expression");
     }
 
-    private ClassType determineType(NameExpr expr) throws Exception {
+    private ClassType determineType(NameExpr expr) {
         String name = expr.getName();
         if (Character.isUpperCase(name.charAt(0))) {
             return imports.getClassByShortName(name);
         } else {
-            if (varType != null && varType.getFieldTypeAsClass(name) != null) {
-                return varType.getFieldTypeAsClass(name);
-            }
+            assert varType != null;
+            assert varType.getFieldTypeAsClass(name) != null;
+
+            return varType.getFieldTypeAsClass(name);
         }
-        throw new UnsupportedExpressionException();
     }
 
-    private ClassType determineType(FieldAccessExpr expr) throws Exception {
+    private ClassType determineType(FieldAccessExpr expr) {
         String fieldName = expr.getField();
         if (varType.hasName(fieldName)) {
             return varType.getFieldTypeAsClass(fieldName);
@@ -77,7 +77,7 @@ class TypeFinder {
         }
     }
 
-    private ClassType determineType(MethodCallExpr expr) throws Exception {
+    private ClassType determineType(MethodCallExpr expr) {
 
         Expression scope = expr.getScope();
         if (scope == null) {
@@ -99,7 +99,7 @@ class TypeFinder {
         return reflectionAbstraction.getReturnType(scopeClassName, expr.getName(), argType);
     }
 
-    private ClassType determineType(LiteralExpr expr) throws Exception {
+    private ClassType determineType(LiteralExpr expr) {
         if (expr instanceof NullLiteralExpr) {
             return imports.getClassByShortName("Object");
         }
@@ -109,7 +109,7 @@ class TypeFinder {
         return reflectionAbstraction.getClassTypeByName("java.lang." + typeOfExpression);
     }
 
-    private ClassType determineType(AssignExpr expr) throws Exception {
+    private ClassType determineType(AssignExpr expr) {
         if (expr.getTarget() instanceof FieldAccessExpr) {
             return determineType((FieldAccessExpr) expr.getTarget());
         } else if (expr.getTarget() instanceof NameExpr) {
@@ -118,37 +118,53 @@ class TypeFinder {
         throw new UnsupportedExpressionException();
     }
 
-    private ClassType determineType(ThisExpr expr) throws Exception {
+    private ClassType determineType(ThisExpr expr) {
         return varType.getFieldTypeAsClass("this");
     }
 
-    private ClassType determineType(SuperExpr expr) throws Exception {
+    private ClassType determineType(SuperExpr expr) {
         return varType.getFieldTypeAsClass("super");
     }
 
-    private ClassType determineType(ObjectCreationExpr expr) throws Exception {
+    private ClassType determineType(ObjectCreationExpr expr) {
         return imports.getClassByShortName(expr.getType().getName());
     }
 
-    private ClassType determineType(CastExpr expr) throws Exception {
+    private ClassType determineType(CastExpr expr) {
         return determineType(new NameExpr(expr.getType().toString()));
     }
 
-    private ClassType determineType(BinaryExpr expr) throws Exception {
+    private ClassType determineType(BinaryExpr expr) {
         ClassType leftOperatorType = determineType(expr.getLeft());
         ClassType rightOperatorType = determineType(expr.getRight());
         BinaryExpr.Operator operator = expr.getOperator();
 
         if (BinaryExpr.Operator.plus.equals(operator)) {
-            return getReturnTypeIfBothArgumentsHaveAnyType(leftOperatorType, rightOperatorType);
+            ClassType ress = getReturnTypeIfBothArgumentsHaveAnyType(leftOperatorType, rightOperatorType);
+            if (ress == null) {
+                return reflectionAbstraction.createErrorClassType("null");
+            } else {
+                return ress;
+            }
         }
         if (BinaryExpr.Operator.divide.equals(operator)) {
-            return getReturnTypeIfBothArgumentsHaveAnyType(leftOperatorType, rightOperatorType);
+            ClassType ress = getReturnTypeIfBothArgumentsHaveAnyType(leftOperatorType, rightOperatorType);
+            if (ress == null) {
+                return reflectionAbstraction.createErrorClassType("null");
+            } else {
+                return ress;
+            }
         }
         if (BinaryExpr.Operator.minus.equals(operator)
                 || BinaryExpr.Operator.times.equals(operator)
                 || BinaryExpr.Operator.remainder.equals(operator)) {
-            return getReturnTypeIfBothArgumentsHaveAnyType(leftOperatorType, rightOperatorType);
+            ClassType ress = getReturnTypeIfBothArgumentsHaveAnyType(leftOperatorType, rightOperatorType);
+
+            if (ress == null) {
+                return reflectionAbstraction.createErrorClassType("null");
+            } else {
+                return ress;
+            }
         }
         throw new UnsupportedExpressionException();
     }
@@ -161,7 +177,7 @@ class TypeFinder {
     }
 
     private ClassType getReturnTypeIfBothArgumentsIsDigit(ClassType firstArgType,
-                                                       ClassType secondArgType) throws Exception {
+                                                       ClassType secondArgType) {
         if (oneOfArgumentsHaveType("double", firstArgType, secondArgType)
                 || oneOfArgumentsHaveType("java.lang.Double", firstArgType, secondArgType)) {
                 return reflectionAbstraction.getClassTypeByName("double");
@@ -185,7 +201,7 @@ class TypeFinder {
         return null;
     }
 
-    private ClassType getReturnTypeIfBothArgumentsIsChar(ClassType firstArgType, ClassType secondArgType) throws Exception {
+    private ClassType getReturnTypeIfBothArgumentsIsChar(ClassType firstArgType, ClassType secondArgType) {
         if (oneOfArgumentsHaveType("java.lang.String", firstArgType, secondArgType)) {
             return reflectionAbstraction.getClassTypeByName("java.lang.String");
         }
@@ -196,7 +212,7 @@ class TypeFinder {
         return null;
     }
 
-    private ClassType getReturnTypeIfBothArgumentsHaveAnyType(ClassType firstArgType, ClassType secondArgType) throws Exception {
+    private ClassType getReturnTypeIfBothArgumentsHaveAnyType(ClassType firstArgType, ClassType secondArgType) {
         ClassType type = getReturnTypeIfBothArgumentsIsChar(firstArgType, secondArgType);
         if (type != null) {
             return type;
@@ -206,6 +222,6 @@ class TypeFinder {
                 return type;
             }
         }
-        throw new UnsupportedExpressionException();
+        return reflectionAbstraction.createErrorClassType("getReturnTypeIfBothArgumentsHaveAnyType null");
     }
 }

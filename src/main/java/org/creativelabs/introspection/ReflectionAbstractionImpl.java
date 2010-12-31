@@ -20,15 +20,21 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         }
     }
 
-    private Class[] getTypeClasses(String[] types) throws Exception {
-        Class[] result = new Class[types.length];
-        for (int i = 0; i < types.length; ++i) {
-            result[i] = getClass(types[i]);
+    private static class ClassTypeError implements ClassType {
+        private String message;
+
+        @Override
+        public String toStringRepresentation() {
+            return message;
         }
-        return result;
+
+        @Override
+        public String toString() {
+            return toStringRepresentation();
+        }
     }
 
-    private Class getClass(String type) throws Exception {
+    private Class getClass(String type) throws ClassNotFoundException {
         if ("byte".equals(type)
                 || "java.lang.Byte".equals(type)) {
             return byte.class;
@@ -78,7 +84,7 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         }
     }
 
-    private Class[] getTypeClasses(ClassType[] types) throws Exception {
+    private Class[] getTypeClasses(ClassType[] types) {
         Class[] result = new Class[types.length];
         for (int i = 0; i < types.length; ++i) {
             result[i] = ((ClassTypeImpl) types[i]).clazz;
@@ -87,25 +93,33 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
     }
 
     @Override
-    public ClassType getReturnType(ClassType className, String methodName, ClassType[] types) throws Exception {
-        Class[] classTypes = getTypeClasses(types);
-        Class cl = ((ClassTypeImpl) className).clazz;
-        Method method = cl.getMethod(methodName, classTypes);
-        Class myCl = method.getReturnType();
+    public ClassType getReturnType(ClassType className, String methodName, ClassType[] types) {
+        try {
+            Class[] classTypes = getTypeClasses(types);
+            Class cl = ((ClassTypeImpl) className).clazz;
+            Method method = cl.getMethod(methodName, classTypes);
+            Class myCl = method.getReturnType();
 
-        ClassTypeImpl result = new ClassTypeImpl();
-        result.clazz = myCl;
-        return result;
+            ClassTypeImpl result = new ClassTypeImpl();
+            result.clazz = myCl;
+            return result;
+        } catch (Exception e) {
+            return createErrorClassType(e.getMessage());
+        }
     }
 
     @Override
-    public ClassType getFieldType(ClassType className, String fieldName) throws Exception {
-        Class cl = ((ClassTypeImpl) className).clazz;
-        Field field = cl.getField(fieldName);
+    public ClassType getFieldType(ClassType className, String fieldName) {
+        try {
+            Class cl = ((ClassTypeImpl) className).clazz;
+            Field field = cl.getField(fieldName);
 
-        ClassTypeImpl result = new ClassTypeImpl();
-        result.clazz = field.getType();
-        return result;
+            ClassTypeImpl result = new ClassTypeImpl();
+            result.clazz = field.getType();
+            return result;
+        } catch (Exception e) {
+            return createErrorClassType(e.getMessage());
+        }
     }
 
     @Override
@@ -114,8 +128,15 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
             ClassTypeImpl c = new ClassTypeImpl();
             c.clazz = getClass(className);
             return c;
-        } catch (Exception e) {
-            throw new RuntimeException("Class " + className + " doesn't exist in classpath.");
+        } catch (ClassNotFoundException e) {
+            return createErrorClassType(e.getMessage());
         }
+    }
+
+    @Override
+    public ClassType createErrorClassType(String message) {
+        ClassTypeError err = new ClassTypeError();
+        err.message = message;
+        return err;
     }
 }
