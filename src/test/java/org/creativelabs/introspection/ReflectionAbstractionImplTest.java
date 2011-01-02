@@ -49,6 +49,15 @@ public class ReflectionAbstractionImplTest {
     }
 
     @Test
+    public void testGetReturnTypeError() throws Exception {
+        ClassType[] types = new ClassType[1];
+        types[0] = ra.getClassTypeByName("java.lang.String");
+        ClassType returnType = ra.getReturnType(ra.getClassTypeByName("japa.parser.ast.Comment"),
+                "absentMethod", types);
+        assertEquals("ClassTypeError", returnType.getClass().getSimpleName());
+    }
+
+    @Test
     public void testClassWithNameExists() throws Exception {
         assertTrue(ra.classWithNameExists("java.lang.String"));
     }
@@ -85,6 +94,13 @@ public class ReflectionAbstractionImplTest {
 	}
 
     @Test
+    public void testGetClassTypeByNameError() {
+        ClassType type = ra.getClassTypeByName("NoSuchClass");
+
+        assertEquals("ClassTypeError", type.getClass().getSimpleName());
+    }
+
+    @Test
     public void testGetReturnTypeClassType() throws Exception {
         ClassType[] types = new ClassType[1];
         types[0] = ra.getClassTypeByName("java.lang.String");
@@ -100,6 +116,14 @@ public class ReflectionAbstractionImplTest {
         ClassType fieldType = new ReflectionAbstractionImpl().getFieldType(myClass, "CASE_INSENSITIVE_ORDER");
 
         assertEquals("java.util.Comparator", fieldType.toString());
+    }
+
+    @Test
+    public void testGetFieldTypeError() throws Exception {
+		ClassType myClass = ra.getClassTypeByName("java.lang.String");
+        ClassType fieldType = new ReflectionAbstractionImpl().getFieldType(myClass, "NO_SUCH_FIELD");
+
+        assertEquals("ClassTypeError", fieldType.getClass().getSimpleName());
     }
 
     @Test
