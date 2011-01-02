@@ -12,4 +12,9 @@ public class ClassTypeStub implements ClassType {
         return className;
     }
 
+    @Override
+    public String toString() {
+        return toStringRepresentation();
+    }
+
 }

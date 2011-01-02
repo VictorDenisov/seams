@@ -99,6 +99,8 @@ public class DependencyCounterVisitorBuilderTest {
         DependencyCounterVisitor dependencyVisitor = builder.build();
 
         assertNotNull(dependencyVisitor);
+        assertEquals("java.lang.String", 
+                dependencyVisitor.classFields.getFieldTypeAsClass("arg").toStringRepresentation());
     }
 
     @Test(dependsOnGroups="parse-helper.create-method")

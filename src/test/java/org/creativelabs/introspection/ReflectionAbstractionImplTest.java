@@ -8,7 +8,12 @@ import static org.testng.AssertJUnit.*;
 
 public class ReflectionAbstractionImplTest {
 
-    private ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
+    private ReflectionAbstractionImpl ra;
+
+    @BeforeMethod
+    public void setUp() {
+        ra = new ReflectionAbstractionImpl();
+    }
 
     @Test
     public void testGetReturnType() throws Exception {
@@ -43,12 +48,12 @@ public class ReflectionAbstractionImplTest {
 
     @Test
     public void testClassWithNameExists() throws Exception {
-        assertTrue(new ReflectionAbstractionImpl().classWithNameExists("java.lang.String"));
+        assertTrue(ra.classWithNameExists("java.lang.String"));
     }
 
     @Test
     public void testClassWithNameExistsAbsent() throws Exception {
-        assertFalse(new ReflectionAbstractionImpl().classWithNameExists("far.far.away.UnExisting"));
+        assertFalse(ra.classWithNameExists("far.far.away.UnExisting"));
     }
 
     @DataProvider(name = "type-provider")
@@ -72,14 +77,13 @@ public class ReflectionAbstractionImplTest {
 
 	@Test(dataProvider = "type-provider")
 	public void testGetClassTypeByName(String input, String answer) throws Exception {
-		ClassType type = new ReflectionAbstractionImpl().getClassTypeByName(input);
+		ClassType type = ra.getClassTypeByName(input);
 
 		assertEquals(answer, type.toStringRepresentation());
 	}
 
     @Test
     public void testGetReturnTypeClassType() throws Exception {
-		ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
         ClassType[] types = new ClassType[1];
         types[0] = ra.getClassTypeByName("java.lang.String");
 		ClassType myClass = ra.getClassTypeByName("java.lang.String");
@@ -90,11 +94,20 @@ public class ReflectionAbstractionImplTest {
 
     @Test
     public void testGetFieldTypeClassType() throws Exception {
-		ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
-
 		ClassType myClass = ra.getClassTypeByName("java.lang.String");
         ClassType fieldType = new ReflectionAbstractionImpl().getFieldType(myClass, "CASE_INSENSITIVE_ORDER");
 
         assertEquals("java.util.Comparator", fieldType.toStringRepresentation());
+    }
+
+    @Test
+    public void testGetReturnTypeStringEquals() {
+        ClassType className = ra.getClassTypeByName("java.lang.String");
+        ClassType[] args = new ClassType[1];
+        args[0] = ra.getClassTypeByName("java.lang.Object");
+
+        ClassType result = ra.getReturnType(className, "equals", args);
+        System.out.println(result.getClass());
+        assertEquals("boolean", result.toStringRepresentation());
     }
 }

@@ -104,7 +104,7 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
             result.clazz = myCl;
             return result;
         } catch (Exception e) {
-            return createErrorClassType(e.getMessage());
+            return createErrorClassType(e.toString());
         }
     }
 
@@ -118,7 +118,7 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
             result.clazz = field.getType();
             return result;
         } catch (Exception e) {
-            return createErrorClassType(e.getMessage());
+            return createErrorClassType(e.toString());
         }
     }
 
@@ -129,7 +129,7 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
             c.clazz = getClass(className);
             return c;
         } catch (ClassNotFoundException e) {
-            return createErrorClassType(e.getMessage());
+            return createErrorClassType(e.toString());
         }
     }
 

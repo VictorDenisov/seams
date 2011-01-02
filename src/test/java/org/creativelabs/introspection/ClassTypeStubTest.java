@@ -9,6 +9,14 @@ public class ClassTypeStubTest {
     @Test
     public void testConstruction() {
         ClassTypeStub classType = new ClassTypeStub("org.creativelabs");
+
         assertEquals("org.creativelabs", classType.toStringRepresentation());
+    }
+
+    @Test
+    public void testToString() {
+        ClassTypeStub classType = new ClassTypeStub("ClassStub");
+
+        assertEquals("ClassStub", classType + "");
     }
 }

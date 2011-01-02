@@ -466,4 +466,22 @@ public class TypeFinderTest {
 
         assertEquals("java.io.File", type.toStringRepresentation());
     }
+
+    @Test(enabled=false)
+    public void testImportDeclarationGetNameGetNameEquals() throws Exception {
+        StringLogReflectionAbstraction reflectionAbstraction 
+            = StringLogReflectionAbstraction
+            .createDecoratingStringLogReflectionAbstraction(new ReflectionAbstractionImpl());
+        Expression expr = ParseHelper.createExpression("id.getName().getName().equals(\"h\")");
+        VariableList varList = new VariableList();
+        varList.put("id", 
+                reflectionAbstraction.getClassTypeByName("japa.parser.ast.ImportDeclaration"));
+        ImportList imports = ParseHelper.createImportList("");
+        TypeFinder typeFinder = new TypeFinder(reflectionAbstraction, varList, imports);
+
+        ClassType type = typeFinder.determineType(expr);
+        
+        System.out.println(reflectionAbstraction.getLog());
+        assertEquals("java.lang.String", type.toStringRepresentation());
+    }
 }

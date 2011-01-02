@@ -10,7 +10,7 @@ import org.creativelabs.introspection.*;
 import java.util.*;
 
 class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
-    private VariableList classFields;
+    protected VariableList classFields;
 
     private ImportList imports;
 
