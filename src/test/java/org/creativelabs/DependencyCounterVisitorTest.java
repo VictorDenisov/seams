@@ -29,7 +29,7 @@ public class DependencyCounterVisitorTest {
 
         Set<Dependency> deps = dc.getDependencies();
         assertEquals("name", deps.iterator().next().getExpression());
-        assertEquals("java.lang.String", deps.iterator().next().getType().toStringRepresentation());
+        assertEquals("java.lang.String", deps.iterator().next().getType().toString());
     }
 
     @Test
@@ -42,7 +42,7 @@ public class DependencyCounterVisitorTest {
         dc.visit(expr, null);
 
         Set<Dependency> deps = dc.getDependencies();
-        assertEquals("java.lang.String", deps.iterator().next().getType().toStringRepresentation());
+        assertEquals("java.lang.String", deps.iterator().next().getType().toString());
     }
 
     @Test

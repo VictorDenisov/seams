@@ -157,7 +157,7 @@ class TypeFinder {
     }
 
     private boolean oneOfArgumentsHaveType(String type, ClassType firstArgType, ClassType secondArgType) {
-        if (firstArgType.toStringRepresentation().equals(type) || secondArgType.toStringRepresentation().equals(type)) {
+        if (firstArgType.toString().equals(type) || secondArgType.toString().equals(type)) {
             return true;
         }
         return false;

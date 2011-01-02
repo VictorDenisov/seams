@@ -2,6 +2,6 @@ package org.creativelabs.introspection;
 
 public interface ClassType {
 
-    String toStringRepresentation();
+    String toString();
 
 }

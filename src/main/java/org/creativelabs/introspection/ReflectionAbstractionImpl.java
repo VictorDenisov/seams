@@ -10,13 +10,8 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         private Class clazz;
 
         @Override
-        public String toStringRepresentation() {
-            return clazz.getName();
-        }
-
-        @Override
         public String toString() {
-            return toStringRepresentation();
+            return clazz.getName();
         }
     }
 
@@ -24,13 +19,8 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         private String message;
 
         @Override
-        public String toStringRepresentation() {
-            return message;
-        }
-
-        @Override
         public String toString() {
-            return toStringRepresentation();
+            return message;
         }
     }
 

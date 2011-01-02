@@ -116,9 +116,9 @@ public class TestingReflectionAbstraction implements ReflectionAbstraction {
     public ClassType getReturnType(ClassType className, String methodName, ClassType[] types) {
         String[] args = new String[types.length];
         for (int i = 0; i < types.length; ++i) {
-            args[i] = types[i].toStringRepresentation();
+            args[i] = types[i].toString();
         }
-        return new ClassTypeStub(methods.get(new MethodWrapper(className.toStringRepresentation(), methodName, args)));
+        return new ClassTypeStub(methods.get(new MethodWrapper(className.toString(), methodName, args)));
     }
 
     @Override

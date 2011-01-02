@@ -34,7 +34,7 @@ public class TypeFinderTest {
 
         ClassType type = new TypeFinder(varTypes, null).determineType(expr);
 
-        assertEquals("java.lang.String", type.toStringRepresentation());
+        assertEquals("java.lang.String", type.toString());
     }
 
     @Test
@@ -47,7 +47,7 @@ public class TypeFinderTest {
 
         ClassType type = new TypeFinder(varTypes, imports).determineType(expr);
 
-        assertEquals("java.lang.String", type.toStringRepresentation());
+        assertEquals("java.lang.String", type.toString());
     }
 
     @Test
@@ -61,7 +61,7 @@ public class TypeFinderTest {
 
         ClassType type = new TypeFinder(varTypes, imports).determineType(expr);
 
-        assertEquals("java.lang.String", type.toStringRepresentation());
+        assertEquals("java.lang.String", type.toString());
     }
 
     @Test
@@ -74,7 +74,7 @@ public class TypeFinderTest {
 
         ClassType type = new TypeFinder(varTypes, null).determineType(expr);
 
-        assertEquals("int", type.toStringRepresentation());
+        assertEquals("int", type.toString());
     }
 
     @Test
@@ -86,7 +86,7 @@ public class TypeFinderTest {
         varTypes.put("str", ra.getClassTypeByName(String.class.getName()));
 
         ClassType type = new TypeFinder(varTypes, null).determineType(expr);
-        assertEquals("java.util.Comparator", type.toStringRepresentation());
+        assertEquals("java.util.Comparator", type.toString());
     }
 
     @Test
@@ -100,7 +100,7 @@ public class TypeFinderTest {
 
         ClassType type = new TypeFinder(varTypes, imports).determineType(expr);
 
-        assertEquals("org.apache.log4j.Logger", type.toStringRepresentation());
+        assertEquals("org.apache.log4j.Logger", type.toString());
     }
 
     @Test
@@ -114,7 +114,7 @@ public class TypeFinderTest {
 
         ClassType type = new TypeFinder(varTypes, imports).determineType(expr);
 
-        assertEquals("org.apache.log4j.lf5.LogLevel", type.toStringRepresentation());
+        assertEquals("org.apache.log4j.lf5.LogLevel", type.toString());
     }
 
     @Test(enabled=false)
@@ -148,7 +148,7 @@ public class TypeFinderTest {
 
         ClassType type = new TypeFinder(varTypes, imports).determineType(expr);
 
-        assertEquals(expectedValue, type.toStringRepresentation());
+        assertEquals(expectedValue, type.toString());
     }
 
     @Test
@@ -157,7 +157,7 @@ public class TypeFinderTest {
 
         ClassType type = new TypeFinder(null, null).determineType(expr);
 
-        assertEquals("int", type.toStringRepresentation());
+        assertEquals("int", type.toString());
     }
 
     @Test
@@ -170,7 +170,7 @@ public class TypeFinderTest {
 
         ClassType type = new TypeFinder(varTypes, null).determineType(expr);
 
-        assertEquals("int", type.toStringRepresentation());
+        assertEquals("int", type.toString());
 
     }
 
@@ -184,7 +184,7 @@ public class TypeFinderTest {
 
         ClassType type = new TypeFinder(varTypes, null).determineType(expr);
 
-        assertEquals("java.lang.String", type.toStringRepresentation());
+        assertEquals("java.lang.String", type.toString());
 
     }
 
@@ -213,7 +213,7 @@ public class TypeFinderTest {
 
         ClassType type = new TypeFinder(reflectionAbstraction, varTypes, importList).determineType(expr);
 
-        assertEquals("org.creativelabs.A", type.toStringRepresentation());
+        assertEquals("org.creativelabs.A", type.toString());
     }
 
     @Test
@@ -240,7 +240,7 @@ public class TypeFinderTest {
 
         ClassType type = new TypeFinder(reflectionAbstraction, varTypes, importList).determineType(expr);
 
-        assertEquals("org.creativelabs.A", type.toStringRepresentation());
+        assertEquals("org.creativelabs.A", type.toString());
     }
 
     @Test
@@ -269,7 +269,7 @@ public class TypeFinderTest {
 
         ClassType type = new TypeFinder(reflectionAbstraction, varTypes, importList).determineType(expr);
 
-        assertEquals("int", type.toStringRepresentation());
+        assertEquals("int", type.toString());
     }
 
     @Test
@@ -292,7 +292,7 @@ public class TypeFinderTest {
 
         ClassType type = new TypeFinder(varTypes, importList).determineType(expr);
 
-        assertEquals("org.creativelabs.A", type.toStringRepresentation());
+        assertEquals("org.creativelabs.A", type.toString());
 
     }
 
@@ -310,7 +310,7 @@ public class TypeFinderTest {
 
         ClassType type = new TypeFinder(varTypes, imports).determineType(expr);
 
-        assertEquals("int", type.toStringRepresentation());
+        assertEquals("int", type.toString());
 
     }
 
@@ -324,7 +324,7 @@ public class TypeFinderTest {
 
         ClassType type = null;
         type = new TypeFinder(varTypes, imports).determineType(expr);
-        assertEquals(expectedValue, type.toStringRepresentation());
+        assertEquals(expectedValue, type.toString());
     }
 
     @Test
@@ -349,7 +349,7 @@ public class TypeFinderTest {
 
         ClassType type = new TypeFinder(varTypes, null).determineType(expr);
 
-        assertEquals("java.lang.String", type.toStringRepresentation());
+        assertEquals("java.lang.String", type.toString());
 
     }
 
@@ -362,7 +362,7 @@ public class TypeFinderTest {
 
         ClassType type = new TypeFinder(varTypes, null).determineType(expr);
 
-        assertEquals("org.creativelabs.A", type.toStringRepresentation());
+        assertEquals("org.creativelabs.A", type.toString());
     }
 
     @Test
@@ -374,7 +374,7 @@ public class TypeFinderTest {
 
         ClassType type = new TypeFinder(varTypes, null).determineType(expr);
 
-        assertEquals("org.creativelabs.A", type.toStringRepresentation());
+        assertEquals("org.creativelabs.A", type.toString());
     }
 
     @DataProvider(name = "binary-ops-list")
@@ -410,7 +410,7 @@ public class TypeFinderTest {
     public void testBinaryExpression(String expression, String expectedType, ImportList imports) throws Exception{
         BinaryExpr expr = (BinaryExpr) ((AssignExpr) ParseHelper.createExpression(expression)).getValue();
         ClassType type = new TypeFinder(null, imports).determineType(expr);
-        assertEquals(expectedType, type.toStringRepresentation());
+        assertEquals(expectedType, type.toString());
     }
 
     @Test
@@ -437,7 +437,7 @@ public class TypeFinderTest {
 
         ClassType type = new TypeFinder(reflectionAbstraction, varTypes, importList).determineType(expr);
 
-        assertEquals("java.lang.String", type.toStringRepresentation());
+        assertEquals("java.lang.String", type.toString());
     }
 
     @Test
@@ -464,7 +464,7 @@ public class TypeFinderTest {
 
         ClassType type = new TypeFinder(reflectionAbstraction, varTypes, importList).determineType(expr);
 
-        assertEquals("java.io.File", type.toStringRepresentation());
+        assertEquals("java.io.File", type.toString());
     }
 
     @Test(enabled=false)
@@ -481,6 +481,6 @@ public class TypeFinderTest {
 
         ClassType type = typeFinder.determineType(expr);
         
-        assertEquals("java.lang.String", type.toStringRepresentation());
+        assertEquals("java.lang.String", type.toString());
     }
 }

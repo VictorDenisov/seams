@@ -32,7 +32,7 @@ public class VariableListTest {
 
         VariableList fieldList = new VariableList(classDeclaration, imports);
 
-        assertEquals("int", fieldList.getFieldTypeAsClass("v").toStringRepresentation());
+        assertEquals("int", fieldList.getFieldTypeAsClass("v").toString());
     }
 
     @Test
@@ -44,7 +44,7 @@ public class VariableListTest {
 
         VariableList fieldList = new VariableList(classDeclaration, imports);
 
-        assertEquals("java.lang.String", fieldList.getFieldTypeAsClass("str").toStringRepresentation());
+        assertEquals("java.lang.String", fieldList.getFieldTypeAsClass("str").toString());
     }
 
     @Test
@@ -63,14 +63,14 @@ public class VariableListTest {
     public void testPut() throws Exception {
         VariableList varList = new VariableList();
         varList.put("name", new ClassTypeStub("String"));
-        assertEquals("String", varList.getFieldTypeAsClass("name").toStringRepresentation());
+        assertEquals("String", varList.getFieldTypeAsClass("name").toString());
     }
 
     @Test
     public void testPutClass() throws Exception {
         VariableList varList = new VariableList();
         varList.put("name", new ClassTypeStub(String.class.getName()));
-        assertEquals("java.lang.String", varList.getFieldTypeAsClass("name").toStringRepresentation());
+        assertEquals("java.lang.String", varList.getFieldTypeAsClass("name").toString());
     }
 
     @Test
@@ -81,7 +81,7 @@ public class VariableListTest {
 
         varList.addAll(fullList);
 
-        assertEquals("String", varList.getFieldTypeAsClass("name").toStringRepresentation());
+        assertEquals("String", varList.getFieldTypeAsClass("name").toString());
     }
 
     @Test
@@ -89,7 +89,7 @@ public class VariableListTest {
         VariableList varList = new VariableList();
         varList.put("name", new ClassTypeStub("java.lang.String"));
 
-        assertEquals("java.lang.String", varList.getFieldTypeAsClass("name").toStringRepresentation());
+        assertEquals("java.lang.String", varList.getFieldTypeAsClass("name").toString());
     }
 
     @Test
@@ -97,7 +97,7 @@ public class VariableListTest {
         VariableList varList = new VariableList();
         varList.put("name", new ClassTypeStub("int"));
 
-        String clazz = varList.getFieldTypeAsClass("name").toStringRepresentation();
+        String clazz = varList.getFieldTypeAsClass("name").toString();
         assertEquals("int", clazz);
     }
 
@@ -108,7 +108,7 @@ public class VariableListTest {
         ClassType value = varList.getFieldTypeAsClass("name");
 
         assertNotNull(value);
-        assertEquals("name doesn't exist", value.toStringRepresentation());
+        assertEquals("name doesn't exist", value.toString());
     }
 
     @Test(groups="variable-list.method-construction", dependsOnGroups="parse-helper.create-method")
@@ -120,7 +120,7 @@ public class VariableListTest {
         VariableList varList = new VariableList(md, imports);
 
         assertEquals(1, varList.getNames().size());
-        assertEquals("java.lang.String", varList.getFieldTypeAsClass("arg").toStringRepresentation());
+        assertEquals("java.lang.String", varList.getFieldTypeAsClass("arg").toString());
     }
 
     @Test(groups="variable-list.method-construction", dependsOnGroups="parse-helper.create-method")

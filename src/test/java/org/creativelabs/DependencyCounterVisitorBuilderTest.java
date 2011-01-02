@@ -100,7 +100,7 @@ public class DependencyCounterVisitorBuilderTest {
 
         assertNotNull(dependencyVisitor);
         assertEquals("java.lang.String", 
-                dependencyVisitor.classFields.getFieldTypeAsClass("arg").toStringRepresentation());
+                dependencyVisitor.classFields.getFieldTypeAsClass("arg").toString());
     }
 
     @Test(dependsOnGroups="parse-helper.create-method")

@@ -19,7 +19,8 @@ public class ReflectionAbstractionImplTest {
     public void testGetReturnType() throws Exception {
         ClassType[] types = new ClassType[1];
         types[0] = ra.getClassTypeByName("java.lang.String");
-        String returnType = ra.getReturnType(ra.getClassTypeByName("java.lang.String"), "matches", types).toStringRepresentation();
+        String returnType = ra.getReturnType(
+                ra.getClassTypeByName("java.lang.String"), "matches", types) + "";
         assertEquals("boolean", returnType);
     }
 
@@ -27,13 +28,14 @@ public class ReflectionAbstractionImplTest {
     public void testGetReturnTypeArray() throws Exception {
         ClassType[] types = new ClassType[1];
         types[0] = ra.getClassTypeByName("java.lang.String");
-        String returnType = ra.getReturnType(ra.getClassTypeByName("java.lang.String"), "split", types).toStringRepresentation();
+        String returnType = 
+            ra.getReturnType(ra.getClassTypeByName("java.lang.String"), "split", types) + "";
         assertEquals("[Ljava.lang.String;", returnType);
     } 
     @Test
     public void testGetReturnTypeComment() throws Exception {
         String returnType = ra.getReturnType(ra.getClassTypeByName("japa.parser.ast.Comment"),
-                "getContent", new ClassType[0]).toStringRepresentation(); 
+                "getContent", new ClassType[0]).toString(); 
         assertEquals("java.lang.String", returnType);
     }
 
@@ -42,7 +44,7 @@ public class ReflectionAbstractionImplTest {
         ClassType[] types = new ClassType[1];
         types[0] = ra.getClassTypeByName("java.lang.String");
         String returnType = ra.getReturnType(ra.getClassTypeByName("japa.parser.ast.Comment"),
-                "setContent", types).toStringRepresentation();
+                "setContent", types).toString();
         assertEquals("void", returnType);
     }
 
@@ -79,7 +81,7 @@ public class ReflectionAbstractionImplTest {
 	public void testGetClassTypeByName(String input, String answer) throws Exception {
 		ClassType type = ra.getClassTypeByName(input);
 
-		assertEquals(answer, type.toStringRepresentation());
+		assertEquals(answer, type.toString());
 	}
 
     @Test
@@ -89,7 +91,7 @@ public class ReflectionAbstractionImplTest {
 		ClassType myClass = ra.getClassTypeByName("java.lang.String");
         ClassType returnType = ra.getReturnType(myClass, "matches", types);
 
-        assertEquals("boolean", returnType.toStringRepresentation());
+        assertEquals("boolean", returnType.toString());
     }
 
     @Test
@@ -97,7 +99,7 @@ public class ReflectionAbstractionImplTest {
 		ClassType myClass = ra.getClassTypeByName("java.lang.String");
         ClassType fieldType = new ReflectionAbstractionImpl().getFieldType(myClass, "CASE_INSENSITIVE_ORDER");
 
-        assertEquals("java.util.Comparator", fieldType.toStringRepresentation());
+        assertEquals("java.util.Comparator", fieldType.toString());
     }
 
     @Test
@@ -107,7 +109,7 @@ public class ReflectionAbstractionImplTest {
         args[0] = ra.getClassTypeByName("java.lang.Object");
 
         ClassType result = ra.getReturnType(className, "equals", args);
-        assertEquals("boolean", result.toStringRepresentation());
+        assertEquals("boolean", result.toString());
     }
 
     @Test(enabled=false)
@@ -117,6 +119,6 @@ public class ReflectionAbstractionImplTest {
         args[0] = ra.getClassTypeByName("java.lang.String");
 
         ClassType result = ra.getReturnType(className, "equals", args);
-        assertEquals("boolean", result.toStringRepresentation());
+        assertEquals("boolean", result.toString());
     }
 }

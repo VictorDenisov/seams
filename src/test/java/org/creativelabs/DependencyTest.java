@@ -12,7 +12,7 @@ public class DependencyTest {
         Dependency dependency = new Dependency("value", new ClassTypeStub("type"));
 
         assertEquals("value", dependency.getExpression());
-        assertEquals("type", dependency.getType().toStringRepresentation());
+        assertEquals("type", dependency.getType().toString());
 
     }
 }

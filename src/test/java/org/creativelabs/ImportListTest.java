@@ -55,37 +55,37 @@ public class ImportListTest {
     @Test
     public void testGetClass() throws Exception {
         ImportList imports = ParseHelper.createImportList("import java.util.ArrayList;");
-        assertEquals("java.util.ArrayList", imports.getClassByShortName("ArrayList").toStringRepresentation());
+        assertEquals("java.util.ArrayList", imports.getClassByShortName("ArrayList").toString());
     }
 
     @Test
     public void testGetClassFromAsterisk() throws Exception {
         ImportList imports = ParseHelper.createImportList("import java.util.*;");
-        assertEquals("java.util.ArrayList", imports.getClassByShortName("ArrayList").toStringRepresentation());
+        assertEquals("java.util.ArrayList", imports.getClassByShortName("ArrayList").toString());
     }
 
     @Test
     public void testGetClassFromAsteriskTwoImports() throws Exception {
         ImportList imports = ParseHelper.createImportList("import java.io.*; import java.util.*;");
-        assertEquals("java.util.ArrayList", imports.getClassByShortName("ArrayList").toStringRepresentation());
+        assertEquals("java.util.ArrayList", imports.getClassByShortName("ArrayList").toString());
     }
 
     @Test
     public void testGetClassFromAsteriskFirstConcreteImport() throws Exception {
         ImportList imports = ParseHelper.createImportList("import java.io.File; import java.util.*;");
-        assertEquals("java.util.ArrayList", imports.getClassByShortName("ArrayList").toStringRepresentation());
+        assertEquals("java.util.ArrayList", imports.getClassByShortName("ArrayList").toString());
     }
 
     @Test
     public void testGetClassFromJavaLang() throws Exception {
         ImportList imports = ParseHelper.createImportList("");
-        assertEquals("java.lang.String", imports.getClassByShortName("String").toStringRepresentation());
+        assertEquals("java.lang.String", imports.getClassByShortName("String").toString());
     }
 
     @Test
     public void testGetClassFromPrimitiveInt() throws Exception {
         ImportList imports = ParseHelper.createImportList("");
-        assertEquals("int", imports.getClassByShortName("int").toStringRepresentation());
+        assertEquals("int", imports.getClassByShortName("int").toString());
     }
 
     @Test
@@ -99,42 +99,42 @@ public class ImportListTest {
     @Test
     public void testGetClassFromLocalPackage() throws Exception {
         ImportList imports = ParseHelper.createImportList("package java.util;");
-        assertEquals("java.util.ArrayList", imports.getClassByShortName("ArrayList").toStringRepresentation());
+        assertEquals("java.util.ArrayList", imports.getClassByShortName("ArrayList").toString());
     }
 
     @Test
     public void testGetClassFromLocalPackageAsterisk() throws Exception {
         ImportList imports = ParseHelper.createImportList("package java.util; import java.io.*;");
-        assertEquals("java.util.ArrayList", imports.getClassByShortName("ArrayList").toStringRepresentation());
+        assertEquals("java.util.ArrayList", imports.getClassByShortName("ArrayList").toString());
     }
 
     @Test
     public void testGetClassFromAsteriskLocalPackage() throws Exception {
         ImportList imports = ParseHelper.createImportList("package java.util; import java.io.*;");
-        assertEquals("java.io.File", imports.getClassByShortName("File").toStringRepresentation());
+        assertEquals("java.io.File", imports.getClassByShortName("File").toString());
     }
 
     @Test
     public void testGetClassFromLocalPackageConcreteImport() throws Exception {
         ImportList imports = ParseHelper.createImportList("package java.util; import java.io.File;");
-        assertEquals("java.util.ArrayList", imports.getClassByShortName("ArrayList").toStringRepresentation());
+        assertEquals("java.util.ArrayList", imports.getClassByShortName("ArrayList").toString());
     }
 
     @Test
     public void testGetClassFromConcreteImportLocalPackage() throws Exception {
         ImportList imports = ParseHelper.createImportList("package java.util; import java.io.*;");
-        assertEquals("java.io.File", imports.getClassByShortName("File").toStringRepresentation());
+        assertEquals("java.io.File", imports.getClassByShortName("File").toString());
     }
 
     @Test
     public void testGetClassFromGeneric() throws Exception {
         ImportList imports = ParseHelper.createImportList("package org.sample; import java.util.*;");
-        assertEquals("java.util.Map", imports.getClassByShortName("Map<String, String>").toStringRepresentation());
+        assertEquals("java.util.Map", imports.getClassByShortName("Map<String, String>").toString());
     }
 
     @Test
     public void testGetClassFromNested() throws Exception {
         ImportList imports = ParseHelper.createImportList("package org.sample; import java.util.*;");
-        assertEquals("java.util.Map$Entry", imports.getClassByShortName("Map.Entry<String, String>").toStringRepresentation());
+        assertEquals("java.util.Map$Entry", imports.getClassByShortName("Map.Entry<String, String>").toString());
     }
 }
