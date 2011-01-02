@@ -481,7 +481,6 @@ public class TypeFinderTest {
 
         ClassType type = typeFinder.determineType(expr);
         
-        System.out.println(reflectionAbstraction.getLog());
         assertEquals("java.lang.String", type.toStringRepresentation());
     }
 }

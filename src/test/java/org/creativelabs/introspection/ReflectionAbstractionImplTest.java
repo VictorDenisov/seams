@@ -107,7 +107,6 @@ public class ReflectionAbstractionImplTest {
         args[0] = ra.getClassTypeByName("java.lang.Object");
 
         ClassType result = ra.getReturnType(className, "equals", args);
-        System.out.println(result.getClass());
         assertEquals("boolean", result.toStringRepresentation());
     }
 
@@ -118,7 +117,6 @@ public class ReflectionAbstractionImplTest {
         args[0] = ra.getClassTypeByName("java.lang.String");
 
         ClassType result = ra.getReturnType(className, "equals", args);
-        System.out.println(result.getClass());
         assertEquals("boolean", result.toStringRepresentation());
     }
 }

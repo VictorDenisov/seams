@@ -25,12 +25,6 @@ class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
 
     private InternalInstancesGraph internalInstances = new InternalInstancesGraph();
 
-    public void cleanUp() {
-        dependencies = new HashSet<Dependency>();
-        internalInstances = new InternalInstancesGraph();
-        localVariables = new VariableList();
-    }
-
     Set<Dependency> getDependencies() {
         return Collections.unmodifiableSet(dependencies);
     }
