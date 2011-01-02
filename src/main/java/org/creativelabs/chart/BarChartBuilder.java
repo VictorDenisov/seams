@@ -5,7 +5,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
 
-public class BarChartBuilder implements ChartBuilder{
+public class BarChartBuilder implements ChartBuilder {
 
     private static final String METRICS = "Dependencies and Internal instances";
     private static final String X_AXIS_LABEL = "Metrics";
@@ -26,7 +26,7 @@ public class BarChartBuilder implements ChartBuilder{
         dataSet.addValue(countOfInternalInstances, METRICS, METHOD + methodName);
     }
 
-    public JFreeChart getChart(){
+    public JFreeChart getChart() {
         return ChartFactory.createBarChart3D(
                 TITLE,
                 X_AXIS_LABEL,

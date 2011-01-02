@@ -7,7 +7,7 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 
-public class ChartDrawer implements Drawer{
+public class ChartDrawer implements Drawer {
 
     private JFreeChart chart = null;
 

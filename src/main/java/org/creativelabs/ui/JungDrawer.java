@@ -13,7 +13,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-public class JungDrawer implements Drawer{
+public class JungDrawer implements Drawer {
 
     // Graph<V, E> where V is the type of the vertices and E is the type of the edges
     private Graph<Vertex, String> g = null;

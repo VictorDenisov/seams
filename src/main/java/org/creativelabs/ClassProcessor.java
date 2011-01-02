@@ -21,14 +21,14 @@ class ClassProcessor {
         this.dependencyCounterBuilder = dependencyCounterBuilder;
     }
 
-    public DependenciesChart getDependenciesChart(){
+    public DependenciesChart getDependenciesChart() {
         DependenciesChart chart = new DependenciesChart();
-        for (Map.Entry<String, InternalInstancesGraph> entry : internalInstances.entrySet()){
+        for (Map.Entry<String, InternalInstancesGraph> entry : internalInstances.entrySet()) {
             chart.addInternalInstancesCountForMethod(entry.getKey(), entry.getValue().toSet().size());
         }
         Set<String> classDependencies = new HashSet<String>();
-        for (Set<Dependency> dependencySet : dependencies.values()){
-            for (Dependency dependency : dependencySet){
+        for (Set<Dependency> dependencySet : dependencies.values()) {
+            for (Dependency dependency : dependencySet) {
                 classDependencies.add(dependency.getType() + "");
             }
         }
