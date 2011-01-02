@@ -8,9 +8,6 @@ import org.creativelabs.introspection.*;
 
 class TypeFinder {
 
-    static class UnsupportedExpressionException extends RuntimeException {
-    }
-
     private ReflectionAbstraction reflectionAbstraction;
 
     private VariableList varType;
@@ -58,9 +55,6 @@ class TypeFinder {
         if (Character.isUpperCase(name.charAt(0))) {
             return imports.getClassByShortName(name);
         } else {
-            assert varType != null;
-            assert varType.getFieldTypeAsClass(name) != null;
-
             return varType.getFieldTypeAsClass(name);
         }
     }
@@ -108,12 +102,7 @@ class TypeFinder {
     }
 
     private ClassType determineType(AssignExpr expr) {
-        if (expr.getTarget() instanceof FieldAccessExpr) {
-            return determineType((FieldAccessExpr) expr.getTarget());
-        } else if (expr.getTarget() instanceof NameExpr) {
-            return determineType((NameExpr) expr.getTarget());
-        }
-        throw new UnsupportedExpressionException();
+        return determineType(expr.getTarget());
     }
 
     private ClassType determineType(ThisExpr expr) {
@@ -164,7 +153,7 @@ class TypeFinder {
                 return ress;
             }
         }
-        throw new UnsupportedExpressionException();
+        return reflectionAbstraction.createErrorClassType("unknown binary operation: " + operator);
     }
 
     private boolean oneOfArgumentsHaveType(String type, ClassType firstArgType, ClassType secondArgType) {
