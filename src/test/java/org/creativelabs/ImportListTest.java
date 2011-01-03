@@ -165,4 +165,13 @@ public class ImportListTest {
         ClassType result = imports.getClassByType(type);
         assertEquals("java.util.ArrayList", result.toString());
     }
+
+    @Test
+    public void testGetClassByTypePrimitive() throws Exception {
+        ImportList imports = ParseHelper.createImportList("package org.sample; import java.util.*;");
+        Type type = ParseHelper.createType("int");
+
+        ClassType result = imports.getClassByType(type);
+        assertEquals("int", result.toString());
+    }
 }

@@ -61,9 +61,13 @@ class ImportList {
     }
 
     ClassType getClassByType(Type type) {
-        ClassOrInterfaceType classType = (ClassOrInterfaceType)((ReferenceType)type).getType();
-        ClassType result = getClassByShortName(classType.getName());
-        return result;
+        if (type instanceof ReferenceType) {
+            ClassOrInterfaceType classType = (ClassOrInterfaceType)((ReferenceType)type).getType();
+            ClassType result = getClassByShortName(classType.getName());
+            return result;
+        } else {
+            return ra.getClassTypeByName(type.toString());
+        }
     }
 
     ClassType getClassByShortName(String shortName) {
