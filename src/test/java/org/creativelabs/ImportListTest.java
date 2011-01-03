@@ -160,9 +160,7 @@ public class ImportListTest {
     @Test
     public void testGetClassByType() throws Exception {
         ImportList imports = ParseHelper.createImportList("package org.sample; import java.util.*;");
-        ClassOrInterfaceType type = 
-            (ClassOrInterfaceType)
-            ((ReferenceType)ParseHelper.createType("ArrayList<String>")).getType();
+        Type type = ParseHelper.createType("ArrayList<String>");
 
         ClassType result = imports.getClassByType(type);
         assertEquals("java.util.ArrayList", result.toString());

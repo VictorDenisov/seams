@@ -3,7 +3,7 @@ package org.creativelabs;
 import japa.parser.ast.CompilationUnit;
 import japa.parser.ast.ImportDeclaration;
 import japa.parser.ast.expr.NameExpr;
-import japa.parser.ast.type.ClassOrInterfaceType;
+import japa.parser.ast.type.*;
 
 import org.creativelabs.introspection.ReflectionAbstraction;
 import org.creativelabs.introspection.ClassType;
@@ -60,8 +60,9 @@ class ImportList {
         return shortName.replace('.', '$');
     }
 
-    ClassType getClassByType(ClassOrInterfaceType type) {
-        ClassType result = getClassByShortName(type.getName());
+    ClassType getClassByType(Type type) {
+        ClassOrInterfaceType classType = (ClassOrInterfaceType)((ReferenceType)type).getType();
+        ClassType result = getClassByShortName(classType.getName());
         return result;
     }
 
