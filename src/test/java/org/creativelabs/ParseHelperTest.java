@@ -57,7 +57,7 @@ public class ParseHelperTest {
         assertEquals("method", md.getName());
     }
 
-    @Test(groups="parse-helper.create-type")
+    @Test(groups="parse-helper.create-type.construction")
     public void testCreateType() throws Exception {
         Type type = ParseHelper.createType("ArrayList<String>");
 
@@ -68,6 +68,21 @@ public class ParseHelperTest {
         assertEquals("ArrayList<String>", rt.getType() + "");
         assertEquals("ArrayList<String>", type.toString());
     }
+
+    @Test(groups="parse-helper.create-type.primitive-types")
+    public void testCreatePrimitiveTypes() throws Exception {
+        Type type = ParseHelper.createType("int");
+
+        assertEquals("PrimitiveType", type.getClass().getSimpleName());
+    }
+
+    @Test(groups="parse-helper.create-type.reference-types")
+    public void testCreateReferenceTypes() throws Exception {
+        Type type = ParseHelper.createType("Integer");
+
+        assertEquals("ReferenceType", type.getClass().getSimpleName());
+    }
+
 
 }
 
