@@ -82,7 +82,5 @@ public class ParseHelperTest {
 
         assertEquals("ReferenceType", type.getClass().getSimpleName());
     }
-
-
 }
 

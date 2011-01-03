@@ -83,7 +83,7 @@ public class ReflectionAbstractionImplTest {
             { "char", "char" },
             { "boolean", "boolean" },
             { "void", "void" },
-            { "java.util.Map$Entry", "java.util.Map$Entry" },
+            { "java.util.Map$Entry", "java.util.Map$Entry<K, V, >" },
             { "java.lang.Integer", "int" },
         };
     }
@@ -117,7 +117,7 @@ public class ReflectionAbstractionImplTest {
 		ClassType myClass = ra.getClassTypeByName("java.lang.String");
         ClassType fieldType = new ReflectionAbstractionImpl().getFieldType(myClass, "CASE_INSENSITIVE_ORDER");
 
-        assertEquals("java.util.Comparator", fieldType.toString());
+        assertEquals("java.util.Comparator<T, >", fieldType.toString());
     }
 
     @Test
@@ -148,14 +148,9 @@ public class ReflectionAbstractionImplTest {
         assertEquals("boolean", result.toString());
     }
 
-    //Should be deleted
-    //TODO
-    @Test(enabled=false)
+    @Test(dependsOnGroups="parse-helper.create-type.*")
     public void testReflectionAbstractionGetClassName() throws Exception {
-        Class c = Class.forName("java.util.ArrayList");
-        System.out.println(c.getName());
-        TypeVariable[] a = c.getTypeParameters();
-        System.out.println(a.length);
-        System.out.println(a[0]);
+        ClassType className = ra.getClassTypeByName("java.util.ArrayList");
+        assertEquals("java.util.ArrayList<E, >", className.toString());
     }
 }

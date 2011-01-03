@@ -1,7 +1,6 @@
 package org.creativelabs.introspection;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Field;
+import java.lang.reflect.*;
 
 public class ReflectionAbstractionImpl implements ReflectionAbstraction {
 
@@ -11,7 +10,16 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
 
         @Override
         public String toString() {
-            return clazz.getName();
+            StringBuffer result = new StringBuffer();
+            result.append(clazz.getName());
+            if (clazz.getTypeParameters().length != 0) {
+                result.append("<");
+                for (TypeVariable variable : clazz.getTypeParameters()) {
+                    result.append(variable + ", ");
+                }
+                result.append(">");
+            }
+            return result.toString();
         }
     }
 
