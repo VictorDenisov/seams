@@ -82,5 +82,15 @@ public class ParseHelperTest {
 
         assertEquals("ReferenceType", type.getClass().getSimpleName());
     }
+
+    @Test(groups="parse-helper.create-type.nested-types")
+    public void testCreateNestedTypes() throws Exception {
+        Type type = ParseHelper.createType("Map.Entry<String, String>");
+        ClassOrInterfaceType classType = (ClassOrInterfaceType)((ReferenceType)type).getType();
+
+        assertEquals("ReferenceType", type.getClass().getSimpleName());
+        assertEquals("Entry", classType.getName());
+        assertEquals("Map", classType.getScope().getName());
+    }
 }
 

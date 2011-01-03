@@ -147,7 +147,7 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
     
     public ClassType substGenericArgs(ClassType className, ClassType[] args) {
         ClassTypeImpl result = new ClassTypeImpl();
-        result.clazz = ((ClassTypeImpl)className).clazz;
+        result.clazz = ((ClassTypeImpl) className).clazz;
         result.genericArgs = new HashMap<String, ClassType>();
 
         TypeVariable[] vars = result.clazz.getTypeParameters();
