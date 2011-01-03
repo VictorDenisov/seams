@@ -64,6 +64,14 @@ class ImportList {
         if (type instanceof ReferenceType) {
             ClassOrInterfaceType classType = (ClassOrInterfaceType)((ReferenceType)type).getType();
             ClassType result = getClassByShortName(classType.getName());
+            if (classType.getTypeArgs() != null) {
+                ClassType[] args = new ClassType[classType.getTypeArgs().size()];
+                int p = 0;
+                for (Type argType : classType.getTypeArgs()) {
+                    args[p++] = getClassByType(argType);
+                }
+                result = ra.substGenericArgs(result, args);
+            }
             return result;
         } else {
             return ra.getClassTypeByName(type.toString());

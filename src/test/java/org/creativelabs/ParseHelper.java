@@ -18,7 +18,11 @@ public final class ParseHelper {
     private ParseHelper() {
     }
 
-    public static ReflectionAbstraction ra = new ReflectionAbstractionImpl();
+    public ParseHelper(ReflectionAbstraction ra) {
+        this.ra = ra;
+    }
+
+    private ReflectionAbstraction ra = null;
 
     /**
      * data - one expression, which ast should be returned.
@@ -47,6 +51,13 @@ CompilationUnit cu = JavaParser.parse(sr);
     }
 
     public static ImportList createImportList(String data) throws Exception {
+        CompilationUnit cu = ParseHelper.createCompilationUnit(
+                data + " public class Main{}");
+        ImportList imports = new ImportList(new ReflectionAbstractionImpl(), cu);
+        return imports;
+    }
+
+    public ImportList createImportListRA(String data) throws Exception {
         CompilationUnit cu = ParseHelper.createCompilationUnit(
                 data + " public class Main{}");
         ImportList imports = new ImportList(ra, cu);

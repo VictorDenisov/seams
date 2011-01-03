@@ -145,6 +145,7 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         return err;
     }
     
+    @Override
     public ClassType substGenericArgs(ClassType className, ClassType[] args) {
         ClassTypeImpl result = new ClassTypeImpl();
         result.clazz = ((ClassTypeImpl) className).clazz;

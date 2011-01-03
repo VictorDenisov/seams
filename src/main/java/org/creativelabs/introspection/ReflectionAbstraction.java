@@ -12,4 +12,5 @@ public interface ReflectionAbstraction {
 
     ClassType createErrorClassType(String message);
 
+    ClassType substGenericArgs(ClassType className, ClassType[] args);
 }

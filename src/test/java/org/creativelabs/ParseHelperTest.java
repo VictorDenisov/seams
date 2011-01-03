@@ -79,14 +79,16 @@ public class ParseHelperTest {
     @Test(groups="parse-helper.create-type.reference-types")
     public void testCreateReferenceTypes() throws Exception {
         Type type = ParseHelper.createType("Integer");
+        ClassOrInterfaceType cit = (ClassOrInterfaceType) ((ReferenceType) type).getType();
 
         assertEquals("ReferenceType", type.getClass().getSimpleName());
+        assertNull(cit.getScope());
     }
 
     @Test(groups="parse-helper.create-type.nested-types")
     public void testCreateNestedTypes() throws Exception {
         Type type = ParseHelper.createType("Map.Entry<String, String>");
-        ClassOrInterfaceType classType = (ClassOrInterfaceType)((ReferenceType)type).getType();
+        ClassOrInterfaceType classType = (ClassOrInterfaceType) ((ReferenceType)type).getType();
 
         assertEquals("ReferenceType", type.getClass().getSimpleName());
         assertEquals("Entry", classType.getName());
