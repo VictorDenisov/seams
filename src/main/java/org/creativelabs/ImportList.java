@@ -5,7 +5,7 @@ import japa.parser.ast.ImportDeclaration;
 import japa.parser.ast.expr.NameExpr;
 import japa.parser.ast.type.ClassOrInterfaceType;
 
-import org.creativelabs.introspection.ReflectionAbstractionImpl;
+import org.creativelabs.introspection.ReflectionAbstraction;
 import org.creativelabs.introspection.ClassType;
 
 import java.util.*;
@@ -14,7 +14,10 @@ class ImportList {
 
     private List<ImportDeclaration> list = new ArrayList<ImportDeclaration>();
 
-    ImportList(CompilationUnit cu) {
+    private ReflectionAbstraction ra = null;
+
+    ImportList(ReflectionAbstraction ra, CompilationUnit cu) {
+        this.ra = ra;
         if (cu.getPackage() != null) {
             list.add(new ImportDeclaration(new NameExpr(cu.getPackage().getName().toString()), false, true));
         }
@@ -63,7 +66,6 @@ class ImportList {
     }
 
     ClassType getClassByShortName(String shortName) {
-        ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
         shortName = stripGeneric(shortName);
         shortName = processForNested(shortName);
         if (classIsPrimitive(shortName)) {

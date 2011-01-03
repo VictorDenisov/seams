@@ -8,6 +8,8 @@ import japa.parser.JavaParser;
 import japa.parser.ParseException;
 import japa.parser.ast.CompilationUnit;
 
+import org.creativelabs.introspection.*;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
@@ -15,6 +17,8 @@ public final class ParseHelper {
 
     private ParseHelper() {
     }
+
+    public static ReflectionAbstraction ra = new ReflectionAbstractionImpl();
 
     /**
      * data - one expression, which ast should be returned.
@@ -45,7 +49,7 @@ CompilationUnit cu = JavaParser.parse(sr);
     public static ImportList createImportList(String data) throws Exception {
         CompilationUnit cu = ParseHelper.createCompilationUnit(
                 data + " public class Main{}");
-        ImportList imports = new ImportList(cu);
+        ImportList imports = new ImportList(ra, cu);
         return imports;
     }
 

@@ -1,6 +1,6 @@
 package org.creativelabs;
 
-import org.testng.annotations.Test;
+import org.testng.annotations.*;
 import japa.parser.ast.CompilationUnit;
 import japa.parser.ast.type.*;
 
@@ -13,6 +13,24 @@ import static org.testng.AssertJUnit.*;
 import static org.creativelabs.AssertHelper.*;
 
 public class ImportListTest {
+
+    @BeforeClass
+    public void setUpClass() {
+        TestingReflectionAbstraction tra = new TestingReflectionAbstraction();
+        tra.addClass("java.util.ArrayList", "java.util.ArrayList");
+        tra.addClass("java.lang.String", "java.lang.String");
+        tra.addClass("java.io.File", "java.io.File");
+        tra.addClass("java.util.Map", "java.util.Map");
+        tra.addClass("java.util.Map$Entry", "java.util.Map$Entry");
+        tra.addClass("int", "int");
+        ParseHelper.ra = tra;
+
+    }
+
+    @AfterClass
+    public void cleanUpClass() {
+        ParseHelper.ra = new ReflectionAbstractionImpl();
+    }
 
     @Test
     public void testImportsConstruction() throws Exception {

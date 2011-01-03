@@ -133,7 +133,7 @@ public class TestingReflectionAbstraction implements ReflectionAbstraction {
 
     @Override
     public boolean classWithNameExists(String className) {
-        return false;
+        return classes.keySet().contains(className);
     }
 
     @Override

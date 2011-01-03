@@ -11,6 +11,7 @@ import org.creativelabs.chart.BarChartBuilder;
 import org.creativelabs.ui.ChartDrawer;
 import org.creativelabs.ui.JungDrawer;
 import org.creativelabs.graph.JungGraphBuilder;
+import org.creativelabs.introspection.ReflectionAbstractionImpl;
 
 final class MainApp {
 
@@ -96,7 +97,7 @@ final class MainApp {
             if (fileName.endsWith(".java")) {
                 FileInputStream fis = new FileInputStream(fileOrDirectory);
                 CompilationUnit cu = JavaParser.parse(fis);
-                imports = new ImportList(cu);
+                imports = new ImportList(new ReflectionAbstractionImpl(), cu);
                 for (TypeDeclaration typeDeclaration : cu.getTypes()) {
                     if (typeDeclaration instanceof ClassOrInterfaceDeclaration) {
                         processClass((ClassOrInterfaceDeclaration) typeDeclaration,
