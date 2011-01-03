@@ -137,4 +137,10 @@ public class ImportListTest {
         ImportList imports = ParseHelper.createImportList("package org.sample; import java.util.*;");
         assertEquals("java.util.Map$Entry", imports.getClassByShortName("Map.Entry<String, String>").toString());
     }
+
+    @Test
+    public void testGetClassByType() throws Exception {
+        ImportList imports = ParseHelper.createImportList("package org.sample; import java.util.*;");
+        //imports.getClassByType("ArrayList<String>");
+    }
 }

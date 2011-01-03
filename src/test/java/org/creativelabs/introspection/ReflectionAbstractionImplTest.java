@@ -4,6 +4,8 @@ import org.testng.annotations.*;
 
 import java.util.*;
 
+import java.lang.reflect.*;
+
 import static org.testng.AssertJUnit.*;
 
 public class ReflectionAbstractionImplTest {
@@ -144,5 +146,16 @@ public class ReflectionAbstractionImplTest {
 
         ClassType result = ra.getReturnType(className, "equals", args);
         assertEquals("boolean", result.toString());
+    }
+
+    //Should be deleted
+    //TODO
+    @Test(enabled=false)
+    public void testReflectionAbstractionGetClassName() throws Exception {
+        Class c = Class.forName("java.util.ArrayList");
+        System.out.println(c.getName());
+        TypeVariable[] a = c.getTypeParameters();
+        System.out.println(a.length);
+        System.out.println(a[0]);
     }
 }

@@ -55,6 +55,10 @@ List<String> getImports() {
         return shortName.replace('.', '$');
     }
 
+    ClassType getClassByType() {
+        return null;
+    }
+
     ClassType getClassByShortName(String shortName) {
         ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
         shortName = stripGeneric(shortName);

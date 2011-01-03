@@ -3,6 +3,7 @@ package org.creativelabs;
 import japa.parser.ast.body.*;
 import japa.parser.ast.stmt.*;
 import japa.parser.ast.expr.*;
+import japa.parser.ast.type.*;
 import japa.parser.JavaParser;
 import japa.parser.ParseException;
 import japa.parser.ast.CompilationUnit;
@@ -68,4 +69,11 @@ CompilationUnit cu = JavaParser.parse(sr);
         ClassOrInterfaceDeclaration cd = (ClassOrInterfaceDeclaration) cu.getTypes().get(0);
         return ((MethodDeclaration) cd.getMembers().get(0)).getBody();
     }
+
+    public static Type createType(String data) throws Exception {
+        ClassOrInterfaceDeclaration cd = ParseHelper.createClassDeclaration("class Main { " + data + " varName;" + "}");
+        FieldDeclaration fd = (FieldDeclaration)cd.getMembers().get(0);
+        return fd.getType();
+    }
+
 }

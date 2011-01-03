@@ -10,6 +10,7 @@ import japa.parser.ast.CompilationUnit;
 import japa.parser.ast.body.*;
 import japa.parser.ast.stmt.*;
 import japa.parser.ast.expr.*;
+import japa.parser.ast.type.*;
 
 import java.util.Arrays;
 
@@ -54,6 +55,18 @@ public class ParseHelperTest {
         MethodDeclaration md = ParseHelper.createMethodDeclaration("void method(String arg) {}");
 
         assertEquals("method", md.getName());
+    }
+
+    @Test(groups="parse-helper.create-type")
+    public void testCreateType() throws Exception {
+        Type type = ParseHelper.createType("ArrayList<String>");
+
+        ReferenceType rt = (ReferenceType) type;
+        ClassOrInterfaceType cit = (ClassOrInterfaceType) rt.getType();
+        assertEquals(1, cit.getTypeArgs().size());
+        assertEquals("String", cit.getTypeArgs().get(0).toString());
+        assertEquals("ArrayList<String>", rt.getType() + "");
+        assertEquals("ArrayList<String>", type.toString());
     }
 
 }
