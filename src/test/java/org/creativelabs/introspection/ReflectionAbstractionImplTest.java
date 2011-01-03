@@ -153,4 +153,14 @@ public class ReflectionAbstractionImplTest {
         ClassType className = ra.getClassTypeByName("java.util.ArrayList");
         assertEquals("java.util.ArrayList<E, >", className.toString());
     }
+
+    @Test(dependsOnGroups="parse-helper.create-type.*")
+    public void testReflectionAbstractionSetGenericArgs() throws Exception {
+        ClassType className = ra.getClassTypeByName("java.util.ArrayList");
+
+        ClassType genericArg = ra.getClassTypeByName("java.lang.String");
+
+        ClassType result = ra.substGenericArgs(className, new ClassType[]{genericArg});
+        assertEquals("java.util.ArrayList<java.lang.String, >", result.toString());
+    }
 }

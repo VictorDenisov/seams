@@ -1,12 +1,15 @@
 package org.creativelabs.introspection;
 
 import java.lang.reflect.*;
+import java.util.HashMap;
 
 public class ReflectionAbstractionImpl implements ReflectionAbstraction {
 
     private static class ClassTypeImpl implements ClassType {
 
         private Class clazz;
+
+        private HashMap<String, ClassType> genericArgs = null;
 
         @Override
         public String toString() {
@@ -15,7 +18,11 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
             if (clazz.getTypeParameters().length != 0) {
                 result.append("<");
                 for (TypeVariable variable : clazz.getTypeParameters()) {
-                    result.append(variable + ", ");
+                    if (genericArgs != null) {
+                        result.append(genericArgs.get(variable.toString()) + ", ");
+                    } else {
+                        result.append(variable + ", ");
+                    }
                 }
                 result.append(">");
             }
@@ -136,5 +143,18 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         ClassTypeError err = new ClassTypeError();
         err.message = message;
         return err;
+    }
+    
+    public ClassType substGenericArgs(ClassType className, ClassType[] args) {
+        ClassTypeImpl result = new ClassTypeImpl();
+        result.clazz = ((ClassTypeImpl)className).clazz;
+        result.genericArgs = new HashMap<String, ClassType>();
+
+        TypeVariable[] vars = result.clazz.getTypeParameters();
+        for (int i = 0; i < args.length; ++i) {
+            TypeVariable variable = vars[i];
+            result.genericArgs.put(variable.toString(), args[i]);
+        }
+        return result;
     }
 }
