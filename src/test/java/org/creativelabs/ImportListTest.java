@@ -2,6 +2,7 @@ package org.creativelabs;
 
 import org.testng.annotations.Test;
 import japa.parser.ast.CompilationUnit;
+import japa.parser.ast.type.*;
 
 import java.util.List;
 import java.util.Arrays;
@@ -141,6 +142,11 @@ public class ImportListTest {
     @Test
     public void testGetClassByType() throws Exception {
         ImportList imports = ParseHelper.createImportList("package org.sample; import java.util.*;");
-        //imports.getClassByType("ArrayList<String>");
+        ClassOrInterfaceType type = 
+            (ClassOrInterfaceType)
+            ((ReferenceType)ParseHelper.createType("ArrayList<String>")).getType();
+
+        ClassType result = imports.getClassByType(type);
+        assertEquals("java.util.ArrayList", result.toString());
     }
 }
