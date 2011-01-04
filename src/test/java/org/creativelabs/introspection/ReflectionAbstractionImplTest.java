@@ -219,4 +219,13 @@ public class ReflectionAbstractionImplTest {
         assertEquals("java.util.Set<org.creativelabs.Dependency, >", result.toString());
     }
 
+    @Test(enabled=false)
+    public void testDependencyCounterVisitorGetDependenciesInheritedMethod() {
+        ClassType clazz = ra.getClassTypeByName("japa.parser.ast.body.ClassOrInterfaceDeclaration");
+
+        ClassType result = ra.getReturnType(clazz, "getImplements", new ClassType[0]);
+
+        assertEquals("java.util.List<japa.parse.ast.body.BodyDeclaration, >", result.toString());
+    }
+
 }
