@@ -65,22 +65,22 @@ public class VariableListTest {
 
     @Test
     public void testPut() throws Exception {
-        VariableList varList = new VariableList();
+        VariableList varList = VariableList.createEmpty();
         varList.put("name", new ClassTypeStub("String"));
         assertEquals("String", varList.getFieldTypeAsClass("name").toString());
     }
 
     @Test
     public void testPutClass() throws Exception {
-        VariableList varList = new VariableList();
+        VariableList varList = VariableList.createEmpty();
         varList.put("name", new ClassTypeStub(String.class.getName()));
         assertEquals("java.lang.String", varList.getFieldTypeAsClass("name").toString());
     }
 
     @Test
     public void testAddAll() throws Exception {
-        VariableList varList = new VariableList();
-        VariableList fullList = new VariableList();
+        VariableList varList = VariableList.createEmpty();
+        VariableList fullList = VariableList.createEmpty();
         fullList.put("name", new ClassTypeStub("String"));
 
         varList.addAll(fullList);
@@ -90,7 +90,7 @@ public class VariableListTest {
 
     @Test
     public void testTypeAsClass() throws Exception {
-        VariableList varList = new VariableList();
+        VariableList varList = VariableList.createEmpty();
         varList.put("name", new ClassTypeStub("java.lang.String"));
 
         assertEquals("java.lang.String", varList.getFieldTypeAsClass("name").toString());
@@ -98,7 +98,7 @@ public class VariableListTest {
 
     @Test
     public void testTypeAsClassInt() throws Exception {
-        VariableList varList = new VariableList();
+        VariableList varList = VariableList.createEmpty();
         varList.put("name", new ClassTypeStub("int"));
 
         String clazz = varList.getFieldTypeAsClass("name").toString();
@@ -107,7 +107,7 @@ public class VariableListTest {
 
     @Test
     public void testIfNameIsAbsentReturnNotNull() throws Exception {
-        VariableList varList = new VariableList();
+        VariableList varList = VariableList.createEmpty();
 
         ClassType value = varList.getFieldTypeAsClass("name");
 

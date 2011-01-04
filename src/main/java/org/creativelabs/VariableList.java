@@ -15,7 +15,12 @@ class VariableList {
 
     private ImportList imports = null;
 
-    VariableList() {
+    private VariableList() {
+
+    }
+
+    public static VariableList createEmpty() {
+        return new VariableList();
     }
 
     private ClassType getByClass(Type fieldType) {

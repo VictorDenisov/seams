@@ -45,7 +45,7 @@ public class DependencyCounterVisitorBuilder {
         if (methodArguments == null) {
             throw new IllegalStateException("Method arguments can't be null");
         }
-        VariableList externalVariables = new VariableList();
+        VariableList externalVariables = VariableList.createEmpty();
         externalVariables.addAll(classFields);
         externalVariables.addAll(methodArguments);
         return new DependencyCounterVisitor(externalVariables, imports);

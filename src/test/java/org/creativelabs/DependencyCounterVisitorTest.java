@@ -35,7 +35,7 @@ public class DependencyCounterVisitorTest {
     @Test
     public void testVisitNameExprClass() throws Exception {
         ImportList importList = ParseHelper.createImportList("");
-        DependencyCounterVisitor dc = new DependencyCounterVisitor(new VariableList(), importList);
+        DependencyCounterVisitor dc = new DependencyCounterVisitor(VariableList.createEmpty(), importList);
 
         MethodCallExpr expr = (MethodCallExpr)ParseHelper.createExpression("String.valueOf(true)");
 

@@ -18,7 +18,7 @@ public class TypeFinderTest {
     private ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
 
     private VariableList createEmptyVariableList() {
-        return new VariableList();
+        return VariableList.createEmpty();
     }
 
     private ImportList createEmptyImportList() throws Exception{
@@ -473,7 +473,7 @@ public class TypeFinderTest {
             = StringLogReflectionAbstraction
             .createDecoratingStringLogReflectionAbstraction(new ReflectionAbstractionImpl());
         Expression expr = ParseHelper.createExpression("id.getName().getName().equals(\"h\")");
-        VariableList varList = new VariableList();
+        VariableList varList = VariableList.createEmpty();
         varList.put("id", 
                 reflectionAbstraction.getClassTypeByName("japa.parser.ast.ImportDeclaration"));
         ImportList imports = ParseHelper.createImportList("");

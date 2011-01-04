@@ -15,8 +15,8 @@ public class DependencyCounterVisitorBuilderTest {
         DependencyCounterVisitorBuilder builder = new DependencyCounterVisitorBuilder();
 
         ImportList imports = ParseHelper.createImportList("");
-        VariableList fields = new VariableList();
-        VariableList methodArguments = new VariableList();
+        VariableList fields = VariableList.createEmpty();
+        VariableList methodArguments = VariableList.createEmpty();
 
         builder.setImports(imports);
         builder.setClassFields(fields);
@@ -31,8 +31,8 @@ public class DependencyCounterVisitorBuilderTest {
     public void testBuilderConstructionNullImports() throws Exception {
         DependencyCounterVisitorBuilder builder = new DependencyCounterVisitorBuilder();
 
-        VariableList fields = new VariableList();
-        VariableList methodArguments = new VariableList();
+        VariableList fields = VariableList.createEmpty();
+        VariableList methodArguments = VariableList.createEmpty();
 
         builder.setClassFields(fields);
         builder.setMethodArguments(methodArguments);
@@ -51,7 +51,7 @@ public class DependencyCounterVisitorBuilderTest {
         DependencyCounterVisitorBuilder builder = new DependencyCounterVisitorBuilder();
 
         ImportList imports = ParseHelper.createImportList("");
-        VariableList methodArguments = new VariableList();
+        VariableList methodArguments = VariableList.createEmpty();
 
         builder.setImports(imports);
         builder.setMethodArguments(methodArguments);
@@ -70,7 +70,7 @@ public class DependencyCounterVisitorBuilderTest {
         DependencyCounterVisitorBuilder builder = new DependencyCounterVisitorBuilder();
 
         ImportList imports = ParseHelper.createImportList("");
-        VariableList classFields = new VariableList();
+        VariableList classFields = VariableList.createEmpty();
 
         builder.setImports(imports);
         builder.setClassFields(classFields);
@@ -90,7 +90,7 @@ public class DependencyCounterVisitorBuilderTest {
         DependencyCounterVisitorBuilder builder = new DependencyCounterVisitorBuilder();
 
         ImportList imports = ParseHelper.createImportList("");
-        VariableList classFields = new VariableList();
+        VariableList classFields = VariableList.createEmpty();
 
         builder.setImports(imports);
         builder.setClassFields(classFields);
@@ -108,7 +108,7 @@ public class DependencyCounterVisitorBuilderTest {
         MethodDeclaration md = ParseHelper.createMethodDeclaration("void method(String arg) {}");
         DependencyCounterVisitorBuilder builder = new DependencyCounterVisitorBuilder();
 
-        VariableList classFields = new VariableList();
+        VariableList classFields = VariableList.createEmpty();
 
         builder.setClassFields(classFields);
 
