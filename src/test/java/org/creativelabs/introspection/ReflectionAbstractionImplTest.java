@@ -180,4 +180,21 @@ public class ReflectionAbstractionImplTest {
         assertEquals("java.lang.String", result.toString());
     }
 
+    @Test(dependsOnMethods=
+            {"testReflectionAbstractionGetClassName", 
+                "testReflectionAbstractionSetGenericArgs"})
+    public void testGetReturnTypeWithGenericsReturnValue() throws Exception {
+        ClassType className = ra.getClassTypeByName("java.util.HashMap");
+
+        ClassType genericArgString = ra.getClassTypeByName("java.lang.String");
+        ClassType genericArgInteger = ra.getClassTypeByName("java.lang.Integer");
+
+        className = ra.substGenericArgs(className, 
+                new ClassType[]{genericArgString, genericArgInteger});
+
+        ClassType result = ra.getReturnType(className, "keySet", new ClassType[0]);
+
+        assertEquals("java.util.Set<java.lang.String, >", result.toString());
+    }
+
 }

@@ -100,8 +100,9 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
     @Override
     public ClassType getReturnType(ClassType className, String methodName, ClassType[] types) {
         try {
+            ClassTypeImpl classNameImpl = (ClassTypeImpl) className;
             Class[] classTypes = getTypeClasses(types);
-            Class cl = ((ClassTypeImpl) className).clazz;
+            Class cl = classNameImpl.clazz;
             Method method = cl.getMethod(methodName, classTypes);
             Class myCl = method.getReturnType();
 
@@ -110,9 +111,17 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
 
             Type genericReturnType = method.getGenericReturnType();
             if (genericReturnType instanceof TypeVariable) {
-                ClassTypeImpl classNameImpl = (ClassTypeImpl) className;
                 String varReturnType = genericReturnType.toString();
                 result = (ClassTypeImpl) (classNameImpl.genericArgs.get(varReturnType));
+            } else if (genericReturnType instanceof ParameterizedType) {
+                ParameterizedType parameterizedType = (ParameterizedType) genericReturnType;
+                Type[] actualArgs = parameterizedType.getActualTypeArguments();
+                ClassType[] classTypeArgs = new ClassType[actualArgs.length];
+                for (int i = 0; i < actualArgs.length; ++i) {
+                    classTypeArgs[i] = classNameImpl.genericArgs.get(actualArgs[i].toString());
+                }
+
+                result = (ClassTypeImpl) substGenericArgs(result, classTypeArgs);
             }
 
             return result;
