@@ -23,20 +23,18 @@ class VariableList {
         return new VariableList();
     }
 
-    private ClassType getByClass(Type fieldType) {
-        return imports.getClassByType(fieldType);
-    }
-
-    VariableList(MethodDeclaration methodDeclaration, ImportList imports) {
-        this.imports = imports;
+    public static VariableList createFromMethodArguments(MethodDeclaration methodDeclaration, ImportList imports) {
+        VariableList result = new VariableList();
+        result.imports = imports;
         if (methodDeclaration.getParameters() == null) {
-            return;
+            return result;
         }
         for (Parameter parameter : methodDeclaration.getParameters()) {
             Type type = parameter.getType();
             String name = parameter.getId().getName();
-            fieldTypes.put(name, getByClass(type));
+            result.fieldTypes.put(name, imports.getClassByType(type));
         }
+        return result;
     }
 
     VariableList(ClassOrInterfaceDeclaration classDeclaration, ImportList imports) {
@@ -46,7 +44,7 @@ class VariableList {
                 FieldDeclaration fd = (FieldDeclaration) bd;
                 Type type = fd.getType();
                 for (VariableDeclarator vardecl : fd.getVariables()) {
-                    fieldTypes.put(vardecl.getId().getName(), getByClass(type));
+                    fieldTypes.put(vardecl.getId().getName(), imports.getClassByType(type));
                 }
             }
         }

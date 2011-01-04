@@ -31,7 +31,7 @@ public class DependencyCounterVisitorBuilder {
         if (imports == null) {
             throw new IllegalStateException("Imports should be not null for this operation");
         }
-        this.methodArguments = new VariableList(md, imports);
+        this.methodArguments = VariableList.createFromMethodArguments(md, imports);
         return this;
     }
 

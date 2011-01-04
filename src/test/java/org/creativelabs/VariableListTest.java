@@ -122,7 +122,7 @@ public class VariableListTest {
         ImportList imports = ParseHelper.createImportList("");
         imports = spy(imports);
 
-        VariableList varList = new VariableList(md, imports);
+        VariableList varList = VariableList.createFromMethodArguments(md, imports);
 
         assertEquals(1, varList.getNames().size());
         assertEquals("java.lang.String", varList.getFieldTypeAsClass("arg").toString());
@@ -135,7 +135,7 @@ public class VariableListTest {
 
         ImportList imports = ParseHelper.createImportList("");
 
-        VariableList varList = new VariableList(md, imports);
+        VariableList varList = VariableList.createFromMethodArguments(md, imports);
 
         assertEquals(0, varList.getNames().size());
     }
