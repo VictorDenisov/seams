@@ -79,7 +79,7 @@ final class MainApp {
     private static void outputSet(Set<Dependency> set, PrintWriter writer) {
         writer.println("Dependencies (");
         for (Dependency value : set) {
-            writer.println(value.getExpression() + " -- " + value.getType());
+            writer.println("    " + value.getExpression() + " -- " + value.getType());
         }
         writer.println(")");
     }
