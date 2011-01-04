@@ -92,4 +92,9 @@ public class StringLogReflectionAbstraction implements ReflectionAbstraction {
         log.append("; ");
         return result;
     }
+
+    @Override
+    public ClassType substGenericArgs(ClassType className, ClassType[] args) {
+        return null;
+    }
 }

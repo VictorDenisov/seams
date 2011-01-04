@@ -140,4 +140,9 @@ public class TestingReflectionAbstraction implements ReflectionAbstraction {
     public ClassType createErrorClassType(String message) {
         return new ClassTypeStub(message);
     }
+
+    @Override
+    public ClassType substGenericArgs(ClassType className, ClassType[] args) {
+        return null;
+    }
 }
