@@ -163,4 +163,21 @@ public class ReflectionAbstractionImplTest {
         ClassType result = ra.substGenericArgs(className, new ClassType[]{genericArg});
         assertEquals("java.util.ArrayList<java.lang.String, >", result.toString());
     }
+
+    @Test(dependsOnMethods=
+            {"testReflectionAbstractionGetClassName", 
+                "testReflectionAbstractionSetGenericArgs"})
+    public void testGetReturnTypeWithGenerics() throws Exception {
+        ClassType className = ra.getClassTypeByName("java.util.ArrayList");
+
+        ClassType genericArg = ra.getClassTypeByName("java.lang.String");
+
+        className = ra.substGenericArgs(className, new ClassType[]{genericArg});
+
+        ClassType arg = ra.getClassTypeByName("int");
+        ClassType result = ra.getReturnType(className, "get", new ClassType[]{arg});
+
+        assertEquals("java.lang.String", result.toString());
+    }
+
 }

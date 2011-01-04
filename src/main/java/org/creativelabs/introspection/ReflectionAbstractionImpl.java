@@ -107,6 +107,14 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
 
             ClassTypeImpl result = new ClassTypeImpl();
             result.clazz = myCl;
+
+            Type genericReturnType = method.getGenericReturnType();
+            if (genericReturnType instanceof TypeVariable) {
+                ClassTypeImpl classNameImpl = (ClassTypeImpl) className;
+                String varReturnType = genericReturnType.toString();
+                result = (ClassTypeImpl) (classNameImpl.genericArgs.get(varReturnType));
+            }
+
             return result;
         } catch (Exception e) {
             return createErrorClassType(e.toString());
