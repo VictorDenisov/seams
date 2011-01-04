@@ -103,7 +103,7 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
             ClassTypeImpl classNameImpl = (ClassTypeImpl) className;
             Class[] classTypes = getTypeClasses(types);
             Class cl = classNameImpl.clazz;
-            Method method = cl.getMethod(methodName, classTypes);
+            Method method = cl.getDeclaredMethod(methodName, classTypes);
             Class myCl = method.getReturnType();
 
             ClassTypeImpl result = new ClassTypeImpl();

@@ -210,4 +210,13 @@ public class ReflectionAbstractionImplTest {
                 result.toString());
     }
 
+    @Test
+    public void testDependencyCounterVisitorGetDependenciesNonPublicMethod() {
+        ClassType clazz = ra.getClassTypeByName("org.creativelabs.DependencyCounterVisitor");
+
+        ClassType result = ra.getReturnType(clazz, "getDependencies", new ClassType[0]);
+
+        assertEquals("java.util.Set<org.creativelabs.Dependency, >", result.toString());
+    }
+
 }
