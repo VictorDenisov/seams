@@ -118,7 +118,12 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
                 Type[] actualArgs = parameterizedType.getActualTypeArguments();
                 ClassType[] classTypeArgs = new ClassType[actualArgs.length];
                 for (int i = 0; i < actualArgs.length; ++i) {
-                    classTypeArgs[i] = classNameImpl.genericArgs.get(actualArgs[i].toString());
+                    if (actualArgs[i] instanceof TypeVariable) {
+                        classTypeArgs[i] = classNameImpl.genericArgs.get(actualArgs[i].toString());
+                    } else if (actualArgs[i] instanceof Class) {
+                        Class argClass = (Class) actualArgs[i];
+                        classTypeArgs[i] = getClassTypeByName(argClass.getName());
+                    }
                 }
 
                 result = (ClassTypeImpl) substGenericArgs(result, classTypeArgs);

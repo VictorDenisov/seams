@@ -183,7 +183,7 @@ public class ReflectionAbstractionImplTest {
     @Test(dependsOnMethods=
             {"testReflectionAbstractionGetClassName", 
                 "testReflectionAbstractionSetGenericArgs"})
-    public void testGetReturnTypeWithGenericsReturnValue() throws Exception {
+    public void testGetReturnTypeWithGenericsReturnValueLetter() throws Exception {
         ClassType className = ra.getClassTypeByName("java.util.HashMap");
 
         ClassType genericArgString = ra.getClassTypeByName("java.lang.String");
@@ -195,6 +195,19 @@ public class ReflectionAbstractionImplTest {
         ClassType result = ra.getReturnType(className, "keySet", new ClassType[0]);
 
         assertEquals("java.util.Set<java.lang.String, >", result.toString());
+    }
+
+    @Test(dependsOnMethods=
+            {"testReflectionAbstractionGetClassName", 
+                "testReflectionAbstractionSetGenericArgs"})
+    public void testGetReturnTypeWithGenericsReturnValueClass() throws Exception {
+        ClassType className = ra.getClassTypeByName("org.creativelabs.ClassProcessor");
+
+        ClassType result = ra.getReturnType(className, "getInternalInstances", new ClassType[0]);
+
+        assertEquals(
+                "java.util.Map<java.lang.String, org.creativelabs.InternalInstancesGraph, >", 
+                result.toString());
     }
 
 }

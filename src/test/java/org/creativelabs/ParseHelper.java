@@ -45,7 +45,7 @@ public final class ParseHelper {
 
     public static CompilationUnit createCompilationUnit(String data) throws ParseException {
         InputStream sr = new ByteArrayInputStream(data.getBytes());
-CompilationUnit cu = JavaParser.parse(sr);
+        CompilationUnit cu = JavaParser.parse(sr);
 
         return cu;
     }
