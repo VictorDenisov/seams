@@ -1,11 +1,13 @@
 package org.creativelabs;
 import japa.parser.ast.expr.*;
 import japa.parser.ast.body.*; 
+import japa.parser.ast.type.*; 
 import org.testng.annotations.Test;
 import org.creativelabs.introspection.*;
 
 import java.util.*;
 
+import static org.mockito.Mockito.*;
 import static org.testng.AssertJUnit.*;
 import static org.creativelabs.AssertHelper.*;
 
@@ -17,10 +19,12 @@ public class VariableListTest {
             ParseHelper.createClassDeclaration("class Main { int v; }");
 
         ImportList imports = ParseHelper.createImportList("");
+        imports = spy(imports);
 
         VariableList fieldList = new VariableList(classDeclaration, imports);
 
         assertEqualsList(Arrays.asList(new String[]{"v"}), fieldList.getNames());
+        verify(imports).getClassByType(any(Type.class));
     }
 
     @Test
@@ -116,11 +120,13 @@ public class VariableListTest {
         MethodDeclaration md = ParseHelper.createMethodDeclaration("void method(String arg) {}");
 
         ImportList imports = ParseHelper.createImportList("");
+        imports = spy(imports);
 
         VariableList varList = new VariableList(md, imports);
 
         assertEquals(1, varList.getNames().size());
         assertEquals("java.lang.String", varList.getFieldTypeAsClass("arg").toString());
+        verify(imports).getClassByType(any(Type.class));
     }
 
     @Test(groups="variable-list.method-construction", dependsOnGroups="parse-helper.create-method")

@@ -3,6 +3,7 @@ package org.creativelabs;
 import org.creativelabs.introspection.*;
 
 import japa.parser.ast.expr.*;
+import japa.parser.ast.type.*;
 import japa.parser.ast.body.*;
 
 import java.util.*;
@@ -17,8 +18,8 @@ class VariableList {
     VariableList() {
     }
 
-    private ClassType getByClass(String fieldType) {
-        return imports.getClassByShortName(fieldType);
+    private ClassType getByClass(Type fieldType) {
+        return imports.getClassByType(fieldType);
     }
 
     VariableList(MethodDeclaration methodDeclaration, ImportList imports) {
@@ -27,7 +28,7 @@ class VariableList {
             return;
         }
         for (Parameter parameter : methodDeclaration.getParameters()) {
-            String type = parameter.getType().toString();
+            Type type = parameter.getType();
             String name = parameter.getId().getName();
             fieldTypes.put(name, getByClass(type));
         }
@@ -38,7 +39,7 @@ class VariableList {
         for (BodyDeclaration bd : classDeclaration.getMembers()) {
             if (bd instanceof FieldDeclaration) {
                 FieldDeclaration fd = (FieldDeclaration) bd;
-                String type = fd.getType().toString();
+                Type type = fd.getType();
                 for (VariableDeclarator vardecl : fd.getVariables()) {
                     fieldTypes.put(vardecl.getId().getName(), getByClass(type));
                 }
