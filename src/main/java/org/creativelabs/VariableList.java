@@ -37,17 +37,20 @@ class VariableList {
         return result;
     }
 
-    VariableList(ClassOrInterfaceDeclaration classDeclaration, ImportList imports) {
-        this.imports = imports;
+    public static VariableList createFromClassFields(ClassOrInterfaceDeclaration classDeclaration,
+            ImportList imports) {
+        VariableList result = new VariableList();
+        result.imports = imports;
         for (BodyDeclaration bd : classDeclaration.getMembers()) {
             if (bd instanceof FieldDeclaration) {
                 FieldDeclaration fd = (FieldDeclaration) bd;
                 Type type = fd.getType();
                 for (VariableDeclarator vardecl : fd.getVariables()) {
-                    fieldTypes.put(vardecl.getId().getName(), imports.getClassByType(type));
+                    result.fieldTypes.put(vardecl.getId().getName(), imports.getClassByType(type));
                 }
             }
         }
+        return result;
     }
 
     List<String> getNames() {

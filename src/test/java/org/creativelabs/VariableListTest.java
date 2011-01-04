@@ -21,7 +21,7 @@ public class VariableListTest {
         ImportList imports = ParseHelper.createImportList("");
         imports = spy(imports);
 
-        VariableList fieldList = new VariableList(classDeclaration, imports);
+        VariableList fieldList = VariableList.createFromClassFields(classDeclaration, imports);
 
         assertEqualsList(Arrays.asList(new String[]{"v"}), fieldList.getNames());
         verify(imports).getClassByType(any(Type.class));
@@ -34,7 +34,7 @@ public class VariableListTest {
 
         ImportList imports = ParseHelper.createImportList("");
 
-        VariableList fieldList = new VariableList(classDeclaration, imports);
+        VariableList fieldList = VariableList.createFromClassFields(classDeclaration, imports);
 
         assertEquals("int", fieldList.getFieldTypeAsClass("v").toString());
     }
@@ -46,7 +46,7 @@ public class VariableListTest {
 
         ImportList imports = ParseHelper.createImportList("");
 
-        VariableList fieldList = new VariableList(classDeclaration, imports);
+        VariableList fieldList = VariableList.createFromClassFields(classDeclaration, imports);
 
         assertEquals("java.lang.String", fieldList.getFieldTypeAsClass("str").toString());
     }
@@ -58,7 +58,7 @@ public class VariableListTest {
 
         ImportList imports = ParseHelper.createImportList("");
 
-        VariableList fieldList = new VariableList(classDeclaration, imports);
+        VariableList fieldList = VariableList.createFromClassFields(classDeclaration, imports);
 
         assertTrue(fieldList.hasName("str"));
     }

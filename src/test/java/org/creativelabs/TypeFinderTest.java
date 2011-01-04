@@ -456,7 +456,7 @@ public class TypeFinderTest {
                 "package java.util;"
                 + "import java.io.File;");
 
-        VariableList varTypes = new VariableList(cd, importList);
+        VariableList varTypes = VariableList.createFromClassFields(cd, importList);
         varTypes.put("file", new ClassTypeStub("java.io.File"));
 
         TestingReflectionAbstraction reflectionAbstraction = new TestingReflectionAbstraction();

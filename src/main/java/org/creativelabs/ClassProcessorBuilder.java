@@ -37,7 +37,7 @@ public class ClassProcessorBuilder {
     }
 
     VariableList constructVariableList() {
-        return new VariableList(typeDeclaration, imports);
+        return VariableList.createFromClassFields(typeDeclaration, imports);
     }
 
     ClassProcessor buildClassProcessor() {

@@ -19,7 +19,7 @@ public class DependencyCounterVisitorTest {
 
         ImportList imports = ParseHelper.createImportList("");
 
-        VariableList fieldList = new VariableList(classDeclaration, imports);
+        VariableList fieldList = VariableList.createFromClassFields(classDeclaration, imports);
 
         DependencyCounterVisitor dc = new DependencyCounterVisitor(fieldList, imports);
 
