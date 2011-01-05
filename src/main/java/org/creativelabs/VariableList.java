@@ -13,8 +13,6 @@ class VariableList {
 
     private Map<String, ClassType> fieldTypes = new HashMap<String, ClassType>();
 
-    private ImportList imports = null;
-
     private VariableList() {
 
     }
@@ -25,7 +23,6 @@ class VariableList {
 
     public static VariableList createFromMethodArguments(MethodDeclaration methodDeclaration, ImportList imports) {
         VariableList result = new VariableList();
-        result.imports = imports;
         if (methodDeclaration.getParameters() == null) {
             return result;
         }
@@ -40,7 +37,6 @@ class VariableList {
     public static VariableList createFromClassFields(ClassOrInterfaceDeclaration classDeclaration,
             ImportList imports) {
         VariableList result = new VariableList();
-        result.imports = imports;
         for (BodyDeclaration bd : classDeclaration.getMembers()) {
             if (bd instanceof FieldDeclaration) {
                 FieldDeclaration fd = (FieldDeclaration) bd;
