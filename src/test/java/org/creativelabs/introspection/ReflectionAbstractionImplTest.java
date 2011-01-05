@@ -243,4 +243,13 @@ public class ReflectionAbstractionImplTest {
         assertEquals("java.lang.String", result.toString());
     }
 
+    @Test
+    public void testExceptionInSubstGenericArgs() {
+        ClassType stub = new ClassTypeStub("Hello");
+
+        stub = ra.substGenericArgs(stub, new ClassType[]{stub, stub});
+
+        assertEquals("ClassTypeError", stub.getClass().getSimpleName());
+    }
+
 }

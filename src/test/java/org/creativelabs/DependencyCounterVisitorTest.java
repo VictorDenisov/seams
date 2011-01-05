@@ -2,12 +2,14 @@ package org.creativelabs;
 
 import japa.parser.ast.expr.*;
 import japa.parser.ast.body.*;
+import japa.parser.ast.type.*;
 import japa.parser.ast.stmt.*;
 
 import org.testng.annotations.Test;
 
 import java.util.*;
 
+import static org.mockito.Mockito.*;
 import static org.testng.AssertJUnit.*;
 
 public class DependencyCounterVisitorTest {
@@ -73,5 +75,17 @@ public class DependencyCounterVisitorTest {
             result = "NullPointerException";
         }
         assertEquals("noException", result);
+    }
+
+    @Test
+    public void testVisitVariableDeclarationExpr() throws Exception {
+        ImportList imports = spy(ParseHelper.createImportList("import java.util.*;"));
+        Expression expr = ParseHelper.createExpression("Map.Entry<String, String> entry;");
+        VariableList varList = VariableList.createEmpty();
+
+        DependencyCounterVisitor dependencyCounter = new DependencyCounterVisitor(varList, imports);
+        expr.accept(dependencyCounter, null);
+
+        verify(imports, atLeastOnce()).getClassByType(any(Type.class));
     }
 }

@@ -169,15 +169,19 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
     
     @Override
     public ClassType substGenericArgs(ClassType className, ClassType[] args) {
-        ClassTypeImpl result = new ClassTypeImpl();
-        result.clazz = ((ClassTypeImpl) className).clazz;
-        result.genericArgs = new HashMap<String, ClassType>();
+        try {
+            ClassTypeImpl result = new ClassTypeImpl();
+            result.clazz = ((ClassTypeImpl) className).clazz;
+            result.genericArgs = new HashMap<String, ClassType>();
 
-        TypeVariable[] vars = result.clazz.getTypeParameters();
-        for (int i = 0; i < args.length; ++i) {
-            TypeVariable variable = vars[i];
-            result.genericArgs.put(variable.toString(), args[i]);
+            TypeVariable[] vars = result.clazz.getTypeParameters();
+            for (int i = 0; i < args.length; ++i) {
+                TypeVariable variable = vars[i];
+                result.genericArgs.put(variable.toString(), args[i]);
+            }
+            return result;
+        } catch (Exception e) {
+            return createErrorClassType(e.toString());
         }
-        return result;
     }
 }
