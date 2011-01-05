@@ -228,4 +228,19 @@ public class ReflectionAbstractionImplTest {
         assertEquals("java.util.List<japa.parse.ast.body.BodyDeclaration, >", result.toString());
     }
 
+    @Test
+    public void testMapEntry() {
+        ClassType clazz = ra.getClassTypeByName("java.util.Map$Entry");
+
+        ClassType genericArgString = ra.getClassTypeByName("java.lang.String");
+        ClassType genericArgInteger = ra.getClassTypeByName("java.lang.Integer");
+
+        clazz = ra.substGenericArgs(clazz, 
+                new ClassType[]{genericArgString, genericArgInteger});
+
+        ClassType result = ra.getReturnType(clazz, "getKey", new ClassType[0]);
+
+        assertEquals("java.lang.String", result.toString());
+    }
+
 }

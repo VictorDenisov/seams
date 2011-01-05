@@ -21,6 +21,7 @@ public class ImportListTest {
         TestingReflectionAbstraction tra = new TestingReflectionAbstraction();
         tra.addClass("java.util.ArrayList", "java.util.ArrayList");
         tra.addClass("java.lang.String", "java.lang.String");
+        tra.addClass("java.lang.Integer", "java.lang.Integer");
         tra.addClass("java.io.File", "java.io.File");
         tra.addClass("java.util.Map", "java.util.Map");
         tra.addClass("java.util.Map$Entry", "java.util.Map$Entry");
@@ -170,5 +171,17 @@ public class ImportListTest {
 
         ClassType result = imports.getClassByType(type);
         assertEquals("int", result.toString());
+    }
+
+    @Test
+    public void testCreateMapEntry() throws Exception {
+        ParseHelper ph = new ParseHelper(new ReflectionAbstractionImpl());
+
+        ImportList imports = ph.createImportListRA("package org.sample; import java.util.*;");
+        Type type = ph.createType("Map.Entry<String, String>");
+
+        ClassType result = imports.getClassByType(type);
+
+        assertEquals("java.util.Map$Entry<java.lang.String, java.lang.String, >", result.toString());
     }
 }
