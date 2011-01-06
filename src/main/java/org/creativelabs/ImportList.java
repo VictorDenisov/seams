@@ -109,9 +109,9 @@ class ImportList {
                     return ra.getClassTypeByName(className);
                 }
             } else {
-                String className = id.getName().toString();
-                className = className.substring(0, className.length() - scope.length());
                 if (id.getName().getName().equals(scope)) {
+                    String className = id.getName().toString();
+                    className = className.substring(0, className.length() - scope.length());
                     return ra.getClassTypeByName(className + shortName);
                 }
             }
