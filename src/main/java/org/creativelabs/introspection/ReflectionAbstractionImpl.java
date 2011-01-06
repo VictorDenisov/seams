@@ -103,7 +103,18 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
             ClassTypeImpl classNameImpl = (ClassTypeImpl) className;
             Class[] classTypes = getTypeClasses(types);
             Class cl = classNameImpl.clazz;
-            Method method = cl.getDeclaredMethod(methodName, classTypes);
+            Method method = null;
+            while (cl != null) {
+                try {
+                    method = cl.getDeclaredMethod(methodName, classTypes);
+                    break;
+                } catch (NoSuchMethodException nsme) {
+                    cl = cl.getSuperclass();
+                }
+            }
+            if (method == null) {
+                return createErrorClassType("no such method : " + methodName);
+            }
             Class myCl = method.getReturnType();
 
             ClassTypeImpl result = new ClassTypeImpl();

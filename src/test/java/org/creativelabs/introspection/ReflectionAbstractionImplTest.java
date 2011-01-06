@@ -219,13 +219,23 @@ public class ReflectionAbstractionImplTest {
         assertEquals("java.util.Set<org.creativelabs.Dependency, >", result.toString());
     }
 
-    @Test(enabled=false)
+    @Test
     public void testDependencyCounterVisitorGetDependenciesInheritedMethod() {
         ClassType clazz = ra.getClassTypeByName("japa.parser.ast.body.ClassOrInterfaceDeclaration");
 
-        ClassType result = ra.getReturnType(clazz, "getImplements", new ClassType[0]);
+        ClassType result = ra.getReturnType(clazz, "getMembers", new ClassType[0]);
 
-        assertEquals("java.util.List<japa.parse.ast.body.BodyDeclaration, >", result.toString());
+        assertEquals("java.util.List<japa.parser.ast.body.BodyDeclaration, >", result.toString());
+    }
+
+    @Test
+    public void testDependencyCounterVisitorGetDependenciesNonExistentMethod() {
+        ClassType clazz = ra.getClassTypeByName("japa.parser.ast.body.ClassOrInterfaceDeclaration");
+
+        ClassType result = ra.getReturnType(clazz, "getFooBar", new ClassType[0]);
+
+        assertEquals("ClassTypeError", result.getClass().getSimpleName());
+        assertEquals("no such method : getFooBar", result.toString());
     }
 
     @Test
