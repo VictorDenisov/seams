@@ -138,7 +138,14 @@ public class ReflectionAbstractionImplTest {
         assertEquals("boolean", result.toString());
     }
 
-    @Test(enabled=false)
+    @Test
+    public void testGetMethod() throws Exception {
+        Class clazz = Class.forName("java.lang.String");
+        Method method = ra.getMethod(clazz, "equals", new Class[]{Class.forName("java.lang.String")});
+        assertNotNull(method);
+    }
+
+    @Test
     public void testGetReturnTypeStringEqualsString() {
         ClassType className = ra.getClassTypeByName("java.lang.String");
         ClassType[] args = new ClassType[1];

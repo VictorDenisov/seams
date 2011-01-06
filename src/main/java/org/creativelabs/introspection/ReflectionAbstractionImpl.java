@@ -97,6 +97,47 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         return result;
     }
 
+    boolean isSuperClass(Class superClass, Class clazz) {
+        while (clazz != null) {
+            if (clazz.getName().equals(superClass.getName())) {
+                return true;
+            }
+            clazz = clazz.getSuperclass();
+        }
+        return false;
+    }
+
+    boolean isEligible(Method method, String methodName, Class[] args) {
+        if (!method.getName().equals(methodName)) {
+            return false;
+        }
+        if (args.length != method.getParameterTypes().length) {
+            return false;
+        }
+        Class[] parameters = method.getParameterTypes();
+        for (int i = 0; i < args.length; ++i) {
+            if (!isSuperClass(parameters[i], args[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    Method getMethod(Class clazz, String methodName, Class[] args) throws NoSuchMethodException {
+        try {
+            Method result = clazz.getDeclaredMethod(methodName, args);
+            return result;
+        } catch (NoSuchMethodException e) {
+            Method[] methods = clazz.getDeclaredMethods();
+            for (Method method : methods) {
+                if (isEligible(method, methodName, args)) {
+                    return method;
+                }
+            }
+            throw new NoSuchMethodException();
+        }
+    }
+
     @Override
     public ClassType getReturnType(ClassType className, String methodName, ClassType[] types) {
         try {
@@ -106,7 +147,8 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
             Method method = null;
             while (cl != null) {
                 try {
-                    method = cl.getDeclaredMethod(methodName, classTypes);
+                    method = getMethod(cl, methodName, classTypes);
+                    //method = cl.getDeclaredMethod(methodName, classTypes);
                     break;
                 } catch (NoSuchMethodException nsme) {
                     cl = cl.getSuperclass();
