@@ -239,6 +239,13 @@ public class ReflectionAbstractionImplTest {
     }
 
     @Test
+    public void testGetTypeWrongClassType() {
+        ClassType result = ra.getReturnType(new ClassTypeStub("h"), "getFooBar", new ClassType[0]);
+
+        assertEquals("ClassTypeError", result.getClass().getSimpleName());
+    }
+
+    @Test
     public void testMapEntry() {
         ClassType clazz = ra.getClassTypeByName("java.util.Map$Entry");
 

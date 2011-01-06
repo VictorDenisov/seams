@@ -13,7 +13,7 @@ class VariableList {
 
     private Map<String, ClassType> fieldTypes = new HashMap<String, ClassType>();
 
-    private VariableList() {
+    protected VariableList() {
 
     }
 

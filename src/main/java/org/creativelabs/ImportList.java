@@ -75,7 +75,7 @@ class ImportList {
 
     ClassType getClassByType(Type type) {
         if (type instanceof ReferenceType) {
-            ClassOrInterfaceType classType = (ClassOrInterfaceType)((ReferenceType)type).getType();
+            ClassOrInterfaceType classType = (ClassOrInterfaceType) ((ReferenceType) type).getType();
             ClassType result = getClassByShortName(classType.toString());
 
             result = processTypeArguments(classType, result);
