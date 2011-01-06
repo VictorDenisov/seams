@@ -157,7 +157,7 @@ public class TypeFinderTest {
 
         ClassType type = new TypeFinder(null, null).determineType(expr);
 
-        assertEquals("int", type.toString());
+        assertEquals("java.lang.Integer", type.toString());
     }
 
     @Test

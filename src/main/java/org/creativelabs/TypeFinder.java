@@ -96,9 +96,14 @@ class TypeFinder {
             return imports.getClassByShortName("Object");
         }
         String className = expr.getClass().getSimpleName();
-        //All javaparser's literals have the special class names : Type + "LiteralExpr"
+        //All javaparser's literals have the special class names : Type + "LiteralExpr" 
+        //except Character
         String typeOfExpression = className.substring(0, className.indexOf("Literal"));
-        return reflectionAbstraction.getClassTypeByName("java.lang." + typeOfExpression);
+        if ("Char".equals(typeOfExpression)) {
+            return reflectionAbstraction.getClassTypeByName("java.lang.Character");
+        } else {
+            return reflectionAbstraction.getClassTypeByName("java.lang." + typeOfExpression);
+        }
     }
 
     private ClassType determineType(AssignExpr expr) {
@@ -193,7 +198,7 @@ class TypeFinder {
             return reflectionAbstraction.getClassTypeByName("java.lang.String");
         }
         if (oneOfArgumentsHaveType("char", firstArgType, secondArgType)
-                || oneOfArgumentsHaveType("java.lang.Char", firstArgType, secondArgType)) {
+                || oneOfArgumentsHaveType("java.lang.Character", firstArgType, secondArgType)) {
             return reflectionAbstraction.getClassTypeByName("char");
         }
         return null;
