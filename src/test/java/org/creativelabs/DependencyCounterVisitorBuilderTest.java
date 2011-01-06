@@ -122,4 +122,17 @@ public class DependencyCounterVisitorBuilderTest {
         assertEquals("Imports should be not null for this operation", result);
     }
 
+    @Test(dependsOnGroups="parse-helper.create-stmt")
+    public void testExceptionProcessing() throws Exception {
+        Statement expr = ParseHelper.createStatement("try {} catch (Exception e) {}");
+
+        ImportList imports = ParseHelper.createImportList("");
+        VariableList classFields = VariableList.createEmpty();
+
+        DependencyCounterVisitor dependencyCounter = new DependencyCounterVisitor(classFields, imports);
+        expr.accept(dependencyCounter, null);
+        assertEquals("java.lang.Exception", 
+                dependencyCounter.localVariables.getFieldTypeAsClass("e").toString());
+    }
+
 }

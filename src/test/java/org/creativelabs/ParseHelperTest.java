@@ -94,5 +94,12 @@ public class ParseHelperTest {
         assertEquals("Entry", classType.getName());
         assertEquals("Map", classType.getScope().getName());
     }
+
+    @Test(groups="parse-helper.create-stmt")
+    public void testCreateStatement() throws Exception {
+        Statement statement = ParseHelper.createStatement("System.out.println();");
+
+        assertEquals("ExpressionStmt", statement.getClass().getSimpleName());
+    }
 }
 

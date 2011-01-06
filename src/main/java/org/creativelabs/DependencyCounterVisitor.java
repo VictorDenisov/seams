@@ -21,7 +21,7 @@ class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
 
     private Set<Dependency> dependencies = new HashSet<Dependency>();
 
-    private VariableList localVariables = VariableList.createEmpty();
+    protected VariableList localVariables = VariableList.createEmpty();
 
     private InternalInstancesGraph internalInstances = new InternalInstancesGraph();
 
@@ -106,6 +106,13 @@ class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
             }
         }
         super.visit(n, o);
+    }
+
+    @Override
+    public void visit(Parameter n, Object o) {
+        ClassType classType = imports.getClassByType(n.getType());
+
+        localVariables.put(n.getId().getName(), classType);
     }
 }
 

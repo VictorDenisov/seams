@@ -24,6 +24,22 @@ public final class ParseHelper {
 
     private ReflectionAbstraction ra = null;
 
+    public static Statement createStatement(String data) throws ParseException {
+        InputStream sr = new ByteArrayInputStream(("public class Sample {"
+                    + "public static void main(String[] args) {"
+                    + data
+                    + "}" 
+                    + "}").getBytes());
+
+        CompilationUnit cu = JavaParser.parse(sr);
+
+        ClassOrInterfaceDeclaration cd = (ClassOrInterfaceDeclaration) cu.getTypes().get(0);
+        MethodDeclaration md = (MethodDeclaration) cd.getMembers().get(0);
+        Statement expr = md.getBody().getStmts().get(0);
+
+        return expr;
+    }
+
     /**
      * data - one expression, which ast should be returned.
      */
