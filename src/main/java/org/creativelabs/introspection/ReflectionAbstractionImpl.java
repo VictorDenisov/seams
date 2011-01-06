@@ -148,7 +148,6 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
             while (cl != null) {
                 try {
                     method = getMethod(cl, methodName, classTypes);
-                    //method = cl.getDeclaredMethod(methodName, classTypes);
                     break;
                 } catch (NoSuchMethodException nsme) {
                     cl = cl.getSuperclass();

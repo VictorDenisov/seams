@@ -155,6 +155,26 @@ public class ReflectionAbstractionImplTest {
         assertEquals("boolean", result.toString());
     }
 
+    @Test
+    public void testGetReturnTypeTypeFinderLiteral() throws Exception {
+        Class className = Class.forName("org.creativelabs.TypeFinder");
+
+        Class[] args = new Class[] {Class.forName("japa.parser.ast.expr.LiteralExpr")};
+
+        Method result = ra.getMethod(className, "determineType", args);
+        assertEquals("japa.parser.ast.expr.LiteralExpr", result.getParameterTypes()[0].getName());
+    }
+
+    @Test
+    public void testGetReturnTypeTypeFinderNameExpr() throws Exception {
+        Class className = Class.forName("org.creativelabs.TypeFinder");
+
+        Class[] args = new Class[] {Class.forName("japa.parser.ast.expr.NameExpr")};
+
+        Method result = ra.getMethod(className, "determineType", args);
+        assertEquals("japa.parser.ast.expr.NameExpr", result.getParameterTypes()[0].getName());
+    }
+
     @Test(dependsOnGroups="parse-helper.create-type.*")
     public void testReflectionAbstractionGetClassName() throws Exception {
         ClassType className = ra.getClassTypeByName("java.util.ArrayList");
