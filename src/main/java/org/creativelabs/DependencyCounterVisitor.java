@@ -38,11 +38,7 @@ class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
         if (n == null) {
             return;
         }
-        if (n.getStmts() != null) {
-            for (Statement statement : n.getStmts()) {
-                statement.accept(this, o);
-            }
-        }
+        super.visit(n, o);
     }
 
     @Override
