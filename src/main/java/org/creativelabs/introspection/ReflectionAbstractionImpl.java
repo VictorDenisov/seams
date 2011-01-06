@@ -159,6 +159,27 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         }
     }
 
+    private ClassTypeImpl processParameterizedType(ParameterizedType parameterizedType, 
+            HashMap<String, ClassType> genericArgs, ClassType result) {
+        Type[] actualArgs = parameterizedType.getActualTypeArguments();
+        ClassType[] classTypeArgs = new ClassType[actualArgs.length];
+        for (int i = 0; i < actualArgs.length; ++i) {
+            if (actualArgs[i] instanceof TypeVariable) {
+                classTypeArgs[i] = genericArgs.get(actualArgs[i].toString());
+            } else if (actualArgs[i] instanceof Class) {
+                Class argClass = (Class) actualArgs[i];
+                classTypeArgs[i] = getClassTypeByName(argClass.getName());
+            } else if (actualArgs[i] instanceof ParameterizedType) {
+                ClassTypeImpl classTypeArg = new ClassTypeImpl();
+                classTypeArg.clazz = (Class) ((ParameterizedType) actualArgs[i]).getRawType();
+                classTypeArgs[i] = processParameterizedType((ParameterizedType) actualArgs[i], 
+                        genericArgs, classTypeArg);
+            }
+        }
+
+        return (ClassTypeImpl) substGenericArgs(result, classTypeArgs);
+    }
+
     @Override
     public ClassType getReturnType(ClassType className, String methodName, ClassType[] types) {
         try {
@@ -188,18 +209,8 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
                 result = (ClassTypeImpl) (classNameImpl.genericArgs.get(varReturnType));
             } else if (genericReturnType instanceof ParameterizedType) {
                 ParameterizedType parameterizedType = (ParameterizedType) genericReturnType;
-                Type[] actualArgs = parameterizedType.getActualTypeArguments();
-                ClassType[] classTypeArgs = new ClassType[actualArgs.length];
-                for (int i = 0; i < actualArgs.length; ++i) {
-                    if (actualArgs[i] instanceof TypeVariable) {
-                        classTypeArgs[i] = classNameImpl.genericArgs.get(actualArgs[i].toString());
-                    } else if (actualArgs[i] instanceof Class) {
-                        Class argClass = (Class) actualArgs[i];
-                        classTypeArgs[i] = getClassTypeByName(argClass.getName());
-                    }
-                }
-
-                result = (ClassTypeImpl) substGenericArgs(result, classTypeArgs);
+                result = processParameterizedType(parameterizedType,
+                        classNameImpl.genericArgs, result);
             }
 
             return result;
