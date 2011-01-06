@@ -296,4 +296,22 @@ public class ReflectionAbstractionImplTest {
         assertEquals("ClassTypeError", stub.getClass().getSimpleName());
     }
 
+    @Test
+    public void testMapAndPrimitiveTypes() {
+        ClassType clazz = ra.getClassTypeByName("java.util.Map");
+
+        ClassType genericArgInteger = ra.getClassTypeByName("java.lang.Integer");
+        ClassType genericArgString = ra.getClassTypeByName("java.lang.String");
+
+        clazz = ra.substGenericArgs(clazz, 
+                new ClassType[]{genericArgInteger, genericArgString});
+
+        ClassType intClass = ra.getClassTypeByName("int");
+        ClassType strClass = ra.getClassTypeByName("java.lang.String");
+
+        ClassType result = ra.getReturnType(clazz, "put", new ClassType[]{intClass, strClass});
+
+        assertEquals("java.lang.String", result.toString());
+    }
+
 }
