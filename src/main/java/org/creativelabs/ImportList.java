@@ -85,9 +85,19 @@ class ImportList {
         }
     }
 
+    private String getScope(String shortName) {
+        String scope = shortName;
+        if (shortName.indexOf('$') >= 0) {
+            scope = shortName.substring(0, shortName.indexOf('$'));
+        }
+        return scope;
+
+    }
+
     ClassType getClassByShortName(String shortName) {
         shortName = stripGeneric(shortName);
         shortName = processForNested(shortName);
+        String scope = getScope(shortName);
         if (classIsPrimitive(shortName)) {
             return ra.getClassTypeByName(shortName);
         }
@@ -100,8 +110,9 @@ class ImportList {
                 }
             } else {
                 String className = id.getName().toString();
-                if (id.getName().getName().equals(shortName)) {
-                    return ra.getClassTypeByName(className);
+                className = className.substring(0, className.length() - scope.length());
+                if (id.getName().getName().equals(scope)) {
+                    return ra.getClassTypeByName(className + shortName);
                 }
             }
         }

@@ -88,4 +88,31 @@ public class DependencyCounterVisitorTest {
 
         verify(imports, atLeastOnce()).getClassByType(any(Type.class));
     }
+
+    @Test(dependsOnGroups="parse-helper.create-stmt")
+    public void testExceptionProcessing() throws Exception {
+        Statement expr = ParseHelper.createStatement("try {} catch (Exception e) {}");
+
+        ImportList imports = ParseHelper.createImportList("");
+        VariableList classFields = VariableList.createEmpty();
+
+        DependencyCounterVisitor dependencyCounter = new DependencyCounterVisitor(classFields, imports);
+        expr.accept(dependencyCounter, null);
+        assertEquals("java.lang.Exception", 
+                dependencyCounter.localVariables.getFieldTypeAsClass("e").toString());
+    }
+
+    @Test(dependsOnGroups = "parse-helper.create-stmt", enabled=false)
+    public void testForeachProcessing() throws Exception {
+        Statement expr = ParseHelper.createStatement(
+                "for (Map.Entry<String, Integer> entry : map) {}");
+        ImportList imports = ParseHelper.createImportList("import java.util.Map;");
+        VariableList classFields = VariableList.createEmpty();
+
+        DependencyCounterVisitor dependencyCounter = new DependencyCounterVisitor(classFields, imports);
+        expr.accept(dependencyCounter, null);
+
+        assertEquals("java.util.Map$Entry<java.lang.String, java.lang.Integer, >",
+                dependencyCounter.localVariables.getFieldTypeAsClass("entry").toString());
+    }
 }

@@ -184,4 +184,16 @@ public class ImportListTest {
 
         assertEquals("java.util.Map$Entry<java.lang.String, java.lang.String, >", result.toString());
     }
+
+    @Test
+    public void testCreateMapEntryMapImported() throws Exception {
+        ParseHelper ph = new ParseHelper(new ReflectionAbstractionImpl());
+
+        ImportList imports = ph.createImportListRA("package org.sample; import java.util.Map;");
+        Type type = ph.createType("Map.Entry<String, String>");
+
+        ClassType result = imports.getClassByType(type);
+
+        assertEquals("java.util.Map$Entry<java.lang.String, java.lang.String, >", result.toString());
+    }
 }
