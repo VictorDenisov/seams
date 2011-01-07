@@ -328,5 +328,17 @@ public class ReflectionAbstractionImplTest {
         assertEquals("java.util.Set<java.util.Map$Entry<java.lang.Integer, java.lang.String, >, >",
                 result.toString());
     }
+    
+    @Test
+    public void testSetAddAll() {
+        ClassType clazz = ra.getClassTypeByName("java.util.Set");
+        ClassType genericArgString = ra.getClassTypeByName("java.lang.String");
+        clazz = ra.substGenericArgs(clazz, new ClassType[]{genericArgString});
+
+        ClassType arg = ra.getClassTypeByName("java.util.Set");
+        ClassType result = ra.getReturnType(clazz, "addAll", new ClassType[]{arg});
+
+        assertEquals("boolean", result.toString());
+    }
 
 }

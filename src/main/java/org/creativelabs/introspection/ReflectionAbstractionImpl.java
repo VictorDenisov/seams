@@ -115,13 +115,7 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
     }
 
     boolean isSuperClass(Class superClass, Class clazz) {
-        while (clazz != null) {
-            if (clazz.getName().equals(superClass.getName())) {
-                return true;
-            }
-            clazz = clazz.getSuperclass();
-        }
-        return false;
+        return superClass.isAssignableFrom(clazz);
     }
 
     boolean isEligible(Method method, String methodName, Class[] args) {
