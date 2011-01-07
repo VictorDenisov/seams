@@ -322,4 +322,15 @@ public class ReflectionAbstractionImplTest {
         assertEquals("boolean", result.toString());
     }
 
+    @Test
+    public void testStringIndexOf() {
+        ClassType clazz = ra.getClassTypeByName("java.lang.String");
+
+        ClassType arg = ra.getClassTypeByName("char");
+
+        ClassType result = ra.getReturnType(clazz, "indexOf", new ClassType[]{arg});
+
+        assertEquals("int", result.toString());
+    }
+
 }

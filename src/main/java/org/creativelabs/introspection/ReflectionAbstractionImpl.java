@@ -2,6 +2,7 @@ package org.creativelabs.introspection;
 
 import java.lang.reflect.*;
 import java.util.HashMap;
+import java.util.ArrayList;
 
 public class ReflectionAbstractionImpl implements ReflectionAbstraction {
 
@@ -39,32 +40,40 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         }
     }
 
-    private HashMap<String, Class> boxingMap;
+    private HashMap<String, ArrayList<Class>> boxingMap;
 
     private HashMap<String, Class> primitivesMap;
 
+    private void addToBoxing(String data, Class clazz) {
+        if (!boxingMap.containsKey(data)) {
+            boxingMap.put(data, new ArrayList<Class>());
+        }
+        boxingMap.get(data).add(clazz);
+    }
+
     public ReflectionAbstractionImpl() {
-        boxingMap = new HashMap<String, Class>();
+        boxingMap = new HashMap<String, ArrayList<Class>>();
 
-        boxingMap.put("byte", Byte.class);
-        boxingMap.put("short", Short.class);
-        boxingMap.put("int", Integer.class);
-        boxingMap.put("long", Long.class);
-        boxingMap.put("float", Float.class);
-        boxingMap.put("double", Double.class);
-        boxingMap.put("char", Character.class);
-        boxingMap.put("boolean", Boolean.class);
-        boxingMap.put("void", Void.class);
+        addToBoxing("byte", Byte.class);
+        addToBoxing("short", Short.class);
+        addToBoxing("int", Integer.class);
+        addToBoxing("long", Long.class);
+        addToBoxing("float", Float.class);
+        addToBoxing("double", Double.class);
+        addToBoxing("char", Character.class);
+        addToBoxing("char", int.class);
+        addToBoxing("boolean", Boolean.class);
+        addToBoxing("void", Void.class);
 
-        boxingMap.put("java.lang.Byte", byte.class);
-        boxingMap.put("java.lang.Short", short.class);
-        boxingMap.put("java.lang.Integer", int.class);
-        boxingMap.put("java.lang.Long", long.class);
-        boxingMap.put("java.lang.Float", float.class);
-        boxingMap.put("java.lang.Double", double.class);
-        boxingMap.put("java.lang.Character", char.class);
-        boxingMap.put("java.lang.Boolean", boolean.class);
-        boxingMap.put("java.lang.Void", void.class);
+        addToBoxing("java.lang.Byte", byte.class);
+        addToBoxing("java.lang.Short", short.class);
+        addToBoxing("java.lang.Integer", int.class);
+        addToBoxing("java.lang.Long", long.class);
+        addToBoxing("java.lang.Float", float.class);
+        addToBoxing("java.lang.Double", double.class);
+        addToBoxing("java.lang.Character", char.class);
+        addToBoxing("java.lang.Boolean", boolean.class);
+        addToBoxing("java.lang.Void", void.class);
 
         primitivesMap = new HashMap<String, Class>();
         primitivesMap.put("byte", byte.class);
@@ -119,8 +128,14 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         for (int i = 0; i < args.length; ++i) {
             Class arg = args[i];
             if (!isSuperClass(parameters[i], arg)) {
-                arg = boxingMap.get(arg.getName());
-                if (!isSuperClass(parameters[i], arg)) {
+                boolean result = false;
+                for (Class varg: boxingMap.get(arg.getName())) {
+                    if (isSuperClass(parameters[i], varg)) {
+                        result = true;
+                        break;
+                    }
+                }
+                if (result == false) {
                     return false;
                 }
             }

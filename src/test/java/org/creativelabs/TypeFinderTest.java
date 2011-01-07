@@ -483,4 +483,18 @@ public class TypeFinderTest {
         
         assertEquals("boolean", type.toString());
     }
+
+    //TODO
+    @Test(enabled = false)
+    public void testStringIndexOf() throws Exception {
+        Expression expr = ParseHelper.createExpression("\"foo\".indexOf('a')");
+
+        VariableList varList = VariableList.createEmpty();
+        ImportList imports = ParseHelper.createImportList("");
+
+        TypeFinder typeFinder = new TypeFinder(new ReflectionAbstractionImpl(), varList, imports);
+        ClassType type = typeFinder.determineType(expr);
+
+        assertEquals("int", type.toString());
+    }
 }
