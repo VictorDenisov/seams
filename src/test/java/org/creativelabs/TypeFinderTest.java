@@ -496,4 +496,22 @@ public class TypeFinderTest {
 
         assertEquals("int", type.toString());
     }
+
+    @Test
+    public void testConstructorExpression() throws Exception {
+        ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
+        Expression expr = ParseHelper.createExpression(
+                "new ChartDrawer(chartBuilder.getChart()).saveToFile(IMAGE_WIDTH, IMAGE_HEIGHT, fileName)");
+        VariableList varList = VariableList.createEmpty();
+        varList.put("chartBuilder", ra.getClassTypeByName("org.creativelabs.chart.BarChartBuilder"));
+        varList.put("IMAGE_WIDTH", ra.getClassTypeByName("int"));
+        varList.put("IMAGE_HEIGHT", ra.getClassTypeByName("int"));
+        varList.put("fileName", ra.getClassTypeByName("java.lang.String"));
+        ImportList imports = ParseHelper.createImportList("import org.creativelabs.ui.ChartDrawer;");
+
+        TypeFinder typeFinder = new TypeFinder(new ReflectionAbstractionImpl(), varList, imports);
+        ClassType type = typeFinder.determineType(expr);
+
+        assertEquals("void", type.toString());
+    }
 }
