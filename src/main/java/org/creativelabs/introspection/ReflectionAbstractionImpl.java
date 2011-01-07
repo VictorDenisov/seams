@@ -41,6 +41,8 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
 
     private HashMap<String, Class> boxingMap;
 
+    private HashMap<String, Class> primitivesMap;
+
     public ReflectionAbstractionImpl() {
         boxingMap = new HashMap<String, Class>();
 
@@ -63,37 +65,25 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         boxingMap.put("java.lang.Character", char.class);
         boxingMap.put("java.lang.Boolean", boolean.class);
         boxingMap.put("java.lang.Void", void.class);
+
+        primitivesMap = new HashMap<String, Class>();
+        primitivesMap.put("byte", byte.class);
+        primitivesMap.put("short", short.class);
+        primitivesMap.put("int", int.class);
+        primitivesMap.put("long", long.class);
+        primitivesMap.put("float", float.class);
+        primitivesMap.put("double", double.class);
+        primitivesMap.put("char", char.class);
+        primitivesMap.put("boolean", boolean.class);
+        primitivesMap.put("void", void.class);
     }
 
     private Class getClass(String type) throws ClassNotFoundException {
-        if ("byte".equals(type)) {
-            return byte.class;
+        if (primitivesMap.containsKey(type)) {
+            return primitivesMap.get(type);
+        } else {
+            return Class.forName(type);
         }
-        if ("short".equals(type)) {
-            return short.class;
-        }
-        if ("int".equals(type)) {
-            return int.class;
-        }
-        if ("long".equals(type)) {
-            return long.class;
-        }
-        if ("float".equals(type)) {
-            return float.class;
-        }
-        if ("double".equals(type)) {
-            return double.class;
-        }
-        if ("char".equals(type)) {
-            return char.class;
-        }
-        if ("boolean".equals(type)) {
-            return boolean.class;
-        }
-        if ("void".equals(type)) {
-            return void.class;
-        }
-        return Class.forName(type);
     }
 
     @Override
