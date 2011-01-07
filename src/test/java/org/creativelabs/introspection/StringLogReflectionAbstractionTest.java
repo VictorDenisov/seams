@@ -17,10 +17,10 @@ public class StringLogReflectionAbstractionTest {
 
     @BeforeMethod
     public void setUp() {
-        ra = StringLogReflectionAbstraction.createDumbStringLogReflectionAbstraction();
+        ra = StringLogReflectionAbstraction.createDumb();
 
         decoratingReflectionAbstraction = StringLogReflectionAbstraction
-            .createDecoratingStringLogReflectionAbstraction(ra);
+            .createDecorating(ra);
     }
 
     @Test(groups=SIMPLE_TESTS_GROUP_NAME)

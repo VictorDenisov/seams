@@ -9,12 +9,12 @@ public class StringLogReflectionAbstraction implements ReflectionAbstraction {
     private StringLogReflectionAbstraction() {
     }
     
-    public static StringLogReflectionAbstraction createDumbStringLogReflectionAbstraction() {
+    public static StringLogReflectionAbstraction createDumb() {
         return new StringLogReflectionAbstraction();
     }
 
     public static StringLogReflectionAbstraction 
-        createDecoratingStringLogReflectionAbstraction (ReflectionAbstraction reflectionAbstraction) {
+        createDecorating(ReflectionAbstraction reflectionAbstraction) {
         StringLogReflectionAbstraction result = new StringLogReflectionAbstraction();
         result.decoratedReflectionAbstraction = reflectionAbstraction;
         return result;
