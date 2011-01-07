@@ -117,7 +117,7 @@ public class TypeFinderTest {
         assertEquals("org.apache.log4j.lf5.LogLevel", type.toString());
     }
 
-    @Test(enabled=false)
+    @Test(enabled = false)
     public void testDetermineTypeThrowsUnsupportedExpression() throws Exception {
         Expression expr = ParseHelper.createExpression("x = y");
 
@@ -467,7 +467,7 @@ public class TypeFinderTest {
         assertEquals("java.io.File", type.toString());
     }
 
-    @Test(enabled=false)
+    @Test
     public void testImportDeclarationGetNameGetNameEquals() throws Exception {
         StringLogReflectionAbstraction reflectionAbstraction 
             = StringLogReflectionAbstraction
@@ -481,6 +481,6 @@ public class TypeFinderTest {
 
         ClassType type = typeFinder.determineType(expr);
         
-        assertEquals("java.lang.String", type.toString());
+        assertEquals("boolean", type.toString());
     }
 }
