@@ -181,13 +181,20 @@ public class ReflectionAbstractionImplTest {
         assertEquals("java.util.ArrayList<E, >", className.toString());
     }
 
+    private ClassType createParameterizedClass(String className, String... parameters) {
+        ClassType clazz = ra.getClassTypeByName(className);
+        ClassType[] genericArgs = new ClassType[parameters.length];
+        for (int i = 0; i < parameters.length; ++i) {
+            genericArgs[i] = ra.getClassTypeByName(parameters[i]);
+        }
+        clazz = ra.substGenericArgs(clazz, genericArgs);
+        return clazz;
+    }
+
     @Test(dependsOnGroups="parse-helper.create-type.*")
     public void testReflectionAbstractionSetGenericArgs() throws Exception {
-        ClassType className = ra.getClassTypeByName("java.util.ArrayList");
+        ClassType result = createParameterizedClass("java.util.ArrayList", "java.lang.String");
 
-        ClassType genericArg = ra.getClassTypeByName("java.lang.String");
-
-        ClassType result = ra.substGenericArgs(className, new ClassType[]{genericArg});
         assertEquals("java.util.ArrayList<java.lang.String, >", result.toString());
     }
 
@@ -195,11 +202,7 @@ public class ReflectionAbstractionImplTest {
             {"testReflectionAbstractionGetClassName", 
                 "testReflectionAbstractionSetGenericArgs"})
     public void testGetReturnTypeWithGenerics() throws Exception {
-        ClassType className = ra.getClassTypeByName("java.util.ArrayList");
-
-        ClassType genericArg = ra.getClassTypeByName("java.lang.String");
-
-        className = ra.substGenericArgs(className, new ClassType[]{genericArg});
+        ClassType className = createParameterizedClass("java.util.ArrayList", "java.lang.String");
 
         ClassType arg = ra.getClassTypeByName("int");
         ClassType result = ra.getReturnType(className, "get", new ClassType[]{arg});
@@ -211,13 +214,8 @@ public class ReflectionAbstractionImplTest {
             {"testReflectionAbstractionGetClassName", 
                 "testReflectionAbstractionSetGenericArgs"})
     public void testGetReturnTypeWithGenericsReturnValueLetter() throws Exception {
-        ClassType className = ra.getClassTypeByName("java.util.HashMap");
-
-        ClassType genericArgString = ra.getClassTypeByName("java.lang.String");
-        ClassType genericArgInteger = ra.getClassTypeByName("java.lang.Integer");
-
-        className = ra.substGenericArgs(className, 
-                new ClassType[]{genericArgString, genericArgInteger});
+        ClassType className = createParameterizedClass("java.util.HashMap", 
+                "java.lang.String", "java.lang.Integer");
 
         ClassType result = ra.getReturnType(className, "keySet", new ClassType[0]);
 
@@ -225,8 +223,7 @@ public class ReflectionAbstractionImplTest {
     }
 
     @Test(dependsOnMethods=
-            {"testReflectionAbstractionGetClassName", 
-                "testReflectionAbstractionSetGenericArgs"})
+            {"testReflectionAbstractionGetClassName"})
     public void testGetReturnTypeWithGenericsReturnValueClass() throws Exception {
         ClassType className = ra.getClassTypeByName("org.creativelabs.ClassProcessor");
 
@@ -272,15 +269,10 @@ public class ReflectionAbstractionImplTest {
         assertEquals("ClassTypeError", result.getClass().getSimpleName());
     }
 
-    @Test
+    @Test(dependsOnMethods = "testReflectionAbstractionSetGenericArgs")
     public void testMapEntry() {
-        ClassType clazz = ra.getClassTypeByName("java.util.Map$Entry");
-
-        ClassType genericArgString = ra.getClassTypeByName("java.lang.String");
-        ClassType genericArgInteger = ra.getClassTypeByName("java.lang.Integer");
-
-        clazz = ra.substGenericArgs(clazz, 
-                new ClassType[]{genericArgString, genericArgInteger});
+        ClassType clazz = createParameterizedClass("java.util.Map$Entry", 
+                "java.lang.String", "java.lang.Integer");
 
         ClassType result = ra.getReturnType(clazz, "getKey", new ClassType[0]);
 
@@ -296,15 +288,10 @@ public class ReflectionAbstractionImplTest {
         assertEquals("ClassTypeError", stub.getClass().getSimpleName());
     }
 
-    @Test
+    @Test(dependsOnMethods = "testReflectionAbstractionSetGenericArgs")
     public void testMapAndPrimitiveTypes() {
-        ClassType clazz = ra.getClassTypeByName("java.util.Map");
-
-        ClassType genericArgInteger = ra.getClassTypeByName("java.lang.Integer");
-        ClassType genericArgString = ra.getClassTypeByName("java.lang.String");
-
-        clazz = ra.substGenericArgs(clazz, 
-                new ClassType[]{genericArgInteger, genericArgString});
+        ClassType clazz = createParameterizedClass("java.util.Map",
+                "java.lang.Integer", "java.lang.String");
 
         ClassType intClass = ra.getClassTypeByName("int");
         ClassType strClass = ra.getClassTypeByName("java.lang.String");
@@ -314,26 +301,20 @@ public class ReflectionAbstractionImplTest {
         assertEquals("java.lang.String", result.toString());
     }
 
-    @Test
+    @Test(dependsOnMethods = "testReflectionAbstractionSetGenericArgs")
     public void testMapGetEntrySet() {
-        ClassType clazz = ra.getClassTypeByName("java.util.Map");
+        ClassType clazz = createParameterizedClass("java.util.Map",
+                "java.lang.Integer", "java.lang.String");
 
-        ClassType genericArgInteger = ra.getClassTypeByName("java.lang.Integer");
-        ClassType genericArgString = ra.getClassTypeByName("java.lang.String");
-
-        clazz = ra.substGenericArgs(clazz, 
-                new ClassType[]{genericArgInteger, genericArgString});
         ClassType result = ra.getReturnType(clazz, "entrySet", new ClassType[0]);
 
         assertEquals("java.util.Set<java.util.Map$Entry<java.lang.Integer, java.lang.String, >, >",
                 result.toString());
     }
     
-    @Test
+    @Test(dependsOnMethods = "testReflectionAbstractionSetGenericArgs")
     public void testSetAddAll() {
-        ClassType clazz = ra.getClassTypeByName("java.util.Set");
-        ClassType genericArgString = ra.getClassTypeByName("java.lang.String");
-        clazz = ra.substGenericArgs(clazz, new ClassType[]{genericArgString});
+        ClassType clazz = createParameterizedClass("java.util.Set", "java.lang.String");
 
         ClassType arg = ra.getClassTypeByName("java.util.Set");
         ClassType result = ra.getReturnType(clazz, "addAll", new ClassType[]{arg});
