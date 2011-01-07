@@ -50,6 +50,10 @@ class TypeFinder {
         return reflectionAbstraction.createErrorClassType("unsupported expression");
     }
 
+    private ClassType determineType(CastExpr expr) {
+        return imports.getClassByType(expr.getType());
+    }
+
     private ClassType determineType(NameExpr expr) {
         String name = expr.getName();
         ClassType result = null;
@@ -124,10 +128,6 @@ class TypeFinder {
 
     private ClassType determineType(ObjectCreationExpr expr) {
         return imports.getClassByShortName(expr.getType().getName());
-    }
-
-    private ClassType determineType(CastExpr expr) {
-        return determineType(new NameExpr(expr.getType().toString()));
     }
 
     private ClassType determineType(BinaryExpr expr) {

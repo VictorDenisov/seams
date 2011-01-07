@@ -509,9 +509,10 @@ public class TypeFinderTest {
         varList.put("fileName", ra.getClassTypeByName("java.lang.String"));
         ImportList imports = ParseHelper.createImportList("import org.creativelabs.ui.ChartDrawer;");
 
-        TypeFinder typeFinder = new TypeFinder(new ReflectionAbstractionImpl(), varList, imports);
+        TypeFinder typeFinder = new TypeFinder(ra, varList, imports);
         ClassType type = typeFinder.determineType(expr);
 
         assertEquals("void", type.toString());
     }
+
 }
