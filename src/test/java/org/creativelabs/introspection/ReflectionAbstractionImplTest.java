@@ -84,7 +84,14 @@ public class ReflectionAbstractionImplTest {
             { "boolean", "boolean" },
             { "void", "void" },
             { "java.util.Map$Entry", "java.util.Map$Entry<K, V, >" },
+            { "java.lang.Byte", "java.lang.Byte" },
+            { "java.lang.Short", "java.lang.Short" },
             { "java.lang.Integer", "java.lang.Integer" },
+            { "java.lang.Long", "java.lang.Long" },
+            { "java.lang.Float", "java.lang.Float" },
+            { "java.lang.Double", "java.lang.Double" },
+            { "java.lang.Character", "java.lang.Character" },
+            { "java.lang.Void", "java.lang.Void" },
         };
     }
 
