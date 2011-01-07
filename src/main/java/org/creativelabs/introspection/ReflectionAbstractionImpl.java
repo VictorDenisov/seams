@@ -72,6 +72,7 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         addToBoxing("java.lang.Float", float.class);
         addToBoxing("java.lang.Double", double.class);
         addToBoxing("java.lang.Character", char.class);
+        addToBoxing("java.lang.Character", int.class);
         addToBoxing("java.lang.Boolean", boolean.class);
         addToBoxing("java.lang.Void", void.class);
 

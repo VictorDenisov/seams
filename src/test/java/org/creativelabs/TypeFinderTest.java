@@ -484,8 +484,7 @@ public class TypeFinderTest {
         assertEquals("boolean", type.toString());
     }
 
-    //TODO
-    @Test(enabled = false)
+    @Test
     public void testStringIndexOf() throws Exception {
         Expression expr = ParseHelper.createExpression("\"foo\".indexOf('a')");
 
