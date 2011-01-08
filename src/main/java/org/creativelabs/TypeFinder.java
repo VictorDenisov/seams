@@ -47,6 +47,8 @@ class TypeFinder {
             return determineType((BinaryExpr) expr);
         } else if (expr instanceof ArrayAccessExpr) {
             return determineType((ArrayAccessExpr) expr);
+        } else if (expr instanceof VariableDeclarationExpr) {
+            return determineType((VariableDeclarationExpr) expr);
         }
 
         return reflectionAbstraction.createErrorClassType("unsupported expression");
@@ -58,6 +60,9 @@ class TypeFinder {
 
     private ClassType determineType(NameExpr expr) {
         String name = expr.getName();
+        if (isFullClassName(name)){
+            return reflectionAbstraction.getClassTypeByName(name);
+        }
         ClassType result = null;
         if (imports != null) {
             result = imports.getClassByShortName(name);
@@ -67,6 +72,13 @@ class TypeFinder {
         } else {
             return varType.getFieldTypeAsClass(name);
         }
+    }
+
+    private boolean isFullClassName(String className){
+        if (className.indexOf('.') == -1){
+            return false;
+        }
+        return true;
     }
 
     private ClassType determineType(FieldAccessExpr expr) {
@@ -233,6 +245,10 @@ class TypeFinder {
             expression = ((ArrayAccessExpr) expression).getName();
         }
         return reflectionAbstraction.convertFromArray(determineType((NameExpr) expression));
+    }
+
+    private ClassType determineType(VariableDeclarationExpr expr) {
+        return determineType(new NameExpr(expr.getType().toString()));
     }
 
 }

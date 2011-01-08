@@ -1,5 +1,6 @@
 package org.creativelabs;
 
+import japa.parser.ParseException;
 import japa.parser.ast.CompilationUnit;
 import japa.parser.ast.body.ClassOrInterfaceDeclaration;
 import japa.parser.ast.body.MethodDeclaration;
@@ -657,6 +658,24 @@ public class TypeFinderTest {
 
         assertEquals("java.lang.Class[][]", type.toString());
 
+    }
+
+    @Test
+    public void testFullClassNameProcessing() throws Exception {
+        VariableDeclarationExpr expr = (VariableDeclarationExpr) ParseHelper.createExpression("java.lang.String str");
+
+        ImportList importList = ParseHelper.createImportList(
+                "package java.util;"
+                + "import java.lang.Class;");
+
+        VariableList varTypes = createEmptyVariableList();
+
+        TestingReflectionAbstraction reflectionAbstraction = new TestingReflectionAbstraction();
+        reflectionAbstraction.addClass("java.lang.String", "java.lang.String");
+
+        ClassType type = new TypeFinder(reflectionAbstraction, varTypes, importList).determineType(expr);
+
+        assertEquals("java.lang.String", type.toString());
     }
 
 }
