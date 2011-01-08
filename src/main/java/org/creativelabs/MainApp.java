@@ -97,9 +97,12 @@ final class MainApp {
             if (fileName.endsWith(".java")) {
                 FileInputStream fis = new FileInputStream(fileOrDirectory);
                 CompilationUnit cu = JavaParser.parse(fis);
-                imports = new ImportList(new ReflectionAbstractionImpl(), cu);
                 for (TypeDeclaration typeDeclaration : cu.getTypes()) {
                     if (typeDeclaration instanceof ClassOrInterfaceDeclaration) {
+                        imports = 
+                            new ImportList(new ReflectionAbstractionImpl(), cu, 
+                                    (ClassOrInterfaceDeclaration) typeDeclaration);
+
                         processClass((ClassOrInterfaceDeclaration) typeDeclaration,
                                 fileOrDirectory.getAbsolutePath());
                     }

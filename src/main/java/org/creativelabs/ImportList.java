@@ -4,6 +4,7 @@ import japa.parser.ast.CompilationUnit;
 import japa.parser.ast.ImportDeclaration;
 import japa.parser.ast.expr.NameExpr;
 import japa.parser.ast.type.*;
+import japa.parser.ast.body.*;
 
 import org.creativelabs.introspection.ReflectionAbstraction;
 import org.creativelabs.introspection.ClassType;
@@ -16,6 +17,13 @@ class ImportList {
 
     private ReflectionAbstraction ra = null;
 
+    private String className;
+
+    ImportList(ReflectionAbstraction ra, CompilationUnit cu, ClassOrInterfaceDeclaration cd) {
+        this(ra, cu);
+        className = cu.getPackage().getName().toString() + "." + cd.getName();
+    }
+
     ImportList(ReflectionAbstraction ra, CompilationUnit cu) {
         this.ra = ra;
         if (cu.getPackage() != null) {
@@ -26,7 +34,6 @@ class ImportList {
             list.addAll(cu.getImports());
         }
     }
-
     List<String> getImports() {
         List<String> result = new ArrayList<String>();
         for (ImportDeclaration d : list) {
@@ -115,6 +122,9 @@ class ImportList {
                     return ra.getClassTypeByName(className + shortName);
                 }
             }
+        }
+        if (ra.classWithNameExists(className + "$" + shortName)) {
+            return ra.getClassTypeByName(className + "$" + shortName);
         }
         return ra.createErrorClassType("Unknown class: " + shortName);
     }
