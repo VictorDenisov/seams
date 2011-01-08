@@ -15,4 +15,8 @@ public interface ReflectionAbstraction {
     ClassType substGenericArgs(ClassType className, ClassType[] args);
 
     ClassType getNestedClass(ClassType className, String nestedClassName);
+
+    ClassType convertToArray(ClassType classType, int dimension);
+
+    ClassType convertFromArray(ClassType classType);
 }

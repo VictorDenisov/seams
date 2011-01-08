@@ -79,7 +79,8 @@ class ImportList {
             ClassType result = getClassByShortName(classType.toString());
 
             result = processTypeArguments(classType, result);
-            return result;
+
+            return ra.convertToArray(result, ((ReferenceType) type).getArrayCount());
         } else {
             return getClassByShortName(type.toString());
         }

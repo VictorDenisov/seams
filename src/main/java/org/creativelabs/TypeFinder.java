@@ -45,6 +45,8 @@ class TypeFinder {
             return determineType((CastExpr) expr);
         } else if (expr instanceof BinaryExpr) {
             return determineType((BinaryExpr) expr);
+        } else if (expr instanceof ArrayAccessExpr) {
+            return determineType((ArrayAccessExpr) expr);
         }
 
         return reflectionAbstraction.createErrorClassType("unsupported expression");
@@ -224,4 +226,13 @@ class TypeFinder {
         }
         return reflectionAbstraction.createErrorClassType("getReturnTypeIfBothArgumentsHaveAnyType null");
     }
+
+    private ClassType determineType(ArrayAccessExpr expr) {
+        Expression expression = expr;
+        while (expression instanceof ArrayAccessExpr){
+            expression = ((ArrayAccessExpr) expression).getName();
+        }
+        return reflectionAbstraction.convertFromArray(determineType((NameExpr) expression));
+    }
+
 }
