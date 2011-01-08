@@ -1,5 +1,6 @@
 package org.creativelabs;
 
+import japa.parser.ParseException;
 import japa.parser.ast.CompilationUnit;
 import japa.parser.ast.body.ClassOrInterfaceDeclaration;
 import japa.parser.ast.body.MethodDeclaration;
@@ -541,6 +542,140 @@ public class TypeFinderTest {
         ClassType type = typeFinder.determineType(expr);
 
         assertEquals("japa.parser.ast.body.ClassOrInterfaceDeclaration", type.toString());
+    }
+
+    @Test
+    public void testDetermineTypeOfArrayAccessExpr() throws Exception {
+        CompilationUnit cu = ParseHelper.createCompilationUnit("public class Sample {"
+                + "Class[] clazz;"
+                + "String methodCall(){"
+                + "clazz[0] = Class.forName(\"java.lang.String\");"
+                + "}"
+                + "}");
+        ClassOrInterfaceDeclaration cd = (ClassOrInterfaceDeclaration) cu.getTypes().get(0);
+        MethodDeclaration md = (MethodDeclaration) cd.getMembers().get(1);
+        ArrayAccessExpr expr = (ArrayAccessExpr)
+                ((AssignExpr)((ExpressionStmt) md.getBody().getStmts().get(0)).getExpression()).getTarget();
+
+        ImportList importList = ParseHelper.createImportList(
+                "package java.util;"
+                + "import java.lang.Class;");
+
+        VariableList varTypes = createEmptyVariableList();
+        varTypes.put("clazz", new ClassTypeStub("java.lang.Class[]"));
+
+        TestingReflectionAbstraction reflectionAbstraction = new TestingReflectionAbstraction();
+        reflectionAbstraction.addMethod("Sample", "methodCall", new String[]{}, String.class.getName());
+
+        ClassType type = new TypeFinder(reflectionAbstraction, varTypes, importList).determineType(expr);
+
+        assertEquals("java.lang.Class", type.toString());
+
+    }
+
+    @Test
+    public void testDetermineTypeOfArrayExpr() throws Exception {
+        CompilationUnit cu = ParseHelper.createCompilationUnit("public class Sample {"
+                + "Class[] clazz;"
+                + "String methodCall(){"
+                + "clazz = new Class[2];"
+                + "}"
+                + "}");
+        ClassOrInterfaceDeclaration cd = (ClassOrInterfaceDeclaration) cu.getTypes().get(0);
+        MethodDeclaration md = (MethodDeclaration) cd.getMembers().get(1);
+        NameExpr expr = (NameExpr) ((AssignExpr)
+                ((ExpressionStmt) md.getBody().getStmts().get(0)).getExpression()).getTarget();
+
+        ImportList importList = ParseHelper.createImportList(
+                "package java.util;"
+                + "import java.lang.Class;");
+
+        VariableList varTypes = createEmptyVariableList();
+        varTypes.put("clazz", new ClassTypeStub("java.lang.Class[]"));
+
+        TestingReflectionAbstraction reflectionAbstraction = new TestingReflectionAbstraction();
+        reflectionAbstraction.addMethod("Sample", "methodCall", new String[]{}, String.class.getName());
+
+        ClassType type = new TypeFinder(reflectionAbstraction, varTypes, importList).determineType(expr);
+
+        assertEquals("java.lang.Class[]", type.toString());
+
+    }
+
+    @Test
+    public void testDetermineTypeOfDoubleDimArrayAccessExpr() throws Exception {
+        CompilationUnit cu = ParseHelper.createCompilationUnit("public class Sample {"
+                + "Class[][] clazz;"
+                + "String methodCall(){"
+                + "clazz[0][1] = Class.forName(\"java.lang.String\");"
+                + "}"
+                + "}");
+        ClassOrInterfaceDeclaration cd = (ClassOrInterfaceDeclaration) cu.getTypes().get(0);
+        MethodDeclaration md = (MethodDeclaration) cd.getMembers().get(1);
+        ArrayAccessExpr expr = (ArrayAccessExpr)
+                ((AssignExpr)((ExpressionStmt) md.getBody().getStmts().get(0)).getExpression()).getTarget();
+
+        ImportList importList = ParseHelper.createImportList(
+                "package java.util;"
+                + "import java.lang.Class;");
+
+        VariableList varTypes = createEmptyVariableList();
+        varTypes.put("clazz", new ClassTypeStub("java.lang.Class[][]"));
+
+        TestingReflectionAbstraction reflectionAbstraction = new TestingReflectionAbstraction();
+        reflectionAbstraction.addMethod("Sample", "methodCall", new String[]{}, String.class.getName());
+
+        ClassType type = new TypeFinder(reflectionAbstraction, varTypes, importList).determineType(expr);
+
+        assertEquals("java.lang.Class", type.toString());
+
+    }
+
+    @Test
+    public void testDetermineTypeOfDoubleDimArrayExpr() throws Exception {
+        CompilationUnit cu = ParseHelper.createCompilationUnit("public class Sample {"
+                + "Class[][] clazz;"
+                + "String methodCall(){"
+                + "clazz = new Class[2][1];"
+                + "}"
+                + "}");
+        ClassOrInterfaceDeclaration cd = (ClassOrInterfaceDeclaration) cu.getTypes().get(0);
+        MethodDeclaration md = (MethodDeclaration) cd.getMembers().get(1);
+        NameExpr expr = (NameExpr) ((AssignExpr)
+                ((ExpressionStmt) md.getBody().getStmts().get(0)).getExpression()).getTarget();
+
+        ImportList importList = ParseHelper.createImportList(
+                "package java.util;"
+                + "import java.lang.Class;");
+
+        VariableList varTypes = createEmptyVariableList();
+        varTypes.put("clazz", new ClassTypeStub("java.lang.Class[][]"));
+
+        TestingReflectionAbstraction reflectionAbstraction = new TestingReflectionAbstraction();
+        reflectionAbstraction.addMethod("Sample", "methodCall", new String[]{}, String.class.getName());
+
+        ClassType type = new TypeFinder(reflectionAbstraction, varTypes, importList).determineType(expr);
+
+        assertEquals("java.lang.Class[][]", type.toString());
+
+    }
+
+    @Test
+    public void testFullClassNameProcessing() throws Exception {
+        VariableDeclarationExpr expr = (VariableDeclarationExpr) ParseHelper.createExpression("java.lang.String str");
+
+        ImportList importList = ParseHelper.createImportList(
+                "package java.util;"
+                + "import java.lang.Class;");
+
+        VariableList varTypes = createEmptyVariableList();
+
+        TestingReflectionAbstraction reflectionAbstraction = new TestingReflectionAbstraction();
+        reflectionAbstraction.addClass("java.lang.String", "java.lang.String");
+
+        ClassType type = new TypeFinder(reflectionAbstraction, varTypes, importList).determineType(expr);
+
+        assertEquals("java.lang.String", type.toString());
     }
 
 }

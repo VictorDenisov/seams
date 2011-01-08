@@ -7,6 +7,7 @@ import japa.parser.ast.*;
 import japa.parser.ast.body.*;
 import japa.parser.*;
 
+import org.apache.commons.cli.*;
 import org.creativelabs.chart.BarChartBuilder;
 import org.creativelabs.ui.ChartDrawer;
 import org.creativelabs.ui.JungDrawer;
@@ -21,38 +22,76 @@ final class MainApp {
 
     private static final int IMAGE_HEIGHT = 300;
 
+    private static final String USAGE = "[-h] [-d] [-g] [-c] -f <file or directory> [<file or directory> ...]";
+
+    private static final String HEADER =
+            "Seams.";
+    private static final String FOOTER =
+            "For more instructions, see our website at: https://github.com/VictorDenisov/seams";
+
+    private static CommandLine commandLine = null;
+
     private MainApp() {
 
     }
 
     public static void main(String... args) throws Exception {
-        for (String path : args) {
-            File file = new File(path);
-            printToFile(file);
+        CommandLineParser parser = new PosixParser();
+        Options options = new Options();
+        options.addOption("h", "help", false, "Print this usage information");
+        options.addOption("d", "dependency", false, "Create files with dependencies");
+        options.addOption("g", "graph", false, "Create files with graphs");
+        options.addOption("c", "chart", false, "Create file with chart");
+        options.addOptionGroup(new OptionGroup());
+        Option option = OptionBuilder.
+                isRequired(true).
+                hasArgs().
+                withArgName("file or directory").
+                withDescription("Select files or directories for processing").
+                withLongOpt("files").
+                create('f');
+        options.addOption(option);
+        commandLine = parser.parse(options, args);
+        if (commandLine.hasOption('h')
+                || commandLine.getOptions().length == 0) {
+            printUsage(options);
+            System.exit(0);
+        }
+        if (commandLine.hasOption('f')) {
+            for (String path : commandLine.getOptionValues('f')) {
+                File file = new File(path);
+                printToFile(file);
+            }
         }
     }
 
     private static void processClass(ClassOrInterfaceDeclaration typeDeclaration, String fileName) {
         ClassProcessor classProcessor = new ClassProcessorBuilder()
-            .setTypeDeclaration(typeDeclaration)
-            .setImports(imports)
-            .buildClassProcessor();
+                .setTypeDeclaration(typeDeclaration)
+                .setImports(imports)
+                .buildClassProcessor();
         classProcessor.compute();
 
-        for (Map.Entry<String, InternalInstancesGraph> entry
-                : classProcessor.getInternalInstances().entrySet()) {
-            InternalInstancesGraph graph = entry.getValue();
-            String methodName = entry.getKey();
-            JungGraphBuilder graphBuilder = new JungGraphBuilder();
-            graph.buildGraph(graphBuilder);
-            new JungDrawer(graphBuilder.getGraph()).saveToFile(IMAGE_WIDTH, IMAGE_HEIGHT,
-                    fileName + "." + methodName);
+        if (commandLine.hasOption('g')) {
+            for (Map.Entry<String, InternalInstancesGraph> entry
+                    : classProcessor.getInternalInstances().entrySet()) {
+                InternalInstancesGraph graph = entry.getValue();
+                String methodName = entry.getKey();
+                JungGraphBuilder graphBuilder = new JungGraphBuilder();
+                graph.buildGraph(graphBuilder);
+                new JungDrawer(graphBuilder.getGraph()).saveToFile(IMAGE_WIDTH, IMAGE_HEIGHT,
+                        fileName + "." + methodName);
+            }
         }
-        BarChartBuilder chartBuilder = new BarChartBuilder();
-        DependenciesChart chart = classProcessor.getDependenciesChart();
-        chart.buildChart(chartBuilder);
-        new ChartDrawer(chartBuilder.getChart()).saveToFile(IMAGE_WIDTH, IMAGE_HEIGHT, fileName);
-        outData(classProcessor, fileName);
+        if (commandLine.hasOption('c')) {
+            BarChartBuilder chartBuilder = new BarChartBuilder();
+            DependenciesChart chart = classProcessor.getDependenciesChart();
+            chart.buildChart(chartBuilder);
+            new ChartDrawer(chartBuilder.getChart()).saveToFile(IMAGE_WIDTH, IMAGE_HEIGHT, fileName);
+        }
+        if (commandLine.hasOption('d')) {
+            outData(classProcessor, fileName);
+        }
     }
 
     private static void outData(ClassProcessor classProcessor, String fileName) {
@@ -110,6 +149,13 @@ final class MainApp {
             }
         }
     }
+
+    private static void printUsage(Options options) {
+        HelpFormatter helpFormatter = new HelpFormatter();
+        helpFormatter.setWidth(80);
+        helpFormatter.printHelp(USAGE, HEADER, options, FOOTER);
+    }
+
 }
 
 // vim: set ts=4 sw=4 et:

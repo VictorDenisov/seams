@@ -123,7 +123,7 @@ public class TestingReflectionAbstraction implements ReflectionAbstraction {
 
     @Override
     public ClassType getFieldType(ClassType className, String fieldName) {
-        return null;
+        return new ClassTypeStub(fields.get(new FieldWrapper(className.toString(), fieldName)));
     }
 
     @Override
@@ -149,5 +149,20 @@ public class TestingReflectionAbstraction implements ReflectionAbstraction {
     @Override
     public ClassType getNestedClass(ClassType className, String nestedClassName) {
         return null;
+    }
+
+    @Override
+    public ClassType convertToArray(ClassType classType, int dimension) {
+        StringBuffer buffer = new StringBuffer();
+        for (int i = 0; i < dimension; i++){
+            buffer.append("[]");
+        }
+        return new ClassTypeStub(classType.toString() + buffer);
+    }
+
+    @Override
+    public ClassType convertFromArray(ClassType classType) {
+        return new ClassTypeStub(classType.toString().
+                substring(0, classType.toString().indexOf("[")));
     }
 }

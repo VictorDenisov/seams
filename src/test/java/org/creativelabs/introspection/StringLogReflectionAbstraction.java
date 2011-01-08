@@ -102,4 +102,14 @@ public class StringLogReflectionAbstraction implements ReflectionAbstraction {
     public ClassType getNestedClass(ClassType className, String nestedClassName) {
         return null;
     }
+
+    @Override
+    public ClassType convertToArray(ClassType classType, int dimension) {
+        return null;
+    }
+
+    @Override
+    public ClassType convertFromArray(ClassType classType) {
+        return null;
+    }
 }
