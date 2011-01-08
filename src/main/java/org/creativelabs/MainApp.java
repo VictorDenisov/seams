@@ -52,7 +52,8 @@ final class MainApp {
                 create('f');
         options.addOption(option);
         commandLine = parser.parse(options, args);
-        if (commandLine.hasOption('h')) {
+        if (commandLine.hasOption('h')
+                || commandLine.getOptions().length == 0) {
             printUsage(options);
             System.exit(0);
         }
