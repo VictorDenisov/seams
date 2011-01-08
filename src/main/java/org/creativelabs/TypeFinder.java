@@ -73,7 +73,11 @@ class TypeFinder {
             return varType.getFieldTypeAsClass(fieldName);
         } else {
             ClassType scopeClassName = determineType(expr.getScope());
-            return reflectionAbstraction.getFieldType(scopeClassName, expr.getField());
+            ClassType result = reflectionAbstraction.getFieldType(scopeClassName, expr.getField());
+            if (result.getClass().getSimpleName().equals("ClassTypeError")) {
+                result = reflectionAbstraction.getNestedClass(scopeClassName, expr.getField());
+            }
+            return result;
         }
     }
 
