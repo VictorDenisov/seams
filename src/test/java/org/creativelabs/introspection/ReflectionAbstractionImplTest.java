@@ -124,7 +124,7 @@ public class ReflectionAbstractionImplTest {
 		ClassType myClass = ra.getClassTypeByName("java.lang.String");
         ClassType fieldType = new ReflectionAbstractionImpl().getFieldType(myClass, "CASE_INSENSITIVE_ORDER");
 
-        assertEquals("java.util.Comparator<T, >", fieldType.toString());
+        assertEquals("java.util.Comparator<java.lang.String, >", fieldType.toString());
     }
 
     @Test
@@ -365,6 +365,17 @@ public class ReflectionAbstractionImplTest {
         ClassType result = ra.getNestedClass(clazz, "length");
 
         assertEquals("ClassTypeError", result.getClass().getSimpleName());
+    }
+
+    @Test
+    public void testGetFieldGenericArgs() {
+        ClassType clazz = ra.getClassTypeByName(
+                "org.creativelabs.introspection.ReflectionAbstractionImpl$ClassTypeImpl");
+
+        ClassType result = ra.getFieldType(clazz, "genericArgs");
+
+        assertEquals("java.util.HashMap<java.lang.String, org.creativelabs.introspection.ClassType, >",
+                result.toString());
     }
 
 }

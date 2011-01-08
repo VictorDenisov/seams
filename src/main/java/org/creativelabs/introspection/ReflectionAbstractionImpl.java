@@ -193,6 +193,20 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         return (ClassTypeImpl) substGenericArgs(result, classTypeArgs);
     }
 
+    private ClassTypeImpl processGenericArgs(Type genericReturnType, 
+            ClassTypeImpl classNameImpl, ClassTypeImpl result) {
+
+        if (genericReturnType instanceof TypeVariable) {
+            String varReturnType = genericReturnType.toString();
+            return (ClassTypeImpl) (classNameImpl.genericArgs.get(varReturnType));
+        } else if (genericReturnType instanceof ParameterizedType) {
+            ParameterizedType parameterizedType = (ParameterizedType) genericReturnType;
+            return processParameterizedType(parameterizedType,
+                    classNameImpl.genericArgs, result);
+        }
+        return result;
+    }
+
     @Override
     public ClassType getReturnType(ClassType className, String methodName, ClassType[] types) {
         try {
@@ -217,14 +231,8 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
             result.clazz = myCl;
 
             Type genericReturnType = method.getGenericReturnType();
-            if (genericReturnType instanceof TypeVariable) {
-                String varReturnType = genericReturnType.toString();
-                result = (ClassTypeImpl) (classNameImpl.genericArgs.get(varReturnType));
-            } else if (genericReturnType instanceof ParameterizedType) {
-                ParameterizedType parameterizedType = (ParameterizedType) genericReturnType;
-                result = processParameterizedType(parameterizedType,
-                        classNameImpl.genericArgs, result);
-            }
+
+            result = processGenericArgs(genericReturnType, classNameImpl, result);
 
             return result;
         } catch (Exception e) {
@@ -235,11 +243,17 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
     @Override
     public ClassType getFieldType(ClassType className, String fieldName) {
         try {
-            Class cl = ((ClassTypeImpl) className).clazz;
+            ClassTypeImpl classNameImpl = (ClassTypeImpl) className;
+            Class cl = classNameImpl.clazz;
             Field field = cl.getDeclaredField(fieldName);
 
             ClassTypeImpl result = new ClassTypeImpl();
             result.clazz = field.getType();
+
+            Type genericReturnType = field.getGenericType();
+
+            result = processGenericArgs(genericReturnType, classNameImpl, result);
+
             return result;
         } catch (Exception e) {
             return createErrorClassType(e.toString());
