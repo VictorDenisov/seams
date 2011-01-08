@@ -223,7 +223,7 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
     public ClassType getFieldType(ClassType className, String fieldName) {
         try {
             Class cl = ((ClassTypeImpl) className).clazz;
-            Field field = cl.getField(fieldName);
+            Field field = cl.getDeclaredField(fieldName);
 
             ClassTypeImpl result = new ClassTypeImpl();
             result.clazz = field.getType();
@@ -264,6 +264,27 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
                 result.genericArgs.put(variable.toString(), args[i]);
             }
             return result;
+        } catch (Exception e) {
+            return createErrorClassType(e.toString());
+        }
+    }
+
+    @Override
+    public ClassType getNestedClass(ClassType className, String nestedClassName) {
+        try {
+            ClassTypeImpl classNameImpl = (ClassTypeImpl) className;
+            Class[] list = classNameImpl.clazz.getDeclaredClasses();
+            ClassTypeImpl result = new ClassTypeImpl();
+            for (Class clazz : list) {
+                if (clazz.getSimpleName().equals(nestedClassName)) {
+                    result.clazz = clazz;
+                }
+            }
+            if (result.clazz != null) {
+                return result;
+            } else {
+                return createErrorClassType("no such nested class : " + nestedClassName);
+            }
         } catch (Exception e) {
             return createErrorClassType(e.toString());
         }

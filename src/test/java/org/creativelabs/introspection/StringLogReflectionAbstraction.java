@@ -97,4 +97,9 @@ public class StringLogReflectionAbstraction implements ReflectionAbstraction {
     public ClassType substGenericArgs(ClassType className, ClassType[] args) {
         return null;
     }
+
+    @Override
+    public ClassType getNestedClass(ClassType className, String nestedClassName) {
+        return null;
+    }
 }

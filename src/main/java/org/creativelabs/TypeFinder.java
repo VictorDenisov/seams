@@ -50,6 +50,10 @@ class TypeFinder {
         return reflectionAbstraction.createErrorClassType("unsupported expression");
     }
 
+    private ClassType determineType(CastExpr expr) {
+        return imports.getClassByType(expr.getType());
+    }
+
     private ClassType determineType(NameExpr expr) {
         String name = expr.getName();
         ClassType result = null;
@@ -69,7 +73,11 @@ class TypeFinder {
             return varType.getFieldTypeAsClass(fieldName);
         } else {
             ClassType scopeClassName = determineType(expr.getScope());
-            return reflectionAbstraction.getFieldType(scopeClassName, expr.getField());
+            ClassType result = reflectionAbstraction.getFieldType(scopeClassName, expr.getField());
+            if (result.getClass().getSimpleName().equals("ClassTypeError")) {
+                result = reflectionAbstraction.getNestedClass(scopeClassName, expr.getField());
+            }
+            return result;
         }
     }
 
@@ -124,10 +132,6 @@ class TypeFinder {
 
     private ClassType determineType(ObjectCreationExpr expr) {
         return imports.getClassByShortName(expr.getType().getName());
-    }
-
-    private ClassType determineType(CastExpr expr) {
-        return determineType(new NameExpr(expr.getType().toString()));
     }
 
     private ClassType determineType(BinaryExpr expr) {

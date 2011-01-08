@@ -509,9 +509,38 @@ public class TypeFinderTest {
         varList.put("fileName", ra.getClassTypeByName("java.lang.String"));
         ImportList imports = ParseHelper.createImportList("import org.creativelabs.ui.ChartDrawer;");
 
-        TypeFinder typeFinder = new TypeFinder(new ReflectionAbstractionImpl(), varList, imports);
+        TypeFinder typeFinder = new TypeFinder(ra, varList, imports);
         ClassType type = typeFinder.determineType(expr);
 
         assertEquals("void", type.toString());
     }
+
+    @Test
+    public void testBinaryExprOperator() throws Exception {
+        ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
+        Expression expr = ParseHelper.createExpression("BinaryExpr.Operator");
+        VariableList varList = VariableList.createEmpty();
+        ImportList imports = ParseHelper.createImportList("import japa.parser.ast.expr.*;");
+
+        TypeFinder typeFinder = new TypeFinder(ra, varList, imports);
+        ClassType type = typeFinder.determineType(expr);
+
+        assertEquals("japa.parser.ast.expr.BinaryExpr$Operator", type.toString());
+    }
+
+    @Test(enabled = false)
+    public void testFieldAccess() throws Exception {
+        ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
+        Expression expr = ParseHelper.createExpression("clazz.typeDeclaration");
+        VariableList varList = VariableList.createEmpty();
+        varList.put("typeDeclaration", ra.getClassTypeByName("java.lang.String"));
+        varList.put("clazz", ra.getClassTypeByName("org.creativelabs.ClassProcessor"));
+        ImportList imports = ParseHelper.createImportList("");
+
+        TypeFinder typeFinder = new TypeFinder(ra, varList, imports);
+        ClassType type = typeFinder.determineType(expr);
+
+        assertEquals("japa.parser.ast.body.ClassOrInterfaceDeclaration", type.toString());
+    }
+
 }
