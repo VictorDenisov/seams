@@ -351,4 +351,13 @@ public class ReflectionAbstractionImplTest {
         assertEquals("ClassTypeError", result.getClass().getSimpleName());
     }
 
+    @Test
+    public void testGetClassesNoSuchNestedClass() {
+        ClassType clazz = ra.getClassTypeByName("japa.parser.ast.expr.BinaryExpr");
+
+        ClassType result = ra.getNestedClass(clazz, "length");
+
+        assertEquals("ClassTypeError", result.getClass().getSimpleName());
+    }
+
 }
