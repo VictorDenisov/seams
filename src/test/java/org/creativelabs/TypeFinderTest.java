@@ -9,10 +9,13 @@ import japa.parser.ast.stmt.ExpressionStmt;
 import japa.parser.ast.stmt.Statement;
 import org.creativelabs.introspection.*;
 import org.testng.annotations.*;
+import java.util.*;
 
 import java.io.File;
 
 import static org.testng.AssertJUnit.assertEquals;
+import static org.creativelabs.AssertHelper.*;
+import static org.mockito.Mockito.*;
 
 public class TypeFinderTest {
 
@@ -22,8 +25,28 @@ public class TypeFinderTest {
         return VariableList.createEmpty();
     }
 
+    private VariableList createVarListWithValues(ReflectionAbstraction ra, String... args) {
+        VariableList varList = VariableList.createEmpty();
+        for (int i = 0; i < args.length / 2; ++i) {
+            varList.put(args[i * 2], ra.getClassTypeByName(args[i * 2 + 1]));
+        }
+        return varList;
+    }
+
     private ImportList createEmptyImportList() throws Exception{
         return ParseHelper.createImportList("");
+    }
+
+    @Test
+    public void testCreateVarListWithValues() {
+        TestingReflectionAbstraction ra = spy(new TestingReflectionAbstraction());
+        VariableList varList = createVarListWithValues(ra, 
+                "a", "TypeA", "b", "TypeB");
+        List<String> result = varList.getNames();
+        Collections.sort(result);
+        assertEqualsList(Arrays.asList(new String[]{"a", "b"}), result);
+        verify(ra).getClassTypeByName("TypeA");
+        verify(ra).getClassTypeByName("TypeB");
     }
 
     @Test
@@ -606,7 +629,7 @@ public class TypeFinderTest {
     public void testDetermineTypeOfDoubleDimArrayAccessExpr() throws Exception {
         ExpressionStmt statement = (ExpressionStmt) ParseHelper.createStatement(
                 "clazz[0][1] = Class.forName(\"java.lang.String\");");
-        ArrayAccessExpr expr = (ArrayAccessExpr) ((AssignExpr)(statement).getExpression()).getTarget();
+        ArrayAccessExpr expr = (ArrayAccessExpr) ((AssignExpr) (statement).getExpression()).getTarget();
 
         ImportList importList = ParseHelper.createImportList("");
 
@@ -654,6 +677,23 @@ public class TypeFinderTest {
         ClassType type = new TypeFinder(reflectionAbstraction, varTypes, importList).determineType(expr);
 
         assertEquals("java.lang.String", type.toString());
+    }
+    
+    @Test(dependsOnMethods="testCreateVarListWithValues")
+    public void testEnclosedExprProcessing() throws Exception {
+        ExpressionStmt statement = (ExpressionStmt) ParseHelper.createStatement(
+                "var = ((String)a[0]);");
+        Expression expr = ((AssignExpr) (statement).getExpression()).getValue();
+
+        ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
+        ImportList importList = ParseHelper.createImportList("");
+
+        VariableList varList = createVarListWithValues(ra, "a", "[Ljava.lang.Object;");
+
+        TypeFinder typeFinder = new TypeFinder(ra, varList, importList);
+        ClassType result = typeFinder.determineType(expr);
+
+        assertEquals("java.lang.String", result.toString());
     }
 
 }

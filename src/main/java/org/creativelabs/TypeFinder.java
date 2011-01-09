@@ -49,9 +49,15 @@ class TypeFinder {
             return determineType((ArrayAccessExpr) expr);
         } else if (expr instanceof VariableDeclarationExpr) {
             return determineType((VariableDeclarationExpr) expr);
+        } else if (expr instanceof EnclosedExpr) {
+            return determineType((EnclosedExpr) expr);
         }
 
         return reflectionAbstraction.createErrorClassType("unsupported expression");
+    }
+
+    private ClassType determineType(EnclosedExpr expr) {
+        return determineType(expr.getInner());
     }
 
     private ClassType determineType(CastExpr expr) {
