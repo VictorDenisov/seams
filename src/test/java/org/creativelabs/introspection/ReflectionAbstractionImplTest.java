@@ -378,4 +378,13 @@ public class ReflectionAbstractionImplTest {
                 result.toString());
     }
 
+    @Test
+    public void testLengthArrayField() throws Exception {
+        ClassType clazz = ra.getClassTypeByName("java.lang.String");
+        clazz = ra.convertToArray(clazz, 1);
+        ClassType result = ra.getFieldType(clazz, "length");
+        
+        assertEquals("int", result.toString());
+    }
+
 }

@@ -237,6 +237,14 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
     public ClassType getFieldType(ClassType className, String fieldName) {
         try {
             ClassTypeImpl classNameImpl = (ClassTypeImpl) className;
+            
+            if (classNameImpl.elementType != null) {
+                if (fieldName.equals("length")) {
+                    // Hook for length. Length is not a field of the array type.
+                    return getClassTypeByName("int");
+                }
+            }
+            
             Class cl = classNameImpl.clazz;
             Field field = cl.getDeclaredField(fieldName);
 
