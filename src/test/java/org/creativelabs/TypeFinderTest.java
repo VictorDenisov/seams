@@ -10,6 +10,7 @@ import japa.parser.ast.stmt.Statement;
 import org.creativelabs.introspection.*;
 import org.testng.annotations.*;
 import java.util.*;
+import java.lang.reflect.*;
 
 import java.io.File;
 
@@ -694,6 +695,20 @@ public class TypeFinderTest {
         ClassType result = typeFinder.determineType(expr);
 
         assertEquals("java.lang.String", result.toString());
+    }
+
+    @Test
+    public void testCollectionsUnmodifiableSet() throws Exception {
+        Expression expr = ParseHelper.createExpression("Collections.unmodifiableSet(set)");
+
+        ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
+
+        ImportList importList = ParseHelper.createImportList("import java.util.Collections;");
+        VariableList varList = createVarListWithValues(ra, "set", "java.util.Set");
+        TypeFinder typeFinder = new TypeFinder(ra, varList, importList);
+        ClassType result = typeFinder.determineType(expr);
+
+        assertEquals("java.util.Set<java.lang.Object, >", result.toString());
     }
 
 }
