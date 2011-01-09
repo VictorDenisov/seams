@@ -637,16 +637,7 @@ public class TypeFinderTest {
 
     @Test
     public void testDetermineTypeOfDoubleDimArrayExpr() throws Exception {
-        CompilationUnit cu = ParseHelper.createCompilationUnit("public class Sample {"
-                + "Class[][] clazz;"
-                + "String methodCall(){"
-                + "clazz = new Class[2][1];"
-                + "}"
-                + "}");
-        ClassOrInterfaceDeclaration cd = (ClassOrInterfaceDeclaration) cu.getTypes().get(0);
-        MethodDeclaration md = (MethodDeclaration) cd.getMembers().get(1);
-        NameExpr expr = (NameExpr) ((AssignExpr)
-                ((ExpressionStmt) md.getBody().getStmts().get(0)).getExpression()).getTarget();
+        NameExpr expr = (NameExpr) ParseHelper.createExpression("clazz");
 
         ImportList importList = ParseHelper.createImportList(
                 "package java.util;"
@@ -661,7 +652,6 @@ public class TypeFinderTest {
         ClassType type = new TypeFinder(reflectionAbstraction, varTypes, importList).determineType(expr);
 
         assertEquals("java.lang.Class[][]", type.toString());
-
     }
 
     @Test
