@@ -604,6 +604,7 @@ public class TypeFinderTest {
 
     @Test
     public void testDetermineTypeOfDoubleDimArrayAccessExpr() throws Exception {
+        try {
         CompilationUnit cu = ParseHelper.createCompilationUnit("public class Sample {"
                 + "Class[][] clazz;"
                 + "String methodCall(){"
@@ -628,6 +629,9 @@ public class TypeFinderTest {
         ClassType type = new TypeFinder(reflectionAbstraction, varTypes, importList).determineType(expr);
 
         assertEquals("java.lang.Class", type.toString());
+        } catch (Exception e) {
+            throw new RuntimeException();
+        }
 
     }
 

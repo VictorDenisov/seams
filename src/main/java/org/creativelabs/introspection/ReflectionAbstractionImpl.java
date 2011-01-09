@@ -12,14 +12,10 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
 
         private HashMap<String, ClassType> genericArgs = null;
 
-        private int arrayCount;
+        private ClassTypeImpl elementType;
 
         private ClassTypeImpl() {
-            arrayCount = 0;
-        }
-
-        private ClassTypeImpl(int arrayCount) {
-            this.arrayCount = arrayCount;
+            elementType = null;
         }
 
         @Override
@@ -36,9 +32,6 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
                     }
                 }
                 result.append(">");
-            }
-            for (int i = 0; i < arrayCount; i++) {
-                result.append("[]");
             }
             return result.toString();
         }
@@ -319,15 +312,29 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
 
     @Override
     public ClassType convertToArray(ClassType classType, int dimension) {
-        ClassTypeImpl arrayType = (ClassTypeImpl) classType;
-        arrayType.arrayCount = dimension;
-        return arrayType;
+        try {
+            ClassTypeImpl classTypeImpl = (ClassTypeImpl) classType;
+            ClassTypeImpl result = classTypeImpl;
+            String className = "L" + classTypeImpl.clazz.getName() + ";";
+            for (int i = 0; i < dimension; ++i) {
+                ClassTypeImpl previous = result;
+                result = new ClassTypeImpl();
+                className = "[" + className;
+                result.clazz = Class.forName(className);
+                result.elementType = previous;
+            }
+            return result;
+        } catch (Exception e) {
+            return createErrorClassType(e.toString());
+        }
     }
 
     @Override
     public ClassType convertFromArray(ClassType classType) {
-        ClassTypeImpl arrayType = (ClassTypeImpl) classType;
-        arrayType.arrayCount = 0;
-        return arrayType;
+        ClassTypeImpl classTypeImpl = (ClassTypeImpl) classType;
+        while (classTypeImpl.elementType != null) {
+            classTypeImpl = classTypeImpl.elementType;
+        }
+        return classTypeImpl;
     }
 }
