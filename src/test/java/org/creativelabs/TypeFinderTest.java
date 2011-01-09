@@ -604,52 +604,36 @@ public class TypeFinderTest {
 
     @Test
     public void testDetermineTypeOfDoubleDimArrayAccessExpr() throws Exception {
-        try {
-        CompilationUnit cu = ParseHelper.createCompilationUnit("public class Sample {"
-                + "Class[][] clazz;"
-                + "String methodCall(){"
-                + "clazz[0][1] = Class.forName(\"java.lang.String\");"
-                + "}"
-                + "}");
-        ClassOrInterfaceDeclaration cd = (ClassOrInterfaceDeclaration) cu.getTypes().get(0);
-        MethodDeclaration md = (MethodDeclaration) cd.getMembers().get(1);
-        ArrayAccessExpr expr = (ArrayAccessExpr)
-                ((AssignExpr)((ExpressionStmt) md.getBody().getStmts().get(0)).getExpression()).getTarget();
+        ExpressionStmt statement = (ExpressionStmt) ParseHelper.createStatement(
+                "clazz[0][1] = Class.forName(\"java.lang.String\");");
+        ArrayAccessExpr expr = (ArrayAccessExpr) ((AssignExpr)(statement).getExpression()).getTarget();
 
-        ImportList importList = ParseHelper.createImportList(
-                "package java.util;"
-                + "import java.lang.Class;");
+        ImportList importList = ParseHelper.createImportList("");
 
         VariableList varTypes = createEmptyVariableList();
         varTypes.put("clazz", new ClassTypeStub("java.lang.Class[][]"));
 
         TestingReflectionAbstraction reflectionAbstraction = new TestingReflectionAbstraction();
-        reflectionAbstraction.addMethod("Sample", "methodCall", new String[]{}, String.class.getName());
 
-        ClassType type = new TypeFinder(reflectionAbstraction, varTypes, importList).determineType(expr);
+        ClassType type = new TypeFinder(reflectionAbstraction, varTypes, importList)
+            .determineType(expr);
 
         assertEquals("java.lang.Class", type.toString());
-        } catch (Exception e) {
-            throw new RuntimeException();
-        }
-
     }
 
     @Test
     public void testDetermineTypeOfDoubleDimArrayExpr() throws Exception {
         NameExpr expr = (NameExpr) ParseHelper.createExpression("clazz");
 
-        ImportList importList = ParseHelper.createImportList(
-                "package java.util;"
-                + "import java.lang.Class;");
+        ImportList importList = ParseHelper.createImportList("");
 
         VariableList varTypes = createEmptyVariableList();
         varTypes.put("clazz", new ClassTypeStub("java.lang.Class[][]"));
 
         TestingReflectionAbstraction reflectionAbstraction = new TestingReflectionAbstraction();
-        reflectionAbstraction.addMethod("Sample", "methodCall", new String[]{}, String.class.getName());
 
-        ClassType type = new TypeFinder(reflectionAbstraction, varTypes, importList).determineType(expr);
+        ClassType type = new TypeFinder(reflectionAbstraction, varTypes, importList)
+            .determineType(expr);
 
         assertEquals("java.lang.Class[][]", type.toString());
     }
