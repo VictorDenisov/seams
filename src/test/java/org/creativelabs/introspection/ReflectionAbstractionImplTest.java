@@ -17,6 +17,17 @@ public class ReflectionAbstractionImplTest {
         ra = new ReflectionAbstractionImpl();
     }
 
+    public static ClassType createParameterizedClass(String className, String... parameters) {
+        ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
+        ClassType clazz = ra.getClassTypeByName(className);
+        ClassType[] genericArgs = new ClassType[parameters.length];
+        for (int i = 0; i < parameters.length; ++i) {
+            genericArgs[i] = ra.getClassTypeByName(parameters[i]);
+        }
+        clazz = ra.substGenericArgs(clazz, genericArgs);
+        return clazz;
+    }
+
     @Test
     public void testGetReturnType() throws Exception {
         ClassType[] types = new ClassType[1];
@@ -186,16 +197,6 @@ public class ReflectionAbstractionImplTest {
     public void testReflectionAbstractionGetClassName() throws Exception {
         ClassType className = ra.getClassTypeByName("java.util.ArrayList");
         assertEquals("java.util.ArrayList<E, >", className.toString());
-    }
-
-    private ClassType createParameterizedClass(String className, String... parameters) {
-        ClassType clazz = ra.getClassTypeByName(className);
-        ClassType[] genericArgs = new ClassType[parameters.length];
-        for (int i = 0; i < parameters.length; ++i) {
-            genericArgs[i] = ra.getClassTypeByName(parameters[i]);
-        }
-        clazz = ra.substGenericArgs(clazz, genericArgs);
-        return clazz;
     }
 
     @Test(dependsOnGroups="parse-helper.create-type.*")

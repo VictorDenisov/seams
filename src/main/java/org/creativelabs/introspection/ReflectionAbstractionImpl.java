@@ -212,6 +212,11 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
     @Override
     public ClassType getReturnType(ClassType className, String methodName, ClassType[] types) {
         try {
+            if (methodName.equals("toString") && types.length == 0) {
+                //Hook for toString method. Actually every object has toString method,
+                //even if some interfaces doesn't declare it.
+                return getClassTypeByName("java.lang.String");
+            }
             ClassTypeImpl classNameImpl = (ClassTypeImpl) className;
             Class[] classTypes = getTypeClasses(types);
             Class cl = classNameImpl.clazz;

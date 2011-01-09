@@ -14,6 +14,7 @@ import java.lang.reflect.*;
 
 import java.io.File;
 
+import org.creativelabs.introspection.ReflectionAbstractionImplTest;
 import static org.testng.AssertJUnit.assertEquals;
 import static org.creativelabs.AssertHelper.*;
 import static org.mockito.Mockito.*;
@@ -709,6 +710,31 @@ public class TypeFinderTest {
         ClassType result = typeFinder.determineType(expr);
 
         assertEquals("java.util.Set<java.lang.Object, >", result.toString());
+    }
+
+    @Test
+    public void testHashMapPut() throws Exception {
+        Class clazz = Class.forName("java.lang.reflect.Type");
+        Expression expr = ParseHelper.createExpression("map.get(args[0].toString())");
+        ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
+
+        ClassType mapType = ReflectionAbstractionImplTest
+            .createParameterizedClass("java.util.HashMap", 
+                    "java.lang.String", 
+                    "org.creativelabs.introspection.ClassType");
+
+        ClassType argsType = ra.getClassTypeByName("java.lang.reflect.Type");
+        argsType = ra.convertToArray(argsType, 1);
+
+        VariableList varList = createEmptyVariableList();
+        varList.put("map", mapType);
+        varList.put("args", argsType);
+
+        ImportList importList = ParseHelper.createImportList("");
+
+        TypeFinder typeFinder = new TypeFinder(ra, varList, importList);
+        ClassType result = typeFinder.determineType(expr);
+        assertEquals("org.creativelabs.introspection.ClassType", result.toString());
     }
 
 }

@@ -107,7 +107,6 @@ class TypeFinder {
         if (scope == null) {
             scope = new ThisExpr();
         }
-
         ClassType scopeClassName = determineType(scope);
 
         ArrayList<Expression> emptyExpressionsList = new ArrayList<Expression>();
