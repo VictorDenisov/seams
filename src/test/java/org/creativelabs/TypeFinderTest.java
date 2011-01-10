@@ -1,16 +1,23 @@
 package org.creativelabs;
 
+import japa.parser.ParseException;
 import japa.parser.ast.CompilationUnit;
 import japa.parser.ast.body.ClassOrInterfaceDeclaration;
 import japa.parser.ast.body.MethodDeclaration;
 import japa.parser.ast.expr.*;
 import japa.parser.ast.stmt.ExpressionStmt;
+import japa.parser.ast.stmt.Statement;
 import org.creativelabs.introspection.*;
 import org.testng.annotations.*;
+import java.util.*;
+import java.lang.reflect.*;
 
 import java.io.File;
 
+import org.creativelabs.introspection.ReflectionAbstractionImplTest;
 import static org.testng.AssertJUnit.assertEquals;
+import static org.creativelabs.AssertHelper.*;
+import static org.mockito.Mockito.*;
 
 public class TypeFinderTest {
 
@@ -18,8 +25,28 @@ public class TypeFinderTest {
         return VariableList.createEmpty();
     }
 
+    private VariableList createVarListWithValues(ReflectionAbstraction ra, String... args) {
+        VariableList varList = VariableList.createEmpty();
+        for (int i = 0; i < args.length / 2; ++i) {
+            varList.put(args[i * 2], ra.getClassTypeByName(args[i * 2 + 1]));
+        }
+        return varList;
+    }
+
     private ImportList createEmptyImportList() throws Exception{
         return ParseHelper.createImportList("");
+    }
+
+    @Test
+    public void testCreateVarListWithValues() {
+        TestingReflectionAbstraction ra = spy(new TestingReflectionAbstraction());
+        VariableList varList = createVarListWithValues(ra,
+                "a", "TypeA", "b", "TypeB");
+        List<String> result = varList.getNames();
+        Collections.sort(result);
+        assertEqualsList(Arrays.asList(new String[]{"a", "b"}), result);
+        verify(ra).getClassTypeByName("TypeA");
+        verify(ra).getClassTypeByName("TypeB");
     }
 
     @Test
@@ -100,11 +127,11 @@ public class TypeFinderTest {
         varTypes.put("str", new ClassTypeStub(String.class.getName()));
 
         TestingReflectionAbstraction reflectionAbstraction = new TestingReflectionAbstraction();
-        reflectionAbstraction.addField("java.lang.String", "CASE_INSENSITIVE_ORDER", "java.util.Comparator<T, >");
+        reflectionAbstraction.addClass("java.lang.String", "java.lang.String");
+        reflectionAbstraction.addField("java.lang.String", "CASE_INSENSITIVE_ORDER", "java.util.Comparator<java.lang.String, >");
 
         ClassType type = new TypeFinder(reflectionAbstraction, varTypes, imports).determineType(expr);
-
-        assertEquals("java.util.Comparator<T, >", type.toString());
+        assertEquals("java.util.Comparator<java.lang.String, >", type.toString());
     }
 
     @Test
@@ -657,60 +684,38 @@ public class TypeFinderTest {
 
     @Test
     public void testDetermineTypeOfDoubleDimArrayAccessExpr() throws Exception {
-        CompilationUnit cu = ParseHelper.createCompilationUnit("public class Sample {"
-                + "Class[][] clazz;"
-                + "String methodCall(){"
-                + "clazz[0][1] = Class.forName(\"java.lang.String\");"
-                + "}"
-                + "}");
-        ClassOrInterfaceDeclaration cd = (ClassOrInterfaceDeclaration) cu.getTypes().get(0);
-        MethodDeclaration md = (MethodDeclaration) cd.getMembers().get(1);
-        ArrayAccessExpr expr = (ArrayAccessExpr)
-                ((AssignExpr)((ExpressionStmt) md.getBody().getStmts().get(0)).getExpression()).getTarget();
+        ExpressionStmt statement = (ExpressionStmt) ParseHelper.createStatement(
+                "clazz[0][1] = Class.forName(\"java.lang.String\");");
+        ArrayAccessExpr expr = (ArrayAccessExpr) ((AssignExpr) (statement).getExpression()).getTarget();
 
-        ImportList importList = ParseHelper.createImportList(
-                "package java.util;"
-                + "import java.lang.Class;");
+        ImportList importList = ParseHelper.createImportList("");
 
         VariableList varTypes = createEmptyVariableList();
         varTypes.put("clazz", new ClassTypeStub("java.lang.Class[][]"));
 
         TestingReflectionAbstraction reflectionAbstraction = new TestingReflectionAbstraction();
-        reflectionAbstraction.addMethod("Sample", "methodCall", new String[]{}, String.class.getName());
 
-        ClassType type = new TypeFinder(reflectionAbstraction, varTypes, importList).determineType(expr);
+        ClassType type = new TypeFinder(reflectionAbstraction, varTypes, importList)
+            .determineType(expr);
 
         assertEquals("java.lang.Class", type.toString());
-
     }
 
     @Test
     public void testDetermineTypeOfDoubleDimArrayExpr() throws Exception {
-        CompilationUnit cu = ParseHelper.createCompilationUnit("public class Sample {"
-                + "Class[][] clazz;"
-                + "String methodCall(){"
-                + "clazz = new Class[2][1];"
-                + "}"
-                + "}");
-        ClassOrInterfaceDeclaration cd = (ClassOrInterfaceDeclaration) cu.getTypes().get(0);
-        MethodDeclaration md = (MethodDeclaration) cd.getMembers().get(1);
-        NameExpr expr = (NameExpr) ((AssignExpr)
-                ((ExpressionStmt) md.getBody().getStmts().get(0)).getExpression()).getTarget();
+        NameExpr expr = (NameExpr) ParseHelper.createExpression("clazz");
 
-        ImportList importList = ParseHelper.createImportList(
-                "package java.util;"
-                + "import java.lang.Class;");
+        ImportList importList = ParseHelper.createImportList("");
 
         VariableList varTypes = createEmptyVariableList();
         varTypes.put("clazz", new ClassTypeStub("java.lang.Class[][]"));
 
         TestingReflectionAbstraction reflectionAbstraction = new TestingReflectionAbstraction();
-        reflectionAbstraction.addMethod("Sample", "methodCall", new String[]{}, String.class.getName());
 
-        ClassType type = new TypeFinder(reflectionAbstraction, varTypes, importList).determineType(expr);
+        ClassType type = new TypeFinder(reflectionAbstraction, varTypes, importList)
+            .determineType(expr);
 
         assertEquals("java.lang.Class[][]", type.toString());
-
     }
 
     @Test
@@ -729,6 +734,62 @@ public class TypeFinderTest {
         ClassType type = new TypeFinder(reflectionAbstraction, varTypes, importList).determineType(expr);
 
         assertEquals("java.lang.String", type.toString());
+    }
+    
+    @Test(dependsOnMethods="testCreateVarListWithValues")
+    public void testEnclosedExprProcessing() throws Exception {
+        ExpressionStmt statement = (ExpressionStmt) ParseHelper.createStatement(
+                "var = ((String)a[0]);");
+        Expression expr = ((AssignExpr) (statement).getExpression()).getValue();
+
+        ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
+        ImportList importList = ParseHelper.createImportList("");
+
+        VariableList varList = createVarListWithValues(ra, "a", "[Ljava.lang.Object;");
+
+        TypeFinder typeFinder = new TypeFinder(ra, varList, importList);
+        ClassType result = typeFinder.determineType(expr);
+
+        assertEquals("java.lang.String", result.toString());
+    }
+
+    @Test
+    public void testCollectionsUnmodifiableSet() throws Exception {
+        Expression expr = ParseHelper.createExpression("Collections.unmodifiableSet(set)");
+
+        ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
+
+        ImportList importList = ParseHelper.createImportList("import java.util.Collections;");
+        VariableList varList = createVarListWithValues(ra, "set", "java.util.Set");
+        TypeFinder typeFinder = new TypeFinder(ra, varList, importList);
+        ClassType result = typeFinder.determineType(expr);
+
+        assertEquals("java.util.Set<java.lang.Object, >", result.toString());
+    }
+
+    @Test
+    public void testHashMapPut() throws Exception {
+        Class clazz = Class.forName("java.lang.reflect.Type");
+        Expression expr = ParseHelper.createExpression("map.get(args[0].toString())");
+        ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
+
+        ClassType mapType = ReflectionAbstractionImplTest
+            .createParameterizedClass("java.util.HashMap", 
+                    "java.lang.String", 
+                    "org.creativelabs.introspection.ClassType");
+
+        ClassType argsType = ra.getClassTypeByName("java.lang.reflect.Type");
+        argsType = ra.convertToArray(argsType, 1);
+
+        VariableList varList = createEmptyVariableList();
+        varList.put("map", mapType);
+        varList.put("args", argsType);
+
+        ImportList importList = ParseHelper.createImportList("");
+
+        TypeFinder typeFinder = new TypeFinder(ra, varList, importList);
+        ClassType result = typeFinder.determineType(expr);
+        assertEquals("org.creativelabs.introspection.ClassType", result.toString());
     }
 
 }

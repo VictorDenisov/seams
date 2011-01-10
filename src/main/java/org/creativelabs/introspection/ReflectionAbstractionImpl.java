@@ -12,14 +12,11 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
 
         private HashMap<String, ClassType> genericArgs = null;
 
-        private int arrayCount;
+        private ClassTypeImpl elementType;
 
         private ClassTypeImpl() {
-            arrayCount = 0;
-        }
-
-        private ClassTypeImpl(int arrayCount) {
-            this.arrayCount = arrayCount;
+            elementType = null;
+            genericArgs = new HashMap<String, ClassType>();
         }
 
         @Override
@@ -29,16 +26,13 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
             if (clazz.getTypeParameters().length != 0) {
                 result.append("<");
                 for (TypeVariable variable : clazz.getTypeParameters()) {
-                    if (genericArgs != null) {
+                    if (!genericArgs.isEmpty()) {
                         result.append(genericArgs.get(variable.toString()) + ", ");
                     } else {
                         result.append(variable + ", ");
                     }
                 }
                 result.append(">");
-            }
-            for (int i = 0; i < arrayCount; i++) {
-                result.append("[]");
             }
             return result.toString();
         }
@@ -178,7 +172,11 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         ClassType[] classTypeArgs = new ClassType[actualArgs.length];
         for (int i = 0; i < actualArgs.length; ++i) {
             if (actualArgs[i] instanceof TypeVariable) {
-                classTypeArgs[i] = genericArgs.get(actualArgs[i].toString());
+                if (genericArgs.get(actualArgs[i].toString()) != null) {
+                    classTypeArgs[i] = genericArgs.get(actualArgs[i].toString());
+                } else {
+                    classTypeArgs[i] = getClassTypeByName("java.lang.Object");
+                }
             } else if (actualArgs[i] instanceof Class) {
                 Class argClass = (Class) actualArgs[i];
                 classTypeArgs[i] = getClassTypeByName(argClass.getName());
@@ -193,9 +191,32 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         return (ClassTypeImpl) substGenericArgs(result, classTypeArgs);
     }
 
+    private ClassTypeImpl processGenericArgs(Type genericReturnType, 
+            ClassTypeImpl classNameImpl, ClassTypeImpl result) {
+
+        if (genericReturnType instanceof TypeVariable) {
+            String varReturnType = genericReturnType.toString();
+            if (classNameImpl.genericArgs.get(varReturnType) != null) {
+                return (ClassTypeImpl) (classNameImpl.genericArgs.get(varReturnType));
+            } else {
+                return (ClassTypeImpl) getClassTypeByName("java.lang.Object");
+            }
+        } else if (genericReturnType instanceof ParameterizedType) {
+            ParameterizedType parameterizedType = (ParameterizedType) genericReturnType;
+            return processParameterizedType(parameterizedType,
+                    classNameImpl.genericArgs, result);
+        }
+        return result;
+    }
+
     @Override
     public ClassType getReturnType(ClassType className, String methodName, ClassType[] types) {
         try {
+            if (methodName.equals("toString") && types.length == 0) {
+                //Hook for toString method. Actually every object has toString method,
+                //even if some interfaces doesn't declare it.
+                return getClassTypeByName("java.lang.String");
+            }
             ClassTypeImpl classNameImpl = (ClassTypeImpl) className;
             Class[] classTypes = getTypeClasses(types);
             Class cl = classNameImpl.clazz;
@@ -217,14 +238,8 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
             result.clazz = myCl;
 
             Type genericReturnType = method.getGenericReturnType();
-            if (genericReturnType instanceof TypeVariable) {
-                String varReturnType = genericReturnType.toString();
-                result = (ClassTypeImpl) (classNameImpl.genericArgs.get(varReturnType));
-            } else if (genericReturnType instanceof ParameterizedType) {
-                ParameterizedType parameterizedType = (ParameterizedType) genericReturnType;
-                result = processParameterizedType(parameterizedType,
-                        classNameImpl.genericArgs, result);
-            }
+
+            result = processGenericArgs(genericReturnType, classNameImpl, result);
 
             return result;
         } catch (Exception e) {
@@ -235,11 +250,25 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
     @Override
     public ClassType getFieldType(ClassType className, String fieldName) {
         try {
-            Class cl = ((ClassTypeImpl) className).clazz;
+            ClassTypeImpl classNameImpl = (ClassTypeImpl) className;
+            
+            if (classNameImpl.elementType != null) {
+                if (fieldName.equals("length")) {
+                    // Hook for length. Length is not a field of the array type.
+                    return getClassTypeByName("int");
+                }
+            }
+            
+            Class cl = classNameImpl.clazz;
             Field field = cl.getDeclaredField(fieldName);
 
             ClassTypeImpl result = new ClassTypeImpl();
             result.clazz = field.getType();
+
+            Type genericReturnType = field.getGenericType();
+
+            result = processGenericArgs(genericReturnType, classNameImpl, result);
+
             return result;
         } catch (Exception e) {
             return createErrorClassType(e.toString());
@@ -269,7 +298,6 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         try {
             ClassTypeImpl result = new ClassTypeImpl();
             result.clazz = ((ClassTypeImpl) className).clazz;
-            result.genericArgs = new HashMap<String, ClassType>();
 
             TypeVariable[] vars = result.clazz.getTypeParameters();
             for (int i = 0; i < args.length; ++i) {
@@ -305,15 +333,29 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
 
     @Override
     public ClassType convertToArray(ClassType classType, int dimension) {
-        ClassTypeImpl arrayType = (ClassTypeImpl) classType;
-        arrayType.arrayCount = dimension;
-        return arrayType;
+        try {
+            ClassTypeImpl classTypeImpl = (ClassTypeImpl) classType;
+            ClassTypeImpl result = classTypeImpl;
+            String className = "L" + classTypeImpl.clazz.getName() + ";";
+            for (int i = 0; i < dimension; ++i) {
+                ClassTypeImpl previous = result;
+                result = new ClassTypeImpl();
+                className = "[" + className;
+                result.clazz = Class.forName(className);
+                result.elementType = previous;
+            }
+            return result;
+        } catch (Exception e) {
+            return createErrorClassType(e.toString());
+        }
     }
 
     @Override
     public ClassType convertFromArray(ClassType classType) {
-        ClassTypeImpl arrayType = (ClassTypeImpl) classType;
-        arrayType.arrayCount = 0;
-        return arrayType;
+        ClassTypeImpl classTypeImpl = (ClassTypeImpl) classType;
+        while (classTypeImpl.elementType != null) {
+            classTypeImpl = classTypeImpl.elementType;
+        }
+        return classTypeImpl;
     }
 }

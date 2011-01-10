@@ -17,6 +17,17 @@ public class ReflectionAbstractionImplTest {
         ra = new ReflectionAbstractionImpl();
     }
 
+    public static ClassType createParameterizedClass(String className, String... parameters) {
+        ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
+        ClassType clazz = ra.getClassTypeByName(className);
+        ClassType[] genericArgs = new ClassType[parameters.length];
+        for (int i = 0; i < parameters.length; ++i) {
+            genericArgs[i] = ra.getClassTypeByName(parameters[i]);
+        }
+        clazz = ra.substGenericArgs(clazz, genericArgs);
+        return clazz;
+    }
+
     @Test
     public void testGetReturnType() throws Exception {
         ClassType[] types = new ClassType[1];
@@ -124,7 +135,7 @@ public class ReflectionAbstractionImplTest {
 		ClassType myClass = ra.getClassTypeByName("java.lang.String");
         ClassType fieldType = new ReflectionAbstractionImpl().getFieldType(myClass, "CASE_INSENSITIVE_ORDER");
 
-        assertEquals("java.util.Comparator<T, >", fieldType.toString());
+        assertEquals("java.util.Comparator<java.lang.String, >", fieldType.toString());
     }
 
     @Test
@@ -186,16 +197,6 @@ public class ReflectionAbstractionImplTest {
     public void testReflectionAbstractionGetClassName() throws Exception {
         ClassType className = ra.getClassTypeByName("java.util.ArrayList");
         assertEquals("java.util.ArrayList<E, >", className.toString());
-    }
-
-    private ClassType createParameterizedClass(String className, String... parameters) {
-        ClassType clazz = ra.getClassTypeByName(className);
-        ClassType[] genericArgs = new ClassType[parameters.length];
-        for (int i = 0; i < parameters.length; ++i) {
-            genericArgs[i] = ra.getClassTypeByName(parameters[i]);
-        }
-        clazz = ra.substGenericArgs(clazz, genericArgs);
-        return clazz;
     }
 
     @Test(dependsOnGroups="parse-helper.create-type.*")
@@ -365,6 +366,26 @@ public class ReflectionAbstractionImplTest {
         ClassType result = ra.getNestedClass(clazz, "length");
 
         assertEquals("ClassTypeError", result.getClass().getSimpleName());
+    }
+
+    @Test
+    public void testGetFieldGenericArgs() {
+        ClassType clazz = ra.getClassTypeByName(
+                "org.creativelabs.introspection.ReflectionAbstractionImpl$ClassTypeImpl");
+
+        ClassType result = ra.getFieldType(clazz, "genericArgs");
+
+        assertEquals("java.util.HashMap<java.lang.String, org.creativelabs.introspection.ClassType, >",
+                result.toString());
+    }
+
+    @Test
+    public void testLengthArrayField() throws Exception {
+        ClassType clazz = ra.getClassTypeByName("java.lang.String");
+        clazz = ra.convertToArray(clazz, 1);
+        ClassType result = ra.getFieldType(clazz, "length");
+        
+        assertEquals("int", result.toString());
     }
 
 }

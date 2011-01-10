@@ -49,9 +49,15 @@ class TypeFinder {
             return determineType((ArrayAccessExpr) expr);
         } else if (expr instanceof VariableDeclarationExpr) {
             return determineType((VariableDeclarationExpr) expr);
+        } else if (expr instanceof EnclosedExpr) {
+            return determineType((EnclosedExpr) expr);
         }
 
         return reflectionAbstraction.createErrorClassType("unsupported expression");
+    }
+
+    private ClassType determineType(EnclosedExpr expr) {
+        return determineType(expr.getInner());
     }
 
     private ClassType determineType(CastExpr expr) {
@@ -101,7 +107,6 @@ class TypeFinder {
         if (scope == null) {
             scope = new ThisExpr();
         }
-
         ClassType scopeClassName = determineType(scope);
 
         ArrayList<Expression> emptyExpressionsList = new ArrayList<Expression>();
@@ -245,6 +250,10 @@ class TypeFinder {
             expression = ((ArrayAccessExpr) expression).getName();
         }
         return reflectionAbstraction.convertFromArray(determineType((NameExpr) expression));
+        /*
+        ClassType nameResult = determineType(expr.getName());
+        return reflectionAbstraction.getElementType(nameResult);
+        */
     }
 
     private ClassType determineType(VariableDeclarationExpr expr) {

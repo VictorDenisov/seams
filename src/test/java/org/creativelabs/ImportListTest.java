@@ -3,6 +3,7 @@ package org.creativelabs;
 import org.testng.annotations.*;
 import japa.parser.ast.CompilationUnit;
 import japa.parser.ast.type.*;
+import japa.parser.ast.body.*;
 
 import java.util.List;
 import java.util.Arrays;
@@ -11,6 +12,7 @@ import org.creativelabs.introspection.*;
 
 import static org.testng.AssertJUnit.*;
 import static org.creativelabs.AssertHelper.*;
+import static org.mockito.Mockito.*;
 
 public class ImportListTest {
 
@@ -195,5 +197,21 @@ public class ImportListTest {
         ClassType result = imports.getClassByType(type);
 
         assertEquals("java.util.Map$Entry<java.lang.String, java.lang.String, >", result.toString());
+    }
+
+    @Test
+    public void testNestedClassTypeDetection() throws Exception {
+        CompilationUnit cu = ParseHelper.createCompilationUnit(
+                "package org.creativelabs; public class Main { public static class Nested {}}");
+        ReflectionAbstraction ra = mock(ReflectionAbstraction.class);
+        when(ra.classWithNameExists("org.creativelabs.Main$Nested")).thenReturn(true);
+        when(ra.classWithNameExists("org.creativelabs.Main$Nested")).thenReturn(true);
+
+        ImportList imports = 
+            new ImportList(ra, cu, (ClassOrInterfaceDeclaration)(cu.getTypes().get(0)));
+
+        ClassType result = imports.getClassByShortName("Nested");
+
+        verify(ra).getClassTypeByName("org.creativelabs.Main$Nested");
     }
 }
