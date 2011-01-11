@@ -495,9 +495,8 @@ public class TypeFinderTest {
 
     @Test
     public void testImportDeclarationGetNameGetNameEquals() throws Exception {
-        StringLogReflectionAbstraction reflectionAbstraction 
-            = StringLogReflectionAbstraction
-            .createDecorating(new ReflectionAbstractionImpl());
+        ReflectionAbstractionImpl reflectionAbstraction 
+            = new ReflectionAbstractionImpl();
         Expression expr = ParseHelper.createExpression("id.getName().getName().equals(\"h\")");
         VariableList varList = VariableList.createEmpty();
         varList.put("id", 
