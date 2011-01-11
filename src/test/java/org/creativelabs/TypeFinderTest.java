@@ -112,7 +112,7 @@ public class TypeFinderTest {
         varTypes.put("str", ra.getClassTypeByName(String.class.getName()));
 
         ClassType type = new TypeFinder(varTypes, null).determineType(expr);
-        assertEquals("java.util.Comparator<T, >", type.toString());
+        assertEquals("java.util.Comparator<java.lang.String, >", type.toString());
     }
 
     @Test
