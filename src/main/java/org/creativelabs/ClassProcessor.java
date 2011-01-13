@@ -3,22 +3,29 @@ package org.creativelabs;
 import japa.parser.ast.body.*;
 import japa.parser.ast.stmt.*;
 
+import org.creativelabs.report.*;
+
 import java.util.*;
 
 class ClassProcessor {
     private ClassOrInterfaceDeclaration typeDeclaration;
 
-    private Map<String, Set<Dependency>> dependencies = new HashMap<String, Set<Dependency>>();
+    protected Map<String, Set<Dependency>> dependencies = new HashMap<String, Set<Dependency>>();
 
     private DependencyCounterVisitorBuilder dependencyCounterBuilder;
 
-    private HashMap<String, InternalInstancesGraph> internalInstances
+    protected HashMap<String, InternalInstancesGraph> internalInstances
         = new HashMap<String, InternalInstancesGraph>();
 
     ClassProcessor(ClassOrInterfaceDeclaration typeDeclaration,
             DependencyCounterVisitorBuilder dependencyCounterBuilder) {
         this.typeDeclaration = typeDeclaration;
         this.dependencyCounterBuilder = dependencyCounterBuilder;
+    }
+
+    public void buildReport(ReportBuilder reportBuilder) {
+        reportBuilder.setDependencies(typeDeclaration.getName(), dependencies);
+        reportBuilder.setInternalInstances(typeDeclaration.getName(), internalInstances);
     }
 
     public DependenciesChart getDependenciesChart() {

@@ -8,6 +8,7 @@ import japa.parser.ast.body.*;
 import japa.parser.ast.visitor.*;
 
 import org.creativelabs.introspection.*;
+import org.creativelabs.report.*;
 
 import java.util.*;
 
@@ -76,6 +77,25 @@ public class ClassProcessorTest {
         assertEquals(1, methodArgumentsList.getNames().size());
         assertEquals("arg", methodArgumentsList.getNames().get(0));
 
+    }
+
+    @Test
+    public void testBuildReport() throws Exception {
+        ClassOrInterfaceDeclaration typeDeclaration =
+            ParseHelper.createClassDeclaration("class Main { }");
+
+        ClassProcessor classProcessor = new ClassProcessor(typeDeclaration, null);
+        HashMap dependencies = new HashMap();
+        HashMap internalInstances = new HashMap();
+        classProcessor.dependencies = dependencies;
+        classProcessor.internalInstances = internalInstances;
+
+        ReportBuilder reportBuilder = mock(ReportBuilder.class);
+
+        classProcessor.buildReport(reportBuilder);
+
+        verify(reportBuilder).setDependencies(eq("Main"), eq(dependencies));
+        verify(reportBuilder).setInternalInstances(eq("Main"), eq(internalInstances));
     }
 
 }
