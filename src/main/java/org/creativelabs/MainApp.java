@@ -9,8 +9,8 @@ import japa.parser.*;
 
 import org.apache.commons.cli.*;
 import org.creativelabs.chart.BarChartBuilder;
-import org.creativelabs.ui.ChartDrawer;
-import org.creativelabs.ui.JungDrawer;
+import org.creativelabs.ui.*;
+import org.creativelabs.report.*;
 import org.creativelabs.graph.JungGraphBuilder;
 import org.creativelabs.introspection.ReflectionAbstractionImpl;
 
@@ -58,19 +58,22 @@ final class MainApp {
             System.exit(0);
         }
         if (commandLine.hasOption('f')) {
+            OverviewReportBuilder reportBuilder = new OverviewReportBuilder();
             for (String path : commandLine.getOptionValues('f')) {
                 File file = new File(path);
-                printToFile(file);
+                printToFile(file, reportBuilder);
             }
+            reportBuilder.saveToFile("overview.txt");
         }
     }
 
-    private static void processClass(ClassOrInterfaceDeclaration typeDeclaration, String fileName) {
+    private static void processClass(ClassOrInterfaceDeclaration typeDeclaration, String fileName, OverviewReportBuilder reportBuilder) {
         ClassProcessor classProcessor = new ClassProcessorBuilder()
                 .setTypeDeclaration(typeDeclaration)
                 .setImports(imports)
                 .buildClassProcessor();
         classProcessor.compute();
+        classProcessor.buildReport(reportBuilder);
 
         if (commandLine.hasOption('g')) {
             for (Map.Entry<String, InternalInstancesGraph> entry
@@ -123,13 +126,13 @@ final class MainApp {
         writer.println(")");
     }
 
-    private static void printToFile(File fileOrDirectory) throws Exception {
+    private static void printToFile(File fileOrDirectory, OverviewReportBuilder reportBuilder) throws Exception {
         if (!fileOrDirectory.exists()) {
             throw new IllegalArgumentException(fileOrDirectory.getAbsolutePath() + " doesn't exist");
         }
         if (fileOrDirectory.isDirectory()) {
             for (File directory : fileOrDirectory.listFiles()) {
-                printToFile(directory);
+                printToFile(directory, reportBuilder);
             }
         } else {
             String fileName = fileOrDirectory.getName();
@@ -143,7 +146,7 @@ final class MainApp {
                                     (ClassOrInterfaceDeclaration) typeDeclaration);
 
                         processClass((ClassOrInterfaceDeclaration) typeDeclaration,
-                                fileOrDirectory.getAbsolutePath());
+                                fileOrDirectory.getAbsolutePath(), reportBuilder);
                     }
                 }
             }
