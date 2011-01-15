@@ -26,11 +26,10 @@ public class OverviewReportBuilder implements ReportBuilder {
         internalInstancesCount.put(className, resultMap);
     }
 
-    public void saveToFile(String fileName) throws Exception {
+    public void saveToFile(PrintWriter writer) throws Exception {
         if (dependencyCount.keySet().size() != internalInstancesCount.keySet().size()) {
             throw new IllegalStateException();
         }
-        PrintWriter writer = new PrintWriter(new File(fileName));
 
         for (String className : dependencyCount.keySet()) {
             writer.println("class " + className);

@@ -63,7 +63,7 @@ final class MainApp {
                 File file = new File(path);
                 printToFile(file, reportBuilder);
             }
-            reportBuilder.saveToFile("overview.txt");
+            reportBuilder.saveToFile(new PrintWriter(new File("overview.txt")));
         }
     }
 
