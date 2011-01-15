@@ -1,6 +1,9 @@
 package org.creativelabs.ui;
 
 import org.jfree.chart.*;
+import org.jfree.chart.axis.*;
+import org.jfree.chart.plot.*;
+import org.jfree.data.category.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,6 +16,8 @@ public class ChartDrawer implements Drawer {
 
     public ChartDrawer(JFreeChart chart) {
         this.chart = chart;
+        CategoryAxis ca = ((CategoryPlot)chart.getPlot()).getDomainAxis();
+        ca.setCategoryLabelPositions(CategoryLabelPositions.createUpRotationLabelPositions(0.5235));
     }
 
     @Override

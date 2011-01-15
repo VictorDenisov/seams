@@ -58,16 +58,19 @@ final class MainApp {
             System.exit(0);
         }
         if (commandLine.hasOption('f')) {
-            OverviewReportBuilder reportBuilder = new OverviewReportBuilder();
+            //OverviewChartReportBuilder reportBuilder = new OverviewChartReportBuilder();
+            InternalInstancesByClassReportBuilder reportBuilder 
+                = new InternalInstancesByClassReportBuilder();
             for (String path : commandLine.getOptionValues('f')) {
                 File file = new File(path);
                 printToFile(file, reportBuilder);
             }
-            reportBuilder.saveToFile(new PrintWriter(new File("overview.txt")));
+            reportBuilder.saveToFile("internalInstances");
+            //reportBuilder.saveToFile(new PrintWriter(new File("overview.txt")));
         }
     }
 
-    private static void processClass(ClassOrInterfaceDeclaration typeDeclaration, String fileName, OverviewReportBuilder reportBuilder) {
+    private static void processClass(ClassOrInterfaceDeclaration typeDeclaration, String fileName, ReportBuilder reportBuilder) {
         ClassProcessor classProcessor = new ClassProcessorBuilder()
                 .setTypeDeclaration(typeDeclaration)
                 .setImports(imports)
@@ -126,7 +129,7 @@ final class MainApp {
         writer.println(")");
     }
 
-    private static void printToFile(File fileOrDirectory, OverviewReportBuilder reportBuilder) throws Exception {
+    private static void printToFile(File fileOrDirectory, ReportBuilder reportBuilder) throws Exception {
         if (!fileOrDirectory.exists()) {
             throw new IllegalArgumentException(fileOrDirectory.getAbsolutePath() + " doesn't exist");
         }
