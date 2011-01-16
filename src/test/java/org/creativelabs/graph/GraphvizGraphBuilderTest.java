@@ -18,6 +18,6 @@ public class GraphvizGraphBuilderTest {
         graphBuilder.addEdge(a, b);
         graphBuilder.finalizeGraph();
 
-        assertEquals("digraph G {\n    a -> b;\n}\n", stringWriter.toString());
+        assertEquals("digraph G {\n    size=\"60,30\"\n    ratio=fill\n    a -> b;\n}\n", stringWriter.toString());
     }
 }

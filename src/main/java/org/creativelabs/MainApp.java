@@ -59,18 +59,20 @@ final class MainApp {
         }
         if (commandLine.hasOption('f')) {
             //OverviewChartReportBuilder reportBuilder = new OverviewChartReportBuilder();
-            PrintWriter pw = new PrintWriter(new FileWriter("dependenciesGraph.gv"));
-            GraphvizGraphBuilder graphBuilder = new GraphvizGraphBuilder(pw);
+            //PrintWriter pw = new PrintWriter(new FileWriter("dependenciesGraph.gv"));
+            JungGraphBuilder graphBuilder = new JungGraphBuilder();
             DependencyGraphReportBuilder reportBuilder 
                 = new DependencyGraphReportBuilder(graphBuilder);
             for (String path : commandLine.getOptionValues('f')) {
                 File file = new File(path);
                 printToFile(file, reportBuilder);
             }
+            /*
             graphBuilder.finalizeGraph();
             pw.close();
+            */
         //    reportBuilder.saveToFile("overviewChart");
-            //new JungDrawer(graphBuilder.getGraph()).saveToFile(5000, 5000, "dependenciesGraph");
+            new JungDrawer(graphBuilder.getGraph()).saveToFile(5000, 5000, "dependenciesGraph");
             //reportBuilder.saveToFile(new PrintWriter(new File("overview.txt")));
         }
     }

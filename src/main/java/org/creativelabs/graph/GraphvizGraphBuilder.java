@@ -27,6 +27,8 @@ public class GraphvizGraphBuilder implements GraphBuilder {
     public GraphvizGraphBuilder(PrintWriter printWriter) {
         this.printWriter = printWriter;
         printWriter.println("digraph G {");
+        printWriter.println("    size=\"60,30\"");
+        printWriter.println("    ratio=fill");
     }
 
     public Vertex addVertex(String label) {
