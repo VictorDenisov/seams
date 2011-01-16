@@ -20,19 +20,22 @@ public class DependencyGraphReportBuilder implements ReportBuilder {
             classVertex = graphBuilder.addVertex(className);
         }
 
+        Set<String> deps = new TreeSet<String>();
         for (Map.Entry<String, Collection<Dependency>> entry : dependencies.entrySet()) {
             for (Dependency dependency : entry.getValue()) {
-                String str = dependency.getType().toString();
-                Vertex vertex;
-                if (map.containsKey(str)) {
-                    vertex = map.get(str);
-                } else {
-                    vertex = graphBuilder.addVertex(str);
-                }
-                try {
-                    graphBuilder.addEdge(classVertex, vertex);
-                } catch (Exception e) {
-                }
+                deps.add(dependency.getType().getShortString());
+            }
+        }
+        for (String str : deps) {
+            Vertex vertex;
+            if (map.containsKey(str)) {
+                vertex = map.get(str);
+            } else {
+                vertex = graphBuilder.addVertex(str);
+            }
+            try {
+                graphBuilder.addEdge(classVertex, vertex);
+            } catch (Exception e) {
             }
         }
     }

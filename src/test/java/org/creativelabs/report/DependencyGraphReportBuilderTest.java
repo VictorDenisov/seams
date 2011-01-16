@@ -35,7 +35,35 @@ public class DependencyGraphReportBuilderTest {
         map.put("methodC", deps);
         reportBuilder.setDependencies("ClassB", map);
 
-        assertEquals("{ClassA -> String, ClassA -> Map, ClassB -> ClassA, ClassB -> Map, }",
+        assertEquals("{ClassA -> Map, ClassA -> String, ClassB -> ClassA, ClassB -> Map, }",
+                graphBuilder.toString());
+    }
+
+    @Test
+    public void testSetDependenciesMultiple() {
+        ToStringGraphBuilder graphBuilder = new ToStringGraphBuilder();
+        DependencyGraphReportBuilder reportBuilder = new DependencyGraphReportBuilder(graphBuilder);
+
+        Map<String, Collection<Dependency>> map = new TreeMap<String, Collection<Dependency>>();
+
+        Collection<Dependency> deps = new ArrayList<Dependency>();
+        deps.add(new Dependency(null, new ClassTypeStub("String")));
+        deps.add(new Dependency(null, new ClassTypeStub("Map")));
+        map.put("methodA", deps);
+        deps = new ArrayList<Dependency>();
+        deps.add(new Dependency(null, new ClassTypeStub("String")));
+        deps.add(new Dependency(null, new ClassTypeStub("Map")));
+        map.put("methodB", deps);
+        reportBuilder.setDependencies("ClassA", map);
+
+        map = new TreeMap<String, Collection<Dependency>>();
+        deps = new ArrayList<Dependency>();
+        deps.add(new Dependency(null, new ClassTypeStub("ClassA")));
+        deps.add(new Dependency(null, new ClassTypeStub("Map")));
+        map.put("methodC", deps);
+        reportBuilder.setDependencies("ClassB", map);
+
+        assertEquals("{ClassA -> Map, ClassA -> String, ClassB -> ClassA, ClassB -> Map, }",
                 graphBuilder.toString());
     }
 }
