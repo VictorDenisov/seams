@@ -17,4 +17,8 @@ public class ClassTypeStub implements ClassType {
         return toStringRepresentation();
     }
 
+    @Override
+    public String getShortString() {
+        return toStringRepresentation();
+    }
 }

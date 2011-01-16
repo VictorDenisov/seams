@@ -10,7 +10,7 @@ import java.util.*;
 class ClassProcessor {
     private ClassOrInterfaceDeclaration typeDeclaration;
 
-    protected Map<String, Set<Dependency>> dependencies = new HashMap<String, Set<Dependency>>();
+    protected Map<String, Collection<Dependency>> dependencies = new HashMap<String, Collection<Dependency>>();
 
     private DependencyCounterVisitorBuilder dependencyCounterBuilder;
 
@@ -33,8 +33,8 @@ class ClassProcessor {
         for (Map.Entry<String, InternalInstancesGraph> entry : internalInstances.entrySet()) {
             chart.addInternalInstancesCountForMethod(entry.getKey(), entry.getValue().toSet().size());
         }
-        Set<String> classDependencies = new HashSet<String>();
-        for (Set<Dependency> dependencySet : dependencies.values()) {
+        Collection<String> classDependencies = new HashSet<String>();
+        for (Collection<Dependency> dependencySet : dependencies.values()) {
             for (Dependency dependency : dependencySet) {
                 classDependencies.add(dependency.getType() + "");
             }
@@ -47,7 +47,7 @@ class ClassProcessor {
         return internalInstances;
     }
 
-    public Map<String, Set<Dependency>> getDependencies() {
+    public Map<String, Collection<Dependency>> getDependencies() {
         return dependencies;
     }
 

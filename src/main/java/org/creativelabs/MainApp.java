@@ -11,7 +11,7 @@ import org.apache.commons.cli.*;
 import org.creativelabs.chart.BarChartBuilder;
 import org.creativelabs.ui.*;
 import org.creativelabs.report.*;
-import org.creativelabs.graph.JungGraphBuilder;
+import org.creativelabs.graph.*;
 import org.creativelabs.introspection.ReflectionAbstractionImpl;
 
 final class MainApp {
@@ -59,16 +59,18 @@ final class MainApp {
         }
         if (commandLine.hasOption('f')) {
             //OverviewChartReportBuilder reportBuilder = new OverviewChartReportBuilder();
-            JungGraphBuilder graphBuilder = new JungGraphBuilder();
+            PrintWriter pw = new PrintWriter(new FileWriter("dependenciesGraph.gv"));
+            GraphvizGraphBuilder graphBuilder = new GraphvizGraphBuilder(pw);
             DependencyGraphReportBuilder reportBuilder 
                 = new DependencyGraphReportBuilder(graphBuilder);
             for (String path : commandLine.getOptionValues('f')) {
                 File file = new File(path);
                 printToFile(file, reportBuilder);
             }
+            graphBuilder.finalizeGraph();
+            pw.close();
         //    reportBuilder.saveToFile("overviewChart");
-            new JungDrawer(graphBuilder.getGraph()).saveToFile(5000, 5000,
-                        "dependenciesGraph");
+            //new JungDrawer(graphBuilder.getGraph()).saveToFile(5000, 5000, "dependenciesGraph");
             //reportBuilder.saveToFile(new PrintWriter(new File("overview.txt")));
         }
     }
@@ -117,14 +119,14 @@ final class MainApp {
         }
     }
 
-    private static void printDeps(Map<String, Set<Dependency>> deps, PrintWriter writer) {
-        for (Map.Entry<String, Set<Dependency>> entry : deps.entrySet()) {
+    private static void printDeps(Map<String, Collection<Dependency>> deps, PrintWriter writer) {
+        for (Map.Entry<String, Collection<Dependency>> entry : deps.entrySet()) {
             writer.print(entry.getKey() + " -> ");
             outputSet(entry.getValue(), writer);
         }
     }
 
-    private static void outputSet(Set<Dependency> set, PrintWriter writer) {
+    private static void outputSet(Collection<Dependency> set, PrintWriter writer) {
         writer.println("Dependencies (");
         for (Dependency value : set) {
             writer.println("    " + value.getExpression() + " -- " + value.getType());

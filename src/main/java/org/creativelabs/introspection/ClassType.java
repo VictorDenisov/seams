@@ -4,4 +4,6 @@ public interface ClassType {
 
     String toString();
 
+    String getShortString();
+
 }

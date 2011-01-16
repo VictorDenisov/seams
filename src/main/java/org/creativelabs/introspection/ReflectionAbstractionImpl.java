@@ -36,6 +36,11 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
             }
             return result.toString();
         }
+
+        @Override
+        public String getShortString() {
+            return clazz.getSimpleName();
+        }
     }
 
     private static class ClassTypeError implements ClassType {
@@ -43,6 +48,11 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
 
         @Override
         public String toString() {
+            return message;
+        }
+
+        @Override
+        public String getShortString() {
             return message;
         }
     }
