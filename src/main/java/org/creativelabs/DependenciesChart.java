@@ -1,6 +1,5 @@
 package org.creativelabs;
 
-
 import org.creativelabs.chart.ChartBuilder;
 
 import java.util.HashMap;

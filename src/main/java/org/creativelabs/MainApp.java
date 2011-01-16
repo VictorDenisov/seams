@@ -59,13 +59,16 @@ final class MainApp {
         }
         if (commandLine.hasOption('f')) {
             //OverviewChartReportBuilder reportBuilder = new OverviewChartReportBuilder();
-            InternalInstancesByClassReportBuilder reportBuilder 
-                = new InternalInstancesByClassReportBuilder();
+            JungGraphBuilder graphBuilder = new JungGraphBuilder();
+            DependencyGraphReportBuilder reportBuilder 
+                = new DependencyGraphReportBuilder(graphBuilder);
             for (String path : commandLine.getOptionValues('f')) {
                 File file = new File(path);
                 printToFile(file, reportBuilder);
             }
-            reportBuilder.saveToFile("internalInstances");
+        //    reportBuilder.saveToFile("overviewChart");
+            new JungDrawer(graphBuilder.getGraph()).saveToFile(5000, 5000,
+                        "dependenciesGraph");
             //reportBuilder.saveToFile(new PrintWriter(new File("overview.txt")));
         }
     }

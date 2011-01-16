@@ -3,6 +3,7 @@ package org.creativelabs.report;
 import java.util.*;
 import java.io.*;
 import org.creativelabs.*;
+import org.creativelabs.ui.*;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
@@ -57,5 +58,12 @@ public class OverviewChartReportBuilder implements ReportBuilder {
                 dataSet,
                 PlotOrientation.VERTICAL,
                 true, true, false);
+    }
+
+    public void saveToFile(String name) throws Exception {
+            final int CHART_WIDTH = 3000;
+            final int CHART_HEIGHT = 500;
+            new ChartDrawer(getChart())
+                .saveToFile(CHART_WIDTH, CHART_HEIGHT, name);
     }
 }
