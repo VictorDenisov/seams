@@ -14,7 +14,7 @@ public class InternalInstancesByClassReportBuilder implements ReportBuilder {
 
     protected Map<String, Integer> internalInstancesCount = new HashMap<String, Integer>();
 
-    public void setDependencies(String className, Map<String, Set<Dependency>> dependencies) {
+    public void setDependencies(String className, Map<String, Collection<Dependency>> dependencies) {
     }
 
     public void setInternalInstances(String className, Map<String, InternalInstancesGraph> instances) {

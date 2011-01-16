@@ -8,12 +8,12 @@ public class Dependency {
 
     private ClassType type;
 
-    Dependency(String expression, ClassType type) {
+    public Dependency(String expression, ClassType type) {
         this.expression = expression;
         this.type = type;
     }
 
-    String getExpression() {
+    public String getExpression() {
         return expression;
     }
 

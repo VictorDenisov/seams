@@ -13,14 +13,14 @@ public class DependencyGraphReportBuilder implements ReportBuilder {
         this.graphBuilder = graphBuilder;
     }
 
-    public void setDependencies(String className, Map<String, Set<Dependency>> dependencies) {
+    public void setDependencies(String className, Map<String, Collection<Dependency>> dependencies) {
         Vertex classVertex = map.get(className);
 
         if (classVertex == null) {
             classVertex = graphBuilder.addVertex(className);
         }
 
-        for (Map.Entry<String, Set<Dependency>> entry : dependencies.entrySet()) {
+        for (Map.Entry<String, Collection<Dependency>> entry : dependencies.entrySet()) {
             for (Dependency dependency : entry.getValue()) {
                 String str = dependency.getType().toString();
                 Vertex vertex;
@@ -28,10 +28,10 @@ public class DependencyGraphReportBuilder implements ReportBuilder {
                     vertex = map.get(str);
                 } else {
                     vertex = graphBuilder.addVertex(str);
-                    try {
-                        graphBuilder.addEdge(classVertex, vertex);
-                    } catch (Exception e) {
-                    }
+                }
+                try {
+                    graphBuilder.addEdge(classVertex, vertex);
+                } catch (Exception e) {
                 }
             }
         }

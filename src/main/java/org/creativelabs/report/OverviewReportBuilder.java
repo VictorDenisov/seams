@@ -10,9 +10,9 @@ public class OverviewReportBuilder implements ReportBuilder {
 
     protected Map<String, Map<String, Integer>> internalInstancesCount = new HashMap<String, Map<String, Integer>>();
 
-    public void setDependencies(String className, Map<String, Set<Dependency>> dependencies) {
+    public void setDependencies(String className, Map<String, Collection<Dependency>> dependencies) {
         Map resultMap = new HashMap<String, Integer>();
-        for (Map.Entry<String, Set<Dependency>> entry : dependencies.entrySet()) {
+        for (Map.Entry<String, Collection<Dependency>> entry : dependencies.entrySet()) {
             resultMap.put(entry.getKey(), entry.getValue().size());
         }
         dependencyCount.put(className, resultMap);

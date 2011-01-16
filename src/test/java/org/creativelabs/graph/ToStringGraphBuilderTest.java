@@ -26,4 +26,17 @@ public class ToStringGraphBuilderTest {
 
         assertEquals("{a -> b, }", gb.toString());
     }
+
+    @Test
+    public void testSeveralEdgesFromA() {
+        ToStringGraphBuilder gb = new ToStringGraphBuilder();
+        Vertex a = gb.addVertex("a");
+        Vertex b = gb.addVertex("b");
+        Vertex c = gb.addVertex("c");
+
+        gb.addEdge(a, b);
+        gb.addEdge(a, c);
+
+        assertEquals("{a -> b, a -> c, }", gb.toString());
+    }
 }
