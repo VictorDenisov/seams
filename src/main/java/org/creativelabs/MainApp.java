@@ -58,22 +58,13 @@ final class MainApp {
             System.exit(0);
         }
         if (commandLine.hasOption('f')) {
-            //OverviewChartReportBuilder reportBuilder = new OverviewChartReportBuilder();
-            //PrintWriter pw = new PrintWriter(new FileWriter("dependenciesGraph.gv"));
-            JungGraphBuilder graphBuilder = new JungGraphBuilder();
-            DependencyGraphReportBuilder reportBuilder 
-                = new DependencyGraphReportBuilder(graphBuilder);
+            DataCollector dataCollector = new DataCollector();
+
             for (String path : commandLine.getOptionValues('f')) {
                 File file = new File(path);
-                printToFile(file, reportBuilder);
+                printToFile(file, dataCollector);
             }
-            /*
-            graphBuilder.finalizeGraph();
-            pw.close();
-            */
-        //    reportBuilder.saveToFile("overviewChart");
-            new JungDrawer(graphBuilder.getGraph()).saveToFile(5000, 5000, "dependenciesGraph");
-            //reportBuilder.saveToFile(new PrintWriter(new File("overview.txt")));
+            dataCollector.buildReport(new DetailedDependencyReportBuilder());
         }
     }
 
@@ -102,38 +93,6 @@ final class MainApp {
             chart.buildChart(chartBuilder);
             new ChartDrawer(chartBuilder.getChart()).saveToFile(IMAGE_WIDTH, IMAGE_HEIGHT, fileName);
         }
-        if (commandLine.hasOption('d')) {
-            outData(classProcessor, fileName);
-        }
-    }
-
-    private static void outData(ClassProcessor classProcessor, String fileName) {
-        try {
-            File file = new File(fileName + ".deps");
-            if (file.createNewFile()) {
-                PrintWriter writer = new PrintWriter(file);
-                printDeps(classProcessor.getDependencies(), writer);
-                writer.flush();
-                writer.close();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static void printDeps(Map<String, Collection<Dependency>> deps, PrintWriter writer) {
-        for (Map.Entry<String, Collection<Dependency>> entry : deps.entrySet()) {
-            writer.print(entry.getKey() + " -> ");
-            outputSet(entry.getValue(), writer);
-        }
-    }
-
-    private static void outputSet(Collection<Dependency> set, PrintWriter writer) {
-        writer.println("Dependencies (");
-        for (Dependency value : set) {
-            writer.println("    " + value.getExpression() + " -- " + value.getType());
-        }
-        writer.println(")");
     }
 
     private static void printToFile(File fileOrDirectory, ReportBuilder reportBuilder) throws Exception {
