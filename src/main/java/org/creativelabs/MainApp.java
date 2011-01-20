@@ -112,7 +112,7 @@ final class MainApp {
                 for (TypeDeclaration typeDeclaration : cu.getTypes()) {
                     if (typeDeclaration instanceof ClassOrInterfaceDeclaration) {
                         imports = 
-                            new ImportList(new ReflectionAbstractionImpl(), cu, 
+                            new ImportList(ReflectionAbstractionImpl.create(), cu, 
                                     (ClassOrInterfaceDeclaration) typeDeclaration);
 
                         processClass((ClassOrInterfaceDeclaration) typeDeclaration,

@@ -69,7 +69,7 @@ public final class ParseHelper {
     public static ImportList createImportList(String data) throws Exception {
         CompilationUnit cu = ParseHelper.createCompilationUnit(
                 data + " public class Main{}");
-        ImportList imports = new ImportList(new ReflectionAbstractionImpl(), cu);
+        ImportList imports = new ImportList(ReflectionAbstractionImpl.create(), cu);
         return imports;
     }
 

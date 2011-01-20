@@ -56,7 +56,7 @@ class VariableList {
     ClassType getFieldTypeAsClass(String fieldName) {
         ClassType result = fieldTypes.get(fieldName);
         if (result == null) {
-            result = new ReflectionAbstractionImpl().createErrorClassType(fieldName + " doesn't exist");
+            result = ReflectionAbstractionImpl.create().createErrorClassType(fieldName + " doesn't exist");
         }
         return result;
     }

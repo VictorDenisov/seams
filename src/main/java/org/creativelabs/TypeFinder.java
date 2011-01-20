@@ -21,7 +21,7 @@ class TypeFinder {
     }
 
     public TypeFinder(VariableList varType, ImportList imports) {
-        this(new ReflectionAbstractionImpl(), varType, imports);
+        this(ReflectionAbstractionImpl.create(), varType, imports);
     }
 
     ClassType determineType(Expression expr) {

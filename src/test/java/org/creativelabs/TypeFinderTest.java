@@ -21,7 +21,7 @@ import static org.mockito.Mockito.*;
 
 public class TypeFinderTest {
 
-    private ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
+    private ReflectionAbstraction ra = ReflectionAbstractionImpl.create();
 
     private VariableList createEmptyVariableList() {
         return VariableList.createEmpty();
@@ -495,8 +495,8 @@ public class TypeFinderTest {
 
     @Test
     public void testImportDeclarationGetNameGetNameEquals() throws Exception {
-        ReflectionAbstractionImpl reflectionAbstraction 
-            = new ReflectionAbstractionImpl();
+        ReflectionAbstraction reflectionAbstraction 
+            = ReflectionAbstractionImpl.create();
         Expression expr = ParseHelper.createExpression("id.getName().getName().equals(\"h\")");
         VariableList varList = VariableList.createEmpty();
         varList.put("id", 
@@ -516,7 +516,7 @@ public class TypeFinderTest {
         VariableList varList = VariableList.createEmpty();
         ImportList imports = ParseHelper.createImportList("");
 
-        TypeFinder typeFinder = new TypeFinder(new ReflectionAbstractionImpl(), varList, imports);
+        TypeFinder typeFinder = new TypeFinder(ReflectionAbstractionImpl.create(), varList, imports);
         ClassType type = typeFinder.determineType(expr);
 
         assertEquals("int", type.toString());
@@ -524,7 +524,7 @@ public class TypeFinderTest {
 
     @Test
     public void testConstructorExpression() throws Exception {
-        ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
+        ReflectionAbstraction ra = ReflectionAbstractionImpl.create();
         Expression expr = ParseHelper.createExpression(
                 "new ChartDrawer(chartBuilder.getChart()).saveToFile(IMAGE_WIDTH, IMAGE_HEIGHT, fileName)");
         VariableList varList = VariableList.createEmpty();
@@ -542,7 +542,7 @@ public class TypeFinderTest {
 
     @Test
     public void testBinaryExprOperator() throws Exception {
-        ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
+        ReflectionAbstraction ra = ReflectionAbstractionImpl.create();
         Expression expr = ParseHelper.createExpression("BinaryExpr.Operator");
         VariableList varList = VariableList.createEmpty();
         ImportList imports = ParseHelper.createImportList("import japa.parser.ast.expr.*;");
@@ -555,7 +555,7 @@ public class TypeFinderTest {
 
     @Test(enabled = false)
     public void testFieldAccess() throws Exception {
-        ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
+        ReflectionAbstraction ra = ReflectionAbstractionImpl.create();
         Expression expr = ParseHelper.createExpression("clazz.typeDeclaration");
         VariableList varList = VariableList.createEmpty();
         varList.put("typeDeclaration", ra.getClassTypeByName("java.lang.String"));
@@ -686,7 +686,7 @@ public class TypeFinderTest {
                 "var = ((String)a[0]);");
         Expression expr = ((AssignExpr) (statement).getExpression()).getValue();
 
-        ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
+        ReflectionAbstraction ra = ReflectionAbstractionImpl.create();
         ImportList importList = ParseHelper.createImportList("");
 
         VariableList varList = createVarListWithValues(ra, "a", "[Ljava.lang.Object;");
@@ -701,7 +701,7 @@ public class TypeFinderTest {
     public void testCollectionsUnmodifiableSet() throws Exception {
         Expression expr = ParseHelper.createExpression("Collections.unmodifiableSet(set)");
 
-        ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
+        ReflectionAbstraction ra = ReflectionAbstractionImpl.create();
 
         ImportList importList = ParseHelper.createImportList("import java.util.Collections;");
         VariableList varList = createVarListWithValues(ra, "set", "java.util.Set");
@@ -711,11 +711,11 @@ public class TypeFinderTest {
         assertEquals("java.util.Set<java.lang.Object, >", result.toString());
     }
 
-    @Test
+    @Test(dependsOnGroups = "reflection-abstraction-impl.interface-has-to-string")
     public void testHashMapPut() throws Exception {
         Class clazz = Class.forName("java.lang.reflect.Type");
         Expression expr = ParseHelper.createExpression("map.get(args[0].toString())");
-        ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
+        ReflectionAbstraction ra = ReflectionAbstractionImpl.create();
 
         ClassType mapType = ReflectionAbstractionImplTest
             .createParameterizedClass("java.util.HashMap", 

@@ -157,7 +157,7 @@ public class ImportListTest {
 
     @Test
     public void testGetClassByType() throws Exception {
-        ParseHelper ph = new ParseHelper(new ReflectionAbstractionImpl());
+        ParseHelper ph = new ParseHelper(ReflectionAbstractionImpl.create());
 
         ImportList imports = ph.createImportListRA("package org.sample; import java.util.*;");
         Type type = ParseHelper.createType("ArrayList<String>");
@@ -177,7 +177,7 @@ public class ImportListTest {
 
     @Test
     public void testCreateMapEntry() throws Exception {
-        ParseHelper ph = new ParseHelper(new ReflectionAbstractionImpl());
+        ParseHelper ph = new ParseHelper(ReflectionAbstractionImpl.create());
 
         ImportList imports = ph.createImportListRA("package org.sample; import java.util.*;");
         Type type = ph.createType("Map.Entry<String, String>");
@@ -189,7 +189,7 @@ public class ImportListTest {
 
     @Test
     public void testCreateMapEntryMapImported() throws Exception {
-        ParseHelper ph = new ParseHelper(new ReflectionAbstractionImpl());
+        ParseHelper ph = new ParseHelper(ReflectionAbstractionImpl.create());
 
         ImportList imports = ph.createImportListRA("package org.sample; import java.util.Map;");
         Type type = ph.createType("Map.Entry<String, String>");

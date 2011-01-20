@@ -10,15 +10,15 @@ import static org.testng.AssertJUnit.*;
 
 public class ReflectionAbstractionImplTest {
 
-    private ReflectionAbstractionImpl ra;
+    private ReflectionAbstraction ra;
 
     @BeforeMethod
     public void setUp() {
-        ra = new ReflectionAbstractionImpl();
+        ra = ReflectionAbstractionImpl.create();
     }
 
     public static ClassType createParameterizedClass(String className, String... parameters) {
-        ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
+        ReflectionAbstraction ra = ReflectionAbstractionImpl.create();
         ClassType clazz = ra.getClassTypeByName(className);
         ClassType[] genericArgs = new ClassType[parameters.length];
         for (int i = 0; i < parameters.length; ++i) {
@@ -133,7 +133,7 @@ public class ReflectionAbstractionImplTest {
     @Test
     public void testGetFieldTypeClassType() throws Exception {
 		ClassType myClass = ra.getClassTypeByName("java.lang.String");
-        ClassType fieldType = new ReflectionAbstractionImpl().getFieldType(myClass, "CASE_INSENSITIVE_ORDER");
+        ClassType fieldType = ReflectionAbstractionImpl.create().getFieldType(myClass, "CASE_INSENSITIVE_ORDER");
 
         assertEquals("java.util.Comparator<java.lang.String, >", fieldType.toString());
     }
@@ -141,7 +141,7 @@ public class ReflectionAbstractionImplTest {
     @Test
     public void testGetFieldTypeError() throws Exception {
 		ClassType myClass = ra.getClassTypeByName("java.lang.String");
-        ClassType fieldType = new ReflectionAbstractionImpl().getFieldType(myClass, "NO_SUCH_FIELD");
+        ClassType fieldType = ReflectionAbstractionImpl.create().getFieldType(myClass, "NO_SUCH_FIELD");
 
         assertEquals("ClassTypeError", fieldType.getClass().getSimpleName());
     }
@@ -159,6 +159,7 @@ public class ReflectionAbstractionImplTest {
     @Test
     public void testGetMethod() throws Exception {
         Class clazz = Class.forName("java.lang.String");
+        ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
         Method method = ra.getMethod(clazz, "equals", new Class[]{Class.forName("java.lang.String")});
         assertNotNull(method);
     }
@@ -176,6 +177,7 @@ public class ReflectionAbstractionImplTest {
     @Test
     public void testGetReturnTypeTypeFinderLiteral() throws Exception {
         Class className = Class.forName("org.creativelabs.TypeFinder");
+        ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
 
         Class[] args = new Class[] {Class.forName("japa.parser.ast.expr.LiteralExpr")};
 
@@ -186,6 +188,7 @@ public class ReflectionAbstractionImplTest {
     @Test
     public void testGetReturnTypeTypeFinderNameExpr() throws Exception {
         Class className = Class.forName("org.creativelabs.TypeFinder");
+        ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
 
         Class[] args = new Class[] {Class.forName("japa.parser.ast.expr.NameExpr")};
 
@@ -388,4 +391,25 @@ public class ReflectionAbstractionImplTest {
         assertEquals("int", result.toString());
     }
 
+    @Test(groups = "reflection-abstraction-impl.interface-has-to-string")
+    public void testInterfaceHashMethodToString() throws Exception {
+        ReflectionAbstraction ra = ReflectionAbstractionImpl.create();
+
+        ClassType argsType = ra.getClassTypeByName("java.lang.reflect.Type");
+
+        ClassType result = ra.getReturnType(argsType, "toString", new ClassType[0]);
+
+        assertEquals("java.lang.String", result.toString());
+    }
+
+    @Test(groups = "reflection-abstraction-impl.interface-has-object-method")
+    public void testInterfaceHashMethodFromObjectClass() throws Exception {
+        ReflectionAbstraction ra = ReflectionAbstractionImpl.create();
+
+        ClassType argsType = ra.getClassTypeByName("java.lang.reflect.Type");
+
+        ClassType result = ra.getReturnType(argsType, "getClass", new ClassType[0]);
+
+        assertEquals("java.lang.Class<null, >", result.toString());
+    }
 }
