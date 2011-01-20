@@ -62,7 +62,7 @@ final class MainApp {
 
             for (String path : commandLine.getOptionValues('f')) {
                 File file = new File(path);
-                printToFile(file, dataCollector);
+                processFileOrDirectory(file, dataCollector);
             }
             dataCollector.buildReport(new DetailedDependencyReportBuilder());
         }
@@ -95,13 +95,13 @@ final class MainApp {
         }
     }
 
-    private static void printToFile(File fileOrDirectory, ReportBuilder reportBuilder) throws Exception {
+    private static void processFileOrDirectory(File fileOrDirectory, ReportBuilder reportBuilder) throws Exception {
         if (!fileOrDirectory.exists()) {
             throw new IllegalArgumentException(fileOrDirectory.getAbsolutePath() + " doesn't exist");
         }
         if (fileOrDirectory.isDirectory()) {
             for (File directory : fileOrDirectory.listFiles()) {
-                printToFile(directory, reportBuilder);
+                processFileOrDirectory(directory, reportBuilder);
             }
         } else {
             String fileName = fileOrDirectory.getName();
