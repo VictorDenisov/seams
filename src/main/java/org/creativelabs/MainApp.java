@@ -65,6 +65,7 @@ final class MainApp {
                 processFileOrDirectory(file, dataCollector);
             }
             dataCollector.buildDetailedDependencyReport();
+            dataCollector.buildNumberOfErrorsReport();
         }
     }
 

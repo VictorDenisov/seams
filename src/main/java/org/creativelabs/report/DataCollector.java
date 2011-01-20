@@ -2,6 +2,7 @@ package org.creativelabs.report;
 
 import java.util.*;
 import org.creativelabs.*;
+import java.io.*;
 
 public class DataCollector implements ReportBuilder {
 
@@ -43,5 +44,19 @@ public class DataCollector implements ReportBuilder {
 
     public void buildDetailedDependencyReport() {
         buildReport(new DetailedDependencyReportBuilder());
+    }
+
+    public void buildNumberOfErrorsReport() throws Exception {
+        ErrorCountDependencyReport report = new ErrorCountDependencyReport();
+        buildReport(report);
+        int numberOfErrors = report.getCount();
+        List<String> errorDeps = report.getErrorMessages();
+
+        PrintWriter pw = new PrintWriter(new FileWriter("errors.txt"));
+        pw.println("Number of errors : " + numberOfErrors);
+        for (String dependency : errorDeps) {
+            pw.println(dependency);
+        }
+        pw.close();
     }
 }
