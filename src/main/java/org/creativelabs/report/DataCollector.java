@@ -40,4 +40,8 @@ public class DataCollector implements ReportBuilder {
             reportBuilder.setInternalInstances(entry.getKey(), entry.getValue().internalInstances);
         }
     }
+
+    public void buildDetailedDependencyReport() {
+        buildReport(new DetailedDependencyReportBuilder());
+    }
 }

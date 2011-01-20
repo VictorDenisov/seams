@@ -64,7 +64,7 @@ final class MainApp {
                 File file = new File(path);
                 processFileOrDirectory(file, dataCollector);
             }
-            dataCollector.buildReport(new DetailedDependencyReportBuilder());
+            dataCollector.buildDetailedDependencyReport();
         }
     }
 
