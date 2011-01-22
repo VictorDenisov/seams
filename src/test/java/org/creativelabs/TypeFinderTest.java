@@ -715,7 +715,6 @@ public class TypeFinderTest {
     public void testHashMapPut() throws Exception {
         Class clazz = Class.forName("java.lang.reflect.Type");
         Expression expr = ParseHelper.createExpression("map.get(args[0].toString())");
-        ReflectionAbstraction ra = ReflectionAbstractionImpl.create();
 
         ClassType mapType = ReflectionAbstractionImplTest
             .createParameterizedClass("java.util.HashMap", 
@@ -734,6 +733,25 @@ public class TypeFinderTest {
         TypeFinder typeFinder = new TypeFinder(ra, varList, importList);
         ClassType result = typeFinder.determineType(expr);
         assertEquals("org.creativelabs.introspection.ClassType", result.toString());
+    }
+
+    @Test(enabled=false)
+    public void testImageIO() throws Exception {
+        ImportList importList = ParseHelper.createImportList(
+                "import javax.imageio.*; import java.io.*;");
+
+        VariableList varList = createEmptyVariableList();
+        varList.put("image", ra.getClassTypeByName("java.awt.image.BufferedImage"));
+        varList.put("filename", ra.getClassTypeByName("java.lang.String"));
+
+        Expression expr = ParseHelper.createExpression(
+                "ImageIO.write(image, \"jpg\", new File(fileName + \".jpg\"))");
+
+        TypeFinder typeFinder = new TypeFinder(ra, varList, importList);
+
+        ClassType result = typeFinder.determineType(expr);
+        
+        assertEquals("boolean", result.toString());
     }
 
 }
