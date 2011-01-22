@@ -393,8 +393,6 @@ public class ReflectionAbstractionImplTest {
 
     @Test(groups = "reflection-abstraction-impl.interface-has-to-string")
     public void testInterfaceHashMethodToString() throws Exception {
-        ReflectionAbstraction ra = ReflectionAbstractionImpl.create();
-
         ClassType argsType = ra.getClassTypeByName("java.lang.reflect.Type");
 
         ClassType result = ra.getReturnType(argsType, "toString", new ClassType[0]);
@@ -404,12 +402,22 @@ public class ReflectionAbstractionImplTest {
 
     @Test(groups = "reflection-abstraction-impl.interface-has-object-method")
     public void testInterfaceHashMethodFromObjectClass() throws Exception {
-        ReflectionAbstraction ra = ReflectionAbstractionImpl.create();
-
         ClassType argsType = ra.getClassTypeByName("java.lang.reflect.Type");
 
         ClassType result = ra.getReturnType(argsType, "getClass", new ClassType[0]);
 
         assertEquals("java.lang.Class<null, >", result.toString());
+    }
+
+    @Test
+    public void testWhenArgumentIsAGenericType() {
+        ClassType classType = createParameterizedClass("edu.uci.ics.jung.graph.Graph",
+                "org.creativelabs.graph.Vertex", "java.lang.String");
+
+        ClassType argument = ra.getClassTypeByName("org.creativelabs.graph.Vertex");
+
+        ClassType result = ra.getReturnType(classType, "addVertex", new ClassType[]{argument});
+
+        assertEquals("boolean", result.toString());
     }
 }

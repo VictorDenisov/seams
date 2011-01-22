@@ -176,6 +176,12 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
                     return method;
                 }
             }
+            methods = clazz.getMethods();
+            for (Method method : methods) {
+                if (isEligible(method, methodName, args)) {
+                    return method;
+                }
+            }
             throw new NoSuchMethodException();
         }
     }
@@ -226,13 +232,6 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
     @Override
     public ClassType getReturnType(ClassType className, String methodName, ClassType[] types) {
         try {
-            /*
-            if (methodName.equals("toString") && types.length == 0) {
-                //Hook for toString method. Actually every object has toString method,
-                //even if some interfaces doesn't declare it.
-                return getClassTypeByName("java.lang.String");
-            }
-            */
             ClassTypeImpl classNameImpl = (ClassTypeImpl) className;
             Class[] classTypes = getTypeClasses(types);
             Class cl = classNameImpl.clazz;
@@ -267,15 +266,6 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
     public ClassType getFieldType(ClassType className, String fieldName) {
         try {
             ClassTypeImpl classNameImpl = (ClassTypeImpl) className;
-            
-            /*
-            if (classNameImpl.elementType != null) {
-                if (fieldName.equals("length")) {
-                    // Hook for length. Length is not a field of the array type.
-                    return getClassTypeByName("int");
-                }
-            }
-            */
             
             Class cl = classNameImpl.clazz;
             Field field = cl.getDeclaredField(fieldName);
