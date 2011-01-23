@@ -49,4 +49,13 @@ public class ImportListClassLookUpTest {
         assertEquals("java.util.Map$Entry<K, V, >", result.toString());
     }
 
+    @Test
+    public void testGetClassByType_ClassOrInterfaceDirectly() throws Exception {
+        ImportList imports = ParseHelper.createImportList("");
+        ClassOrInterfaceType type = createClassOrInterfaceType("java.util.Map");
+        ClassType result = imports.getClassByType(type);
+
+        assertEquals("java.util.Map<K, V, >", result.toString());
+    }
+
 }

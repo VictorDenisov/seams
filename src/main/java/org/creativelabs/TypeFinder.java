@@ -150,7 +150,7 @@ class TypeFinder {
     }
 
     private ClassType determineType(ObjectCreationExpr expr) {
-        return imports.getClassByShortName(expr.getType().getName());
+        return imports.getClassByType(expr.getType());
     }
 
     private ClassType determineType(BinaryExpr expr) {

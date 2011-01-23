@@ -772,4 +772,17 @@ public class TypeFinderTest {
         assertEquals("boolean", result.toString());
     }
 
+    @Test
+    public void testObjectCreationExpr() throws Exception {
+        ImportList importList = ParseHelper.createImportList("");
+        VariableList varList = createEmptyVariableList();
+
+        Expression expr = ParseHelper.createExpression("new java.util.Map()");
+
+        TypeFinder typeFinder = new TypeFinder(ra, varList, importList);
+
+        ClassType result = typeFinder.determineType(expr);
+        assertEquals("java.util.Map<K, V, >", result.toString());
+    }
+
 }

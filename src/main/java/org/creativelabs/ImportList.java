@@ -113,6 +113,12 @@ class ImportList {
 
                 return ra.convertToArray(result, ((ReferenceType) type).getArrayCount());
             }
+        } else if (type instanceof ClassOrInterfaceType) {
+            ClassOrInterfaceType classType = (ClassOrInterfaceType) type;
+
+            ClassType result = getClassByClassOrInterfaceType(classType);
+
+            return result;
         } else {
             return getClassByShortName(type.toString());
         }
