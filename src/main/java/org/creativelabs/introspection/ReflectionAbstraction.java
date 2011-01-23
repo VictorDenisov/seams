@@ -19,4 +19,6 @@ public interface ReflectionAbstraction {
     ClassType convertToArray(ClassType classType, int dimension);
 
     ClassType convertFromArray(ClassType classType);
+
+    ClassType getElementType(ClassType classType);
 }

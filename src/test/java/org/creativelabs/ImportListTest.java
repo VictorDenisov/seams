@@ -176,6 +176,16 @@ public class ImportListTest {
     }
 
     @Test
+    public void testGetClassByTypePrimitiveReference() throws Exception {
+        ImportList imports = parseHelper.createImportListRA("package org.sample; import java.util.*;");
+        Type type = parseHelper.createType("int[]");
+        System.out.println(type.getClass().getSimpleName());
+
+        ClassType result = imports.getClassByType(type);
+        assertEquals("int[]", result.toString());
+    }
+
+    @Test
     public void testCreateMapEntry() throws Exception {
         ParseHelper ph = new ParseHelper(ReflectionAbstractionImpl.create());
 

@@ -735,6 +735,24 @@ public class TypeFinderTest {
         assertEquals("org.creativelabs.introspection.ClassType", result.toString());
     }
 
+    @Test
+    public void testPartialArrayAccess() throws Exception {
+        ImportList importList = ParseHelper.createImportList("");
+
+        ClassType argsType = ra.getClassTypeByName("java.lang.String");
+        argsType = ra.convertToArray(argsType, 2);
+
+        VariableList varList = createEmptyVariableList();
+        varList.put("x", argsType);
+
+        Expression expr = ParseHelper.createExpression("x[3]");
+        TypeFinder typeFinder = new TypeFinder(ra, varList, importList);
+
+        ClassType result = typeFinder.determineType(expr);
+
+        assertEquals("[Ljava.lang.String;", result.toString());
+    }
+
     @Test(enabled=false)
     public void testImageIO() throws Exception {
         ImportList importList = ParseHelper.createImportList(

@@ -245,15 +245,15 @@ class TypeFinder {
     }
 
     private ClassType determineType(ArrayAccessExpr expr) {
+        /*
         Expression expression = expr;
         while (expression instanceof ArrayAccessExpr){
             expression = ((ArrayAccessExpr) expression).getName();
         }
         return reflectionAbstraction.convertFromArray(determineType((NameExpr) expression));
-        /*
+        */
         ClassType nameResult = determineType(expr.getName());
         return reflectionAbstraction.getElementType(nameResult);
-        */
     }
 
     private ClassType determineType(VariableDeclarationExpr expr) {

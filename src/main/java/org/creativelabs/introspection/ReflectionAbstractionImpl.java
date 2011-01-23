@@ -366,4 +366,14 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         }
         return classTypeImpl;
     }
+
+    @Override
+    public ClassType getElementType(ClassType classType) {
+        try {
+            ClassTypeImpl classTypeImpl = (ClassTypeImpl) classType;
+            return classTypeImpl.elementType;
+        } catch (Exception e) {
+            return createErrorClassType(e.toString());
+        }
+    }
 }
