@@ -179,10 +179,18 @@ public class ImportListTest {
     public void testGetClassByTypePrimitiveReference() throws Exception {
         ImportList imports = parseHelper.createImportListRA("package org.sample; import java.util.*;");
         Type type = parseHelper.createType("int[]");
-        System.out.println(type.getClass().getSimpleName());
 
         ClassType result = imports.getClassByType(type);
         assertEquals("int[]", result.toString());
+    }
+
+    @Test
+    public void testGetClassByTypeFullName() throws Exception {
+        ImportList imports = ParseHelper.createImportList("");
+        Type type = ParseHelper.createType("java.lang.String");
+
+        ClassType result = imports.getClassByType(type);
+        assertEquals("java.lang.String", result.toString());
     }
 
     @Test

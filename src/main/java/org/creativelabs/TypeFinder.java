@@ -197,38 +197,46 @@ class TypeFinder {
 
     private ClassType getReturnTypeIfBothArgumentsIsDigit(ClassType firstArgType,
                                                        ClassType secondArgType) {
-        if (oneOfArgumentsHaveType("double", firstArgType, secondArgType)
-                || oneOfArgumentsHaveType("java.lang.Double", firstArgType, secondArgType)) {
-                return reflectionAbstraction.getClassTypeByName("double");
+        try {
+            if (oneOfArgumentsHaveType("double", firstArgType, secondArgType)
+                    || oneOfArgumentsHaveType("java.lang.Double", firstArgType, secondArgType)) {
+                    return reflectionAbstraction.getClassTypeByName("double");
+            }
+            if (oneOfArgumentsHaveType("float", firstArgType, secondArgType)
+                    || oneOfArgumentsHaveType("java.lang.Float", firstArgType, secondArgType)) {
+                return reflectionAbstraction.getClassTypeByName("float");
+            }
+            if (oneOfArgumentsHaveType("long", firstArgType, secondArgType)
+                    || oneOfArgumentsHaveType("java.lang.Long", firstArgType, secondArgType)) {
+                return reflectionAbstraction.getClassTypeByName("long");
+            }
+            if (oneOfArgumentsHaveType("int", firstArgType, secondArgType)
+                    || oneOfArgumentsHaveType("java.lang.Integer", firstArgType, secondArgType)) {
+                return reflectionAbstraction.getClassTypeByName("int");
+            }
+            if (oneOfArgumentsHaveType("short", firstArgType, secondArgType)
+                    || oneOfArgumentsHaveType("java.lang.Short", firstArgType, secondArgType)) {
+                return reflectionAbstraction.getClassTypeByName("short");
+            }
+            return null;
+        } catch (Exception e) {
+            return null;
         }
-        if (oneOfArgumentsHaveType("float", firstArgType, secondArgType)
-                || oneOfArgumentsHaveType("java.lang.Float", firstArgType, secondArgType)) {
-            return reflectionAbstraction.getClassTypeByName("float");
-        }
-        if (oneOfArgumentsHaveType("long", firstArgType, secondArgType)
-                || oneOfArgumentsHaveType("java.lang.Long", firstArgType, secondArgType)) {
-            return reflectionAbstraction.getClassTypeByName("long");
-        }
-        if (oneOfArgumentsHaveType("int", firstArgType, secondArgType)
-                || oneOfArgumentsHaveType("java.lang.Integer", firstArgType, secondArgType)) {
-            return reflectionAbstraction.getClassTypeByName("int");
-        }
-        if (oneOfArgumentsHaveType("short", firstArgType, secondArgType)
-                || oneOfArgumentsHaveType("java.lang.Short", firstArgType, secondArgType)) {
-            return reflectionAbstraction.getClassTypeByName("short");
-        }
-        return null;
     }
 
     private ClassType getReturnTypeIfBothArgumentsIsChar(ClassType firstArgType, ClassType secondArgType) {
-        if (oneOfArgumentsHaveType("java.lang.String", firstArgType, secondArgType)) {
-            return reflectionAbstraction.getClassTypeByName("java.lang.String");
+        try {
+            if (oneOfArgumentsHaveType("java.lang.String", firstArgType, secondArgType)) {
+                return reflectionAbstraction.getClassTypeByName("java.lang.String");
+            }
+            if (oneOfArgumentsHaveType("char", firstArgType, secondArgType)
+                    || oneOfArgumentsHaveType("java.lang.Character", firstArgType, secondArgType)) {
+                return reflectionAbstraction.getClassTypeByName("char");
+            }
+            return null;
+        } catch (Exception e) {
+            return null;
         }
-        if (oneOfArgumentsHaveType("char", firstArgType, secondArgType)
-                || oneOfArgumentsHaveType("java.lang.Character", firstArgType, secondArgType)) {
-            return reflectionAbstraction.getClassTypeByName("char");
-        }
-        return null;
     }
 
     private ClassType getReturnTypeIfBothArgumentsHaveAnyType(ClassType firstArgType, ClassType secondArgType) {
@@ -245,13 +253,6 @@ class TypeFinder {
     }
 
     private ClassType determineType(ArrayAccessExpr expr) {
-        /*
-        Expression expression = expr;
-        while (expression instanceof ArrayAccessExpr){
-            expression = ((ArrayAccessExpr) expression).getName();
-        }
-        return reflectionAbstraction.convertFromArray(determineType((NameExpr) expression));
-        */
         ClassType nameResult = determineType(expr.getName());
         return reflectionAbstraction.getElementType(nameResult);
     }

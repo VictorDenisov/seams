@@ -80,15 +80,31 @@ class ImportList {
         return result;
     }
 
+    ClassType getClassByClassOrInterfaceType(ClassOrInterfaceType classType) {
+        ClassType result = null;
+        if (classType.getScope() == null) {
+            result = getClassByShortName(classType.toString());
+        } else {
+            ClassType higher = getClassByClassOrInterfaceType(classType.getScope());
+            if (higher.getClass().getSimpleName().equals("ClassTypeError")) {
+                result = ra.getClassTypeByName(classType.toString());
+            } else {
+                result = ra.getNestedClass(higher, classType.getName());
+            }
+        }
+        result = processTypeArguments(classType, result);
+
+        return result;
+    }
+
     ClassType getClassByType(Type type) {
         if (type instanceof ReferenceType) {
             Type innerType = ((ReferenceType) type).getType();
 
-            if (innerType instanceof ClassOrInterfaceType ) {
+            if (innerType instanceof ClassOrInterfaceType) {
                 ClassOrInterfaceType classType = (ClassOrInterfaceType) innerType;
-                ClassType result = getClassByShortName(classType.toString());
 
-                result = processTypeArguments(classType, result);
+                ClassType result = getClassByClassOrInterfaceType(classType);
 
                 return ra.convertToArray(result, ((ReferenceType) type).getArrayCount());
             } else {

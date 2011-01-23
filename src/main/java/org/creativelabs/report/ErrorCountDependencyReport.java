@@ -11,7 +11,7 @@ public class ErrorCountDependencyReport implements ReportBuilder {
     public void setDependencies(String className, Map<String, Collection<Dependency>> dependencies) {
         for (Map.Entry<String, Collection<Dependency>> entry : dependencies.entrySet()) {
             for (Dependency dependency : entry.getValue()) {
-                if ("ClassTypeError".equals(dependency.getType().getClass().getSimpleName())) {
+                if (dependency.getType() == null || "ClassTypeError".equals(dependency.getType().getClass().getSimpleName())) {
                     errorDependencies.add(
                             "Error in : " + className + " : " + dependency.getExpression());
                     ++count;
