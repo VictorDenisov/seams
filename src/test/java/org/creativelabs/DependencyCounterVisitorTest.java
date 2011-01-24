@@ -115,4 +115,17 @@ public class DependencyCounterVisitorTest {
         assertEquals("java.util.Map$Entry<java.lang.String, java.lang.Integer, >",
                 dependencyCounter.localVariables.getFieldTypeAsClass("entry").toString());
     }
+
+    @Test
+    public void testVisitFieldAccessExpr_LongClassName() throws Exception {
+        Expression expr = ParseHelper.createExpression("java.lang.String");
+
+        ImportList imports = ConstructionHelper.createEmptyImportList();
+        VariableList varList = ConstructionHelper.createEmptyVariableList();
+        DependencyCounterVisitor dependencyCounter = new DependencyCounterVisitor(varList, imports);
+
+        expr.accept(dependencyCounter, null);
+
+        assertEquals(1, dependencyCounter.getDependencies().size());
+    }
 }

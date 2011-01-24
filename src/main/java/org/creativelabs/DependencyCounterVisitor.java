@@ -76,7 +76,6 @@ class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
         ClassType type = runTypeFinder(n);
 
         dependencies.add(new Dependency(n.toString(), type));
-        super.visit(n, o);
     }
 
     @Override
