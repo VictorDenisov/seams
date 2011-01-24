@@ -58,7 +58,7 @@ public class TypeFinderFieldAccessExprTest {
     public void testFieldAccess() throws Exception {
         Expression expr = ParseHelper.createExpression("clazz.typeDeclaration");
 
-        VariableList varList = VariableList.createEmpty();
+        VariableList varList = ConstructionHelper.createEmptyVariableList();
         varList.put("typeDeclaration", ra.getClassTypeByName("java.lang.String"));
         varList.put("clazz", ra.getClassTypeByName("org.creativelabs.ClassProcessor"));
 
@@ -68,6 +68,19 @@ public class TypeFinderFieldAccessExprTest {
         ClassType type = typeFinder.determineType(expr);
 
         assertEquals("japa.parser.ast.body.ClassOrInterfaceDeclaration", type.toString());
+    }
+
+    @Test
+    public void testFieldAccessFromLongClassName() throws Exception {
+        Expression expr = ParseHelper.createExpression("javax.swing.SwingConstants.CENTER");
+        VariableList varList = ConstructionHelper.createEmptyVariableList();
+
+        ImportList imports = ConstructionHelper.createEmptyImportList();
+        TypeFinder typeFinder = new TypeFinder(varList, imports);
+
+        ClassType type = typeFinder.determineType(expr);
+
+        assertEquals("int", type.toString());
     }
 
 }
