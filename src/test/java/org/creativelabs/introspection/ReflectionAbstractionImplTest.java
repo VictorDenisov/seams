@@ -420,4 +420,14 @@ public class ReflectionAbstractionImplTest {
 
         assertEquals("boolean", result.toString());
     }
+
+    @Test
+    public void testGetFieldInherited() throws Exception {
+        ClassType classType = ra.getClassTypeByName("java.awt.event.MouseEvent");
+
+        ClassType result = ra.getFieldType(classType, "BUTTON3_MASK");
+
+        assertEquals("int", result.toString());
+    }
+
 }

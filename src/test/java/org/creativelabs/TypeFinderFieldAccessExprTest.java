@@ -83,4 +83,17 @@ public class TypeFinderFieldAccessExprTest {
         assertEquals("int", type.toString());
     }
 
+    @Test
+    public void testFieldAccessMouseEvent() throws Exception {
+        Expression expr = ParseHelper.createExpression("MouseEvent.BUTTON3_MASK");
+        VariableList varList = ConstructionHelper.createEmptyVariableList();
+
+        ImportList imports = ParseHelper.createImportList("import java.awt.event.*;");
+        TypeFinder typeFinder = new TypeFinder(varList, imports);
+
+        ClassType type = typeFinder.determineType(expr);
+
+        assertEquals("int", type.toString());
+    }
+
 }
