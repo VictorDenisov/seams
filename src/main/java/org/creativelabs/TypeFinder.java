@@ -89,16 +89,13 @@ class TypeFinder {
 
     private ClassType determineType(FieldAccessExpr expr) {
         String fieldName = expr.getField();
-        if (varType.hasName(fieldName)) {
-            return varType.getFieldTypeAsClass(fieldName);
-        } else {
-            ClassType scopeClassName = determineType(expr.getScope());
-            ClassType result = reflectionAbstraction.getFieldType(scopeClassName, expr.getField());
-            if (result.getClass().getSimpleName().equals("ClassTypeError")) {
-                result = reflectionAbstraction.getNestedClass(scopeClassName, expr.getField());
-            }
-            return result;
+
+        ClassType scopeClassName = determineType(expr.getScope());
+        ClassType result = reflectionAbstraction.getFieldType(scopeClassName, expr.getField());
+        if (result.getClass().getSimpleName().equals("ClassTypeError")) {
+            result = reflectionAbstraction.getNestedClass(scopeClassName, expr.getField());
         }
+        return result;
     }
 
     private ClassType determineType(MethodCallExpr expr) {

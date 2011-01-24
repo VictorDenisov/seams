@@ -54,7 +54,7 @@ public class TypeFinderFieldAccessExprTest {
     }
 
 
-    @Test(enabled = false)
+    @Test
     public void testFieldAccess() throws Exception {
         Expression expr = ParseHelper.createExpression("clazz.typeDeclaration");
 

@@ -259,26 +259,14 @@ public class TypeFinderTest {
 
     @Test
     public void testDetermineTypeOfVariableWithThisLiteral() throws Exception {
-        CompilationUnit cu = ParseHelper.createCompilationUnit("public class Sample {"
-                + "public static void main(String[] args) {"
-                + "this.a = new A();"
-                + "}"
-                + "}");
-        ClassOrInterfaceDeclaration cd = (ClassOrInterfaceDeclaration) cu.getTypes().get(0);
-        MethodDeclaration md = (MethodDeclaration) cd.getMembers().get(0);
-        Expression expr = ((ExpressionStmt) md.getBody().getStmts().get(0)).getExpression();
-
-        ImportList importList = ParseHelper.createImportList(
-                "import org.creativelabs.A;");
+        Expression expr = ParseHelper.createExpression("this.imports");
 
         VariableList varTypes = ConstructionHelper.createEmptyVariableList();
-        varTypes.put("a", new ClassTypeStub("org.creativelabs.A"));
-        varTypes.put("this", new ClassTypeStub(cd.getName()));
+        varTypes.put("this", ra.getClassTypeByName("org.creativelabs.MainApp"));
 
-        ClassType type = new TypeFinder(varTypes, importList).determineType(expr);
+        ClassType type = new TypeFinder(varTypes, null).determineType(expr);
 
-        assertEquals("org.creativelabs.A", type.toString());
-
+        assertEquals("org.creativelabs.ImportList", type.toString());
     }
 
     @Test
@@ -387,29 +375,26 @@ public class TypeFinderTest {
         assertEquals(expectedType, type.toString());
     }
 
+    /** 
+     * class Sample {
+     *     String file;
+     *     String method(File file) {
+     *         this.file = new File();
+     *     }
+     * }
+     */
     @Test
     public void testProcessingArgumentOfMethodSelectClassField() throws Exception{
-        CompilationUnit cu = ParseHelper.createCompilationUnit("public class Sample {"
-                + "String file;"
-                + "String methodCall(File file){"
-                + "this.file = new File();"
-                + "}"
-                + "}");
-        ClassOrInterfaceDeclaration cd = (ClassOrInterfaceDeclaration) cu.getTypes().get(0);
-        MethodDeclaration md = (MethodDeclaration) cd.getMembers().get(1);
-        FieldAccessExpr expr = (FieldAccessExpr) ((AssignExpr) ((ExpressionStmt) md.getBody().getStmts().get(0)).getExpression()).getTarget();
-
-        ImportList importList = ParseHelper.createImportList(
-                "package java.util;"
-                + "import java.io.File;");
+        Expression expr = ParseHelper.createExpression("this.file");
 
         VariableList varTypes = ConstructionHelper.createEmptyVariableList();
-        varTypes.put("file", new ClassTypeStub(String.class.getName()));
+        varTypes.put("file", new ClassTypeStub("java.io.File"));
+        varTypes.put("this", new ClassTypeStub("Sample"));
 
         TestingReflectionAbstraction reflectionAbstraction = new TestingReflectionAbstraction();
-        reflectionAbstraction.addMethod("Sample", "methodCall", new String[]{File.class.getName()}, String.class.getName());
+        reflectionAbstraction.addField("Sample", "file", "java.lang.String");
 
-        ClassType type = new TypeFinder(reflectionAbstraction, varTypes, importList).determineType(expr);
+        ClassType type = new TypeFinder(reflectionAbstraction, varTypes, null).determineType(expr);
 
         assertEquals("java.lang.String", type.toString());
     }
