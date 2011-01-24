@@ -24,10 +24,13 @@ public class TypeFinderFieldAccessExprTest {
 
     private ReflectionAbstraction ra = ReflectionAbstractionImpl.create();
 
+    @BeforeMethod
+    public void setUp() {
+    }
+
     @Test
     public void testDetermineTypeFieldAccessExpr() throws Exception {
-        FieldAccessExpr expr = (FieldAccessExpr) ParseHelper
-                .createExpression("str.CASE_INSENSITIVE_ORDER");
+        Expression expr = ParseHelper.createExpression("str.CASE_INSENSITIVE_ORDER");
 
         VariableList varTypes = ConstructionHelper.createEmptyVariableList();
         varTypes.put("str", ra.getClassTypeByName(String.class.getName()));
@@ -50,25 +53,15 @@ public class TypeFinderFieldAccessExprTest {
         assertEquals("org.apache.log4j.lf5.LogLevel", type.toString());
     }
 
-    @Test
-    public void testSuperLiteralInFieldAccessExpression() throws Exception {
-        SuperExpr expr = (SuperExpr) ((FieldAccessExpr) ParseHelper.createExpression("super.someField")).getScope();
-
-        VariableList varTypes = ConstructionHelper.createEmptyVariableList();
-        varTypes.put("super", new ClassTypeStub("org.creativelabs.A"));
-
-        ClassType type = new TypeFinder(varTypes, null).determineType(expr);
-
-        assertEquals("org.creativelabs.A", type.toString());
-    }
 
     @Test(enabled = false)
     public void testFieldAccess() throws Exception {
-        ReflectionAbstraction ra = ReflectionAbstractionImpl.create();
         Expression expr = ParseHelper.createExpression("clazz.typeDeclaration");
+
         VariableList varList = VariableList.createEmpty();
         varList.put("typeDeclaration", ra.getClassTypeByName("java.lang.String"));
         varList.put("clazz", ra.getClassTypeByName("org.creativelabs.ClassProcessor"));
+
         ImportList imports = ParseHelper.createImportList("");
 
         TypeFinder typeFinder = new TypeFinder(ra, varList, imports);

@@ -415,6 +415,18 @@ public class TypeFinderTest {
     }
 
     @Test
+    public void testSuperLiteralInFieldAccessExpression() throws Exception {
+        SuperExpr expr = (SuperExpr) ((FieldAccessExpr) ParseHelper.createExpression("super.someField")).getScope();
+
+        VariableList varTypes = ConstructionHelper.createEmptyVariableList();
+        varTypes.put("super", new ClassTypeStub("org.creativelabs.A"));
+
+        ClassType type = new TypeFinder(varTypes, null).determineType(expr);
+
+        assertEquals("org.creativelabs.A", type.toString());
+    }
+
+    @Test
     public void testProcessingArgumentOfMethodSelectMethodArgument() throws Exception{
         CompilationUnit cu = ParseHelper.createCompilationUnit("public class Sample {"
                 + "String file;"
