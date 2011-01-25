@@ -716,4 +716,5 @@ public class TypeFinderTest {
         assertEquals("java.util.Map<K, V, >", result.toString());
     }
 
+
 }

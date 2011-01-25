@@ -430,4 +430,15 @@ public class ReflectionAbstractionImplTest {
         assertEquals("int", result.toString());
     }
 
+    @Test
+    public void testGetMethodWithShortInt() throws Exception {
+        ClassType classType = ra.getClassTypeByName("javax.swing.GroupLayout$ParallelGroup");
+        ClassType a = ra.getClassTypeByName("java.lang.Integer");
+        ClassType s = ra.getClassTypeByName("short");
+        
+        ClassType result = ra.getReturnType(classType, "addGap", new ClassType[]{a, a, s});
+
+        assertEquals("javax.swing.GroupLayout$ParallelGroup", result.toString());
+    }
+
 }
