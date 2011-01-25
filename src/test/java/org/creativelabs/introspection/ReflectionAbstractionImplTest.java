@@ -441,4 +441,14 @@ public class ReflectionAbstractionImplTest {
         assertEquals("javax.swing.GroupLayout$ParallelGroup", result.toString());
     }
 
+    @Test
+    public void testGetMethodWithIntegerLong() throws Exception {
+        ClassType classType = ra.getClassTypeByName("java.lang.Thread");
+        ClassType a = ra.getClassTypeByName("java.lang.Integer");
+        
+        ClassType result = ra.getReturnType(classType, "sleep", new ClassType[]{a});
+
+        assertEquals("void", result.toString());
+    }
+
 }

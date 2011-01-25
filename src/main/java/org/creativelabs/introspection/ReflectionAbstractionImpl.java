@@ -79,7 +79,9 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         addToBoxing("short", Short.class);
         addToBoxing("int", Integer.class);
         addToBoxing("int", short.class);
+        addToBoxing("int", long.class);
         addToBoxing("long", Long.class);
+        addToBoxing("long", int.class);
         addToBoxing("float", Float.class);
         addToBoxing("double", Double.class);
         addToBoxing("char", Character.class);
@@ -91,6 +93,7 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         addToBoxing("java.lang.Byte", byte.class);
         addToBoxing("java.lang.Short", short.class);
         addToBoxing("java.lang.Integer", int.class);
+        addToBoxing("java.lang.Integer", long.class);
         addToBoxing("java.lang.Long", long.class);
         addToBoxing("java.lang.Float", float.class);
         addToBoxing("java.lang.Double", double.class);
