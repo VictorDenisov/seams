@@ -161,10 +161,10 @@ public class SsaFormVisitorTest {
         expectedResult.append("i0 <- 0\n");
         expectedResult.append("repeat\n");
         expectedResult.append("begin\n");
-        expectedResult.append("i1 <- phi(i0,i2)\n");
+        //TODO check necessity of phi(x0,x2)
         expectedResult.append("x1 <- phi(x0,x2)\n");
+        expectedResult.append("i1 <- phi(i0,i2)\n");
         expectedResult.append("x2 <- i1 plus 1\n");
-//        expectedResult.append("x1 <- i1 plus 1\n");
         expectedResult.append("i2 <- i1 plus 1\n");
         expectedResult.append("end\n");
         expectedResult.append("until(i0 less 10)\n");

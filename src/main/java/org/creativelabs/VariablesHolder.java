@@ -9,19 +9,15 @@ public class VariablesHolder {
 
     private Map<String, Integer> writeVariables = new HashMap<String, Integer>();
 
-    private Mode mode;
 
-    private boolean isNormalMode = true;
-
-    public VariablesHolder(Map<String, Integer> readVariables, Map<String, Integer> writeVariables, Mode mode) {
+    public VariablesHolder(Map<String, Integer> readVariables, Map<String, Integer> writeVariables) {
         this.readVariables = readVariables;
         this.writeVariables = writeVariables;
-        this.mode = mode;
     }
 
-    public VariablesHolder(Map<String, Integer> writeVariables, Mode mode) {
+    public VariablesHolder(Map<String, Integer> writeVariables) {
+        this.readVariables = copy(writeVariables);
         this.writeVariables = writeVariables;
-        this.mode = mode;
     }
 
     public Map<String, Integer> getReadVariables() {
@@ -40,38 +36,29 @@ public class VariablesHolder {
         this.writeVariables = writeVariables;
     }
 
-    public Mode getMode() {
-        return mode;
-    }
-
-    public void setMode(Mode mode) {
-        this.mode = mode;
-    }
-
     public Integer read(String name) {
-        return getCurrentVariables(true).get(0).get(name);
+        return readVariables.get(name);
     }
 
     public Integer readFrom(String name, boolean read) {
-        if (read) {
-            return readVariables.get(name);
-        } else {
-            return writeVariables.get(name);
-        }
+        return getCurrentVariables(read).get(name);
     }
 
-    public Integer write(String name, Integer index) {
-        if (getCurrentVariables(false).size() == 2) {
-            getCurrentVariables(false).get(1).put(name, index);
-        }
-        return getCurrentVariables(false).get(0).put(name, index);
+    public void write(String name, Integer index) {
+        readVariables.put(name, index);
+        writeVariables.put(name, index);
     }
 
-    public List<String> getDifferenceInVariables(VariablesHolder holder, boolean fromReadVars) {
+    public void writeTo(String name, Integer index, boolean read) {
+        getCurrentVariables(read).put(name, index);
+    }
+
+    public List<String> getDifferenceInVariables(VariablesHolder holder, boolean read) {
         List<String> list = new ArrayList<String>();
-        for (Map.Entry<String, Integer> entry : holder.getWriteVariables().entrySet()) {
-            if (getCurrentVariables(fromReadVars).get(0).containsKey(entry.getKey())
-                    && !getCurrentVariables(fromReadVars).get(0).get(entry.getKey()).equals(entry.getValue())) {
+        Map<String, Integer> map = holder.getCurrentVariables(read);
+        for (Map.Entry<String, Integer> entry : getCurrentVariables(read).entrySet()) {
+            if (map.containsKey(entry.getKey())
+                    && !map.get(entry.getKey()).equals(entry.getValue())) {
                 list.add(entry.getKey());
             }
         }
@@ -79,14 +66,21 @@ public class VariablesHolder {
     }
 
     String getPhi(VariablesHolder holder, String name) {
-        Integer index1 = holder.read(name);
-        Integer index2 = read(name);
+        Integer index1 = holder.readFrom(name, false);
+        Integer index2 = readFrom(name, false);
         return "phi(" + name + Math.min(index1, index2) +
                 "," + name + Math.max(index1, index2) + ")";
     }
 
-    public boolean containsKey(String name, boolean fromRead) {
-        return getCurrentVariables(fromRead).get(0).containsKey(name);
+    String getPhiFrom(VariablesHolder holder, String name, boolean read) {
+        Integer index1 = holder.readFrom(name, read);
+        Integer index2 = readFrom(name, read);
+        return "phi(" + name + Math.min(index1, index2) +
+                "," + name + Math.max(index1, index2) + ")";
+    }
+
+    public boolean containsKey(String name, boolean read) {
+        return getCurrentVariables(read).containsKey(name);
     }
 
     public void copyWriteToReadVariables() {
@@ -98,15 +92,18 @@ public class VariablesHolder {
     }
 
     public void increaseIndex(String name) {
-        if (getCurrentVariables(false).size() == 2) {
-            if (getCurrentVariables(false).get(1).containsKey(name)) {
-                getCurrentVariables(false).get(1).put(name, getCurrentVariables(false).get(1).get(name) + 1);
-            }
+        if (readVariables.containsKey(name)) {
+            readVariables.put(name, readVariables.get(name) + 1);
         }
-        if (getCurrentVariables(false).get(0).containsKey(name)) {
-            getCurrentVariables(false).get(0).put(name, getCurrentVariables(false).get(0).get(name) + 1);
+        if (writeVariables.containsKey(name)) {
+            writeVariables.put(name, writeVariables.get(name) + 1);
         }
-//        return getCurrentVariables(false).get(0).put(name, getCurrentVariables(false).get(0).get(name) + 1);
+    }
+
+    public void increaseIndexIn(String name, boolean read) {
+        if (getCurrentVariables(read).containsKey(name)) {
+            getCurrentVariables(read).put(name, getCurrentVariables(read).get(name) + 1);
+        }
     }
 
     private Map<String, Integer> copy(Map<String, Integer> map) {
@@ -119,55 +116,15 @@ public class VariablesHolder {
 
 
     VariablesHolder copy() {
-        return new VariablesHolder(copy(readVariables), copy(writeVariables), mode);
+        return new VariablesHolder(copy(readVariables), copy(writeVariables));
     }
 
-    private ArrayList<Map<String, Integer>> getCurrentVariables(boolean isRead) {
-        if (isRead) {
-            switch (mode) {
-                case READ_R_VARS_WRITE_R_VARS:
-                case READ_R_VARS_WRITE_W_VARS:
-                    return new ArrayList<Map<String, Integer>>() {{
-                        add(readVariables);
-                    }};
-                case READ_W_VARS_WRITE_R_VARS:
-                case READ_W_VARS_WRITE_W_VARS:
-                    return new ArrayList<Map<String, Integer>>() {{
-                        add(writeVariables);
-                    }};
-                case READ_R_VARS_WRITE_WR_VARS:
-                    return new ArrayList<Map<String, Integer>>() {{
-                        add(readVariables);
-                    }};
-            }
+    private Map<String, Integer> getCurrentVariables(boolean read) {
+        if (read) {
+            return readVariables;
         } else {
-            switch (mode) {
-                case READ_R_VARS_WRITE_R_VARS:
-                case READ_W_VARS_WRITE_R_VARS:
-                    return new ArrayList<Map<String, Integer>>() {{
-                        add(readVariables);
-                    }};
-                case READ_R_VARS_WRITE_W_VARS:
-                case READ_W_VARS_WRITE_W_VARS:
-                    return new ArrayList<Map<String, Integer>>() {{
-                        add(writeVariables);
-                    }};
-                case READ_R_VARS_WRITE_WR_VARS:
-                    return new ArrayList<Map<String, Integer>>() {{
-                        add(writeVariables);
-                        add(readVariables);
-                    }};
-            }
+            return writeVariables;
         }
-        return null;
-    }
-
-    public enum Mode {
-        READ_W_VARS_WRITE_W_VARS,
-        READ_W_VARS_WRITE_R_VARS,
-        READ_R_VARS_WRITE_W_VARS,
-        READ_R_VARS_WRITE_R_VARS,
-        READ_R_VARS_WRITE_WR_VARS,
     }
 
 }

@@ -44,8 +44,7 @@ public class SsaFinderTest {
 
         Map<String, Integer> map = new HashMap<String, Integer>();
         map.put("testVariable", 1);
-        VariablesHolder holder = new VariablesHolder(map, VariablesHolder.Mode.READ_R_VARS_WRITE_WR_VARS);
-        holder.copyWriteToReadVariables();
+        VariablesHolder holder = new VariablesHolder(map);
 
         NameExpr expr = (NameExpr) ParseHelper.createExpression("testVariable");
 
@@ -60,8 +59,7 @@ public class SsaFinderTest {
 
         Map<String, Integer> map = new HashMap<String, Integer>();
         map.put("testVariable", 1);
-        VariablesHolder holder = new VariablesHolder(map, VariablesHolder.Mode.READ_R_VARS_WRITE_WR_VARS);
-        holder.copyWriteToReadVariables();
+        VariablesHolder holder = new VariablesHolder(map);
 
         NameExpr expr = (NameExpr) ParseHelper.createExpression("testVariable");
 

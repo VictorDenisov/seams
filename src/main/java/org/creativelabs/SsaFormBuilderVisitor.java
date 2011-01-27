@@ -185,8 +185,7 @@ public class SsaFormBuilderVisitor extends GenericVisitorAdapter<StringBuilder, 
                 map.put(parameter.getId().getName(), 0);
             }
         }
-        VariablesHolder holder = new VariablesHolder(map, VariablesHolder.Mode.READ_R_VARS_WRITE_WR_VARS);
-        holder.copyWriteToReadVariables();
+        VariablesHolder holder = new VariablesHolder(map);
 
         return visit(n.getBody(), holder);
     }
