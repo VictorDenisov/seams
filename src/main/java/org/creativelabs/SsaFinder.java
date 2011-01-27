@@ -35,7 +35,7 @@ public class SsaFinder {
             variableIndex++;
             variables.write(variableName, variableIndex);
         }
-        return variableName + variableIndex;
+        return variableName + (variableIndex != null ? variableIndex : "<not contains in key set>");
     }
 
     String determineSsa(LiteralExpr expr) {

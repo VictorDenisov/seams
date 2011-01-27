@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Visitor extends GenericVisitorAdapter<StringBuilder, VariablesHolder> {
+public class SsaFormBuilderVisitor extends GenericVisitorAdapter<StringBuilder, VariablesHolder> {
 
     private static final String UNSUPPORTED = "Unsupported expression: ";
 

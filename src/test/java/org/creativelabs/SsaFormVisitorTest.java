@@ -3,11 +3,6 @@ package org.creativelabs;
 import japa.parser.ast.body.MethodDeclaration;
 import org.testng.annotations.Test;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import static junit.framework.Assert.assertEquals;
 
 public class SsaFormVisitorTest {
@@ -19,7 +14,7 @@ public class SsaFormVisitorTest {
                 "}");
 
 
-        Visitor visitor = new Visitor();
+        SsaFormBuilderVisitor visitor = new SsaFormBuilderVisitor();
         StringBuilder actualResult = visitor.visit(methodDeclaration, null);
 
         StringBuilder expectedResult = new StringBuilder();
@@ -34,7 +29,7 @@ public class SsaFormVisitorTest {
                 "int x = 1;" +
                 "}");
 
-        Visitor visitor = new Visitor();
+        SsaFormBuilderVisitor visitor = new SsaFormBuilderVisitor();
         StringBuilder actualResult = visitor.visit(methodDeclaration, null);
 
         StringBuilder expectedResult = new StringBuilder();
@@ -49,7 +44,7 @@ public class SsaFormVisitorTest {
                 "x = x;" +
                 "}");
 
-        Visitor visitor = new Visitor();
+        SsaFormBuilderVisitor visitor = new SsaFormBuilderVisitor();
         StringBuilder actualResult = visitor.visit(methodDeclaration, null);
 
         StringBuilder expectedResult = new StringBuilder();
@@ -64,7 +59,7 @@ public class SsaFormVisitorTest {
                 "x = 2;" +
                 "}");
 
-        Visitor visitor = new Visitor();
+        SsaFormBuilderVisitor visitor = new SsaFormBuilderVisitor();
         StringBuilder actualResult = visitor.visit(methodDeclaration, null);
 
         StringBuilder expectedResult = new StringBuilder();
@@ -79,7 +74,7 @@ public class SsaFormVisitorTest {
                 "x = x + 2;" +
                 "}");
 
-        Visitor visitor = new Visitor();
+        SsaFormBuilderVisitor visitor = new SsaFormBuilderVisitor();
         StringBuilder actualResult = visitor.visit(methodDeclaration, null);
 
         StringBuilder expectedResult = new StringBuilder();
@@ -95,7 +90,7 @@ public class SsaFormVisitorTest {
                 "x = x + y;" +
                 "}");
 
-        Visitor visitor = new Visitor();
+        SsaFormBuilderVisitor visitor = new SsaFormBuilderVisitor();
         StringBuilder actualResult = visitor.visit(methodDeclaration, null);
 
         StringBuilder expectedResult = new StringBuilder();
@@ -111,7 +106,7 @@ public class SsaFormVisitorTest {
                 "x = x + y + y;" +
                 "}");
 
-        Visitor visitor = new Visitor();
+        SsaFormBuilderVisitor visitor = new SsaFormBuilderVisitor();
         StringBuilder actualResult = visitor.visit(methodDeclaration, null);
 
         StringBuilder expectedResult = new StringBuilder();
@@ -132,7 +127,7 @@ public class SsaFormVisitorTest {
                 "}" +
                 "}");
 
-        Visitor visitor = new Visitor();
+        SsaFormBuilderVisitor visitor = new SsaFormBuilderVisitor();
         StringBuilder actualResult = visitor.visit(methodDeclaration, null);
 
         StringBuilder expectedResult = new StringBuilder();
@@ -159,7 +154,7 @@ public class SsaFormVisitorTest {
                 "}" +
                 "}");
 
-        Visitor visitor = new Visitor();
+        SsaFormBuilderVisitor visitor = new SsaFormBuilderVisitor();
         StringBuilder actualResult = visitor.visit(methodDeclaration, null);
 
         StringBuilder expectedResult = new StringBuilder();
@@ -185,7 +180,7 @@ public class SsaFormVisitorTest {
                 "}" +
                 "}");
 
-        Visitor visitor = new Visitor();
+        SsaFormBuilderVisitor visitor = new SsaFormBuilderVisitor();
         StringBuilder actualResult = visitor.visit(methodDeclaration, null);
 
         StringBuilder expectedResult = new StringBuilder();
