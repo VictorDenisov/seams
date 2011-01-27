@@ -3,6 +3,9 @@ package org.creativelabs;
 
 import japa.parser.ast.expr.*;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 public class SsaFinder {
@@ -29,6 +32,10 @@ public class SsaFinder {
             return determineSsa((ArrayAccessExpr) expr);
         } else if (expr instanceof ArrayCreationExpr) {
             return determineSsa((ArrayCreationExpr) expr);
+        } else if (expr instanceof ObjectCreationExpr) {
+            return determineSsa((ObjectCreationExpr) expr);
+        } else if (expr instanceof MethodCallExpr) {
+            return determineSsa((MethodCallExpr) expr);
         }
         return UNSUPPORTED + expr.toString() + "\n";
     }
@@ -36,7 +43,7 @@ public class SsaFinder {
     String determineSsa(NameExpr expr) {
         String variableName = expr.getName();
         Integer variableIndex = variables.read(variableName);
-        if (isNeededToIncreaseIndex){
+        if (isNeededToIncreaseIndex) {
             variableIndex = variables.readFrom(variableName, false);
             variableIndex++;
             variables.write(variableName, variableIndex);
@@ -56,7 +63,7 @@ public class SsaFinder {
     }
 
     String determineSsa(ArrayAccessExpr expr) {
-        if (isNeededToIncreaseIndex){
+        if (isNeededToIncreaseIndex) {
             return "Update(" + expr.getName() + "," + expr.getIndex() + ")";
         } else {
             return "Access(" + expr.getName() + "," + expr.getIndex() + ")";
@@ -65,5 +72,45 @@ public class SsaFinder {
 
     String determineSsa(ArrayCreationExpr expr) {
         return expr.toString();
+    }
+
+    String determineSsa(ObjectCreationExpr expr) {
+        String type = expr.getType().getName();
+        if (expr.getArgs() != null) {
+            List<String> args = new ArrayList<String>();
+            for (Expression expression : expr.getArgs()) {
+                args.add(determineSsa(expression));
+            }
+            StringBuilder builder = new StringBuilder();
+            Iterator<String> iterator = args.iterator();
+            while (iterator.hasNext()) {
+                builder.append(iterator.next());
+                if (iterator.hasNext()) {
+                    builder.append(",");
+                }
+            }
+            return "new " + type + "(" + builder + ")";
+        }
+        return "new " + type + "()";
+    }
+
+    String determineSsa(MethodCallExpr expr) {
+        String name = expr.getName();
+        if (expr.getArgs() != null) {
+            List<String> args = new ArrayList<String>();
+            for (Expression expression : expr.getArgs()) {
+                args.add(determineSsa(expression));
+            }
+            StringBuilder builder = new StringBuilder();
+            Iterator<String> iterator = args.iterator();
+            while (iterator.hasNext()) {
+                builder.append(iterator.next());
+                if (iterator.hasNext()) {
+                    builder.append(",");
+                }
+            }
+            return name + "(" + builder + ")";
+        }
+        return name + "()";
     }
 }

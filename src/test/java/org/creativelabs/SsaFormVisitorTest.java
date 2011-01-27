@@ -254,4 +254,94 @@ public class SsaFormVisitorTest {
         assertEquals(expectedResult.toString(), actualResult.toString());
     }
 
+    @Test
+    public void testObjectCreation() throws Exception {
+        MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("void method(){" +
+                "A x = new A();" +
+                "}");
+
+        SsaFormBuilderVisitor visitor = new SsaFormBuilderVisitor();
+        StringBuilder actualResult = visitor.visit(methodDeclaration, null);
+
+        StringBuilder expectedResult = new StringBuilder();
+        expectedResult.append("x0 <- new A()\n");
+
+        assertEquals(expectedResult.toString(), actualResult.toString());
+    }
+
+    @Test
+    public void testObjectCreationWithParameters() throws Exception {
+        MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("void method(int x){" +
+                "A y = new A(x);" +
+                "}");
+
+        SsaFormBuilderVisitor visitor = new SsaFormBuilderVisitor();
+        StringBuilder actualResult = visitor.visit(methodDeclaration, null);
+
+        StringBuilder expectedResult = new StringBuilder();
+        expectedResult.append("y0 <- new A(x0)\n");
+
+        assertEquals(expectedResult.toString(), actualResult.toString());
+    }
+
+    @Test
+    public void testAssignExprMethodExecution() throws Exception {
+        MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("void method(){" +
+                "int y = method2();" +
+                "}");
+
+        SsaFormBuilderVisitor visitor = new SsaFormBuilderVisitor();
+        StringBuilder actualResult = visitor.visit(methodDeclaration, null);
+
+        StringBuilder expectedResult = new StringBuilder();
+        expectedResult.append("y0 <- method2()\n");
+
+        assertEquals(expectedResult.toString(), actualResult.toString());
+    }
+
+    @Test
+    public void testAssignExprMethodExecutionWithParameter() throws Exception {
+        MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("void method(int x){" +
+                "int y = method2(x);" +
+                "}");
+
+        SsaFormBuilderVisitor visitor = new SsaFormBuilderVisitor();
+        StringBuilder actualResult = visitor.visit(methodDeclaration, null);
+
+        StringBuilder expectedResult = new StringBuilder();
+        expectedResult.append("y0 <- method2(x0)\n");
+
+        assertEquals(expectedResult.toString(), actualResult.toString());
+    }
+
+    @Test
+    public void testVoidMethodExecution() throws Exception {
+        MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("void method(){" +
+                "method2();" +
+                "}");
+
+        SsaFormBuilderVisitor visitor = new SsaFormBuilderVisitor();
+        StringBuilder actualResult = visitor.visit(methodDeclaration, null);
+
+        StringBuilder expectedResult = new StringBuilder();
+        expectedResult.append("method2()\n");
+
+        assertEquals(expectedResult.toString(), actualResult.toString());
+    }
+
+    @Test
+    public void testVoidMethodExecutionWithParameters() throws Exception {
+        MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("void method(int x){" +
+                "method2(x);" +
+                "}");
+
+        SsaFormBuilderVisitor visitor = new SsaFormBuilderVisitor();
+        StringBuilder actualResult = visitor.visit(methodDeclaration, null);
+
+        StringBuilder expectedResult = new StringBuilder();
+        expectedResult.append("method2(x0)\n");
+
+        assertEquals(expectedResult.toString(), actualResult.toString());
+    }
+
 }

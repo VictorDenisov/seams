@@ -2,10 +2,7 @@ package org.creativelabs;
 
 import japa.parser.ast.body.MethodDeclaration;
 import japa.parser.ast.body.Parameter;
-import japa.parser.ast.expr.AssignExpr;
-import japa.parser.ast.expr.BinaryExpr;
-import japa.parser.ast.expr.Expression;
-import japa.parser.ast.expr.VariableDeclarationExpr;
+import japa.parser.ast.expr.*;
 import japa.parser.ast.stmt.*;
 import japa.parser.ast.visitor.GenericVisitorAdapter;
 
@@ -31,6 +28,11 @@ public class SsaFormBuilderVisitor extends GenericVisitorAdapter<StringBuilder, 
         String rightPart = new SsaFinder(arg, false).determineSsa(n.getValue());
         String leftPart = new SsaFinder(arg, true).determineSsa(n.getTarget());
         return new StringBuilder(leftPart + " <- " + rightPart + "\n");
+    }
+
+    @Override
+    public StringBuilder visit(MethodCallExpr n, VariablesHolder arg) {
+        return new StringBuilder(new SsaFinder(arg, false).determineSsa(n) + "\n");
     }
 
     @Override
@@ -206,6 +208,8 @@ public class SsaFormBuilderVisitor extends GenericVisitorAdapter<StringBuilder, 
             return visit((AssignExpr) expression, arg);
         } else if (expression instanceof VariableDeclarationExpr) {
             return visit((VariableDeclarationExpr) expression, arg);
+        } else if (expression instanceof MethodCallExpr) {
+            return visit((MethodCallExpr) expression, arg);
         }
         return new StringBuilder(UNSUPPORTED + expression.toString() + "\n");
     }
