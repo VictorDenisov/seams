@@ -194,4 +194,64 @@ public class SsaFormVisitorTest {
         assertEquals(expectedResult.toString(), actualResult.toString());
     }
 
+    @Test
+    public void testArrayAccess() throws Exception {
+        MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("void method(int x){" +
+                "x = a[i];" +
+                "}");
+
+        SsaFormBuilderVisitor visitor = new SsaFormBuilderVisitor();
+        StringBuilder actualResult = visitor.visit(methodDeclaration, null);
+
+        StringBuilder expectedResult = new StringBuilder();
+        expectedResult.append("x1 <- Access(a,i)\n");
+
+        assertEquals(expectedResult.toString(), actualResult.toString());
+    }
+
+    @Test
+    public void testArrayUpdate() throws Exception {
+        MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("void method(int x){" +
+                "a[i] = x;" +
+                "}");
+
+        SsaFormBuilderVisitor visitor = new SsaFormBuilderVisitor();
+        StringBuilder actualResult = visitor.visit(methodDeclaration, null);
+
+        StringBuilder expectedResult = new StringBuilder();
+        expectedResult.append("Update(a,i) <- x0\n");
+
+        assertEquals(expectedResult.toString(), actualResult.toString());
+    }
+
+    @Test
+    public void testArrayAsArgument() throws Exception {
+        MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("void method(int[] x){" +
+                "int []y = x;" +
+                "}");
+
+        SsaFormBuilderVisitor visitor = new SsaFormBuilderVisitor();
+        StringBuilder actualResult = visitor.visit(methodDeclaration, null);
+
+        StringBuilder expectedResult = new StringBuilder();
+        expectedResult.append("y0 <- x0\n");
+
+        assertEquals(expectedResult.toString(), actualResult.toString());
+    }
+
+    @Test
+    public void testArrayCreation() throws Exception {
+        MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("void method(){" +
+                "int []y = new int[2];" +
+                "}");
+
+        SsaFormBuilderVisitor visitor = new SsaFormBuilderVisitor();
+        StringBuilder actualResult = visitor.visit(methodDeclaration, null);
+
+        StringBuilder expectedResult = new StringBuilder();
+        expectedResult.append("y0 <- new int[2]\n");
+
+        assertEquals(expectedResult.toString(), actualResult.toString());
+    }
+
 }

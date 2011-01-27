@@ -22,18 +22,15 @@ public class SsaFormBuilderVisitor extends GenericVisitorAdapter<StringBuilder, 
     public StringBuilder visit(VariableDeclarationExpr n, VariablesHolder arg) {
         String variableName = n.getVars().get(0).getId().getName();
         arg.write(variableName, 0);
-        return new StringBuilder(variableName + 0 + " <- " + n.getVars().get(0).getInit().toString() + "\n");
+        String rightPart = new SsaFinder(arg, false).determineSsa(n.getVars().get(0).getInit());
+        return new StringBuilder(variableName + 0 + " <- " + rightPart + "\n");
     }
 
     @Override
     public StringBuilder visit(AssignExpr n, VariablesHolder arg) {
-        String variableName = n.getTarget().toString();
-        if (arg.containsKey(variableName, false)) {
-            String rightPart = new SsaFinder(arg, false).determineSsa(n.getValue());
-            String leftPart = new SsaFinder(arg, true).determineSsa(n.getTarget());
-            return new StringBuilder(leftPart + " <- " + rightPart + "\n");
-        }
-        return new StringBuilder(UNSUPPORTED + " <not contain in key set> " + n.toString() + "\n");
+        String rightPart = new SsaFinder(arg, false).determineSsa(n.getValue());
+        String leftPart = new SsaFinder(arg, true).determineSsa(n.getTarget());
+        return new StringBuilder(leftPart + " <- " + rightPart + "\n");
     }
 
     @Override
@@ -52,7 +49,6 @@ public class SsaFormBuilderVisitor extends GenericVisitorAdapter<StringBuilder, 
         StringBuilder elseBlock = new StringBuilder();
         Statement elseStmt = n.getElseStmt();
         elseBlock.append(getStmt(elseStmt, elseVariables));
-
 
 
         StringBuilder buffer = new StringBuilder();
@@ -77,7 +73,7 @@ public class SsaFormBuilderVisitor extends GenericVisitorAdapter<StringBuilder, 
         VariablesHolder holder1 = arg.copy();
 
         List<StringBuilder> init = new ArrayList<StringBuilder>();
-        for (Expression expression : n.getInit()){
+        for (Expression expression : n.getInit()) {
             init.add(getExpr(expression, holder1));
         }
 
@@ -88,17 +84,16 @@ public class SsaFormBuilderVisitor extends GenericVisitorAdapter<StringBuilder, 
         List<String> usingVariables = new ArrayList<String>();
         new AssignVisitor().visit(n, usingVariables);
 
-        for (String var : usingVariables){
+        for (String var : usingVariables) {
             holder2.increaseIndex(var);
         }
 
         StringBuilder body = getStmt(n.getBody(), holder2);
 
         List<StringBuilder> update = new ArrayList<StringBuilder>();
-        for (Expression expression : n.getUpdate()){
+        for (Expression expression : n.getUpdate()) {
             update.add(getExpr(expression, holder2));
         }
-
 
 
         StringBuilder buffer = new StringBuilder();
@@ -137,7 +132,7 @@ public class SsaFormBuilderVisitor extends GenericVisitorAdapter<StringBuilder, 
         List<String> usingVariables = new ArrayList<String>();
         new AssignVisitor().visit(n, usingVariables);
 
-        for (String var : usingVariables){
+        for (String var : usingVariables) {
             holder.increaseIndex(var);
         }
 
@@ -206,7 +201,7 @@ public class SsaFormBuilderVisitor extends GenericVisitorAdapter<StringBuilder, 
         return new StringBuilder(UNSUPPORTED + statement.toString() + "\n");
     }
 
-    private StringBuilder getExpr(Expression expression, VariablesHolder arg){
+    private StringBuilder getExpr(Expression expression, VariablesHolder arg) {
         if (expression instanceof AssignExpr) {
             return visit((AssignExpr) expression, arg);
         } else if (expression instanceof VariableDeclarationExpr) {

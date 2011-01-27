@@ -7,6 +7,8 @@ import java.util.Map;
 
 public class SsaFinder {
 
+    private static final String UNSUPPORTED = "Unsupported expression: ";
+
     VariablesHolder variables;
 
     private boolean isNeededToIncreaseIndex;
@@ -23,8 +25,12 @@ public class SsaFinder {
             return determineSsa((LiteralExpr) expr);
         } else if (expr instanceof BinaryExpr) {
             return determineSsa((BinaryExpr) expr);
+        } else if (expr instanceof ArrayAccessExpr) {
+            return determineSsa((ArrayAccessExpr) expr);
+        } else if (expr instanceof ArrayCreationExpr) {
+            return determineSsa((ArrayCreationExpr) expr);
         }
-        return "Unsupported: " + expr.toString() + "\n";
+        return UNSUPPORTED + expr.toString() + "\n";
     }
 
     String determineSsa(NameExpr expr) {
@@ -47,5 +53,17 @@ public class SsaFinder {
         String rightPart = determineSsa(expr.getRight());
         String operator = expr.getOperator().name();
         return leftPart + " " + operator + " " + rightPart;
+    }
+
+    String determineSsa(ArrayAccessExpr expr) {
+        if (isNeededToIncreaseIndex){
+            return "Update(" + expr.getName() + "," + expr.getIndex() + ")";
+        } else {
+            return "Access(" + expr.getName() + "," + expr.getIndex() + ")";
+        }
+    }
+
+    String determineSsa(ArrayCreationExpr expr) {
+        return expr.toString();
     }
 }

@@ -2,10 +2,7 @@ package org.creativelabs;
 
 
 import japa.parser.ParseException;
-import japa.parser.ast.expr.AssignExpr;
-import japa.parser.ast.expr.BinaryExpr;
-import japa.parser.ast.expr.LiteralExpr;
-import japa.parser.ast.expr.NameExpr;
+import japa.parser.ast.expr.*;
 import org.creativelabs.introspection.ClassType;
 import org.testng.AssertJUnit;
 import org.testng.annotations.DataProvider;
@@ -87,5 +84,22 @@ public class SsaFinderTest {
         };
     }
 
+    @Test
+    public void testArrayAccessExpr() throws ParseException {
+        ArrayAccessExpr expr = (ArrayAccessExpr) ParseHelper.createExpression("a[i]");
+
+        String actualResult = new SsaFinder(null, false).determineSsa(expr);
+        String expectedResult = "Access(a,i)";
+        assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
+    public void testArrayAccessExprWithIncreaseIndex() throws ParseException {
+        ArrayAccessExpr expr = (ArrayAccessExpr) ParseHelper.createExpression("a[i]");
+
+        String actualResult = new SsaFinder(null, true).determineSsa(expr);
+        String expectedResult = "Update(a,i)";
+        assertEquals(expectedResult, actualResult);
+    }
 
 }
