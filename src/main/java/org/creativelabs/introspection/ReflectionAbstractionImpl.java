@@ -43,7 +43,7 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         }
     }
 
-    private static class ClassTypeError implements ClassType {
+    private static class ClassTypeErrorImpl implements ClassType, ClassTypeError {
         private String message;
 
         @Override
@@ -100,8 +100,7 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         addToBoxing("java.lang.Character", char.class);
         addToBoxing("java.lang.Character", int.class);
         addToBoxing("java.lang.Boolean", boolean.class);
-        addToBoxing("java.lang.Void", void.class);
-
+        addToBoxing("java.lang.Void", void.class); 
         primitivesMap = new HashMap<String, Class>();
         primitivesMap.put("byte", byte.class);
         primitivesMap.put("short", short.class);
@@ -306,7 +305,7 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
 
     @Override
     public ClassType createErrorClassType(String message) {
-        ClassTypeError err = new ClassTypeError();
+        ClassTypeErrorImpl err = new ClassTypeErrorImpl();
         err.message = message;
         return err;
     }

@@ -6,8 +6,7 @@ import japa.parser.ast.expr.NameExpr;
 import japa.parser.ast.type.*;
 import japa.parser.ast.body.*;
 
-import org.creativelabs.introspection.ReflectionAbstraction;
-import org.creativelabs.introspection.ClassType;
+import org.creativelabs.introspection.*;
 
 import java.util.*;
 
@@ -86,7 +85,7 @@ class ImportList {
             result = getClassByShortName(classType.toString());
         } else {
             ClassType higher = getClassByClassOrInterfaceType(classType.getScope());
-            if (higher.getClass().getSimpleName().equals("ClassTypeError")) {
+            if (higher instanceof ClassTypeError) {
                 result = ra.getClassTypeByName(classType.toString());
             } else {
                 result = ra.getNestedClass(higher, classType.getName());

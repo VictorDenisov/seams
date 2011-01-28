@@ -67,7 +67,7 @@ public class ReflectionAbstractionImplTest {
         types[0] = ra.getClassTypeByName("java.lang.String");
         ClassType returnType = ra.getReturnType(ra.getClassTypeByName("japa.parser.ast.Comment"),
                 "absentMethod", types);
-        assertEquals("ClassTypeError", returnType.getClass().getSimpleName());
+        assertTrue(returnType instanceof ClassTypeError);
     }
 
     @Test
@@ -117,7 +117,7 @@ public class ReflectionAbstractionImplTest {
     public void testGetClassTypeByNameError() {
         ClassType type = ra.getClassTypeByName("NoSuchClass");
 
-        assertEquals("ClassTypeError", type.getClass().getSimpleName());
+        assertTrue(type instanceof ClassTypeError);
     }
 
     @Test
@@ -143,7 +143,7 @@ public class ReflectionAbstractionImplTest {
 		ClassType myClass = ra.getClassTypeByName("java.lang.String");
         ClassType fieldType = ReflectionAbstractionImpl.create().getFieldType(myClass, "NO_SUCH_FIELD");
 
-        assertEquals("ClassTypeError", fieldType.getClass().getSimpleName());
+        assertTrue(fieldType instanceof ClassTypeError);
     }
 
     @Test
@@ -269,7 +269,7 @@ public class ReflectionAbstractionImplTest {
 
         ClassType result = ra.getReturnType(clazz, "getFooBar", new ClassType[0]);
 
-        assertEquals("ClassTypeError", result.getClass().getSimpleName());
+        assertTrue(result instanceof ClassTypeError);
         assertEquals("no such method : getFooBar", result.toString());
     }
 
@@ -277,7 +277,7 @@ public class ReflectionAbstractionImplTest {
     public void testGetTypeWrongClassType() {
         ClassType result = ra.getReturnType(new ClassTypeStub("h"), "getFooBar", new ClassType[0]);
 
-        assertEquals("ClassTypeError", result.getClass().getSimpleName());
+        assertTrue(result instanceof ClassTypeError);
     }
 
     @Test(dependsOnMethods = "testReflectionAbstractionSetGenericArgs")
@@ -296,7 +296,7 @@ public class ReflectionAbstractionImplTest {
 
         stub = ra.substGenericArgs(stub, new ClassType[]{stub, stub});
 
-        assertEquals("ClassTypeError", stub.getClass().getSimpleName());
+        assertTrue(stub instanceof ClassTypeError);
     }
 
     @Test(dependsOnMethods = "testReflectionAbstractionSetGenericArgs")
@@ -359,7 +359,7 @@ public class ReflectionAbstractionImplTest {
 
         ClassType result = ra.getNestedClass(clazz, "Operator");
 
-        assertEquals("ClassTypeError", result.getClass().getSimpleName());
+        assertTrue(result instanceof ClassTypeError);
     }
 
     @Test
@@ -368,7 +368,7 @@ public class ReflectionAbstractionImplTest {
 
         ClassType result = ra.getNestedClass(clazz, "length");
 
-        assertEquals("ClassTypeError", result.getClass().getSimpleName());
+        assertTrue(result instanceof ClassTypeError);
     }
 
     @Test
