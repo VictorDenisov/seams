@@ -21,4 +21,6 @@ public interface ReflectionAbstraction {
     ClassType convertFromArray(ClassType classType);
 
     ClassType getElementType(ClassType classType);
+
+    ClassType createNullClassType();
 }

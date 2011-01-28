@@ -56,4 +56,8 @@ class HookReflectionAbstraction implements ReflectionAbstraction {
     public ClassType getElementType(ClassType classType) {
         return ra.getElementType(classType);
     }
+
+    public ClassType createNullClassType() {
+        return ra.createNullClassType();
+    }
 }

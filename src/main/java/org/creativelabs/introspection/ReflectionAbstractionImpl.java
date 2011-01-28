@@ -57,6 +57,19 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         }
     }
 
+    private static class ClassTypeNullImpl implements ClassType, ClassTypeNull {
+
+        @Override
+        public String toString() {
+            return "NullClassType";
+        }
+
+        @Override
+        public String getShortString() {
+            return "NullClassType";
+        }
+    }
+
     private HashMap<String, ArrayList<Class>> boxingMap;
 
     private HashMap<String, Class> primitivesMap;
@@ -384,5 +397,10 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         } catch (Exception e) {
             return createErrorClassType(e.toString());
         }
+    }
+
+    @Override
+    public ClassType createNullClassType() {
+        return new ClassTypeNullImpl();
     }
 }

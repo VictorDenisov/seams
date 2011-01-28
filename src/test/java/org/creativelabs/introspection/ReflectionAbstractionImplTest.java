@@ -451,4 +451,11 @@ public class ReflectionAbstractionImplTest {
         assertEquals("void", result.toString());
     }
 
+    @Test
+    public void testCreateNullClassType() throws Exception {
+        ClassType classType = ra.createNullClassType();
+
+        assertTrue(classType instanceof ClassTypeNull);
+    }
+
 }
