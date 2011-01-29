@@ -44,17 +44,11 @@ class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
     @Override
     public void visit(NameExpr n, Object o) {
         ClassType dependencyUponType = null;
-        if (localVariables.hasName(n.getName())) {
-            dependencyUponType = localVariables.getFieldTypeAsClass(n.getName());
-        } else if (classFields.hasName(n.getName())) {
-            dependencyUponType = classFields.getFieldTypeAsClass(n.getName());
-        } else if (Character.isUpperCase(n.getName().charAt(0))) {
-            dependencyUponType = imports.getClassByShortName(n.getName());
-        }
+        dependencyUponType = runTypeFinder(n);
         dependencies.add(new Dependency(n.getName(), dependencyUponType));
     }
 
-    private ClassType runTypeFinder(Expression n) {
+    protected ClassType runTypeFinder(Expression n) {
         VariableList vList = VariableList.createEmpty();
         vList.addAll(classFields);
         vList.addAll(localVariables);

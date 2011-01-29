@@ -489,4 +489,26 @@ public class ReflectionAbstractionImplTest {
         assertEquals("javax.swing.GroupLayout$SequentialGroup", result.toString());
     }
 
+    private class JFrameDescendant extends javax.swing.JFrame {
+    }
+
+    @Test
+    public void testInheritedFieldAccess() {
+        ClassType classType = ra.getClassTypeByName(
+                "org.creativelabs.introspection.ReflectionAbstractionImplTest$JFrameDescendant");
+
+        ClassType result = ra.getFieldType(classType, "rootPane");
+
+        assertEquals("javax.swing.JRootPane", result.toString());
+    }
+
+    @Test
+    public void testJframeLEFT() {
+        ClassType classType = ra.getClassTypeByName("javax.swing.JLabel");
+
+        ClassType result = ra.getFieldType(classType, "LEFT");
+
+        assertEquals("int", result.toString());
+    }
+
 }

@@ -76,7 +76,12 @@ class TypeFinder {
         if (result != null && !(result instanceof ClassTypeError)) {
             return result;
         } else {
-            return varType.getFieldTypeAsClass(name);
+            result = varType.getFieldTypeAsClass(name);
+            if (result instanceof ClassTypeError) {
+                ClassType thisType = varType.getFieldTypeAsClass("this");
+                result = reflectionAbstraction.getFieldType(thisType, name);
+            }
+            return result;
         }
     }
 

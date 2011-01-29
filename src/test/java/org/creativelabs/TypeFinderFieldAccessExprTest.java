@@ -96,4 +96,29 @@ public class TypeFinderFieldAccessExprTest {
         assertEquals("int", type.toString());
     }
 
+    private class JFrameDescendant extends javax.swing.JFrame {
+    }
+
+    /**
+     * class JFrameDescendant extends JFrame {
+     *     void method() {
+     *         rootPane.doSomething();
+     *     }
+     * }
+     */
+    @Test
+    public void testFieldAccessWithoutScope() throws Exception {
+        Expression expr = ParseHelper.createExpression("rootPane");
+        
+        ImportList importList = ConstructionHelper.createEmptyImportList();
+        VariableList varList = ConstructionHelper.createEmptyVariableList();
+        varList.put("this", ra.getClassTypeByName(
+                    "org.creativelabs.TypeFinderFieldAccessExprTest$JFrameDescendant"));
+
+        TypeFinder typeFinder = new TypeFinder(varList, importList);
+
+        ClassType result = typeFinder.determineType(expr);
+
+        assertEquals("javax.swing.JRootPane", result.toString());
+    }
 }

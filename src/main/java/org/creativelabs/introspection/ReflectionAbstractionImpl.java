@@ -303,10 +303,16 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
             
             Class cl = classNameImpl.clazz;
             Field field = null;
-            try {
-                field = cl.getDeclaredField(fieldName);
-            } catch (NoSuchFieldException nsfe) {
-                field = cl.getField(fieldName);
+            while (cl != null) {
+                try {
+                    field = cl.getDeclaredField(fieldName);
+                    break;
+                } catch (NoSuchFieldException nsfe) {
+                    cl = cl.getSuperclass();
+                }
+            }
+            if (field == null) {
+                field = classNameImpl.clazz.getField(fieldName);
             }
 
             ClassTypeImpl result = new ClassTypeImpl();

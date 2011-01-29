@@ -128,4 +128,17 @@ public class DependencyCounterVisitorTest {
 
         assertEquals(1, dependencyCounter.getDependencies().size());
     }
+
+    @Test
+    public void testVisitNameExprUsesTypeFinder() throws Exception {
+        Expression expr = ParseHelper.createExpression("name");
+
+        ImportList imports = ConstructionHelper.createEmptyImportList();
+        VariableList varList = ConstructionHelper.createEmptyVariableList();
+        DependencyCounterVisitor dependencyCounter = 
+            spy(new DependencyCounterVisitor(varList, imports));
+
+        expr.accept(dependencyCounter, null);
+        verify(dependencyCounter).runTypeFinder(any(Expression.class));
+    }
 }
