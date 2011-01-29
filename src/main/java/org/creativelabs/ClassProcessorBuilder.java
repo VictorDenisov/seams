@@ -48,6 +48,9 @@ public class ClassProcessorBuilder {
             throw new IllegalStateException();
         }
         fieldList = constructVariableList();
+        for (String name : fieldList.getNames()) {
+            System.out.println(name + " : " + fieldList.getFieldTypeAsClass(name));
+        }
         fieldList.put("this", imports.getClassByShortName(typeDeclaration.getName()));
 
         ClassType classValue = null;

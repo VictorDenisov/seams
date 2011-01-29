@@ -1,8 +1,7 @@
 package org.creativelabs.introspection;
 
 import java.lang.reflect.*;
-import java.util.HashMap;
-import java.util.ArrayList;
+import java.util.*;
 
 public class ReflectionAbstractionImpl implements ReflectionAbstraction {
 
@@ -179,14 +178,19 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
             } else if (classType instanceof ClassTypeImpl) {
                 Class arg = ((ClassTypeImpl) args[i]).clazz;
                 if (!isSuperClass(parameters[i], arg)) {
-                    boolean result = false;
-                    for (Class varg: boxingMap.get(arg.getName())) {
-                        if (isSuperClass(parameters[i], varg)) {
-                            result = true;
-                            break;
+                    List<Class> classList = boxingMap.get(arg.getName());
+                    if (classList != null) {
+                        boolean result = false;
+                        for (Class varg: classList) {
+                            if (isSuperClass(parameters[i], varg)) {
+                                result = true;
+                                break;
+                            }
                         }
-                    }
-                    if (result == false) {
+                        if (result == false) {
+                            return false;
+                        }
+                    } else {
                         return false;
                     }
                 }

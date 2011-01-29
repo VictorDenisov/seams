@@ -458,4 +458,35 @@ public class ReflectionAbstractionImplTest {
         assertTrue(classType instanceof ClassTypeNull);
     }
 
+    @Test
+    public void testIsEligible() throws Exception {
+        ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
+        Class clazz = Class.forName("javax.swing.GroupLayout$SequentialGroup");
+        Class arg1 = Class.forName("javax.swing.JComponent");
+        Class arg2 = Class.forName("javax.swing.LayoutStyle$ComponentPlacement");
+        Method method = clazz.getDeclaredMethod("addPreferredGap", new Class[]{arg1, arg1, arg2});
+
+        ClassType arg = ra.getClassTypeByName("javax.swing.LayoutStyle$ComponentPlacement");
+        ClassType intCT = ra.getClassTypeByName("java.lang.Integer");
+        ClassType shortCT = ra.getClassTypeByName("short");
+
+        boolean result = ra.isEligible(method, "addPreferredGap", new ClassType[]{arg, intCT, shortCT});
+
+        assertFalse(result);
+    }
+
+    @Test
+    public void testAddPreferredGap() throws Exception {
+        ClassType classType = ra.getClassTypeByName("javax.swing.GroupLayout$SequentialGroup");
+
+        ClassType arg = ra.getClassTypeByName("javax.swing.LayoutStyle$ComponentPlacement");
+        ClassType intCT = ra.getClassTypeByName("java.lang.Integer");
+        ClassType shortCT = ra.getClassTypeByName("short");
+
+        ClassType result = ra.getReturnType(classType, "addPreferredGap", 
+                new ClassType[]{arg, intCT, shortCT});
+        
+        assertEquals("javax.swing.GroupLayout$SequentialGroup", result.toString());
+    }
+
 }
