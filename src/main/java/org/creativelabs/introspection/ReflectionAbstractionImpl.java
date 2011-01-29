@@ -147,7 +147,15 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
     private Class[] getTypeClasses(ClassType[] types) {
         Class[] result = new Class[types.length];
         for (int i = 0; i < types.length; ++i) {
-            result[i] = ((ClassTypeImpl) types[i]).clazz;
+            if (types[i] instanceof ClassTypeNull) {
+                try {
+                    result[i] = Class.forName("java.lang.Object");
+                } catch (Exception e) {
+                    //java.lang.Object always exists
+                }
+            } else if (types[i] instanceof ClassTypeImpl) {
+                result[i] = ((ClassTypeImpl) types[i]).clazz;
+            }
         }
         return result;
     }
@@ -156,7 +164,7 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         return superClass.isAssignableFrom(clazz);
     }
 
-    boolean isEligible(Method method, String methodName, Class[] args) {
+    boolean isEligible(Method method, String methodName, ClassType[] args) {
         if (!method.getName().equals(methodName)) {
             return false;
         }
@@ -165,37 +173,43 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         }
         Class[] parameters = method.getParameterTypes();
         for (int i = 0; i < args.length; ++i) {
-            Class arg = args[i];
-            if (!isSuperClass(parameters[i], arg)) {
-                boolean result = false;
-                for (Class varg: boxingMap.get(arg.getName())) {
-                    if (isSuperClass(parameters[i], varg)) {
-                        result = true;
-                        break;
+            ClassType classType = args[i];
+            if (classType instanceof ClassTypeNull) {
+                continue;
+            } else if (classType instanceof ClassTypeImpl) {
+                Class arg = ((ClassTypeImpl) args[i]).clazz;
+                if (!isSuperClass(parameters[i], arg)) {
+                    boolean result = false;
+                    for (Class varg: boxingMap.get(arg.getName())) {
+                        if (isSuperClass(parameters[i], varg)) {
+                            result = true;
+                            break;
+                        }
                     }
-                }
-                if (result == false) {
-                    return false;
+                    if (result == false) {
+                        return false;
+                    }
                 }
             }
         }
         return true;
     }
 
-    Method getMethod(Class clazz, String methodName, Class[] args) throws NoSuchMethodException {
+    Method getMethod(Class clazz, String methodName, ClassType[] types) throws NoSuchMethodException {
         try {
+            Class[] args = getTypeClasses(types);
             Method result = clazz.getDeclaredMethod(methodName, args);
             return result;
         } catch (NoSuchMethodException e) {
             Method[] methods = clazz.getDeclaredMethods();
             for (Method method : methods) {
-                if (isEligible(method, methodName, args)) {
+                if (isEligible(method, methodName, types)) {
                     return method;
                 }
             }
             methods = clazz.getMethods();
             for (Method method : methods) {
-                if (isEligible(method, methodName, args)) {
+                if (isEligible(method, methodName, types)) {
                     return method;
                 }
             }
@@ -250,12 +264,11 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
     public ClassType getReturnType(ClassType className, String methodName, ClassType[] types) {
         try {
             ClassTypeImpl classNameImpl = (ClassTypeImpl) className;
-            Class[] classTypes = getTypeClasses(types);
             Class cl = classNameImpl.clazz;
             Method method = null;
             while (cl != null) {
                 try {
-                    method = getMethod(cl, methodName, classTypes);
+                    method = getMethod(cl, methodName, types);
                     break;
                 } catch (NoSuchMethodException nsme) {
                     cl = cl.getSuperclass();

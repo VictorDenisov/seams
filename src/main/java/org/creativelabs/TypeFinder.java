@@ -126,7 +126,7 @@ class TypeFinder {
 
     private ClassType determineType(LiteralExpr expr) {
         if (expr instanceof NullLiteralExpr) {
-            return imports.getClassByShortName("Object");
+            return reflectionAbstraction.createNullClassType();
         }
         String className = expr.getClass().getSimpleName();
         //All javaparser's literals have the special class names : Type + "LiteralExpr" 

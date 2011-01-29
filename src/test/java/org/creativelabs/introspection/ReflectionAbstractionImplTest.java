@@ -160,7 +160,7 @@ public class ReflectionAbstractionImplTest {
     public void testGetMethod() throws Exception {
         Class clazz = Class.forName("java.lang.String");
         ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
-        Method method = ra.getMethod(clazz, "equals", new Class[]{Class.forName("java.lang.String")});
+        Method method = ra.getMethod(clazz, "equals", new ClassType[]{ra.getClassTypeByName("java.lang.String")});
         assertNotNull(method);
     }
 
@@ -179,7 +179,7 @@ public class ReflectionAbstractionImplTest {
         Class className = Class.forName("org.creativelabs.TypeFinder");
         ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
 
-        Class[] args = new Class[] {Class.forName("japa.parser.ast.expr.LiteralExpr")};
+        ClassType[] args = new ClassType[] {ra.getClassTypeByName("japa.parser.ast.expr.LiteralExpr")};
 
         Method result = ra.getMethod(className, "determineType", args);
         assertEquals("japa.parser.ast.expr.LiteralExpr", result.getParameterTypes()[0].getName());
@@ -190,7 +190,7 @@ public class ReflectionAbstractionImplTest {
         Class className = Class.forName("org.creativelabs.TypeFinder");
         ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
 
-        Class[] args = new Class[] {Class.forName("japa.parser.ast.expr.NameExpr")};
+        ClassType[] args = new ClassType[] {ra.getClassTypeByName("japa.parser.ast.expr.NameExpr")};
 
         Method result = ra.getMethod(className, "determineType", args);
         assertEquals("japa.parser.ast.expr.NameExpr", result.getParameterTypes()[0].getName());

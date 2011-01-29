@@ -15,7 +15,7 @@ import java.lang.reflect.*;
 import java.io.File;
 
 import org.creativelabs.introspection.ReflectionAbstractionImplTest;
-import static org.testng.AssertJUnit.assertEquals;
+import static org.testng.AssertJUnit.*;
 import static org.creativelabs.AssertHelper.*;
 import static org.mockito.Mockito.*;
 
@@ -271,20 +271,14 @@ public class TypeFinderTest {
 
     @Test
     public void testNullLiteralAsArgumentOfSimpleArgumentMethod() throws Exception {
-
-        MethodCallExpr expr = (MethodCallExpr) ParseHelper.createExpression("\"string\".compareTo(null)");
+        Expression expr = ParseHelper.createExpression("\"string\".compareTo(null)");
 
         VariableList varTypes = ConstructionHelper.createEmptyVariableList();
-        varTypes.put("str", new ClassTypeStub(String.class.getName()));
-
-        TestingReflectionAbstraction reflectionAbstraction = new TestingReflectionAbstraction();
-        reflectionAbstraction.addMethod("java.lang.String", "compareTo", new String[]{"java.lang.String"}, "int");
-        ImportList imports = ParseHelper.createImportList("");
+        ImportList imports = ConstructionHelper.createEmptyImportList();
 
         ClassType type = new TypeFinder(varTypes, imports).determineType(expr);
 
         assertEquals("int", type.toString());
-
     }
 
     private void testNullLiteralAsArgumentOfOverloadedArgumentsMethod(String expression,
@@ -705,7 +699,7 @@ public class TypeFinderTest {
 
     @Test
     public void testObjectCreationExpr() throws Exception {
-        ImportList importList = ParseHelper.createImportList("");
+        ImportList importList = ConstructionHelper.createEmptyImportList();
         VariableList varList = ConstructionHelper.createEmptyVariableList();
 
         Expression expr = ParseHelper.createExpression("new java.util.Map()");
@@ -716,5 +710,16 @@ public class TypeFinderTest {
         assertEquals("java.util.Map<K, V, >", result.toString());
     }
 
+    @Test
+    public void testNullLiteralExpression() throws Exception {
+        ImportList importList = ConstructionHelper.createEmptyImportList();
+        VariableList varList = ConstructionHelper.createEmptyVariableList();
 
+        Expression expr = ParseHelper.createExpression("null");
+
+        TypeFinder typeFinder = new TypeFinder(ra, varList, importList);
+
+        ClassType result = typeFinder.determineType(expr);
+        assertTrue(result instanceof ClassTypeNull);
+    }
 }
