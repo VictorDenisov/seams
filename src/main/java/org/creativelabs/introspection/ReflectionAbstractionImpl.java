@@ -404,6 +404,25 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
     }
 
     @Override
+    public ClassType addArrayDepth(ClassType classType) {
+        try {
+            ClassTypeImpl result = (ClassTypeImpl) classType;
+            ClassTypeImpl previous = result;
+            result = new ClassTypeImpl();
+            String className = previous.toString();
+            if (!previous.clazz.isArray()) {
+                className = "L" + className + ";";
+            }
+            className = "[" + className;
+            result.clazz = Class.forName(className);
+            result.elementType = previous;
+            return result;
+        } catch (Exception e) {
+            return createErrorClassType(e.toString());
+        }
+    }
+
+    @Override
     public ClassType convertFromArray(ClassType classType) {
         ClassTypeImpl classTypeImpl = (ClassTypeImpl) classType;
         while (classTypeImpl.elementType != null) {

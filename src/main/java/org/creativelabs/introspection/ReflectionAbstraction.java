@@ -23,4 +23,6 @@ public interface ReflectionAbstraction {
     ClassType getElementType(ClassType classType);
 
     ClassType createNullClassType();
+
+    ClassType addArrayDepth(ClassType classType);
 }

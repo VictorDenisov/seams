@@ -511,4 +511,22 @@ public class ReflectionAbstractionImplTest {
         assertEquals("int", result.toString());
     }
 
+    @Test
+    public void testAddArrayDepth() {
+        ClassType classType = ra.getClassTypeByName("java.lang.String");
+
+        classType = ra.addArrayDepth(classType);
+
+        assertEquals("[Ljava.lang.String;", classType.toString());
+    }
+
+    @Test
+    public void testAddArrayDepthAlreadyArray() {
+        ClassType classType = ra.getClassTypeByName("[Ljava.lang.String;");
+
+        classType = ra.addArrayDepth(classType);
+
+        assertEquals("[[Ljava.lang.String;", classType.toString());
+    }
+
 }

@@ -29,7 +29,11 @@ class VariableList {
         for (Parameter parameter : methodDeclaration.getParameters()) {
             Type type = parameter.getType();
             String name = parameter.getId().getName();
-            result.fieldTypes.put(name, imports.getClassByType(type));
+            ClassType classType = imports.getClassByType(type);
+            if (parameter.isVarArgs()) {
+                classType = ReflectionAbstractionImpl.create().addArrayDepth(classType);
+            }
+            result.fieldTypes.put(name, classType);
         }
         return result;
     }
