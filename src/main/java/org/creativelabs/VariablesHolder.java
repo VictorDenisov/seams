@@ -106,6 +106,27 @@ public class VariablesHolder {
         }
     }
 
+    public void mergeHolders(VariablesHolder... holders){
+        for (VariablesHolder holder : holders){
+            for (Map.Entry<String, Integer> entry : holder.getReadVariables().entrySet()){
+                if (readVariables.containsKey(entry.getKey())) {
+                    String key = entry.getKey();
+                    readVariables.put(key, Math.max(readVariables.get(key), entry.getValue()));
+                } else {
+                    readVariables.put(entry.getKey(), entry.getValue());
+                }
+            }
+            for (Map.Entry<String, Integer> entry : holder.getWriteVariables().entrySet()){
+                if (writeVariables.containsKey(entry.getKey())) {
+                    String key = entry.getKey();
+                    writeVariables.put(key, Math.max(writeVariables.get(key), entry.getValue()));
+                } else {
+                    writeVariables.put(entry.getKey(), entry.getValue());
+                }
+            }
+        }
+    }
+
     private Map<String, Integer> copy(Map<String, Integer> map) {
         Map<String, Integer> result = new HashMap<String, Integer>();
         for (Map.Entry<String, Integer> entry : map.entrySet()) {

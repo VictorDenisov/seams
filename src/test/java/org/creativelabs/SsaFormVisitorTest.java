@@ -140,11 +140,127 @@ public class SsaFormVisitorTest {
         expectedResult.append("x2 <- y0\n");
         expectedResult.append("y2 <- x2 plus 2\n");
         expectedResult.append("end\n");
-        expectedResult.append("phi(y1,y2)\n");
-        expectedResult.append("phi(x1,x2)\n");
+        expectedResult.append("y3 <- phi(y1,y2)\n");
+        expectedResult.append("x3 <- phi(x1,x2)\n");
 
         assertEquals(expectedResult.toString(), actualResult.toString());
     }
+
+    @Test
+    public void testIfStmtWithoutElse() throws Exception {
+        MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("void method(int x, int y){" +
+                "if (x > y) {" +
+                "x = 1;" +
+                "y = x + y;" +
+                "}" +
+                "}");
+
+        SsaFormBuilderVisitor visitor = new SsaFormBuilderVisitor();
+        StringBuilder actualResult = visitor.visit(methodDeclaration, null);
+
+        StringBuilder expectedResult = new StringBuilder();
+        expectedResult.append("if x0 greater y0\n");
+        expectedResult.append("then do\n");
+        expectedResult.append("x1 <- 1\n");
+        expectedResult.append("y1 <- x1 plus y0\n");
+        expectedResult.append("end\n");
+        expectedResult.append("else do\n");
+        expectedResult.append("end\n");
+        expectedResult.append("y2 <- phi(y0,y1)\n");
+        expectedResult.append("x2 <- phi(x0,x1)\n");
+
+        assertEquals(expectedResult.toString(), actualResult.toString());
+    }
+
+    @Test
+    public void testOneNestedIfStmt() throws Exception {
+        MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("void method(int x, int y){" +
+                "if (x > y) {" +
+                "x = 1;" +
+                "if (1 > x) {" +
+                "y = x + y;" +
+                "}" +
+                "} else {" +
+                "x = y;" +
+                "y = x + 2;" +
+                "}" +
+                "}");
+
+        SsaFormBuilderVisitor visitor = new SsaFormBuilderVisitor();
+        StringBuilder actualResult = visitor.visit(methodDeclaration, null);
+
+        StringBuilder expectedResult = new StringBuilder();
+        expectedResult.append("if x0 greater y0\n");
+        expectedResult.append("then do\n");
+        expectedResult.append("x1 <- 1\n");
+        expectedResult.append("if 1 greater x1\n");
+        expectedResult.append("then do\n");
+        expectedResult.append("y1 <- x1 plus y0\n");
+        expectedResult.append("end\n");
+        expectedResult.append("else do\n");
+        expectedResult.append("end\n");
+        expectedResult.append("y2 <- phi(y0,y1)\n");
+        expectedResult.append("end\n");
+        expectedResult.append("else do\n");
+        expectedResult.append("x2 <- y0\n");
+        expectedResult.append("y3 <- x2 plus 2\n");
+        expectedResult.append("end\n");
+        expectedResult.append("y4 <- phi(y2,y3)\n");
+        expectedResult.append("x3 <- phi(x1,x2)\n");
+
+        assertEquals(expectedResult.toString(), actualResult.toString());
+    }
+
+@Test
+    public void testManyNestedIfStmt() throws Exception {
+        MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("void method(int x, int y){" +
+                "if (x > y) {" +
+                "x = 1;" +
+                "if (1 > x) {" +
+                "y = x + y;" +
+                "} else {" +
+                "if (1 > x) {" +
+                "y = 2;" +
+                "}" +
+                "}" +
+                "} else {" +
+                "x = y;" +
+                "y = x + 2;" +
+                "}" +
+                "}");
+
+        SsaFormBuilderVisitor visitor = new SsaFormBuilderVisitor();
+        StringBuilder actualResult = visitor.visit(methodDeclaration, null);
+
+        StringBuilder expectedResult = new StringBuilder();
+        expectedResult.append("if x0 greater y0\n");
+        expectedResult.append("then do\n");
+            expectedResult.append("x1 <- 1\n");
+            expectedResult.append("if 1 greater x1\n");
+            expectedResult.append("then do\n");
+                expectedResult.append("y1 <- x1 plus y0\n");
+            expectedResult.append("end\n");
+            expectedResult.append("else do\n");
+                expectedResult.append("if 1 greater x1\n");
+                expectedResult.append("then do\n");
+                    expectedResult.append("y2 <- 2\n");
+                expectedResult.append("end\n");
+                expectedResult.append("else do\n");
+                expectedResult.append("end\n");
+                expectedResult.append("y3 <- phi(y1,y2)\n");
+            expectedResult.append("end\n");
+            expectedResult.append("y4 <- phi(y1,y3)\n");
+        expectedResult.append("end\n");
+        expectedResult.append("else do\n");
+            expectedResult.append("x2 <- y0\n");
+            expectedResult.append("y5 <- x2 plus 2\n");
+        expectedResult.append("end\n");
+        expectedResult.append("y6 <- phi(y4,y5)\n");
+        expectedResult.append("x3 <- phi(x1,x2)\n");
+
+        assertEquals(expectedResult.toString(), actualResult.toString());
+    }
+
 
     @Test
     public void testForStmt() throws Exception {

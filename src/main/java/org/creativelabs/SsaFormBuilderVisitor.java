@@ -50,7 +50,11 @@ public class SsaFormBuilderVisitor extends GenericVisitorAdapter<StringBuilder, 
 
         StringBuilder elseBlock = new StringBuilder();
         Statement elseStmt = n.getElseStmt();
-        elseBlock.append(getStmt(elseStmt, elseVariables));
+        if (elseStmt != null) {
+            elseBlock.append(getStmt(elseStmt, elseVariables));
+        } else {
+            elseVariables = arg.copy();
+        }
 
 
         StringBuilder buffer = new StringBuilder();
@@ -63,8 +67,11 @@ public class SsaFormBuilderVisitor extends GenericVisitorAdapter<StringBuilder, 
         buffer.append("end\n");
 
         for (String name : elseVariables.getDifferenceInVariables(thenVariables, false)) {
-            buffer.append(elseVariables.getPhi(thenVariables, name) + "\n");
+            buffer.append(name + (Math.max(thenVariables.read(name), elseVariables.read(name)) + 1) + " <- " + elseVariables.getPhi(thenVariables, name) + "\n");
+            elseVariables.write(name, Math.max(thenVariables.read(name), elseVariables.read(name)) + 1);
         }
+
+        arg.mergeHolders(thenVariables, elseVariables);
 
         return buffer;
     }
