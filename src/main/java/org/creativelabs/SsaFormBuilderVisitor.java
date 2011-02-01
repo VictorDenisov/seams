@@ -211,6 +211,10 @@ public class SsaFormBuilderVisitor extends GenericVisitorAdapter<StringBuilder, 
         return visit(n.getBody(), holder);
     }
 
+    @Override
+    public StringBuilder visit(ReturnStmt n, VariablesHolder arg) {
+        return new StringBuilder("return " + new SsaFinder(arg, false).determineSsa(n.getExpr()) + "\n");
+    }
 
     private StringBuilder getStmt(Statement statement, VariablesHolder arg) {
         if (statement instanceof BlockStmt) {
@@ -223,6 +227,8 @@ public class SsaFormBuilderVisitor extends GenericVisitorAdapter<StringBuilder, 
             return visit((ForStmt) statement, arg);
         } else if (statement instanceof WhileStmt) {
             return visit((WhileStmt) statement, arg);
+        } else if (statement instanceof ReturnStmt) {
+            return visit((ReturnStmt) statement, arg);
         }
         return new StringBuilder(UNSUPPORTED + statement.toString() + "\n");
     }
@@ -235,7 +241,7 @@ public class SsaFormBuilderVisitor extends GenericVisitorAdapter<StringBuilder, 
         } else if (expression instanceof MethodCallExpr) {
             return visit((MethodCallExpr) expression, arg);
         }
-        return new StringBuilder(UNSUPPORTED + expression.toString() + "\n");
+        return new StringBuilder(UNSUPPORTED + "< " + expression.getClass() + " > " + expression.toString() + "\n");
     }
 
 }

@@ -536,4 +536,19 @@ public class SsaFormVisitorTest {
         assertEquals(expectedResult.toString(), actualResult.toString());
     }
 
+    @Test
+    public void testReturnStmt() throws Exception {
+        MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("int method(int x){" +
+                "return x;" +
+                "}");
+
+        SsaFormBuilderVisitor visitor = new SsaFormBuilderVisitor();
+        StringBuilder actualResult = visitor.visit(methodDeclaration, null);
+
+        StringBuilder expectedResult = new StringBuilder();
+        expectedResult.append("return x0\n");
+
+        assertEquals(expectedResult.toString(), actualResult.toString());
+    }
+
 }
