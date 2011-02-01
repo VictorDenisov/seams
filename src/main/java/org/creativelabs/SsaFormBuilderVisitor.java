@@ -124,6 +124,15 @@ public class SsaFormBuilderVisitor extends GenericVisitorAdapter<StringBuilder, 
         buffer.append("end\n");
         buffer.append("until(" + cmp + ")\n");
 
+        for (String name : usingVariables) {
+            if (holder2.containsKey(name, true) && arg.containsKey(name, true)) {
+                buffer.append(name + (Math.max(holder2.read(name), arg.read(name)) + 1) + " <- " + holder2.getPhi(arg, name) + "\n");
+                arg.write(name, (Math.max(holder2.read(name), arg.read(name)) + 1));
+            }
+        }
+
+        arg.mergeHolders(holder1, holder2);
+
         return buffer;
     }
 

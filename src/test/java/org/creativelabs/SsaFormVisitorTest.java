@@ -284,6 +284,46 @@ public class SsaFormVisitorTest {
         expectedResult.append("i2 <- i1 plus 1\n");
         expectedResult.append("end\n");
         expectedResult.append("until(i0 less 10)\n");
+        expectedResult.append("x3 <- phi(x0,x2)\n");
+
+        assertEquals(expectedResult.toString(), actualResult.toString());
+    }
+
+    @Test
+    public void testNestedForStmt() throws Exception {
+        MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("void method(int x){" +
+                "for (int i = 0; i < 10; i = i + 1) {" +
+                    "x = i + 1;" +
+                    "for (int j = 1; j < 5; j = j + 1) {" +
+                        "x = j + 2;" +
+                    "}" +
+                "}" +
+                "}");
+
+        SsaFormBuilderVisitor visitor = new SsaFormBuilderVisitor();
+        StringBuilder actualResult = visitor.visit(methodDeclaration, null);
+
+        StringBuilder expectedResult = new StringBuilder();
+        expectedResult.append("i0 <- 0\n");
+        expectedResult.append("repeat\n");
+        expectedResult.append("begin\n");
+            expectedResult.append("x1 <- phi(x0,x5)\n");
+            expectedResult.append("i1 <- phi(i0,i2)\n");
+            expectedResult.append("x2 <- i1 plus 1\n");
+            expectedResult.append("j0 <- 1\n");
+            expectedResult.append("repeat\n");
+            expectedResult.append("begin\n");
+            expectedResult.append("j1 <- phi(j0,j2)\n");
+            expectedResult.append("x3 <- phi(x2,x4)\n");
+            expectedResult.append("x4 <- j1 plus 2\n");
+            expectedResult.append("j2 <- j1 plus 1\n");
+            expectedResult.append("end\n");
+            expectedResult.append("until(j0 less 5)\n");
+            expectedResult.append("x5 <- phi(x2,x4)\n");
+            expectedResult.append("i2 <- i1 plus 1\n");
+        expectedResult.append("end\n");
+        expectedResult.append("until(i0 less 10)\n");
+        expectedResult.append("x6 <- phi(x0,x5)\n");
 
         assertEquals(expectedResult.toString(), actualResult.toString());
     }
