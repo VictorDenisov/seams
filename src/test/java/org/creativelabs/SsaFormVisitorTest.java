@@ -544,4 +544,62 @@ public class SsaFormVisitorTest {
         assertEquals(expectedResult.toString(), actualResult.toString());
     }
 
+    @Test
+    public void testTryStmtWithoutFinallyBlock() throws Exception {
+        MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("int method(int x){" +
+                "try {" +
+                    "x = 2;" +
+                "} catch (Exception e) {" +
+                    "e.printStackTrace();" +
+                "}" +
+                "}");
+
+        SsaFormBuilderVisitor visitor = new SsaFormBuilderVisitor();
+        StringBuilder actualResult = visitor.visit(methodDeclaration, null);
+
+        StringBuilder expectedResult = new StringBuilder();
+        expectedResult.append("try\n");
+        expectedResult.append("begin\n");
+            expectedResult.append("x1 <- 2\n");
+        expectedResult.append("end\n");
+        expectedResult.append("catch Exception\n");
+        expectedResult.append("begin\n");
+            expectedResult.append("printStackTrace()\n");
+        expectedResult.append("end\n");
+
+        assertEquals(expectedResult.toString(), actualResult.toString());
+    }
+
+    @Test
+    public void testTryStmtWithFinallyBlock() throws Exception {
+        MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("int method(int x){" +
+                "try {" +
+                    "x = 2;" +
+                "} catch (Exception e) {" +
+                    "e.printStackTrace();" +
+                "} finally {" +
+                    "x = 1;" +
+                "}" +
+                "}");
+
+        SsaFormBuilderVisitor visitor = new SsaFormBuilderVisitor();
+        StringBuilder actualResult = visitor.visit(methodDeclaration, null);
+
+        StringBuilder expectedResult = new StringBuilder();
+        expectedResult.append("try\n");
+        expectedResult.append("begin\n");
+            expectedResult.append("x1 <- 2\n");
+        expectedResult.append("end\n");
+        expectedResult.append("catch Exception\n");
+        expectedResult.append("begin\n");
+            expectedResult.append("printStackTrace()\n");
+        expectedResult.append("end\n");
+        expectedResult.append("finally\n");
+        expectedResult.append("begin\n");
+            expectedResult.append("x2 <- 1\n");
+        expectedResult.append("end\n");
+
+        assertEquals(expectedResult.toString(), actualResult.toString());
+    }
+
 }

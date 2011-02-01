@@ -218,6 +218,34 @@ public class SsaFormBuilderVisitor extends GenericVisitorAdapter<StringBuilder, 
         return new StringBuilder("return " + new SsaFinder(arg, false).determineSsa(n.getExpr()) + "\n");
     }
 
+    @Override
+    public StringBuilder visit(TryStmt n, VariablesHolder arg) {
+        StringBuilder builder = new StringBuilder();
+
+        StringBuilder tryStmt = new StringBuilder();
+        tryStmt.append(getStmt(n.getTryBlock(), arg));
+
+        builder.append("try\n");
+        builder.append("begin\n");
+        builder.append(tryStmt);
+        builder.append("end\n");
+        for (CatchClause catchClause : n.getCatchs()){
+            builder.append("catch " + catchClause.getExcept().getType().toString() + "\n");
+            builder.append("begin\n");
+            VariablesHolder holder = arg.copy();
+            visit(catchClause.getExcept().getId(), holder);
+            builder.append(visit(catchClause.getCatchBlock(), holder));
+            builder.append("end\n");
+        }
+        if (n.getFinallyBlock() != null) {
+            builder.append("finally\n");
+            builder.append("begin\n");
+            builder.append(visit(n.getFinallyBlock(), arg));
+            builder.append("end\n");
+        }
+        return builder;
+    }
+
     private StringBuilder getStmt(Statement statement, VariablesHolder arg) {
         if (statement instanceof BlockStmt) {
             return visit((BlockStmt) statement, arg);
@@ -231,6 +259,8 @@ public class SsaFormBuilderVisitor extends GenericVisitorAdapter<StringBuilder, 
             return visit((WhileStmt) statement, arg);
         } else if (statement instanceof ReturnStmt) {
             return visit((ReturnStmt) statement, arg);
+        } else if (statement instanceof TryStmt) {
+            return visit((TryStmt) statement, arg);
         }
         return new StringBuilder(UNSUPPORTED + statement.toString() + "\n");
     }
