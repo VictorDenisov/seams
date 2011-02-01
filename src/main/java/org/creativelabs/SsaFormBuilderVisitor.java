@@ -6,10 +6,7 @@ import japa.parser.ast.expr.*;
 import japa.parser.ast.stmt.*;
 import japa.parser.ast.visitor.GenericVisitorAdapter;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class SsaFormBuilderVisitor extends GenericVisitorAdapter<StringBuilder, VariablesHolder> {
 
@@ -90,7 +87,7 @@ public class SsaFormBuilderVisitor extends GenericVisitorAdapter<StringBuilder, 
 
         VariablesHolder holder2 = holder1.copy();
 
-        List<String> usingVariables = new ArrayList<String>();
+        Set<String> usingVariables = new HashSet<String>();
         new AssignVisitor().visit(n, usingVariables);
 
         for (String var : usingVariables) {
@@ -138,7 +135,7 @@ public class SsaFormBuilderVisitor extends GenericVisitorAdapter<StringBuilder, 
         VariablesHolder holder = arg.copy();
 
 
-        List<String> usingVariables = new ArrayList<String>();
+        Set<String> usingVariables = new HashSet<String>();
         new AssignVisitor().visit(n, usingVariables);
 
         for (String var : usingVariables) {
@@ -161,6 +158,15 @@ public class SsaFormBuilderVisitor extends GenericVisitorAdapter<StringBuilder, 
 
         buffer.append("end\n");
         buffer.append("until(" + cmp + ")\n");
+
+        for (String name : usingVariables) {
+            if (holder.containsKey(name, true) && arg.containsKey(name, true)) {
+                buffer.append(name + (Math.max(holder.read(name), arg.read(name)) + 1) + " <- " + holder.getPhi(arg, name) + "\n");
+                arg.write(name, (Math.max(holder.read(name), arg.read(name)) + 1));
+            }
+        }
+
+        arg.mergeHolders(holder);
 
         return buffer;
     }
