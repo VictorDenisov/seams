@@ -9,6 +9,7 @@ import japa.parser.*;
 
 import org.apache.commons.cli.*;
 import org.creativelabs.chart.BarChartBuilder;
+import org.creativelabs.ssa.SimpleSsaForm;
 import org.creativelabs.ui.*;
 import org.creativelabs.report.*;
 import org.creativelabs.graph.*;
@@ -42,6 +43,7 @@ final class MainApp {
         options.addOption("d", "dependency", false, "Create files with dependencies");
         options.addOption("g", "graph", false, "Create files with graphs");
         options.addOption("c", "chart", false, "Create file with chart");
+        options.addOption("s", "ssa", false, "Create ssa form");
         options.addOptionGroup(new OptionGroup());
         Option option = OptionBuilder.
                 isRequired(true).
@@ -94,6 +96,12 @@ final class MainApp {
             chart.buildChart(chartBuilder);
             new ChartDrawer(chartBuilder.getChart()).saveToFile(IMAGE_WIDTH, IMAGE_HEIGHT, fileName);
         }
+        if (commandLine.hasOption('s')) {
+            for (SimpleSsaForm form : classProcessor.getForms()) {
+                new SsaDrawer(form).saveToFile(IMAGE_WIDTH, IMAGE_HEIGHT,
+                        fileName + "." + form.getMethodName());
+            }
+        }
     }
 
     private static void processFileOrDirectory(File fileOrDirectory, ReportBuilder reportBuilder) throws Exception {
@@ -111,9 +119,9 @@ final class MainApp {
                 CompilationUnit cu = JavaParser.parse(fis);
                 for (TypeDeclaration typeDeclaration : cu.getTypes()) {
                     if (typeDeclaration instanceof ClassOrInterfaceDeclaration) {
-                        imports = 
-                            new ImportList(ReflectionAbstractionImpl.create(), cu, 
-                                    (ClassOrInterfaceDeclaration) typeDeclaration);
+                        imports =
+                                new ImportList(ReflectionAbstractionImpl.create(), cu,
+                                        (ClassOrInterfaceDeclaration) typeDeclaration);
 
                         processClass((ClassOrInterfaceDeclaration) typeDeclaration,
                                 fileOrDirectory.getAbsolutePath(), reportBuilder);

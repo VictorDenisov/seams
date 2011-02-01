@@ -139,7 +139,7 @@ public class SsaFormBuilderVisitor extends GenericVisitorAdapter<StringBuilder, 
     @Override
     public StringBuilder visit(WhileStmt n, VariablesHolder arg) {
 
-        String cmp = new SsaFinder(arg, false).determineSsa((BinaryExpr) n.getCondition());
+        String cmp = new SsaFinder(arg, false).determineSsa(n.getCondition());
 
         VariablesHolder holder = arg.copy();
 
@@ -190,8 +190,10 @@ public class SsaFormBuilderVisitor extends GenericVisitorAdapter<StringBuilder, 
     @Override
     public StringBuilder visit(BlockStmt n, VariablesHolder arg) {
         StringBuilder builder = new StringBuilder();
-        for (Statement statement : n.getStmts()) {
-            builder.append(getStmt(statement, arg));
+        if (n != null && n.getStmts() != null) {
+            for (Statement statement : n.getStmts()) {
+                builder.append(getStmt(statement, arg));
+            }
         }
         return builder;
     }

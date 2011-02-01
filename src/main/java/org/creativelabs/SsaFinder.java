@@ -11,6 +11,7 @@ import java.util.Map;
 public class SsaFinder {
 
     private static final String UNSUPPORTED = "Unsupported expression: ";
+    private static final String NULL = "Expression is null ";
 
     VariablesHolder variables;
 
@@ -37,18 +38,26 @@ public class SsaFinder {
         } else if (expr instanceof MethodCallExpr) {
             return determineSsa((MethodCallExpr) expr);
         }
-        return UNSUPPORTED + expr.toString() + "\n";
+        if (expr != null) {
+            return UNSUPPORTED + expr.toString() + "\n";
+        } else {
+            return NULL + "\n";
+        }
     }
 
     String determineSsa(NameExpr expr) {
         String variableName = expr.getName();
         Integer variableIndex = variables.read(variableName);
-        if (isNeededToIncreaseIndex) {
-            variableIndex = variables.readFrom(variableName, false);
-            variableIndex++;
-            variables.write(variableName, variableIndex);
+        if (variableIndex != null) {
+            if (isNeededToIncreaseIndex) {
+                variableIndex = variables.readFrom(variableName, false);
+                variableIndex++;
+                variables.write(variableName, variableIndex);
+            }
+            return variableName + variableIndex;
+        } else {
+            return variableName + " <not contains in key set>";
         }
-        return variableName + (variableIndex != null ? variableIndex : "<not contains in key set>");
     }
 
     String determineSsa(LiteralExpr expr) {

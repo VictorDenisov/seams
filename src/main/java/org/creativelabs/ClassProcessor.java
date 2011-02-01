@@ -4,6 +4,7 @@ import japa.parser.ast.body.*;
 import japa.parser.ast.stmt.*;
 
 import org.creativelabs.report.*;
+import org.creativelabs.ssa.SimpleSsaForm;
 
 import java.util.*;
 
@@ -15,10 +16,11 @@ class ClassProcessor {
     private DependencyCounterVisitorBuilder dependencyCounterBuilder;
 
     protected HashMap<String, InternalInstancesGraph> internalInstances
-        = new HashMap<String, InternalInstancesGraph>();
+            = new HashMap<String, InternalInstancesGraph>();
+    protected Set<SimpleSsaForm> forms = new HashSet<SimpleSsaForm>();
 
     ClassProcessor(ClassOrInterfaceDeclaration typeDeclaration,
-            DependencyCounterVisitorBuilder dependencyCounterBuilder) {
+                   DependencyCounterVisitorBuilder dependencyCounterBuilder) {
         this.typeDeclaration = typeDeclaration;
         this.dependencyCounterBuilder = dependencyCounterBuilder;
     }
@@ -51,11 +53,16 @@ class ClassProcessor {
         return dependencies;
     }
 
-    public void compute() {            
+    public Set<SimpleSsaForm> getForms() {
+        return forms;
+    }
+
+    public void compute() {
         for (BodyDeclaration bd : typeDeclaration.getMembers()) {
             if (bd instanceof MethodDeclaration) {
                 MethodDeclaration md = (MethodDeclaration) bd;
                 findOutgoingDependencies(md);
+                findSsaForm(md);
             }
         }
     }
@@ -72,6 +79,13 @@ class ClassProcessor {
         if (dependencyCounterVisitor.getInternalInstances() != null) {
             internalInstances.put(md.getName(), dependencyCounterVisitor.getInternalInstances());
         }
+    }
+
+    void findSsaForm(MethodDeclaration md) {
+        SsaFormBuilderVisitor ssaFormBuilderVisitor = new SsaFormBuilderVisitor();
+        SimpleSsaForm form = new SimpleSsaForm(md.getName(),
+                ssaFormBuilderVisitor.visit(md, new VariablesHolder(new HashMap<String, Integer>())));
+        forms.add(form);
     }
 
 }
