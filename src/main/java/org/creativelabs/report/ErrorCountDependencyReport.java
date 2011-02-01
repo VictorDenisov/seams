@@ -2,6 +2,7 @@ package org.creativelabs.report;
 
 import java.util.*;
 import org.creativelabs.*;
+import org.creativelabs.introspection.*;
 
 public class ErrorCountDependencyReport implements ReportBuilder {
     private int count = 0;
@@ -11,7 +12,7 @@ public class ErrorCountDependencyReport implements ReportBuilder {
     public void setDependencies(String className, Map<String, Collection<Dependency>> dependencies) {
         for (Map.Entry<String, Collection<Dependency>> entry : dependencies.entrySet()) {
             for (Dependency dependency : entry.getValue()) {
-                if (dependency.getType() == null || "ClassTypeError".equals(dependency.getType().getClass().getSimpleName())) {
+                if (dependency.getType() == null || dependency.getType() instanceof ClassTypeError) {
                     errorDependencies.add(
                             "Error in : " + className + " : " + dependency.getExpression());
                     ++count;

@@ -171,4 +171,9 @@ public class TestingReflectionAbstraction implements ReflectionAbstraction {
         return new ClassTypeStub(classType.toString().
             substring(0, classType.toString().lastIndexOf("[")));
     }
+
+    @Override
+    public ClassType createNullClassType() {
+        return null;
+    }
 }

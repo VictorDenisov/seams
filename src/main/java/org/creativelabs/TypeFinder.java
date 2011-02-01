@@ -73,10 +73,15 @@ class TypeFinder {
         if (imports != null) {
             result = imports.getClassByShortName(name);
         }
-        if (result != null && !result.getClass().getSimpleName().equals("ClassTypeError")) {
+        if (result != null && !(result instanceof ClassTypeError)) {
             return result;
         } else {
-            return varType.getFieldTypeAsClass(name);
+            result = varType.getFieldTypeAsClass(name);
+            if (result instanceof ClassTypeError) {
+                ClassType thisType = varType.getFieldTypeAsClass("this");
+                result = reflectionAbstraction.getFieldType(thisType, name);
+            }
+            return result;
         }
     }
 
@@ -92,11 +97,11 @@ class TypeFinder {
 
         ClassType scopeClassName = determineType(expr.getScope());
         ClassType result = null;
-        if (scopeClassName.getClass().getSimpleName().equals("ClassTypeError")) {
+        if (scopeClassName instanceof ClassTypeError) {
             result = reflectionAbstraction.getClassTypeByName(expr.toString());
         } else {
             result = reflectionAbstraction.getFieldType(scopeClassName, expr.getField());
-            if (result.getClass().getSimpleName().equals("ClassTypeError")) {
+            if (result instanceof ClassTypeError) {
                 result = reflectionAbstraction.getNestedClass(scopeClassName, expr.getField());
             }
         }
@@ -126,7 +131,7 @@ class TypeFinder {
 
     private ClassType determineType(LiteralExpr expr) {
         if (expr instanceof NullLiteralExpr) {
-            return imports.getClassByShortName("Object");
+            return reflectionAbstraction.createNullClassType();
         }
         String className = expr.getClass().getSimpleName();
         //All javaparser's literals have the special class names : Type + "LiteralExpr" 

@@ -15,7 +15,7 @@ import static org.mockito.Mockito.*;
 
 public class ErrorCountDependencyReportTest {
 
-    private class ClassTypeError implements ClassType {
+    private class ClassTypeErrorImpl implements ClassType, ClassTypeError {
         public String toString() {
             return "";
         }
@@ -34,7 +34,7 @@ public class ErrorCountDependencyReportTest {
     public void testClassTypeErrorCount() {
         ErrorCountDependencyReport report = new ErrorCountDependencyReport();
         ArrayList<Dependency> list = new ArrayList<Dependency>();
-        list.add(new Dependency("error", new ClassTypeError()));
+        list.add(new Dependency("error", new ClassTypeErrorImpl()));
         list.add(new Dependency("normal", mock(ClassType.class)));
         HashMap<String, Collection<Dependency>> map = new HashMap<String, Collection<Dependency>>();
         map.put("foo", list);
@@ -47,7 +47,7 @@ public class ErrorCountDependencyReportTest {
     public void testClassTypeListOfErrors() {
         ErrorCountDependencyReport report = new ErrorCountDependencyReport();
         ArrayList<Dependency> list = new ArrayList<Dependency>();
-        list.add(new Dependency("error", new ClassTypeError()));
+        list.add(new Dependency("error", new ClassTypeErrorImpl()));
         list.add(new Dependency("normal", mock(ClassType.class)));
         HashMap<String, Collection<Dependency>> map = new HashMap<String, Collection<Dependency>>();
         map.put("foo", list);

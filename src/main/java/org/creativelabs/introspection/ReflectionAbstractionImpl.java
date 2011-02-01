@@ -1,8 +1,7 @@
 package org.creativelabs.introspection;
 
 import java.lang.reflect.*;
-import java.util.HashMap;
-import java.util.ArrayList;
+import java.util.*;
 
 public class ReflectionAbstractionImpl implements ReflectionAbstraction {
 
@@ -43,7 +42,7 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         }
     }
 
-    private static class ClassTypeError implements ClassType {
+    private static class ClassTypeErrorImpl implements ClassType, ClassTypeError {
         private String message;
 
         @Override
@@ -54,6 +53,19 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         @Override
         public String getShortString() {
             return message;
+        }
+    }
+
+    private static class ClassTypeNullImpl implements ClassType, ClassTypeNull {
+
+        @Override
+        public String toString() {
+            return "NullClassType";
+        }
+
+        @Override
+        public String getShortString() {
+            return "NullClassType";
         }
     }
 
@@ -78,25 +90,29 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         addToBoxing("byte", Byte.class);
         addToBoxing("short", Short.class);
         addToBoxing("int", Integer.class);
+        addToBoxing("int", short.class);
+        addToBoxing("int", long.class);
         addToBoxing("long", Long.class);
+        addToBoxing("long", int.class);
         addToBoxing("float", Float.class);
         addToBoxing("double", Double.class);
         addToBoxing("char", Character.class);
         addToBoxing("char", int.class);
+        addToBoxing("short", int.class);
         addToBoxing("boolean", Boolean.class);
         addToBoxing("void", Void.class);
 
         addToBoxing("java.lang.Byte", byte.class);
         addToBoxing("java.lang.Short", short.class);
         addToBoxing("java.lang.Integer", int.class);
+        addToBoxing("java.lang.Integer", long.class);
         addToBoxing("java.lang.Long", long.class);
         addToBoxing("java.lang.Float", float.class);
         addToBoxing("java.lang.Double", double.class);
         addToBoxing("java.lang.Character", char.class);
         addToBoxing("java.lang.Character", int.class);
         addToBoxing("java.lang.Boolean", boolean.class);
-        addToBoxing("java.lang.Void", void.class);
-
+        addToBoxing("java.lang.Void", void.class); 
         primitivesMap = new HashMap<String, Class>();
         primitivesMap.put("byte", byte.class);
         primitivesMap.put("short", short.class);
@@ -130,7 +146,15 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
     private Class[] getTypeClasses(ClassType[] types) {
         Class[] result = new Class[types.length];
         for (int i = 0; i < types.length; ++i) {
-            result[i] = ((ClassTypeImpl) types[i]).clazz;
+            if (types[i] instanceof ClassTypeNull) {
+                try {
+                    result[i] = Class.forName("java.lang.Object");
+                } catch (Exception e) {
+                    //java.lang.Object always exists
+                }
+            } else if (types[i] instanceof ClassTypeImpl) {
+                result[i] = ((ClassTypeImpl) types[i]).clazz;
+            }
         }
         return result;
     }
@@ -139,7 +163,7 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         return superClass.isAssignableFrom(clazz);
     }
 
-    boolean isEligible(Method method, String methodName, Class[] args) {
+    boolean isEligible(Method method, String methodName, ClassType[] args) {
         if (!method.getName().equals(methodName)) {
             return false;
         }
@@ -148,37 +172,48 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         }
         Class[] parameters = method.getParameterTypes();
         for (int i = 0; i < args.length; ++i) {
-            Class arg = args[i];
-            if (!isSuperClass(parameters[i], arg)) {
-                boolean result = false;
-                for (Class varg: boxingMap.get(arg.getName())) {
-                    if (isSuperClass(parameters[i], varg)) {
-                        result = true;
-                        break;
+            ClassType classType = args[i];
+            if (classType instanceof ClassTypeNull) {
+                continue;
+            } else if (classType instanceof ClassTypeImpl) {
+                Class arg = ((ClassTypeImpl) args[i]).clazz;
+                if (!isSuperClass(parameters[i], arg)) {
+                    List<Class> classList = boxingMap.get(arg.getName());
+                    if (classList != null) {
+                        boolean result = false;
+                        for (Class varg: classList) {
+                            if (isSuperClass(parameters[i], varg)) {
+                                result = true;
+                                break;
+                            }
+                        }
+                        if (result == false) {
+                            return false;
+                        }
+                    } else {
+                        return false;
                     }
-                }
-                if (result == false) {
-                    return false;
                 }
             }
         }
         return true;
     }
 
-    Method getMethod(Class clazz, String methodName, Class[] args) throws NoSuchMethodException {
+    Method getMethod(Class clazz, String methodName, ClassType[] types) throws NoSuchMethodException {
         try {
+            Class[] args = getTypeClasses(types);
             Method result = clazz.getDeclaredMethod(methodName, args);
             return result;
         } catch (NoSuchMethodException e) {
             Method[] methods = clazz.getDeclaredMethods();
             for (Method method : methods) {
-                if (isEligible(method, methodName, args)) {
+                if (isEligible(method, methodName, types)) {
                     return method;
                 }
             }
             methods = clazz.getMethods();
             for (Method method : methods) {
-                if (isEligible(method, methodName, args)) {
+                if (isEligible(method, methodName, types)) {
                     return method;
                 }
             }
@@ -233,12 +268,11 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
     public ClassType getReturnType(ClassType className, String methodName, ClassType[] types) {
         try {
             ClassTypeImpl classNameImpl = (ClassTypeImpl) className;
-            Class[] classTypes = getTypeClasses(types);
             Class cl = classNameImpl.clazz;
             Method method = null;
             while (cl != null) {
                 try {
-                    method = getMethod(cl, methodName, classTypes);
+                    method = getMethod(cl, methodName, types);
                     break;
                 } catch (NoSuchMethodException nsme) {
                     cl = cl.getSuperclass();
@@ -269,10 +303,16 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
             
             Class cl = classNameImpl.clazz;
             Field field = null;
-            try {
-                field = cl.getDeclaredField(fieldName);
-            } catch (NoSuchFieldException nsfe) {
-                field = cl.getField(fieldName);
+            while (cl != null) {
+                try {
+                    field = cl.getDeclaredField(fieldName);
+                    break;
+                } catch (NoSuchFieldException nsfe) {
+                    cl = cl.getSuperclass();
+                }
+            }
+            if (field == null) {
+                field = classNameImpl.clazz.getField(fieldName);
             }
 
             ClassTypeImpl result = new ClassTypeImpl();
@@ -301,7 +341,7 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
 
     @Override
     public ClassType createErrorClassType(String message) {
-        ClassTypeError err = new ClassTypeError();
+        ClassTypeErrorImpl err = new ClassTypeErrorImpl();
         err.message = message;
         return err;
     }
@@ -364,6 +404,25 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
     }
 
     @Override
+    public ClassType addArrayDepth(ClassType classType) {
+        try {
+            ClassTypeImpl result = (ClassTypeImpl) classType;
+            ClassTypeImpl previous = result;
+            result = new ClassTypeImpl();
+            String className = previous.toString();
+            if (!previous.clazz.isArray()) {
+                className = "L" + className + ";";
+            }
+            className = "[" + className;
+            result.clazz = Class.forName(className);
+            result.elementType = previous;
+            return result;
+        } catch (Exception e) {
+            return createErrorClassType(e.toString());
+        }
+    }
+
+    @Override
     public ClassType convertFromArray(ClassType classType) {
         ClassTypeImpl classTypeImpl = (ClassTypeImpl) classType;
         while (classTypeImpl.elementType != null) {
@@ -380,5 +439,10 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         } catch (Exception e) {
             return createErrorClassType(e.toString());
         }
+    }
+
+    @Override
+    public ClassType createNullClassType() {
+        return new ClassTypeNullImpl();
     }
 }

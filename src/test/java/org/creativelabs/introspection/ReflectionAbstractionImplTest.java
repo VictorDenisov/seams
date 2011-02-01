@@ -67,7 +67,7 @@ public class ReflectionAbstractionImplTest {
         types[0] = ra.getClassTypeByName("java.lang.String");
         ClassType returnType = ra.getReturnType(ra.getClassTypeByName("japa.parser.ast.Comment"),
                 "absentMethod", types);
-        assertEquals("ClassTypeError", returnType.getClass().getSimpleName());
+        assertTrue(returnType instanceof ClassTypeError);
     }
 
     @Test
@@ -117,7 +117,7 @@ public class ReflectionAbstractionImplTest {
     public void testGetClassTypeByNameError() {
         ClassType type = ra.getClassTypeByName("NoSuchClass");
 
-        assertEquals("ClassTypeError", type.getClass().getSimpleName());
+        assertTrue(type instanceof ClassTypeError);
     }
 
     @Test
@@ -143,7 +143,7 @@ public class ReflectionAbstractionImplTest {
 		ClassType myClass = ra.getClassTypeByName("java.lang.String");
         ClassType fieldType = ReflectionAbstractionImpl.create().getFieldType(myClass, "NO_SUCH_FIELD");
 
-        assertEquals("ClassTypeError", fieldType.getClass().getSimpleName());
+        assertTrue(fieldType instanceof ClassTypeError);
     }
 
     @Test
@@ -160,7 +160,7 @@ public class ReflectionAbstractionImplTest {
     public void testGetMethod() throws Exception {
         Class clazz = Class.forName("java.lang.String");
         ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
-        Method method = ra.getMethod(clazz, "equals", new Class[]{Class.forName("java.lang.String")});
+        Method method = ra.getMethod(clazz, "equals", new ClassType[]{ra.getClassTypeByName("java.lang.String")});
         assertNotNull(method);
     }
 
@@ -179,7 +179,7 @@ public class ReflectionAbstractionImplTest {
         Class className = Class.forName("org.creativelabs.TypeFinder");
         ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
 
-        Class[] args = new Class[] {Class.forName("japa.parser.ast.expr.LiteralExpr")};
+        ClassType[] args = new ClassType[] {ra.getClassTypeByName("japa.parser.ast.expr.LiteralExpr")};
 
         Method result = ra.getMethod(className, "determineType", args);
         assertEquals("japa.parser.ast.expr.LiteralExpr", result.getParameterTypes()[0].getName());
@@ -190,7 +190,7 @@ public class ReflectionAbstractionImplTest {
         Class className = Class.forName("org.creativelabs.TypeFinder");
         ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
 
-        Class[] args = new Class[] {Class.forName("japa.parser.ast.expr.NameExpr")};
+        ClassType[] args = new ClassType[] {ra.getClassTypeByName("japa.parser.ast.expr.NameExpr")};
 
         Method result = ra.getMethod(className, "determineType", args);
         assertEquals("japa.parser.ast.expr.NameExpr", result.getParameterTypes()[0].getName());
@@ -269,7 +269,7 @@ public class ReflectionAbstractionImplTest {
 
         ClassType result = ra.getReturnType(clazz, "getFooBar", new ClassType[0]);
 
-        assertEquals("ClassTypeError", result.getClass().getSimpleName());
+        assertTrue(result instanceof ClassTypeError);
         assertEquals("no such method : getFooBar", result.toString());
     }
 
@@ -277,7 +277,7 @@ public class ReflectionAbstractionImplTest {
     public void testGetTypeWrongClassType() {
         ClassType result = ra.getReturnType(new ClassTypeStub("h"), "getFooBar", new ClassType[0]);
 
-        assertEquals("ClassTypeError", result.getClass().getSimpleName());
+        assertTrue(result instanceof ClassTypeError);
     }
 
     @Test(dependsOnMethods = "testReflectionAbstractionSetGenericArgs")
@@ -296,7 +296,7 @@ public class ReflectionAbstractionImplTest {
 
         stub = ra.substGenericArgs(stub, new ClassType[]{stub, stub});
 
-        assertEquals("ClassTypeError", stub.getClass().getSimpleName());
+        assertTrue(stub instanceof ClassTypeError);
     }
 
     @Test(dependsOnMethods = "testReflectionAbstractionSetGenericArgs")
@@ -359,7 +359,7 @@ public class ReflectionAbstractionImplTest {
 
         ClassType result = ra.getNestedClass(clazz, "Operator");
 
-        assertEquals("ClassTypeError", result.getClass().getSimpleName());
+        assertTrue(result instanceof ClassTypeError);
     }
 
     @Test
@@ -368,7 +368,7 @@ public class ReflectionAbstractionImplTest {
 
         ClassType result = ra.getNestedClass(clazz, "length");
 
-        assertEquals("ClassTypeError", result.getClass().getSimpleName());
+        assertTrue(result instanceof ClassTypeError);
     }
 
     @Test
@@ -428,6 +428,105 @@ public class ReflectionAbstractionImplTest {
         ClassType result = ra.getFieldType(classType, "BUTTON3_MASK");
 
         assertEquals("int", result.toString());
+    }
+
+    @Test
+    public void testGetMethodWithShortInt() throws Exception {
+        ClassType classType = ra.getClassTypeByName("javax.swing.GroupLayout$ParallelGroup");
+        ClassType a = ra.getClassTypeByName("java.lang.Integer");
+        ClassType s = ra.getClassTypeByName("short");
+        
+        ClassType result = ra.getReturnType(classType, "addGap", new ClassType[]{a, a, s});
+
+        assertEquals("javax.swing.GroupLayout$ParallelGroup", result.toString());
+    }
+
+    @Test
+    public void testGetMethodWithIntegerLong() throws Exception {
+        ClassType classType = ra.getClassTypeByName("java.lang.Thread");
+        ClassType a = ra.getClassTypeByName("java.lang.Integer");
+        
+        ClassType result = ra.getReturnType(classType, "sleep", new ClassType[]{a});
+
+        assertEquals("void", result.toString());
+    }
+
+    @Test
+    public void testCreateNullClassType() throws Exception {
+        ClassType classType = ra.createNullClassType();
+
+        assertTrue(classType instanceof ClassTypeNull);
+    }
+
+    @Test
+    public void testIsEligible() throws Exception {
+        ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
+        Class clazz = Class.forName("javax.swing.GroupLayout$SequentialGroup");
+        Class arg1 = Class.forName("javax.swing.JComponent");
+        Class arg2 = Class.forName("javax.swing.LayoutStyle$ComponentPlacement");
+        Method method = clazz.getDeclaredMethod("addPreferredGap", new Class[]{arg1, arg1, arg2});
+
+        ClassType arg = ra.getClassTypeByName("javax.swing.LayoutStyle$ComponentPlacement");
+        ClassType intCT = ra.getClassTypeByName("java.lang.Integer");
+        ClassType shortCT = ra.getClassTypeByName("short");
+
+        boolean result = ra.isEligible(method, "addPreferredGap", new ClassType[]{arg, intCT, shortCT});
+
+        assertFalse(result);
+    }
+
+    @Test
+    public void testAddPreferredGap() throws Exception {
+        ClassType classType = ra.getClassTypeByName("javax.swing.GroupLayout$SequentialGroup");
+
+        ClassType arg = ra.getClassTypeByName("javax.swing.LayoutStyle$ComponentPlacement");
+        ClassType intCT = ra.getClassTypeByName("java.lang.Integer");
+        ClassType shortCT = ra.getClassTypeByName("short");
+
+        ClassType result = ra.getReturnType(classType, "addPreferredGap", 
+                new ClassType[]{arg, intCT, shortCT});
+        
+        assertEquals("javax.swing.GroupLayout$SequentialGroup", result.toString());
+    }
+
+    private class JFrameDescendant extends javax.swing.JFrame {
+    }
+
+    @Test
+    public void testInheritedFieldAccess() {
+        ClassType classType = ra.getClassTypeByName(
+                "org.creativelabs.introspection.ReflectionAbstractionImplTest$JFrameDescendant");
+
+        ClassType result = ra.getFieldType(classType, "rootPane");
+
+        assertEquals("javax.swing.JRootPane", result.toString());
+    }
+
+    @Test
+    public void testJframeLEFT() {
+        ClassType classType = ra.getClassTypeByName("javax.swing.JLabel");
+
+        ClassType result = ra.getFieldType(classType, "LEFT");
+
+        assertEquals("int", result.toString());
+    }
+
+    @Test
+    public void testAddArrayDepth() {
+        ClassType classType = ra.getClassTypeByName("java.lang.String");
+
+        classType = ra.addArrayDepth(classType);
+
+        assertEquals("[Ljava.lang.String;", classType.toString());
+    }
+
+    @Test
+    public void testAddArrayDepthAlreadyArray() {
+        ClassType classType = ra.getClassTypeByName("[Ljava.lang.String;");
+
+        classType = ra.addArrayDepth(classType);
+
+        assertEquals("[[Ljava.lang.String;", classType.toString());
     }
 
 }

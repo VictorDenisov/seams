@@ -10,7 +10,7 @@ class HookReflectionAbstraction implements ReflectionAbstraction {
     
     public ClassType getReturnType(ClassType className, String methodName, ClassType[] types) {
         ClassType result = ra.getReturnType(className, methodName, types);
-        if (result.getClass().getSimpleName().equals("ClassTypeError")) {
+        if (result instanceof ClassTypeError) {
             result = ra.getReturnType(ra.getClassTypeByName("java.lang.Object"), methodName, types);
         }
 
@@ -55,5 +55,13 @@ class HookReflectionAbstraction implements ReflectionAbstraction {
 
     public ClassType getElementType(ClassType classType) {
         return ra.getElementType(classType);
+    }
+
+    public ClassType createNullClassType() {
+        return ra.createNullClassType();
+    }
+
+    public ClassType addArrayDepth(ClassType classType) {
+        return ra.addArrayDepth(classType);
     }
 }
