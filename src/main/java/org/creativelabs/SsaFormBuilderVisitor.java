@@ -59,9 +59,11 @@ public class SsaFormBuilderVisitor extends GenericVisitorAdapter<StringBuilder, 
         buffer.append("then do\n");
         buffer.append(thenBlock);
         buffer.append("end\n");
-        buffer.append("else do\n");
-        buffer.append(elseBlock);
-        buffer.append("end\n");
+        if (elseStmt != null) {
+            buffer.append("else do\n");
+            buffer.append(elseBlock);
+            buffer.append("end\n");
+        }
 
         for (String name : elseVariables.getDifferenceInVariables(thenVariables, false)) {
             buffer.append(name + (Math.max(thenVariables.read(name), elseVariables.read(name)) + 1) + " <- " + elseVariables.getPhi(thenVariables, name) + "\n");

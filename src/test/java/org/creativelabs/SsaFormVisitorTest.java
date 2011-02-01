@@ -119,11 +119,11 @@ public class SsaFormVisitorTest {
     public void testIfStmt() throws Exception {
         MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("void method(int x, int y){" +
                 "if (x > y) {" +
-                "x = 1;" +
-                "y = x + y;" +
+                    "x = 1;" +
+                    "y = x + y;" +
                 "} else {" +
-                "x = y;" +
-                "y = x + 2;" +
+                    "x = y;" +
+                    "y = x + 2;" +
                 "}" +
                 "}");
 
@@ -133,12 +133,12 @@ public class SsaFormVisitorTest {
         StringBuilder expectedResult = new StringBuilder();
         expectedResult.append("if x0 greater y0\n");
         expectedResult.append("then do\n");
-        expectedResult.append("x1 <- 1\n");
-        expectedResult.append("y1 <- x1 plus y0\n");
+            expectedResult.append("x1 <- 1\n");
+            expectedResult.append("y1 <- x1 plus y0\n");
         expectedResult.append("end\n");
         expectedResult.append("else do\n");
-        expectedResult.append("x2 <- y0\n");
-        expectedResult.append("y2 <- x2 plus 2\n");
+            expectedResult.append("x2 <- y0\n");
+            expectedResult.append("y2 <- x2 plus 2\n");
         expectedResult.append("end\n");
         expectedResult.append("y3 <- phi(y1,y2)\n");
         expectedResult.append("x3 <- phi(x1,x2)\n");
@@ -150,8 +150,8 @@ public class SsaFormVisitorTest {
     public void testIfStmtWithoutElse() throws Exception {
         MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("void method(int x, int y){" +
                 "if (x > y) {" +
-                "x = 1;" +
-                "y = x + y;" +
+                    "x = 1;" +
+                    "y = x + y;" +
                 "}" +
                 "}");
 
@@ -161,10 +161,8 @@ public class SsaFormVisitorTest {
         StringBuilder expectedResult = new StringBuilder();
         expectedResult.append("if x0 greater y0\n");
         expectedResult.append("then do\n");
-        expectedResult.append("x1 <- 1\n");
-        expectedResult.append("y1 <- x1 plus y0\n");
-        expectedResult.append("end\n");
-        expectedResult.append("else do\n");
+            expectedResult.append("x1 <- 1\n");
+            expectedResult.append("y1 <- x1 plus y0\n");
         expectedResult.append("end\n");
         expectedResult.append("y2 <- phi(y0,y1)\n");
         expectedResult.append("x2 <- phi(x0,x1)\n");
@@ -176,13 +174,13 @@ public class SsaFormVisitorTest {
     public void testOneNestedIfStmt() throws Exception {
         MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("void method(int x, int y){" +
                 "if (x > y) {" +
-                "x = 1;" +
-                "if (1 > x) {" +
-                "y = x + y;" +
-                "}" +
+                    "x = 1;" +
+                    "if (1 > x) {" +
+                        "y = x + y;" +
+                    "}" +
                 "} else {" +
-                "x = y;" +
-                "y = x + 2;" +
+                    "x = y;" +
+                    "y = x + 2;" +
                 "}" +
                 "}");
 
@@ -192,18 +190,16 @@ public class SsaFormVisitorTest {
         StringBuilder expectedResult = new StringBuilder();
         expectedResult.append("if x0 greater y0\n");
         expectedResult.append("then do\n");
-        expectedResult.append("x1 <- 1\n");
-        expectedResult.append("if 1 greater x1\n");
-        expectedResult.append("then do\n");
-        expectedResult.append("y1 <- x1 plus y0\n");
+            expectedResult.append("x1 <- 1\n");
+            expectedResult.append("if 1 greater x1\n");
+            expectedResult.append("then do\n");
+                expectedResult.append("y1 <- x1 plus y0\n");
+                expectedResult.append("end\n");
+            expectedResult.append("y2 <- phi(y0,y1)\n");
         expectedResult.append("end\n");
         expectedResult.append("else do\n");
-        expectedResult.append("end\n");
-        expectedResult.append("y2 <- phi(y0,y1)\n");
-        expectedResult.append("end\n");
-        expectedResult.append("else do\n");
-        expectedResult.append("x2 <- y0\n");
-        expectedResult.append("y3 <- x2 plus 2\n");
+            expectedResult.append("x2 <- y0\n");
+            expectedResult.append("y3 <- x2 plus 2\n");
         expectedResult.append("end\n");
         expectedResult.append("y4 <- phi(y2,y3)\n");
         expectedResult.append("x3 <- phi(x1,x2)\n");
@@ -215,17 +211,17 @@ public class SsaFormVisitorTest {
     public void testManyNestedIfStmt() throws Exception {
         MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("void method(int x, int y){" +
                 "if (x > y) {" +
-                "x = 1;" +
-                "if (1 > x) {" +
-                "y = x + y;" +
+                    "x = 1;" +
+                    "if (1 > x) {" +
+                        "y = x + y;" +
+                    "} else {" +
+                        "if (1 > x) {" +
+                            "y = 2;" +
+                        "}" +
+                    "}" +
                 "} else {" +
-                "if (1 > x) {" +
-                "y = 2;" +
-                "}" +
-                "}" +
-                "} else {" +
-                "x = y;" +
-                "y = x + 2;" +
+                    "x = y;" +
+                    "y = x + 2;" +
                 "}" +
                 "}");
 
@@ -244,8 +240,6 @@ public class SsaFormVisitorTest {
                 expectedResult.append("if 1 greater x1\n");
                 expectedResult.append("then do\n");
                     expectedResult.append("y2 <- 2\n");
-                expectedResult.append("end\n");
-                expectedResult.append("else do\n");
                 expectedResult.append("end\n");
                 expectedResult.append("y3 <- phi(y1,y2)\n");
             expectedResult.append("end\n");
@@ -277,7 +271,6 @@ public class SsaFormVisitorTest {
         expectedResult.append("i0 <- 0\n");
         expectedResult.append("repeat\n");
         expectedResult.append("begin\n");
-        //TODO check necessity of phi(x0,x2)
         expectedResult.append("x1 <- phi(x0,x2)\n");
         expectedResult.append("i1 <- phi(i0,i2)\n");
         expectedResult.append("x2 <- i1 plus 1\n");
