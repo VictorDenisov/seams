@@ -41,6 +41,7 @@ public class DependencyGraphReportBuilder implements ReportBuilder {
     }
 
     public void setInternalInstances(String className, Map<String, InternalInstancesGraph> instances) {
+
     }
 
 }
