@@ -31,7 +31,7 @@ public class DependencyCounterVisitorBuilder {
         if (imports == null) {
             throw new IllegalStateException("Imports should be not null for this operation");
         }
-        this.methodArguments = VariableList.createFromMethodArguments(md, imports);
+        this.methodArguments = new VariableListBuilder().setImports(imports).buildFromMethod(md);
         return this;
     }
 
@@ -45,7 +45,7 @@ public class DependencyCounterVisitorBuilder {
         if (methodArguments == null) {
             throw new IllegalStateException("Method arguments can't be null");
         }
-        VariableList externalVariables = VariableList.createEmpty();
+        VariableList externalVariables = new VariableListBuilder().buildEmpty();
         externalVariables.addAll(classFields);
         externalVariables.addAll(methodArguments);
         return new DependencyCounterVisitor(externalVariables, imports);

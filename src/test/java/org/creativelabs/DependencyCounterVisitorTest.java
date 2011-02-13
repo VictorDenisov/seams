@@ -21,7 +21,8 @@ public class DependencyCounterVisitorTest {
 
         ImportList imports = ParseHelper.createImportList("");
 
-        VariableList fieldList = VariableList.createFromClassFields(classDeclaration, imports);
+        VariableList fieldList = ConstructionHelper
+            .createVariableListFromClassFields(classDeclaration, imports);
 
         DependencyCounterVisitor dc = new DependencyCounterVisitor(fieldList, imports);
 
@@ -36,8 +37,9 @@ public class DependencyCounterVisitorTest {
 
     @Test
     public void testVisitNameExprClass() throws Exception {
-        ImportList importList = ParseHelper.createImportList("");
-        DependencyCounterVisitor dc = new DependencyCounterVisitor(VariableList.createEmpty(), importList);
+        ImportList importList = ConstructionHelper.createEmptyImportList();
+        DependencyCounterVisitor dc = new DependencyCounterVisitor(
+                ConstructionHelper.createEmptyVariableList(), importList);
 
         MethodCallExpr expr = (MethodCallExpr)ParseHelper.createExpression("String.valueOf(true)");
 
@@ -81,7 +83,7 @@ public class DependencyCounterVisitorTest {
     public void testVisitVariableDeclarationExpr() throws Exception {
         ImportList imports = spy(ParseHelper.createImportList("import java.util.*;"));
         Expression expr = ParseHelper.createExpression("Map.Entry<String, String> entry;");
-        VariableList varList = VariableList.createEmpty();
+        VariableList varList = ConstructionHelper.createEmptyVariableList();
 
         DependencyCounterVisitor dependencyCounter = new DependencyCounterVisitor(varList, imports);
         expr.accept(dependencyCounter, null);
@@ -94,7 +96,7 @@ public class DependencyCounterVisitorTest {
         Statement expr = ParseHelper.createStatement("try {} catch (Exception e) {}");
 
         ImportList imports = ParseHelper.createImportList("");
-        VariableList classFields = VariableList.createEmpty();
+        VariableList classFields = ConstructionHelper.createEmptyVariableList();
 
         DependencyCounterVisitor dependencyCounter = new DependencyCounterVisitor(classFields, imports);
         expr.accept(dependencyCounter, null);
@@ -107,7 +109,7 @@ public class DependencyCounterVisitorTest {
         Statement expr = ParseHelper.createStatement(
                 "for (Map.Entry<String, Integer> entry : map) {}");
         ImportList imports = ParseHelper.createImportList("import java.util.Map;");
-        VariableList classFields = VariableList.createEmpty();
+        VariableList classFields = ConstructionHelper.createEmptyVariableList();
 
         DependencyCounterVisitor dependencyCounter = new DependencyCounterVisitor(classFields, imports);
         expr.accept(dependencyCounter, null);
