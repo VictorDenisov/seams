@@ -49,10 +49,6 @@ class HookReflectionAbstraction implements ReflectionAbstraction {
         return ra.convertToArray(classType, dimension);
     }
 
-    public ClassType convertFromArray(ClassType classType) {
-        return ra.convertFromArray(classType);
-    }
-
     public ClassType getElementType(ClassType classType) {
         return ra.getElementType(classType);
     }

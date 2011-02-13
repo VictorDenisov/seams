@@ -423,15 +423,6 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
     }
 
     @Override
-    public ClassType convertFromArray(ClassType classType) {
-        ClassTypeImpl classTypeImpl = (ClassTypeImpl) classType;
-        while (classTypeImpl.elementType != null) {
-            classTypeImpl = classTypeImpl.elementType;
-        }
-        return classTypeImpl;
-    }
-
-    @Override
     public ClassType getElementType(ClassType classType) {
         try {
             ClassTypeImpl classTypeImpl = (ClassTypeImpl) classType;
