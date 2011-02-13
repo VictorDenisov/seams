@@ -1,11 +1,13 @@
 package org.creativelabs.ssa;
 
+import japa.parser.ast.body.MethodDeclaration;
+
 public class SimpleSsaForm {
 
     private String methodName;
-    private StringBuilder form;
+    private MethodDeclaration form;
 
-    public SimpleSsaForm(String methodName, StringBuilder form) {
+    public SimpleSsaForm(String methodName, MethodDeclaration form) {
         this.methodName = methodName;
         this.form = form;
     }
@@ -18,11 +20,11 @@ public class SimpleSsaForm {
         this.methodName = methodName;
     }
 
-    public StringBuilder getForm() {
+    public MethodDeclaration getForm() {
         return form;
     }
 
-    public void setForm(StringBuilder form) {
+    public void setForm(MethodDeclaration form) {
         this.form = form;
     }
 }

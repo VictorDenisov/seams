@@ -12,6 +12,7 @@ public class SsaFinder {
 
     private static final String UNSUPPORTED = "Unsupported expression: ";
     private static final String NULL = "Expression is null ";
+    private static final String SEPARATOR = "#";
 
     VariablesHolder variables;
 
@@ -22,7 +23,7 @@ public class SsaFinder {
         this.isNeededToIncreaseIndex = isNeededToIncreaseIndex;
     }
 
-    String determineSsa(Expression expr) {
+    Expression determineSsa(Expression expr) {
         if (expr instanceof NameExpr) {
             return determineSsa((NameExpr) expr);
         } else if (expr instanceof LiteralExpr) {
@@ -38,14 +39,11 @@ public class SsaFinder {
         } else if (expr instanceof MethodCallExpr) {
             return determineSsa((MethodCallExpr) expr);
         }
-        if (expr != null) {
-            return UNSUPPORTED + expr.toString() + "\n";
-        } else {
-            return NULL + "\n";
-        }
+        //TODO add exception
+        return new NameExpr(expr != null ? UNSUPPORTED + expr.toString() : NULL);
     }
 
-    String determineSsa(NameExpr expr) {
+    NameExpr determineSsa(NameExpr expr) {
         String variableName = expr.getName();
         Integer variableIndex = variables.read(variableName);
         if (variableIndex != null) {
@@ -54,72 +52,52 @@ public class SsaFinder {
                 variableIndex++;
                 variables.write(variableName, variableIndex);
             }
-            return variableName + variableIndex;
+            expr.setName(variableName + SEPARATOR + variableIndex);
         } else {
-            return variableName + " <not contains in key set>";
+            expr.setName(variableName + " <not contains in key set>");
         }
+        return expr;
     }
 
-    String determineSsa(LiteralExpr expr) {
-        return expr.toString();
+    LiteralExpr determineSsa(LiteralExpr expr) {
+        return expr;
     }
 
-    String determineSsa(BinaryExpr expr) {
-        String leftPart = determineSsa(expr.getLeft());
-        String rightPart = determineSsa(expr.getRight());
-        String operator = expr.getOperator().name();
-        return leftPart + " " + operator + " " + rightPart;
+    BinaryExpr determineSsa(BinaryExpr expr) {
+        determineSsa(expr.getLeft());
+        determineSsa(expr.getRight());
+        return expr;
     }
 
-    String determineSsa(ArrayAccessExpr expr) {
-        if (isNeededToIncreaseIndex) {
-            return "Update(" + expr.getName() + "," + expr.getIndex() + ")";
-        } else {
-            return "Access(" + expr.getName() + "," + expr.getIndex() + ")";
-        }
+    ArrayAccessExpr determineSsa(ArrayAccessExpr expr) {
+        //TODO refactor
+        boolean increaseIndex = isNeededToIncreaseIndex;
+        isNeededToIncreaseIndex = false;
+        determineSsa(expr.getIndex());
+        determineSsa(expr.getName());
+        isNeededToIncreaseIndex = increaseIndex;
+        return expr;
     }
 
-    String determineSsa(ArrayCreationExpr expr) {
-        return expr.toString();
+    ArrayCreationExpr determineSsa(ArrayCreationExpr expr) {
+        return expr;
     }
 
-    String determineSsa(ObjectCreationExpr expr) {
-        String type = expr.getType().getName();
+    ObjectCreationExpr determineSsa(ObjectCreationExpr expr) {
         if (expr.getArgs() != null) {
-            List<String> args = new ArrayList<String>();
             for (Expression expression : expr.getArgs()) {
-                args.add(determineSsa(expression));
+                determineSsa(expression);
             }
-            StringBuilder builder = new StringBuilder();
-            Iterator<String> iterator = args.iterator();
-            while (iterator.hasNext()) {
-                builder.append(iterator.next());
-                if (iterator.hasNext()) {
-                    builder.append(",");
-                }
-            }
-            return "new " + type + "(" + builder + ")";
         }
-        return "new " + type + "()";
+        return expr;
     }
 
-    String determineSsa(MethodCallExpr expr) {
-        String name = expr.getName();
+    MethodCallExpr determineSsa(MethodCallExpr expr) {
         if (expr.getArgs() != null) {
-            List<String> args = new ArrayList<String>();
             for (Expression expression : expr.getArgs()) {
-                args.add(determineSsa(expression));
+                determineSsa(expression);
             }
-            StringBuilder builder = new StringBuilder();
-            Iterator<String> iterator = args.iterator();
-            while (iterator.hasNext()) {
-                builder.append(iterator.next());
-                if (iterator.hasNext()) {
-                    builder.append(",");
-                }
-            }
-            return name + "(" + builder + ")";
         }
-        return name + "()";
+        return expr;
     }
 }
