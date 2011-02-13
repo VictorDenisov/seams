@@ -11,10 +11,7 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
 
         private HashMap<String, ClassType> genericArgs = null;
 
-        private ClassTypeImpl elementType;
-
         private ClassTypeImpl() {
-            elementType = null;
             genericArgs = new HashMap<String, ClassType>();
         }
 
@@ -386,17 +383,17 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
 
     @Override
     public ClassType convertToArray(ClassType classType, int dimension) {
+        if (dimension == 0) {
+            return classType;
+        }
         try {
             ClassTypeImpl classTypeImpl = (ClassTypeImpl) classType;
-            ClassTypeImpl result = classTypeImpl;
             String className = "L" + classTypeImpl.clazz.getName() + ";";
             for (int i = 0; i < dimension; ++i) {
-                ClassTypeImpl previous = result;
-                result = new ClassTypeImpl();
                 className = "[" + className;
-                result.clazz = Class.forName(className);
-                result.elementType = previous;
             }
+            ClassTypeImpl result = new ClassTypeImpl();
+            result.clazz = Class.forName(className);
             return result;
         } catch (Exception e) {
             return createErrorClassType(e.toString());
@@ -406,16 +403,14 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
     @Override
     public ClassType addArrayDepth(ClassType classType) {
         try {
-            ClassTypeImpl result = (ClassTypeImpl) classType;
-            ClassTypeImpl previous = result;
-            result = new ClassTypeImpl();
+            ClassTypeImpl previous = (ClassTypeImpl) classType;
+            ClassTypeImpl result = new ClassTypeImpl();
             String className = previous.toString();
             if (!previous.clazz.isArray()) {
                 className = "L" + className + ";";
             }
             className = "[" + className;
             result.clazz = Class.forName(className);
-            result.elementType = previous;
             return result;
         } catch (Exception e) {
             return createErrorClassType(e.toString());
@@ -426,7 +421,9 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
     public ClassType getElementType(ClassType classType) {
         try {
             ClassTypeImpl classTypeImpl = (ClassTypeImpl) classType;
-            return classTypeImpl.elementType;
+            ClassTypeImpl result = new ClassTypeImpl();
+            result.clazz = classTypeImpl.clazz.getComponentType();
+            return result;
         } catch (Exception e) {
             return createErrorClassType(e.toString());
         }
