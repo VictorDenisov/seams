@@ -246,6 +246,15 @@ public class SsaFormBuilderVisitor extends GenericVisitorAdapter<StringBuilder, 
         return builder;
     }
 
+    @Override
+    public StringBuilder visit(ForeachStmt n, VariablesHolder arg) {
+        n.getVariable();
+        n.getBody();
+        n.getIterable();
+        System.out.println("ddd");
+        return null;
+    }
+
     private StringBuilder getStmt(Statement statement, VariablesHolder arg) {
         if (statement instanceof BlockStmt) {
             return visit((BlockStmt) statement, arg);
@@ -261,6 +270,8 @@ public class SsaFormBuilderVisitor extends GenericVisitorAdapter<StringBuilder, 
             return visit((ReturnStmt) statement, arg);
         } else if (statement instanceof TryStmt) {
             return visit((TryStmt) statement, arg);
+        } else if (statement instanceof ForeachStmt) {
+            return visit((ForeachStmt) statement, arg);
         }
         return new StringBuilder(UNSUPPORTED + statement.toString() + "\n");
     }
