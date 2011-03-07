@@ -162,7 +162,7 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         try {
             Class.forName(className, true, classLoader);
             return true;
-        } catch (ClassNotFoundException e) {
+        } catch (Throwable e) {
             return false;
         }
     }
@@ -248,20 +248,24 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
             Class[] args = getTypeClasses(types);
             Method result = clazz.getDeclaredMethod(methodName, args);
             return result;
-        } catch (NoSuchMethodException e) {
-            Method[] methods = clazz.getDeclaredMethods();
-            for (Method method : methods) {
-                if (isEligible(method, methodName, types)) {
-                    return method;
+        } catch (Throwable e) {
+            try {
+                Method[] methods = clazz.getDeclaredMethods();
+                for (Method method : methods) {
+                    if (isEligible(method, methodName, types)) {
+                        return method;
+                    }
                 }
-            }
-            methods = clazz.getMethods();
-            for (Method method : methods) {
-                if (isEligible(method, methodName, types)) {
-                    return method;
+                methods = clazz.getMethods();
+                for (Method method : methods) {
+                    if (isEligible(method, methodName, types)) {
+                        return method;
+                    }
                 }
+                throw new NoSuchMethodException();
+            } catch (Throwable e1) {
+                throw new NoSuchMethodException();
             }
-            throw new NoSuchMethodException();
         }
     }
 
@@ -335,7 +339,7 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
             result = processGenericArgs(genericReturnType, classNameImpl, result);
 
             return result;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             return createErrorClassType(e.toString());
         }
     }
@@ -378,7 +382,7 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
             ClassTypeImpl c = new ClassTypeImpl();
             c.clazz = getClass(className);
             return c;
-        } catch (ClassNotFoundException e) {
+        } catch (Throwable e) {
             return createErrorClassType(e.toString());
         }
     }
