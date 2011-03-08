@@ -426,7 +426,7 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
             ClassTypeImpl result = new ClassTypeImpl();
             String className = previous.toString();
             if (!previous.clazz.isArray()) {
-                className = "L" + className + ";";
+                className = takeArrayName(previous.clazz);
             }
             className = "[" + className;
             result.clazz = Class.forName(className);
