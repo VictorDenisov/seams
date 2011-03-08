@@ -37,4 +37,15 @@ public class TypeFinderRealExamplesTest {
         assertEquals("int", type.toString());
 
     }
+    
+    @Test
+    public void testThisPath() throws Exception {
+        Expression expr = ParseHelper.createExpression("(this.arrayChar)");
+        VariableList varTypes = ConstructionHelper.createVarListWithValues(ra,
+                "this", "org.creativelabs.introspection.ReflectionAbstractionImpl");
+        
+        ClassType type = new TypeFinder(varTypes, null).determineType(expr);
+
+        assertEquals("java.util.HshMap<java.lang.String, java.lang.String, >", type.toString());
+    }
 }
