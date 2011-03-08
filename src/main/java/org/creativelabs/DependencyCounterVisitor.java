@@ -88,6 +88,8 @@ class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
     public void visit(VariableDeclarationExpr n, Object o) {
         for (VariableDeclarator v : n.getVars()) {
             ClassType classType = imports.getClassByType(n.getType());
+            classType = ReflectionAbstractionImpl.create()
+                .convertToArray(classType, v.getId().getArrayCount());
 
             localVariables.put(v.getId().getName(), classType);
             ExpressionSeparatorVisitor esv = new ExpressionSeparatorVisitor(internalInstances);

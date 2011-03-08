@@ -5,6 +5,8 @@ import japa.parser.ast.body.*;
 import japa.parser.ast.type.*;
 import japa.parser.ast.stmt.*;
 
+import org.creativelabs.introspection.*;
+
 import org.testng.annotations.Test;
 
 import java.util.*;
@@ -144,5 +146,18 @@ public class DependencyCounterVisitorTest {
 
         expr.accept(dependencyCounter, null);
         verify(dependencyCounter).runTypeFinder(any(Expression.class));
+    }
+
+    @Test
+    public void testPrimitiveArrayDeclaration() throws Exception {
+        Statement expr = ParseHelper.createStatement("byte buffer[];");
+
+        ImportList imports = ConstructionHelper.createEmptyImportList();
+        VariableList varList = ConstructionHelper.createEmptyVariableList();
+
+        DependencyCounterVisitor dependencyCounter = new DependencyCounterVisitor(varList, imports);
+        expr.accept(dependencyCounter, null);
+        ClassType result = dependencyCounter.localVariables.getFieldTypeAsClass("buffer");
+        assertEquals("[B", result.toString());
     }
 }

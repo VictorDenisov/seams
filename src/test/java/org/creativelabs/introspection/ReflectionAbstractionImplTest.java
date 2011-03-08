@@ -519,6 +519,15 @@ public class ReflectionAbstractionImplTest {
 
         assertEquals("[Ljava.lang.String;", classType.toString());
     }
+    
+    @Test
+    public void testConvertToArrayFromPrimitive() throws Exception {
+        ClassType classType = ra.getClassTypeByName("byte");
+
+        classType = ra.convertToArray(classType, 1);
+
+        assertEquals("[B", classType.toString());
+    }
 
     @Test
     public void testAddArrayDepthAlreadyArray() {

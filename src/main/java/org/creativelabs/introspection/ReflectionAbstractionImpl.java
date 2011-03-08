@@ -70,6 +70,8 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
 
     private HashMap<String, Class> primitivesMap;
 
+    private HashMap<String, String> arrayChar;
+
     private void addToBoxing(String data, Class clazz) {
         if (!boxingMap.containsKey(data)) {
             boxingMap.put(data, new ArrayList<Class>());
@@ -120,6 +122,15 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         primitivesMap.put("char", char.class);
         primitivesMap.put("boolean", boolean.class);
         primitivesMap.put("void", void.class);
+        arrayChar = new HashMap<String, String>();
+        arrayChar.put("byte", "B");
+        arrayChar.put("short", "S");
+        arrayChar.put("int", "I");
+        arrayChar.put("long", "J");
+        arrayChar.put("float", "F");
+        arrayChar.put("double", "D");
+        arrayChar.put("char", "C");
+        arrayChar.put("boolean", "Z");
     }
 
     private Class getClass(String type) throws ClassNotFoundException {
@@ -381,6 +392,14 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         }
     }
 
+    private String takeArrayName(Class clazz) {
+        if (clazz.isPrimitive()) {
+            return arrayChar.get(clazz.getName());
+        } else {
+            return "L" + clazz.getName() + ";";
+        }
+    }
+
     @Override
     public ClassType convertToArray(ClassType classType, int dimension) {
         if (dimension == 0) {
@@ -388,7 +407,7 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         }
         try {
             ClassTypeImpl classTypeImpl = (ClassTypeImpl) classType;
-            String className = "L" + classTypeImpl.clazz.getName() + ";";
+            String className = takeArrayName(classTypeImpl.clazz);
             for (int i = 0; i < dimension; ++i) {
                 className = "[" + className;
             }
