@@ -131,9 +131,20 @@ public class ReflectionAbstractionImplTest {
     }
 
     @Test
+    public void testGetFieldTypePrivateField() throws Exception {
+		ClassType myClass = ra.getClassTypeByName(
+                "org.creativelabs.introspection.ReflectionAbstractionImpl");
+        ClassType fieldType = ra.getFieldType(myClass, "arrayChar");
+
+        assertEquals("java.util.HashMap<java.lang.String, java.lang.String, >",
+                fieldType.toString());
+    }
+
+    @Test
     public void testGetFieldTypeClassType() throws Exception {
 		ClassType myClass = ra.getClassTypeByName("java.lang.String");
-        ClassType fieldType = ReflectionAbstractionImpl.create().getFieldType(myClass, "CASE_INSENSITIVE_ORDER");
+
+        ClassType fieldType = ra.getFieldType(myClass, "CASE_INSENSITIVE_ORDER");
 
         assertEquals("java.util.Comparator<java.lang.String, >", fieldType.toString());
     }
@@ -546,4 +557,5 @@ public class ReflectionAbstractionImplTest {
 
         assertEquals("[B", classType.toString());
     }
+
 }
