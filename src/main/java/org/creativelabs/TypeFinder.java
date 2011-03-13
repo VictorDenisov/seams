@@ -51,9 +51,18 @@ class TypeFinder {
             return determineType((VariableDeclarationExpr) expr);
         } else if (expr instanceof EnclosedExpr) {
             return determineType((EnclosedExpr) expr);
+        } else if (expr instanceof ClassExpr) {
+            return determineType((ClassExpr) expr);
         }
 
         return reflectionAbstraction.createErrorClassType("unsupported expression");
+    }
+
+    private ClassType determineType(ClassExpr expr) {
+        ClassType result = reflectionAbstraction.getClassTypeByName("java.lang.Class");
+        ClassType[] genericArgs = new ClassType[1];
+        genericArgs[0] = imports.getClassByType(expr.getType());
+        return reflectionAbstraction.substGenericArgs(result, genericArgs);
     }
 
     private ClassType determineType(EnclosedExpr expr) {

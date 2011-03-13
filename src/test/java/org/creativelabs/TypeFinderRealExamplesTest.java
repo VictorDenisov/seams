@@ -48,4 +48,17 @@ public class TypeFinderRealExamplesTest {
 
         assertEquals("java.util.HashMap<java.lang.String, java.lang.String, >", type.toString());
     }
+
+    @Test
+    public void testClassField() throws Exception {
+        Expression expr = ParseHelper.createExpression("String.class");
+
+        VariableList varTypes = ConstructionHelper.createEmptyVariableList();
+
+        ImportList imports = ConstructionHelper.createEmptyImportList();
+
+        ClassType type = new TypeFinder(varTypes, imports).determineType(expr);
+
+        assertEquals("java.lang.Class<java.lang.String, >", type.toString());
+    }
 }
