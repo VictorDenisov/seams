@@ -97,7 +97,6 @@ class TypeFinder {
 
         ClassType scopeClassName = determineType(expr.getScope());
         ClassType result = null;
-        System.out.println(scopeClassName);
         if (scopeClassName instanceof ClassTypeError) {
             result = reflectionAbstraction.getClassTypeByName(expr.toString());
         } else {

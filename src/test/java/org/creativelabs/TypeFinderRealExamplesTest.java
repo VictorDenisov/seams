@@ -46,6 +46,6 @@ public class TypeFinderRealExamplesTest {
         
         ClassType type = new TypeFinder(varTypes, null).determineType(expr);
 
-        assertEquals("java.util.HshMap<java.lang.String, java.lang.String, >", type.toString());
+        assertEquals("java.util.HashMap<java.lang.String, java.lang.String, >", type.toString());
     }
 }

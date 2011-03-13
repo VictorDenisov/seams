@@ -19,7 +19,7 @@ public class VariableListBuilderTest {
         ClassOrInterfaceDeclaration classDeclaration = 
             ParseHelper.createClassDeclaration("class Main { int v; }");
 
-        ImportList imports = ParseHelper.createImportList("");
+        ImportList imports = ConstructionHelper.createEmptyImportList();
         imports = spy(imports);
 
         VariableList fieldList = new VariableListBuilder()
@@ -28,6 +28,24 @@ public class VariableListBuilderTest {
 
         assertEqualsList(Arrays.asList(new String[]{"v"}), fieldList.getNames());
         verify(imports).getClassByType(any(Type.class));
+    }
+
+    @Test
+    public void testConstructionFromClass() throws Exception {
+        ClassOrInterfaceDeclaration classDeclaration =
+            ParseHelper.createClassDeclaration("class Main { int[] a; String v[];}");
+
+        ImportList imports = ConstructionHelper.createEmptyImportList();
+
+        VariableList fieldList = new VariableListBuilder()
+            .setImports(imports)
+            .buildFromClass(classDeclaration);
+        
+        List<String> names = fieldList.getNames();
+        Collections.sort(names);
+        assertEqualsList(Arrays.asList(new String[]{"a", "v"}), names);
+        assertEquals("[I", fieldList.getFieldTypeAsClass("a").toString());
+        assertEquals("[Ljava.lang.String;", fieldList.getFieldTypeAsClass("v").toString());
     }
 
     @Test(groups="variable-list.method-construction", dependsOnGroups="parse-helper.create-method")
@@ -71,5 +89,6 @@ public class VariableListBuilderTest {
 
         assertEquals("[Ljava.lang.String;", varList.getFieldTypeAsClass("args").toString());
     }
+
 
 }
