@@ -171,37 +171,57 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         return superClass.isAssignableFrom(clazz);
     }
 
+    boolean isParameterMatch(Class parameter, ClassType classType) {
+        if (classType instanceof ClassTypeNull) {
+            return true;
+        } else if (classType instanceof ClassTypeImpl) {
+            Class arg = ((ClassTypeImpl) classType).clazz;
+            if (!isSuperClass(parameter, arg)) {
+                List<Class> classList = boxingMap.get(arg.getName());
+                if (classList != null) {
+                    boolean result = false;
+                    for (Class varg: classList) {
+                        if (isSuperClass(parameter, varg)) {
+                            result = true;
+                            break;
+                        }
+                    }
+                    if (result == false) {
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     boolean isEligible(Method method, String methodName, ClassType[] args) {
         if (!method.getName().equals(methodName)) {
             return false;
         }
-        if (args.length != method.getParameterTypes().length) {
-            return false;
-        }
         Class[] parameters = method.getParameterTypes();
+        if (method.isVarArgs()) {
+            if (args.length < parameters.length - 1) {
+                return false;
+            }
+        } else {
+            if (args.length != parameters.length) {
+                return false;
+            }
+        }
         for (int i = 0; i < args.length; ++i) {
             ClassType classType = args[i];
-            if (classType instanceof ClassTypeNull) {
-                continue;
-            } else if (classType instanceof ClassTypeImpl) {
-                Class arg = ((ClassTypeImpl) args[i]).clazz;
-                if (!isSuperClass(parameters[i], arg)) {
-                    List<Class> classList = boxingMap.get(arg.getName());
-                    if (classList != null) {
-                        boolean result = false;
-                        for (Class varg: classList) {
-                            if (isSuperClass(parameters[i], varg)) {
-                                result = true;
-                                break;
-                            }
-                        }
-                        if (result == false) {
-                            return false;
-                        }
-                    } else {
-                        return false;
-                    }
-                }
+            Class parameter;
+            if (i >= (parameters.length - 1) && method.isVarArgs()) {
+                parameter = parameters[parameters.length - 1].getComponentType();
+            } else {
+                parameter = parameters[i];
+            }
+
+            if (!isParameterMatch(parameter, classType)) {
+                return false;
             }
         }
         return true;

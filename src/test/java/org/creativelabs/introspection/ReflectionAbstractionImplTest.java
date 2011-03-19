@@ -486,6 +486,44 @@ public class ReflectionAbstractionImplTest {
         assertFalse(result);
     }
 
+    public void sampleMethod(Integer i, String... args) {
+    }
+
+    @Test
+    public void testIsEligibleVariadic() throws Exception {
+        ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
+        Class clazz = Class.forName("org.creativelabs.introspection.ReflectionAbstractionImplTest");
+        Method method = clazz.getDeclaredMethod("sampleMethod", Class.forName("java.lang.Integer"),
+                Class.forName("[Ljava.lang.String;"));
+        ClassType intg = ra.getClassTypeByName("java.lang.Integer");
+        ClassType arg = ra.getClassTypeByName("java.lang.String");
+        boolean value = ra.isEligible(method, "sampleMethod", new ClassType[]{intg, arg});
+        assertTrue(value);
+    }
+
+    @Test
+    public void testIsEligibleVariadicLonger() throws Exception {
+        ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
+        Class clazz = Class.forName("org.creativelabs.introspection.ReflectionAbstractionImplTest");
+        Method method = clazz.getDeclaredMethod("sampleMethod", Class.forName("java.lang.Integer"),
+                Class.forName("[Ljava.lang.String;"));
+        ClassType intg = ra.getClassTypeByName("java.lang.Integer");
+        ClassType arg = ra.getClassTypeByName("java.lang.String");
+        boolean value = ra.isEligible(method, "sampleMethod", new ClassType[]{intg, arg, arg, arg});
+        assertTrue(value);
+    }
+
+    @Test
+    public void testIsEligibleVariadicShorter() throws Exception {
+        ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
+        Class clazz = Class.forName("org.creativelabs.introspection.ReflectionAbstractionImplTest");
+        Method method = clazz.getDeclaredMethod("sampleMethod", Class.forName("java.lang.Integer"),
+                Class.forName("[Ljava.lang.String;"));
+        ClassType intg = ra.getClassTypeByName("java.lang.Integer");
+        boolean value = ra.isEligible(method, "sampleMethod", new ClassType[]{intg});
+        assertTrue(value);
+    }
+
     @Test
     public void testAddPreferredGap() throws Exception {
         ClassType classType = ra.getClassTypeByName("javax.swing.GroupLayout$SequentialGroup");
