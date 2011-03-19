@@ -440,6 +440,15 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
     }
 
     @Override
+    public ClassType addArrayDepth(ClassType classType, int count) {
+        ClassType result = classType;
+        for (int i = 0; i < count; ++i) {
+            result = addArrayDepth(result);
+        }
+        return result;
+    }
+
+    @Override
     public ClassType addArrayDepth(ClassType classType) {
         try {
             ClassTypeImpl previous = (ClassTypeImpl) classType;

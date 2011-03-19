@@ -19,6 +19,7 @@ public class VariableListBuilder {
 
     public VariableList buildFromMethod(MethodDeclaration methodDeclaration) {
         VariableList result = new VariableList();
+        ReflectionAbstraction ra = ReflectionAbstractionImpl.create();
         if (methodDeclaration.getParameters() == null) {
             return result;
         }
@@ -26,8 +27,10 @@ public class VariableListBuilder {
             Type type = parameter.getType();
             String name = parameter.getId().getName();
             ClassType classType = imports.getClassByType(type);
+            classType = ra.addArrayDepth(classType, parameter.getId().getArrayCount());
+
             if (parameter.isVarArgs()) {
-                classType = ReflectionAbstractionImpl.create().addArrayDepth(classType);
+                classType = ra.addArrayDepth(classType);
             }
             result.fieldTypes.put(name, classType);
         }

@@ -60,4 +60,8 @@ class HookReflectionAbstraction implements ReflectionAbstraction {
     public ClassType addArrayDepth(ClassType classType) {
         return ra.addArrayDepth(classType);
     }
+
+    public ClassType addArrayDepth(ClassType classType, int count) {
+        return ra.addArrayDepth(classType, count);
+    }
 }
