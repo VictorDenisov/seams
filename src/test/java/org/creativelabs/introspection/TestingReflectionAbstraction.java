@@ -175,4 +175,9 @@ public class TestingReflectionAbstraction implements ReflectionAbstraction {
     public ClassType addArrayDepth(ClassType classType) {
         return null;
     }
+
+    @Override
+    public ClassType addArrayDepth(ClassType classType, int count) {
+        return null;
+    }
 }
