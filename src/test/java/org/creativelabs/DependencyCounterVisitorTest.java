@@ -162,4 +162,19 @@ public class DependencyCounterVisitorTest {
         ClassType result = dependencyCounter.localVariables.getFieldTypeAsClass("buffer");
         assertEquals("[B", result.toString());
     }
+
+    @Test
+    public void testSSSS() throws Exception {
+        MethodDeclaration decl = ParseHelper.createMethodDeclaration("public void ttt() "
+                + "{ class C {int var;}}");
+        
+        ImportList imports = ConstructionHelper.createEmptyImportList();
+        VariableList varList = ConstructionHelper.createEmptyVariableList();
+
+        DependencyCounterVisitor dependencyCounter = 
+            spy(new DependencyCounterVisitor(varList, imports));
+        decl.accept(dependencyCounter, null);
+
+        verify(dependencyCounter, never()).visit(any(FieldDeclaration.class), eq(null));
+    }
 }

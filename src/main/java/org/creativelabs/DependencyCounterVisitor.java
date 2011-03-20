@@ -114,6 +114,10 @@ class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
 
         localVariables.put(n.getId().getName(), classType);
     }
+
+    @Override
+    public void visit(TypeDeclarationStmt n, Object o) {
+    }
 }
 
 // vim: set ts=4 sw=4 et:

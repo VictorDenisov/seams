@@ -106,6 +106,7 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         addToBoxing("short", Short.class);
         addToBoxing("int", Integer.class);
         addToBoxing("int", short.class);
+        addToBoxing("int", byte.class);
         addToBoxing("int", long.class);
         addToBoxing("long", Long.class);
         addToBoxing("long", int.class);
@@ -114,6 +115,7 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         addToBoxing("char", Character.class);
         addToBoxing("char", int.class);
         addToBoxing("short", int.class);
+        addToBoxing("byte", int.class);
         addToBoxing("boolean", Boolean.class);
         addToBoxing("void", Void.class);
 
