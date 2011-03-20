@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+
+<project name="OwnTaskExample" default="main" basedir=".">
+	<taskdef name="mytask" classname="org.creativelabs.SeamsAntTask" classpath="./target/seams-0.1.jar"/>
+
+	<target name="main">
+		<mytask message="Hello World! MyVeryOwnTask works!"/>
+	</target>
+</project>
+
