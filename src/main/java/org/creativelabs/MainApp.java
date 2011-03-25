@@ -79,6 +79,7 @@ final class MainApp {
         classProcessor.compute();
         classProcessor.buildReport(reportBuilder);
 
+        /* TODO Sould be moved to specific report builders.
         if (commandLine.hasOption('g')) {
             for (Map.Entry<String, InternalInstancesGraph> entry
                     : classProcessor.getInternalInstances().entrySet()) {
@@ -102,9 +103,10 @@ final class MainApp {
                         fileName + "." + form.getMethodName());
             }
         }
+        */
     }
 
-    private static void processFileOrDirectory(File fileOrDirectory, ReportBuilder reportBuilder) throws Exception {
+    public static void processFileOrDirectory(File fileOrDirectory, ReportBuilder reportBuilder) throws Exception {
         if (!fileOrDirectory.exists()) {
             throw new IllegalArgumentException(fileOrDirectory.getAbsolutePath() + " doesn't exist");
         }

@@ -6,7 +6,7 @@
 	<target name="main">
 		<mytask message="Hello World! MyVeryOwnTask works!">
 			<src path="src/main/java"/>
-			<include name="*.java"/>
+			<include name="**/*.java"/>
 		</mytask>
 	</target>
 </project>

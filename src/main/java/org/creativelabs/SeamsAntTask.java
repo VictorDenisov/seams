@@ -2,15 +2,23 @@ package org.creativelabs;
 
 import java.io.*;
 import java.util.*;
+
 import org.apache.tools.ant.*;
+import org.apache.tools.ant.util.*;
 import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.taskdefs.MatchingTask;
-import org.apache.tools.ant.util.*;
+
+import org.creativelabs.report.*;
 
 public class SeamsAntTask extends MatchingTask {
     private String msg;
     private Path src;
     protected File[] compileList = new File[0];
+    private File destDir;
+
+    public void setDestdir(File destDir) {
+        this.destDir = destDir;
+    }
 
     public Path createSrc() {
         if (src == null) {
@@ -48,10 +56,7 @@ public class SeamsAntTask extends MatchingTask {
     }
 
     private String[] findSupportedFileExtensions() {
-        String[] extensions = null;
-        if (extensions == null) {
-            extensions = new String[] { "java" };
-        }
+        String[] extensions = new String[] { "java" };
 
         // now process the extensions to ensure that they are the
         // right format
@@ -105,13 +110,34 @@ public class SeamsAntTask extends MatchingTask {
 
             scanDir(srcDir, srcDir, files);
         }
+        try {
+            process();
+        } catch (Exception e) {
+            throw new BuildException(e);
+        }
 
         System.out.println(msg);
         System.out.println(src);
         for (File s : compileList) {
-            System.out.println(s.getName());
+            System.out.println(s.getPath());
         }
 
+    }
+
+    protected void process() throws Exception {
+        if (compileList.length > 0) {
+            log("Processing " + compileList.length + " source file"
+                + (compileList.length == 1 ? "" : "s")
+                + (destDir != null ? " to " + destDir : ""));
+
+            DataCollector dataCollector = new DataCollector();
+
+            for (File file : compileList) {
+                MainApp.processFileOrDirectory(file, dataCollector);
+            }
+            dataCollector.buildDetailedDependencyReport();
+            dataCollector.buildNumberOfErrorsReport();
+        }
     }
 
     public void setMessage(String msg) {
