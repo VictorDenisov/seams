@@ -1,21 +1,20 @@
 package org.creativelabs; 
 
-import org.testng.annotations.Test;
-import org.testng.annotations.Configuration;
-import org.creativelabs.TypeFinder;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import japa.parser.JavaParser;
 import japa.parser.ast.CompilationUnit;
-import japa.parser.ast.body.*;
-import japa.parser.ast.stmt.*;
-import japa.parser.ast.expr.*;
-import japa.parser.ast.type.*;
+import japa.parser.ast.body.ClassOrInterfaceDeclaration;
+import japa.parser.ast.body.MethodDeclaration;
+import japa.parser.ast.expr.Expression;
+import japa.parser.ast.stmt.Statement;
+import japa.parser.ast.type.ClassOrInterfaceType;
+import japa.parser.ast.type.ReferenceType;
+import japa.parser.ast.type.Type;
+import org.testng.annotations.Test;
 
 import java.util.Arrays;
 
-import static org.testng.AssertJUnit.*;
-import static org.creativelabs.AssertHelper.*;
+import static org.creativelabs.AssertHelper.assertEqualsList;
+import static org.testng.AssertJUnit.assertEquals;
+import static org.testng.AssertJUnit.assertNull;
 
 public class ParseHelperTest {
 

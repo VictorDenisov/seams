@@ -1,10 +1,10 @@
-package org.creativelabs;
+package org.creativelabs.ssa;
 
 import japa.parser.ParseException;
 import japa.parser.ast.expr.AssignExpr;
+import org.creativelabs.ParseHelper;
 import org.testng.annotations.Test;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 

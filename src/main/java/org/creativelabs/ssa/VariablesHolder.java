@@ -1,12 +1,23 @@
-package org.creativelabs;
+package org.creativelabs.ssa;
 
-import java.lang.reflect.Array;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+/**
+ * Stores variable's indexes
+ */
 public class VariablesHolder {
 
+    /**
+     * List of variables and they indexes for reading.
+     */
     private Map<String, Integer> readVariables = new HashMap<String, Integer>();
 
+    /**
+     * List of variables and they indexes for updating.
+     */
     private Map<String, Integer> writeVariables = new HashMap<String, Integer>();
 
 
@@ -53,6 +64,14 @@ public class VariablesHolder {
         getCurrentVariables(read).put(name, index);
     }
 
+    /**
+     * Returns list of variable's names if they indexes are different.
+     * If read is true then search will be in rearVariables otherwise in writeVariables.
+     *
+     * @param holder holder of type VariablesHolder
+     * @param read of type boolean
+     * @return List<String>
+     */
     public List<String> getDifferenceInVariables(VariablesHolder holder, boolean read) {
         List<String> list = new ArrayList<String>();
         Map<String, Integer> map = holder.getCurrentVariables(read);
@@ -65,18 +84,23 @@ public class VariablesHolder {
         return list;
     }
 
-    String getPhi(VariablesHolder holder, String name) {
-        Integer index1 = holder.readFrom(name, false);
-        Integer index2 = readFrom(name, false);
-        return "phi(" + name + Math.min(index1, index2) +
-                "," + name + Math.max(index1, index2) + ")";
-    }
-
-    String getPhiFrom(VariablesHolder holder, String name, boolean read) {
-        Integer index1 = holder.readFrom(name, read);
-        Integer index2 = readFrom(name, read);
-        return "phi(" + name + Math.min(index1, index2) +
-                "," + name + Math.max(index1, index2) + ")";
+    /**
+     * Returns the indexes of variable. If the variable isn't contained in holder it will be return  -1.
+     * @param holder of type VariablesHolder
+     * @param name name of the variable
+     * @return Integer[]
+     */
+    Integer[] getPhiIndexes(VariablesHolder holder, String name) {
+        Integer index1 = holder.readFrom(name, true);
+        Integer index2 = readFrom(name, true);
+        if (index1 == null) {
+            index1 = -1;
+        }
+        if (index2 == null) {
+            index2 = -1;
+        }
+        return new Integer[] {Math.min(index1, index2),
+                Math.max(index1, index2)};
     }
 
     public boolean containsKey(String name, boolean read) {
@@ -106,6 +130,11 @@ public class VariablesHolder {
         }
     }
 
+    /**
+     * Merges variables of a different holders. In fact it's selects a maximal indexes for variables.
+     *
+     * @param holders of type VariablesHolder
+     */
     public void mergeHolders(VariablesHolder... holders){
         for (VariablesHolder holder : holders){
             for (Map.Entry<String, Integer> entry : holder.getReadVariables().entrySet()){
@@ -136,7 +165,7 @@ public class VariablesHolder {
     }
 
 
-    VariablesHolder copy() {
+    public VariablesHolder copy() {
         return new VariablesHolder(copy(readVariables), copy(writeVariables));
     }
 

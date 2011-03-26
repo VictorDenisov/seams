@@ -1,4 +1,4 @@
-package org.creativelabs;
+package org.creativelabs.ssa;
 
 import japa.parser.ast.expr.AssignExpr;
 import japa.parser.ast.expr.Expression;
@@ -7,6 +7,9 @@ import japa.parser.ast.visitor.VoidVisitorAdapter;
 
 import java.util.Set;
 
+/**
+ * Sets to the argument all assigned variables.
+ */
 public class AssignVisitor extends VoidVisitorAdapter<Set<String>> {
 
     @Override

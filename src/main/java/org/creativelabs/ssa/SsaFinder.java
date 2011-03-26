@@ -1,18 +1,21 @@
-package org.creativelabs;
+package org.creativelabs.ssa;
 
 
+import japa.parser.ast.body.VariableDeclaratorId;
 import japa.parser.ast.expr.*;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
+/**
+ * Uses for modification ast expressions.
+ */
 public class SsaFinder {
 
     private static final String UNSUPPORTED = "Unsupported expression: ";
     private static final String NULL = "Expression is null ";
     private static final String SEPARATOR = "#";
+    private static final String NOT_CONTAINS = "<not contains in key set>";
 
     VariablesHolder variables;
 
@@ -38,8 +41,17 @@ public class SsaFinder {
             return determineSsa((ObjectCreationExpr) expr);
         } else if (expr instanceof MethodCallExpr) {
             return determineSsa((MethodCallExpr) expr);
+        } else if (expr instanceof InstanceOfExpr) {
+            return determineSsa((InstanceOfExpr) expr);
+        } else if (expr instanceof CastExpr) {
+            return determineSsa((CastExpr) expr);
+        } else if (expr instanceof EnclosedExpr) {
+            return determineSsa((EnclosedExpr) expr);
+        } else if (expr instanceof ArrayInitializerExpr) {
+            return determineSsa((ArrayInitializerExpr) expr);
+        } else if (expr instanceof UnaryExpr) {
+            return determineSsa((UnaryExpr) expr);
         }
-        //TODO add exception
         return new NameExpr(expr != null ? UNSUPPORTED + expr.toString() : NULL);
     }
 
@@ -54,7 +66,7 @@ public class SsaFinder {
             }
             expr.setName(variableName + SEPARATOR + variableIndex);
         } else {
-            expr.setName(variableName + " <not contains in key set>");
+            expr.setName(variableName + " " + NOT_CONTAINS);
         }
         return expr;
     }
@@ -69,17 +81,40 @@ public class SsaFinder {
         return expr;
     }
 
-    ArrayAccessExpr determineSsa(ArrayAccessExpr expr) {
+    MethodCallExpr determineSsa(ArrayAccessExpr expr) {
         //TODO refactor
-        boolean increaseIndex = isNeededToIncreaseIndex;
+        boolean b = isNeededToIncreaseIndex;
         isNeededToIncreaseIndex = false;
+
         determineSsa(expr.getIndex());
         determineSsa(expr.getName());
-        isNeededToIncreaseIndex = increaseIndex;
-        return expr;
+
+        isNeededToIncreaseIndex = b;
+
+        List<Expression> args = new ArrayList<Expression>();
+        args.add(expr.getName());
+        args.add(expr.getIndex());
+
+        if (isNeededToIncreaseIndex) {
+            return new MethodCallExpr(null, "Update", args);
+        } else {
+            return new MethodCallExpr(null, "Access", args);
+        }
     }
 
     ArrayCreationExpr determineSsa(ArrayCreationExpr expr) {
+        if (expr.getInitializer() != null) {
+            determineSsa(expr.getInitializer());
+        }
+        return expr;
+    }
+
+    ArrayInitializerExpr determineSsa(ArrayInitializerExpr expr) {
+        if (expr.getValues() != null) {
+            for (Expression expression : expr.getValues()) {
+                determineSsa(expression);
+            }
+        }
         return expr;
     }
 
@@ -98,6 +133,42 @@ public class SsaFinder {
                 determineSsa(expression);
             }
         }
+        if (expr.getScope() != null) {
+            determineSsa(expr.getScope());
+        }
         return expr;
+    }
+
+    InstanceOfExpr determineSsa(InstanceOfExpr expr) {
+        if (expr.getExpr() != null) {
+            determineSsa(expr.getExpr());
+        }
+        return expr;
+    }
+
+    CastExpr determineSsa(CastExpr expr) {
+        if (expr.getExpr() != null) {
+            determineSsa(expr.getExpr());
+        }
+        return expr;
+    }
+
+    EnclosedExpr determineSsa(EnclosedExpr expr) {
+        if (expr.getInner() != null) {
+            determineSsa(expr.getInner());
+        }
+        return expr;
+    }
+
+    UnaryExpr determineSsa(UnaryExpr expr) {
+        if (expr.getExpr() != null) {
+            determineSsa(expr.getExpr());
+        }
+        return expr;
+    }
+
+    VariableDeclaratorId determineSsa(VariableDeclaratorId id) {
+        id.setName(determineSsa(new NameExpr(id.getName())).getName());
+        return id;
     }
 }
