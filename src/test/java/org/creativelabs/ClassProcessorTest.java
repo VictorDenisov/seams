@@ -3,11 +3,8 @@ package org.creativelabs;
 import org.testng.annotations.Test;
 
 import japa.parser.ast.stmt.*;
-import japa.parser.ast.expr.*;
 import japa.parser.ast.body.*;
-import japa.parser.ast.visitor.*;
 
-import org.creativelabs.introspection.*;
 import org.creativelabs.report.*;
 
 import java.util.*;

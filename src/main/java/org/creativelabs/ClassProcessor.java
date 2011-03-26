@@ -1,10 +1,11 @@
 package org.creativelabs;
 
 import japa.parser.ast.body.*;
-import japa.parser.ast.stmt.*;
-
-import org.creativelabs.report.*;
-import org.creativelabs.ssa.SimpleSsaForm;
+import japa.parser.ast.stmt.BlockStmt;
+import org.creativelabs.report.ReportBuilder;
+import org.creativelabs.ssa.SsaFormAstRepresentation;
+import org.creativelabs.ssa.SsaFormConverter;
+import org.creativelabs.ssa.VariablesHolder;
 
 import java.util.*;
 
@@ -17,7 +18,7 @@ class ClassProcessor {
 
     protected HashMap<String, InternalInstancesGraph> internalInstances
             = new HashMap<String, InternalInstancesGraph>();
-    protected Set<SimpleSsaForm> forms = new HashSet<SimpleSsaForm>();
+    protected Set<SsaFormAstRepresentation> forms = new HashSet<SsaFormAstRepresentation>();
 
     ClassProcessor(ClassOrInterfaceDeclaration typeDeclaration,
                    DependencyCounterVisitorBuilder dependencyCounterBuilder) {
@@ -53,7 +54,7 @@ class ClassProcessor {
         return dependencies;
     }
 
-    public Set<SimpleSsaForm> getForms() {
+    public Set<SsaFormAstRepresentation> getForms() {
         return forms;
     }
 
@@ -82,9 +83,18 @@ class ClassProcessor {
     }
 
     void findSsaForm(MethodDeclaration md) {
-        SsaFormBuilderVisitor ssaFormBuilderVisitor = new SsaFormBuilderVisitor();
-        SimpleSsaForm form = new SimpleSsaForm(md.getName(),
-                ssaFormBuilderVisitor.visit(md, new VariablesHolder(new HashMap<String, Integer>())));
+        SsaFormConverter visitor = new SsaFormConverter();
+        Map<String, Integer> map = new HashMap<String, Integer>();
+        for (BodyDeclaration bd : typeDeclaration.getMembers()) {
+            if (bd instanceof FieldDeclaration) {
+                FieldDeclaration fd = (FieldDeclaration) bd;
+                for (VariableDeclarator vardecl : fd.getVariables()) {
+                    map.put(vardecl.getId().getName(), 0);
+                }
+            }
+        }
+        visitor.visit(md, new VariablesHolder(map));
+        SsaFormAstRepresentation form = new SsaFormAstRepresentation(md.getName(), md);
         forms.add(form);
     }
 

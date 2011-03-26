@@ -1,19 +1,23 @@
 package org.creativelabs;
 
-import java.io.*;
-import java.util.*;
-
-import japa.parser.ast.*;
-import japa.parser.ast.body.*;
-import japa.parser.*;
-
+import japa.parser.JavaParser;
+import japa.parser.ast.CompilationUnit;
+import japa.parser.ast.body.ClassOrInterfaceDeclaration;
+import japa.parser.ast.body.TypeDeclaration;
 import org.apache.commons.cli.*;
 import org.creativelabs.chart.BarChartBuilder;
-import org.creativelabs.ssa.SimpleSsaForm;
-import org.creativelabs.ui.*;
-import org.creativelabs.report.*;
-import org.creativelabs.graph.*;
+import org.creativelabs.graph.JungGraphBuilder;
 import org.creativelabs.introspection.ReflectionAbstractionImpl;
+import org.creativelabs.report.DataCollector;
+import org.creativelabs.report.ReportBuilder;
+import org.creativelabs.ssa.SsaFormAstRepresentation;
+import org.creativelabs.ui.ChartDrawer;
+import org.creativelabs.ui.JungDrawer;
+import org.creativelabs.ui.SsaDrawer;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.util.Map;
 
 final class MainApp {
 
@@ -97,7 +101,7 @@ final class MainApp {
             new ChartDrawer(chartBuilder.getChart()).saveToFile(IMAGE_WIDTH, IMAGE_HEIGHT, fileName);
         }
         if (commandLine.hasOption('s')) {
-            for (SimpleSsaForm form : classProcessor.getForms()) {
+            for (SsaFormAstRepresentation form : classProcessor.getForms()) {
                 new SsaDrawer(form).saveToFile(IMAGE_WIDTH, IMAGE_HEIGHT,
                         fileName + "." + form.getMethodName());
             }
