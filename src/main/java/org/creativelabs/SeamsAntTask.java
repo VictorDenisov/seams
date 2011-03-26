@@ -5,7 +5,7 @@ import java.util.*;
 
 import org.apache.tools.ant.*;
 import org.apache.tools.ant.util.*;
-import org.apache.tools.ant.types.Path;
+import org.apache.tools.ant.types.*;
 import org.apache.tools.ant.taskdefs.MatchingTask;
 
 import org.creativelabs.report.*;
@@ -15,6 +15,7 @@ public class SeamsAntTask extends MatchingTask {
     private Path src;
     protected File[] compileList = new File[0];
     private File destDir;
+    private Path compileClasspath;
 
     public void setDestdir(File destDir) {
         this.destDir = destDir;
@@ -74,7 +75,7 @@ public class SeamsAntTask extends MatchingTask {
         
         for (int i = 0; i < extensions.length; i++) {
             m.setFrom(extensions[i]);
-            m.setTo("*.class");
+            m.setTo("*.deps");
             SourceFileScanner sfs = new SourceFileScanner(this);
             File[] newFiles = sfs.restrictAsFiles(files, srcDir, destDir, m);
 
@@ -94,6 +95,7 @@ public class SeamsAntTask extends MatchingTask {
         checkParameters();
         resetFileLists();
 
+        System.out.println(compileClasspath);
         // scan source directories and dest directory to build up
         // compile lists
         String[] list = src.list();
@@ -107,8 +109,11 @@ public class SeamsAntTask extends MatchingTask {
 
             DirectoryScanner ds = this.getDirectoryScanner(srcDir);
             String[] files = ds.getIncludedFiles();
+            for (String s : files) {
+                System.out.println(s);
+            }
 
-            scanDir(srcDir, srcDir, files);
+            scanDir(srcDir, new File("target"), files);
         }
         try {
             process();
@@ -116,7 +121,6 @@ public class SeamsAntTask extends MatchingTask {
             throw new BuildException(e);
         }
 
-        System.out.println(msg);
         System.out.println(src);
         for (File s : compileList) {
             System.out.println(s.getPath());
@@ -140,7 +144,22 @@ public class SeamsAntTask extends MatchingTask {
         }
     }
 
-    public void setMessage(String msg) {
-        this.msg = msg;
+    public void setClasspath(Path classpath) {
+        if (compileClasspath == null) {
+            compileClasspath = classpath;
+        } else {
+            compileClasspath.append(classpath);
+        }
+    }
+
+    public Path createClasspath() {
+        if (compileClasspath == null) {
+            compileClasspath = new Path(getProject());
+        }
+        return compileClasspath.createPath();
+    }
+
+    public void setClasspathRef(Reference r) {
+        createClasspath().setRefid(r);
     }
 }

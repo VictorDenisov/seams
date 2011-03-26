@@ -62,7 +62,7 @@ class ClassProcessor {
             if (bd instanceof MethodDeclaration) {
                 MethodDeclaration md = (MethodDeclaration) bd;
                 findOutgoingDependencies(md);
-                findSsaForm(md);
+                //findSsaForm(md);
             }
         }
     }
