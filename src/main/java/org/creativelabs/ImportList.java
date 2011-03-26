@@ -16,11 +16,15 @@ class ImportList {
 
     private ReflectionAbstraction ra = null;
 
-    private String className;
+    protected String className;
 
     ImportList(ReflectionAbstraction ra, CompilationUnit cu, ClassOrInterfaceDeclaration cd) {
         this(ra, cu);
-        className = cu.getPackage().getName().toString() + "." + cd.getName();
+        if (cu.getPackage() != null) {
+            className = cu.getPackage().getName().toString() + "." + cd.getName();
+        } else {
+            className = cd.getName();
+        }
     }
 
     ImportList(ReflectionAbstraction ra, CompilationUnit cu) {
