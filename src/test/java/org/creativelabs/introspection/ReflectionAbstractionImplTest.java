@@ -131,9 +131,20 @@ public class ReflectionAbstractionImplTest {
     }
 
     @Test
+    public void testGetFieldTypePrivateField() throws Exception {
+		ClassType myClass = ra.getClassTypeByName(
+                "org.creativelabs.introspection.ReflectionAbstractionImpl");
+        ClassType fieldType = ra.getFieldType(myClass, "arrayChar");
+
+        assertEquals("java.util.HashMap<java.lang.String, java.lang.String, >",
+                fieldType.toString());
+    }
+
+    @Test
     public void testGetFieldTypeClassType() throws Exception {
 		ClassType myClass = ra.getClassTypeByName("java.lang.String");
-        ClassType fieldType = ReflectionAbstractionImpl.create().getFieldType(myClass, "CASE_INSENSITIVE_ORDER");
+
+        ClassType fieldType = ra.getFieldType(myClass, "CASE_INSENSITIVE_ORDER");
 
         assertEquals("java.util.Comparator<java.lang.String, >", fieldType.toString());
     }
@@ -475,6 +486,44 @@ public class ReflectionAbstractionImplTest {
         assertFalse(result);
     }
 
+    public void sampleMethod(Integer i, String... args) {
+    }
+
+    @Test
+    public void testIsEligibleVariadic() throws Exception {
+        ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
+        Class clazz = Class.forName("org.creativelabs.introspection.ReflectionAbstractionImplTest");
+        Method method = clazz.getDeclaredMethod("sampleMethod", Class.forName("java.lang.Integer"),
+                Class.forName("[Ljava.lang.String;"));
+        ClassType intg = ra.getClassTypeByName("java.lang.Integer");
+        ClassType arg = ra.getClassTypeByName("java.lang.String");
+        boolean value = ra.isEligible(method, "sampleMethod", new ClassType[]{intg, arg});
+        assertTrue(value);
+    }
+
+    @Test
+    public void testIsEligibleVariadicLonger() throws Exception {
+        ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
+        Class clazz = Class.forName("org.creativelabs.introspection.ReflectionAbstractionImplTest");
+        Method method = clazz.getDeclaredMethod("sampleMethod", Class.forName("java.lang.Integer"),
+                Class.forName("[Ljava.lang.String;"));
+        ClassType intg = ra.getClassTypeByName("java.lang.Integer");
+        ClassType arg = ra.getClassTypeByName("java.lang.String");
+        boolean value = ra.isEligible(method, "sampleMethod", new ClassType[]{intg, arg, arg, arg});
+        assertTrue(value);
+    }
+
+    @Test
+    public void testIsEligibleVariadicShorter() throws Exception {
+        ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
+        Class clazz = Class.forName("org.creativelabs.introspection.ReflectionAbstractionImplTest");
+        Method method = clazz.getDeclaredMethod("sampleMethod", Class.forName("java.lang.Integer"),
+                Class.forName("[Ljava.lang.String;"));
+        ClassType intg = ra.getClassTypeByName("java.lang.Integer");
+        boolean value = ra.isEligible(method, "sampleMethod", new ClassType[]{intg});
+        assertTrue(value);
+    }
+
     @Test
     public void testAddPreferredGap() throws Exception {
         ClassType classType = ra.getClassTypeByName("javax.swing.GroupLayout$SequentialGroup");
@@ -521,12 +570,39 @@ public class ReflectionAbstractionImplTest {
     }
 
     @Test
+    public void testAddArrayDepthWithCount() {
+        ClassType classType = ra.getClassTypeByName("java.lang.String");
+
+        classType = ra.addArrayDepth(classType, 2);
+
+        assertEquals("[[Ljava.lang.String;", classType.toString());
+    }
+    
+    @Test
     public void testAddArrayDepthAlreadyArray() {
         ClassType classType = ra.getClassTypeByName("[Ljava.lang.String;");
 
         classType = ra.addArrayDepth(classType);
 
         assertEquals("[[Ljava.lang.String;", classType.toString());
+    }
+
+    @Test
+    public void testAddArrayDepthForPrimitive() {
+        ClassType classType = ra.getClassTypeByName("int");
+
+        classType = ra.addArrayDepth(classType);
+
+        assertEquals("[I", classType.toString());
+    }
+
+    @Test
+    public void testConvertToArrayFromPrimitive() throws Exception {
+        ClassType classType = ra.getClassTypeByName("byte");
+
+        classType = ra.convertToArray(classType, 1);
+
+        assertEquals("[B", classType.toString());
     }
 
 }

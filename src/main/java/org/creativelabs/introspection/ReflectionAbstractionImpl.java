@@ -11,10 +11,7 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
 
         private HashMap<String, ClassType> genericArgs = null;
 
-        private ClassTypeImpl elementType;
-
         private ClassTypeImpl() {
-            elementType = null;
             genericArgs = new HashMap<String, ClassType>();
         }
 
@@ -73,6 +70,8 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
 
     private HashMap<String, Class> primitivesMap;
 
+    private HashMap<String, String> arrayChar;
+
     private void addToBoxing(String data, Class clazz) {
         if (!boxingMap.containsKey(data)) {
             boxingMap.put(data, new ArrayList<Class>());
@@ -123,6 +122,15 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         primitivesMap.put("char", char.class);
         primitivesMap.put("boolean", boolean.class);
         primitivesMap.put("void", void.class);
+        arrayChar = new HashMap<String, String>();
+        arrayChar.put("byte", "B");
+        arrayChar.put("short", "S");
+        arrayChar.put("int", "I");
+        arrayChar.put("long", "J");
+        arrayChar.put("float", "F");
+        arrayChar.put("double", "D");
+        arrayChar.put("char", "C");
+        arrayChar.put("boolean", "Z");
     }
 
     private Class getClass(String type) throws ClassNotFoundException {
@@ -163,37 +171,57 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         return superClass.isAssignableFrom(clazz);
     }
 
+    boolean isParameterMatch(Class parameter, ClassType classType) {
+        if (classType instanceof ClassTypeNull) {
+            return true;
+        } else if (classType instanceof ClassTypeImpl) {
+            Class arg = ((ClassTypeImpl) classType).clazz;
+            if (!isSuperClass(parameter, arg)) {
+                List<Class> classList = boxingMap.get(arg.getName());
+                if (classList != null) {
+                    boolean result = false;
+                    for (Class varg: classList) {
+                        if (isSuperClass(parameter, varg)) {
+                            result = true;
+                            break;
+                        }
+                    }
+                    if (result == false) {
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     boolean isEligible(Method method, String methodName, ClassType[] args) {
         if (!method.getName().equals(methodName)) {
             return false;
         }
-        if (args.length != method.getParameterTypes().length) {
-            return false;
-        }
         Class[] parameters = method.getParameterTypes();
+        if (method.isVarArgs()) {
+            if (args.length < parameters.length - 1) {
+                return false;
+            }
+        } else {
+            if (args.length != parameters.length) {
+                return false;
+            }
+        }
         for (int i = 0; i < args.length; ++i) {
             ClassType classType = args[i];
-            if (classType instanceof ClassTypeNull) {
-                continue;
-            } else if (classType instanceof ClassTypeImpl) {
-                Class arg = ((ClassTypeImpl) args[i]).clazz;
-                if (!isSuperClass(parameters[i], arg)) {
-                    List<Class> classList = boxingMap.get(arg.getName());
-                    if (classList != null) {
-                        boolean result = false;
-                        for (Class varg: classList) {
-                            if (isSuperClass(parameters[i], varg)) {
-                                result = true;
-                                break;
-                            }
-                        }
-                        if (result == false) {
-                            return false;
-                        }
-                    } else {
-                        return false;
-                    }
-                }
+            Class parameter;
+            if (i >= (parameters.length - 1) && method.isVarArgs()) {
+                parameter = parameters[parameters.length - 1].getComponentType();
+            } else {
+                parameter = parameters[i];
+            }
+
+            if (!isParameterMatch(parameter, classType)) {
+                return false;
             }
         }
         return true;
@@ -384,58 +412,66 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         }
     }
 
+    private String takeArrayName(Class clazz) {
+        if (clazz.isPrimitive()) {
+            return arrayChar.get(clazz.getName());
+        } else {
+            return "L" + clazz.getName() + ";";
+        }
+    }
+
     @Override
     public ClassType convertToArray(ClassType classType, int dimension) {
+        if (dimension == 0) {
+            return classType;
+        }
         try {
             ClassTypeImpl classTypeImpl = (ClassTypeImpl) classType;
-            ClassTypeImpl result = classTypeImpl;
-            String className = "L" + classTypeImpl.clazz.getName() + ";";
+            String className = takeArrayName(classTypeImpl.clazz);
             for (int i = 0; i < dimension; ++i) {
-                ClassTypeImpl previous = result;
-                result = new ClassTypeImpl();
                 className = "[" + className;
-                result.clazz = Class.forName(className);
-                result.elementType = previous;
             }
+            ClassTypeImpl result = new ClassTypeImpl();
+            result.clazz = Class.forName(className);
             return result;
         } catch (Exception e) {
             return createErrorClassType(e.toString());
         }
+    }
+
+    @Override
+    public ClassType addArrayDepth(ClassType classType, int count) {
+        ClassType result = classType;
+        for (int i = 0; i < count; ++i) {
+            result = addArrayDepth(result);
+        }
+        return result;
     }
 
     @Override
     public ClassType addArrayDepth(ClassType classType) {
         try {
-            ClassTypeImpl result = (ClassTypeImpl) classType;
-            ClassTypeImpl previous = result;
-            result = new ClassTypeImpl();
+            ClassTypeImpl previous = (ClassTypeImpl) classType;
+            ClassTypeImpl result = new ClassTypeImpl();
             String className = previous.toString();
             if (!previous.clazz.isArray()) {
-                className = "L" + className + ";";
+                className = takeArrayName(previous.clazz);
             }
             className = "[" + className;
             result.clazz = Class.forName(className);
-            result.elementType = previous;
             return result;
         } catch (Exception e) {
             return createErrorClassType(e.toString());
         }
-    }
-
-    @Override
-    public ClassType convertFromArray(ClassType classType) {
-        ClassTypeImpl classTypeImpl = (ClassTypeImpl) classType;
-        while (classTypeImpl.elementType != null) {
-            classTypeImpl = classTypeImpl.elementType;
-        }
-        return classTypeImpl;
     }
 
     @Override
     public ClassType getElementType(ClassType classType) {
         try {
             ClassTypeImpl classTypeImpl = (ClassTypeImpl) classType;
-            return classTypeImpl.elementType;
+            ClassTypeImpl result = new ClassTypeImpl();
+            result.clazz = classTypeImpl.clazz.getComponentType();
+            return result;
         } catch (Exception e) {
             return createErrorClassType(e.toString());
         }

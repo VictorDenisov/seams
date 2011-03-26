@@ -29,7 +29,7 @@ public class ClassProcessorBuilderTest {
 
         @Override
         VariableList constructVariableList() {
-            return VariableList.createEmpty();
+            return ConstructionHelper.createEmptyVariableList();
         }
     }
 

@@ -5,6 +5,8 @@ import japa.parser.ast.body.*;
 import japa.parser.ast.type.*;
 import japa.parser.ast.stmt.*;
 
+import org.creativelabs.introspection.*;
+
 import org.testng.annotations.Test;
 
 import java.util.*;
@@ -21,7 +23,8 @@ public class DependencyCounterVisitorTest {
 
         ImportList imports = ParseHelper.createImportList("");
 
-        VariableList fieldList = VariableList.createFromClassFields(classDeclaration, imports);
+        VariableList fieldList = ConstructionHelper
+            .createVariableListFromClassFields(classDeclaration, imports);
 
         DependencyCounterVisitor dc = new DependencyCounterVisitor(fieldList, imports);
 
@@ -30,20 +33,23 @@ public class DependencyCounterVisitorTest {
         dc.visit(expr, null);
 
         Set<Dependency> deps = dc.getDependencies();
+
         assertEquals("name", deps.iterator().next().getExpression());
         assertEquals("java.lang.String", deps.iterator().next().getType().toString());
     }
 
     @Test
     public void testVisitNameExprClass() throws Exception {
-        ImportList importList = ParseHelper.createImportList("");
-        DependencyCounterVisitor dc = new DependencyCounterVisitor(VariableList.createEmpty(), importList);
+        ImportList importList = ConstructionHelper.createEmptyImportList();
+        DependencyCounterVisitor dc = new DependencyCounterVisitor(
+                ConstructionHelper.createEmptyVariableList(), importList);
 
         MethodCallExpr expr = (MethodCallExpr)ParseHelper.createExpression("String.valueOf(true)");
 
         dc.visit(expr, null);
 
         Set<Dependency> deps = dc.getDependencies();
+
         assertEquals("java.lang.String", deps.iterator().next().getType().toString());
     }
 
@@ -81,7 +87,7 @@ public class DependencyCounterVisitorTest {
     public void testVisitVariableDeclarationExpr() throws Exception {
         ImportList imports = spy(ParseHelper.createImportList("import java.util.*;"));
         Expression expr = ParseHelper.createExpression("Map.Entry<String, String> entry;");
-        VariableList varList = VariableList.createEmpty();
+        VariableList varList = ConstructionHelper.createEmptyVariableList();
 
         DependencyCounterVisitor dependencyCounter = new DependencyCounterVisitor(varList, imports);
         expr.accept(dependencyCounter, null);
@@ -94,7 +100,7 @@ public class DependencyCounterVisitorTest {
         Statement expr = ParseHelper.createStatement("try {} catch (Exception e) {}");
 
         ImportList imports = ParseHelper.createImportList("");
-        VariableList classFields = VariableList.createEmpty();
+        VariableList classFields = ConstructionHelper.createEmptyVariableList();
 
         DependencyCounterVisitor dependencyCounter = new DependencyCounterVisitor(classFields, imports);
         expr.accept(dependencyCounter, null);
@@ -107,7 +113,7 @@ public class DependencyCounterVisitorTest {
         Statement expr = ParseHelper.createStatement(
                 "for (Map.Entry<String, Integer> entry : map) {}");
         ImportList imports = ParseHelper.createImportList("import java.util.Map;");
-        VariableList classFields = VariableList.createEmpty();
+        VariableList classFields = ConstructionHelper.createEmptyVariableList();
 
         DependencyCounterVisitor dependencyCounter = new DependencyCounterVisitor(classFields, imports);
         expr.accept(dependencyCounter, null);
@@ -140,5 +146,18 @@ public class DependencyCounterVisitorTest {
 
         expr.accept(dependencyCounter, null);
         verify(dependencyCounter).runTypeFinder(any(Expression.class));
+    }
+
+    @Test
+    public void testPrimitiveArrayDeclaration() throws Exception {
+        Statement expr = ParseHelper.createStatement("byte buffer[];");
+
+        ImportList imports = ConstructionHelper.createEmptyImportList();
+        VariableList varList = ConstructionHelper.createEmptyVariableList();
+
+        DependencyCounterVisitor dependencyCounter = new DependencyCounterVisitor(varList, imports);
+        expr.accept(dependencyCounter, null);
+        ClassType result = dependencyCounter.localVariables.getFieldTypeAsClass("buffer");
+        assertEquals("[B", result.toString());
     }
 }

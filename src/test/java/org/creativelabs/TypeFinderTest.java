@@ -421,7 +421,7 @@ public class TypeFinderTest {
                 "package java.util;"
                 + "import java.io.File;");
 
-        VariableList varTypes = VariableList.createFromClassFields(cd, importList);
+        VariableList varTypes = ConstructionHelper.createVariableListFromClassFields(cd, importList);
         varTypes.put("file", new ClassTypeStub("java.io.File"));
 
         TestingReflectionAbstraction reflectionAbstraction = new TestingReflectionAbstraction();
@@ -437,7 +437,7 @@ public class TypeFinderTest {
         ReflectionAbstraction reflectionAbstraction 
             = ReflectionAbstractionImpl.create();
         Expression expr = ParseHelper.createExpression("id.getName().getName().equals(\"h\")");
-        VariableList varList = VariableList.createEmpty();
+        VariableList varList = ConstructionHelper.createEmptyVariableList();
         varList.put("id", 
                 reflectionAbstraction.getClassTypeByName("japa.parser.ast.ImportDeclaration"));
         ImportList imports = ParseHelper.createImportList("");
@@ -452,8 +452,8 @@ public class TypeFinderTest {
     public void testStringIndexOf() throws Exception {
         Expression expr = ParseHelper.createExpression("\"foo\".indexOf('a')");
 
-        VariableList varList = VariableList.createEmpty();
-        ImportList imports = ParseHelper.createImportList("");
+        VariableList varList = ConstructionHelper.createEmptyVariableList();
+        ImportList imports = ConstructionHelper.createEmptyImportList();
 
         TypeFinder typeFinder = new TypeFinder(ReflectionAbstractionImpl.create(), varList, imports);
         ClassType type = typeFinder.determineType(expr);
@@ -466,7 +466,7 @@ public class TypeFinderTest {
         ReflectionAbstraction ra = ReflectionAbstractionImpl.create();
         Expression expr = ParseHelper.createExpression(
                 "new ChartDrawer(chartBuilder.getChart()).saveToFile(IMAGE_WIDTH, IMAGE_HEIGHT, fileName)");
-        VariableList varList = VariableList.createEmpty();
+        VariableList varList = ConstructionHelper.createEmptyVariableList();
         varList.put("chartBuilder", ra.getClassTypeByName("org.creativelabs.chart.BarChartBuilder"));
         varList.put("IMAGE_WIDTH", ra.getClassTypeByName("int"));
         varList.put("IMAGE_HEIGHT", ra.getClassTypeByName("int"));
@@ -483,7 +483,7 @@ public class TypeFinderTest {
     public void testBinaryExprOperator() throws Exception {
         ReflectionAbstraction ra = ReflectionAbstractionImpl.create();
         Expression expr = ParseHelper.createExpression("BinaryExpr.Operator");
-        VariableList varList = VariableList.createEmpty();
+        VariableList varList = ConstructionHelper.createEmptyVariableList();
         ImportList imports = ParseHelper.createImportList("import japa.parser.ast.expr.*;");
 
         TypeFinder typeFinder = new TypeFinder(ra, varList, imports);

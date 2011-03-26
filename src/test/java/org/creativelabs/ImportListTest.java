@@ -218,6 +218,18 @@ public class ImportListTest {
     }
 
     @Test
+    public void testCreateFromDefaultPackage() throws Exception {
+        ReflectionAbstraction ra = ReflectionAbstractionImpl.create();
+        ParseHelper ph = new ParseHelper(ReflectionAbstractionImpl.create());
+        CompilationUnit cu = ph.createCompilationUnit("import java.io.*; public class Value {}");
+        ClassOrInterfaceDeclaration cd = (ClassOrInterfaceDeclaration) cu.getTypes().get(0);
+
+        ImportList imports = new ImportList(ra, cu, cd);
+
+        assertEquals("Value", imports.className);
+    }
+
+    @Test
     public void testNestedClassTypeDetection() throws Exception {
         CompilationUnit cu = ParseHelper.createCompilationUnit(
                 "package org.creativelabs; public class Main { public static class Nested {}}");

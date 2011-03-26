@@ -14,9 +14,9 @@ public class DependencyCounterVisitorBuilderTest {
     public void testBuilderConstruction() throws Exception {
         DependencyCounterVisitorBuilder builder = new DependencyCounterVisitorBuilder();
 
-        ImportList imports = ParseHelper.createImportList("");
-        VariableList fields = VariableList.createEmpty();
-        VariableList methodArguments = VariableList.createEmpty();
+        ImportList imports = ConstructionHelper.createEmptyImportList();
+        VariableList fields = ConstructionHelper.createEmptyVariableList();
+        VariableList methodArguments = ConstructionHelper.createEmptyVariableList();
 
         builder.setImports(imports);
         builder.setClassFields(fields);
@@ -31,8 +31,8 @@ public class DependencyCounterVisitorBuilderTest {
     public void testBuilderConstructionNullImports() throws Exception {
         DependencyCounterVisitorBuilder builder = new DependencyCounterVisitorBuilder();
 
-        VariableList fields = VariableList.createEmpty();
-        VariableList methodArguments = VariableList.createEmpty();
+        VariableList fields = ConstructionHelper.createEmptyVariableList();
+        VariableList methodArguments = ConstructionHelper.createEmptyVariableList();
 
         builder.setClassFields(fields);
         builder.setMethodArguments(methodArguments);
@@ -50,8 +50,8 @@ public class DependencyCounterVisitorBuilderTest {
     public void testBuilderConstructionNullFields() throws Exception {
         DependencyCounterVisitorBuilder builder = new DependencyCounterVisitorBuilder();
 
-        ImportList imports = ParseHelper.createImportList("");
-        VariableList methodArguments = VariableList.createEmpty();
+        ImportList imports = ConstructionHelper.createEmptyImportList();
+        VariableList methodArguments = ConstructionHelper.createEmptyVariableList();
 
         builder.setImports(imports);
         builder.setMethodArguments(methodArguments);
@@ -69,8 +69,8 @@ public class DependencyCounterVisitorBuilderTest {
     public void testBuilderConstructionNullMethodArgs() throws Exception {
         DependencyCounterVisitorBuilder builder = new DependencyCounterVisitorBuilder();
 
-        ImportList imports = ParseHelper.createImportList("");
-        VariableList classFields = VariableList.createEmpty();
+        ImportList imports = ConstructionHelper.createEmptyImportList();
+        VariableList classFields = ConstructionHelper.createEmptyVariableList();
 
         builder.setImports(imports);
         builder.setClassFields(classFields);
@@ -89,8 +89,8 @@ public class DependencyCounterVisitorBuilderTest {
         MethodDeclaration md = ParseHelper.createMethodDeclaration("void method(String arg) {}");
         DependencyCounterVisitorBuilder builder = new DependencyCounterVisitorBuilder();
 
-        ImportList imports = ParseHelper.createImportList("");
-        VariableList classFields = VariableList.createEmpty();
+        ImportList imports = ConstructionHelper.createEmptyImportList();
+        VariableList classFields = ConstructionHelper.createEmptyVariableList();
 
         builder.setImports(imports);
         builder.setClassFields(classFields);
@@ -108,7 +108,7 @@ public class DependencyCounterVisitorBuilderTest {
         MethodDeclaration md = ParseHelper.createMethodDeclaration("void method(String arg) {}");
         DependencyCounterVisitorBuilder builder = new DependencyCounterVisitorBuilder();
 
-        VariableList classFields = VariableList.createEmpty();
+        VariableList classFields = ConstructionHelper.createEmptyVariableList();
 
         builder.setClassFields(classFields);
 
