@@ -7,7 +7,7 @@ public class InternalInstancesGraph {
 
     private HashMap<String, String> edges = new HashMap<String, String>();
 
-    void add(String source, String target) {
+    public void add(String source, String target) {
         edges.put(source, target);
     }
 

@@ -6,6 +6,7 @@ import japa.parser.ast.body.VariableDeclarator;
 import japa.parser.ast.expr.*;
 import japa.parser.ast.stmt.*;
 import japa.parser.ast.visitor.VoidVisitorAdapter;
+import org.creativelabs.InternalInstancesGraph;
 
 import java.util.*;
 
@@ -16,10 +17,27 @@ public class SsaFormConverter extends VoidVisitorAdapter<VariablesHolder> {
 
     public static final String SEPARATOR = "#";
 
+    private InternalInstancesGraph graph = new InternalInstancesGraph();
+
     private MethodDeclaration methodDeclaration;
+
+    public SsaFormConverter() {
+    }
+
+    public SsaFormConverter(InternalInstancesGraph graph) {
+        this.graph = graph;
+    }
 
     public MethodDeclaration getMethodDeclaration() {
         return methodDeclaration;
+    }
+
+    public InternalInstancesGraph getGraph() {
+        return graph;
+    }
+
+    public void addToGraph(String from, String to) {
+        graph.add(from, to);
     }
 
     @Override
@@ -30,7 +48,9 @@ public class SsaFormConverter extends VoidVisitorAdapter<VariablesHolder> {
             arg.write(variableName, 0);
             variableDeclarator.setInit(new SsaFinder(arg, false).determineSsa(variableDeclarator.getInit()));
             variableDeclarator.getId().setName(variableName + SEPARATOR + 0);
+            graph.add(variableName + SEPARATOR + 0, variableDeclarator.getInit().toString());
         }
+
 
         n.setVars(vars);
     }
@@ -53,9 +73,11 @@ public class SsaFormConverter extends VoidVisitorAdapter<VariablesHolder> {
 
             arg.increaseIndex(arrayName);
             n.setTarget(new NameExpr(arrayName + SEPARATOR + arg.read(arrayName)));
+            graph.add(arrayName + SEPARATOR + arg.read(arrayName), expressions.get(0).toString());
         } else {
             n.setValue(new SsaFinder(arg, false).determineSsa(n.getValue()));
             n.setTarget(new SsaFinder(arg, true).determineSsa(n.getTarget()));
+            graph.add(n.getTarget().toString(), n.getTarget().toString());
         }
     }
 
@@ -270,6 +292,8 @@ public class SsaFormConverter extends VoidVisitorAdapter<VariablesHolder> {
         Map<String, Integer> map = new HashMap<String, Integer>();
         if (n.getParameters() != null) {
             for (Parameter parameter : n.getParameters()) {
+                graph.add(n.getName() + SsaFormConverter.SEPARATOR + parameter.getId().getName(),
+                        parameter.getId().getName() + SsaFormConverter.SEPARATOR + 0);
                 map.put(parameter.getId().getName(), 0);
                 parameter.getId().setName(parameter.getId().getName() + SEPARATOR + 0);
             }

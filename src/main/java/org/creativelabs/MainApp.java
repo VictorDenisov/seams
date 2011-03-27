@@ -105,6 +105,11 @@ final class MainApp {
                 new SsaDrawer(form).saveToFile(IMAGE_WIDTH, IMAGE_HEIGHT,
                         fileName + "." + form.getMethodName());
             }
+            InternalInstancesGraph graph = classProcessor.getSsaInternalInstancesGraph();
+            JungGraphBuilder graphBuilder = new JungGraphBuilder();
+            graph.buildGraph(graphBuilder);
+            new JungDrawer(graphBuilder.getGraph()).saveToFile(2 * IMAGE_WIDTH, 2 * IMAGE_HEIGHT,
+                    fileName);
         }
     }
 

@@ -16,9 +16,11 @@ class ClassProcessor {
 
     private DependencyCounterVisitorBuilder dependencyCounterBuilder;
 
-    protected HashMap<String, InternalInstancesGraph> internalInstances
+    protected Map<String, InternalInstancesGraph> internalInstances
             = new HashMap<String, InternalInstancesGraph>();
     protected Set<SsaFormAstRepresentation> forms = new HashSet<SsaFormAstRepresentation>();
+
+    protected InternalInstancesGraph ssaInternalInstancesGraph = new InternalInstancesGraph();
 
     ClassProcessor(ClassOrInterfaceDeclaration typeDeclaration,
                    DependencyCounterVisitorBuilder dependencyCounterBuilder) {
@@ -48,6 +50,10 @@ class ClassProcessor {
 
     public Map<String, InternalInstancesGraph> getInternalInstances() {
         return internalInstances;
+    }
+
+    public InternalInstancesGraph getSsaInternalInstancesGraph() {
+        return ssaInternalInstancesGraph;
     }
 
     public Map<String, Collection<Dependency>> getDependencies() {
@@ -83,19 +89,27 @@ class ClassProcessor {
     }
 
     void findSsaForm(MethodDeclaration md) {
-        SsaFormConverter visitor = new SsaFormConverter();
+        SsaFormConverter visitor = new SsaFormConverter(ssaInternalInstancesGraph);
         Map<String, Integer> map = new HashMap<String, Integer>();
         for (BodyDeclaration bd : typeDeclaration.getMembers()) {
             if (bd instanceof FieldDeclaration) {
                 FieldDeclaration fd = (FieldDeclaration) bd;
                 for (VariableDeclarator vardecl : fd.getVariables()) {
                     map.put(vardecl.getId().getName(), 0);
+
+                    visitor.addToGraph(vardecl.getId().getName(),
+                            md.getName() + SsaFormConverter.SEPARATOR + vardecl.getId().getName());
+
+                    visitor.addToGraph(md.getName() + SsaFormConverter.SEPARATOR + vardecl.getId().getName(),
+                            vardecl.getId().getName() + SsaFormConverter.SEPARATOR + 0);
                 }
             }
         }
         visitor.visit(md, new VariablesHolder(map));
         SsaFormAstRepresentation form = new SsaFormAstRepresentation(md.getName(), md);
         forms.add(form);
+        //TODO: To add graphs for all methods
+        ssaInternalInstancesGraph = visitor.getGraph();
     }
 
 }
