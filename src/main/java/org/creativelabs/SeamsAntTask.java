@@ -15,7 +15,7 @@ public class SeamsAntTask extends MatchingTask {
     private Path src;
     protected File[] compileList = new File[0];
     private File destDir;
-    private Path compileClasspath;
+    private Path classpath;
 
     public void setDestdir(File destDir) {
         this.destDir = destDir;
@@ -95,7 +95,7 @@ public class SeamsAntTask extends MatchingTask {
         checkParameters();
         resetFileLists();
 
-        System.out.println(compileClasspath);
+        System.out.println(classpath);
         // scan source directories and dest directory to build up
         // compile lists
         String[] list = src.list();
@@ -142,18 +142,18 @@ public class SeamsAntTask extends MatchingTask {
     }
 
     public void setClasspath(Path classpath) {
-        if (compileClasspath == null) {
-            compileClasspath = classpath;
+        if (this.classpath == null) {
+            this.classpath = classpath;
         } else {
-            compileClasspath.append(classpath);
+            this.classpath.append(classpath);
         }
     }
 
     public Path createClasspath() {
-        if (compileClasspath == null) {
-            compileClasspath = new Path(getProject());
+        if (this.classpath == null) {
+            this.classpath = new Path(getProject());
         }
-        return compileClasspath.createPath();
+        return this.classpath.createPath();
     }
 
     public void setClasspathRef(Reference r) {

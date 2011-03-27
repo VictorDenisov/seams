@@ -2,6 +2,7 @@ package org.creativelabs.introspection;
 
 import java.io.*;
 import java.util.*;
+import java.util.jar.*;
 
 public class FileClassLoader extends ClassLoader {
 
@@ -25,18 +26,22 @@ public class FileClassLoader extends ClassLoader {
         }
                                 
         if (c == null) {
-            String filename = name.replace('.', File.separatorChar) + ".class";
+            byte[] data;
 
             try {
-                byte[] data = loadClassData(filename);
-
-                c = defineClass (name, data, 0, data.length);
-
-                if (c == null) {
-                    throw new ClassNotFoundException (name);
+                if (root.endsWith(".jar")) {
+                    data = readFromJarFile(name);
+                } else {
+                    data = readFromFile(name);
                 }
             } catch (IOException e) {
-                throw new ClassNotFoundException ("Error reading file: " + filename);
+                throw new ClassNotFoundException(e.getMessage());
+            }
+
+            c = defineClass (name, data, 0, data.length);
+
+            if (c == null) {
+                throw new ClassNotFoundException (name);
             }
 
             if (resolve) {
@@ -45,6 +50,32 @@ public class FileClassLoader extends ClassLoader {
         }
 
         return c;
+    }
+
+    private byte[] readFromJarFile(String name) throws IOException {
+        String filename = name.replace('.', File.separatorChar) + ".class";
+
+        JarFile jarFile = new JarFile(root);
+        JarEntry entry = jarFile.getJarEntry(filename);
+        InputStream is = jarFile.getInputStream(entry);
+
+        int size = (int)entry.getSize();
+
+        byte buff[] = new byte[size];
+
+        DataInputStream dis = new DataInputStream (is);
+
+        dis.readFully(buff);
+
+        dis.close();
+
+        return buff;
+    }
+
+    private byte[] readFromFile(String name) throws IOException {
+        String filename = name.replace('.', File.separatorChar) + ".class";
+
+        return loadClassData(filename);
     }
 
     private byte[] loadClassData(String filename) throws IOException {

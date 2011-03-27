@@ -18,4 +18,11 @@ public class FileClassLoaderTest {
         Class cl = loader.loadClass("Sample");
         assertEquals("Sample", cl.getName());
     }
+
+    @Test
+    public void testLoadClassFromJar() throws Exception {
+        FileClassLoader loader = new FileClassLoader("testdata/classloaderdata/sample.jar");
+        Class cl = loader.loadClass("Sample");
+        assertEquals("Sample", cl.getName());
+    }
 }
