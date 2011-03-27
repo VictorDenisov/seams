@@ -14,15 +14,30 @@ public class FileClassLoaderTest {
 
     @Test
     public void testLoadClass() throws Exception {
-        FileClassLoader loader = new FileClassLoader("testdata/classloaderdata");
+        String[] data = new String[]{"testdata/classloaderdata"};
+        FileClassLoader loader = new FileClassLoader(data);
         Class cl = loader.loadClass("Sample");
         assertEquals("Sample", cl.getName());
     }
 
     @Test
     public void testLoadClassFromJar() throws Exception {
-        FileClassLoader loader = new FileClassLoader("testdata/classloaderdata/sample.jar");
+        String[] data = new String[]{"testdata/classloaderdata/sample.jar"};
+        FileClassLoader loader = new FileClassLoader(data);
         Class cl = loader.loadClass("Sample");
         assertEquals("Sample", cl.getName());
+    }
+
+    @Test
+    public void testLoadClassForSeveralJars() throws Exception {
+        String[] data = new String[]{"testdata/classloaderdata/sample.jar",
+            "testdata/classloaderdata/test.jar"};
+        FileClassLoader loader = new FileClassLoader(data);
+
+        Class sample = loader.loadClass("Sample");
+        Class test = loader.loadClass("Test");
+
+        assertEquals("Sample", sample.getName());
+        assertEquals("Test", test.getName());
     }
 }

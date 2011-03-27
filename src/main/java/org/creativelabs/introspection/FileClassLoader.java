@@ -6,13 +6,16 @@ import java.util.jar.*;
 
 public class FileClassLoader extends ClassLoader {
 
-    private String root;
+    private String[] files;
 
-    public FileClassLoader(String rootDir) {
-        if (rootDir == null) {
-            throw new IllegalArgumentException("Null root directory");
+    public FileClassLoader(String[] files) {
+        if (files == null) {
+            throw new IllegalArgumentException("Empty files list");
         }
-        this.root = rootDir;
+        if (files.length == 0) {
+            throw new IllegalArgumentException("Empty files list");
+        }
+        this.files = files;
     }
 
     protected Class loadClass(String name, boolean resolve) throws ClassNotFoundException {
@@ -26,37 +29,44 @@ public class FileClassLoader extends ClassLoader {
         }
                                 
         if (c == null) {
-            byte[] data;
+            filesloop:
+            for (String root : files) {
+                byte[] data;
 
-            try {
-                if (root.endsWith(".jar")) {
-                    data = readFromJarFile(name);
-                } else {
-                    data = readFromFile(name);
+                try {
+                    if (root.endsWith(".jar")) {
+                        data = readFromJarFile(root, name);
+                    } else {
+                        data = readFromFile(root, name);
+                    }
+                } catch (IOException e) {
+                    continue filesloop;
                 }
-            } catch (IOException e) {
-                throw new ClassNotFoundException(e.getMessage());
-            }
 
-            c = defineClass (name, data, 0, data.length);
+                c = defineClass (name, data, 0, data.length);
 
-            if (c == null) {
-                throw new ClassNotFoundException (name);
-            }
+                if (c == null) {
+                    continue filesloop;
+                }
 
-            if (resolve) {
-                resolveClass(c);
+                if (resolve) {
+                    resolveClass(c);
+                }
+                break;
             }
         }
 
         return c;
     }
 
-    private byte[] readFromJarFile(String name) throws IOException {
+    private byte[] readFromJarFile(String root, String name) throws IOException {
         String filename = name.replace('.', File.separatorChar) + ".class";
 
         JarFile jarFile = new JarFile(root);
         JarEntry entry = jarFile.getJarEntry(filename);
+        if (entry == null) {
+            throw new FileNotFoundException(name);
+        }
         InputStream is = jarFile.getInputStream(entry);
 
         int size = (int)entry.getSize();
@@ -65,7 +75,7 @@ public class FileClassLoader extends ClassLoader {
         return loadClassData(is, size);
     }
 
-    private byte[] readFromFile(String name) throws IOException {
+    private byte[] readFromFile(String root, String name) throws IOException {
         String filename = name.replace('.', File.separatorChar) + ".class";
 
         File f = new File (root, filename);

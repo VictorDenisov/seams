@@ -95,7 +95,9 @@ public class SeamsAntTask extends MatchingTask {
         checkParameters();
         resetFileLists();
 
-        System.out.println(classpath);
+        for (String s : classpath.list()) {
+            System.out.println(s);
+        }
         // scan source directories and dest directory to build up
         // compile lists
         String[] list = src.list();

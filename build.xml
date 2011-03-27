@@ -9,6 +9,7 @@
 				<fileset dir="target">
 					<include name="**/*.jar"/>
 				</fileset>
+				<pathelement path="target/classes"/>
 			</classpath>
 
 			<src path="src/main/java"/>
