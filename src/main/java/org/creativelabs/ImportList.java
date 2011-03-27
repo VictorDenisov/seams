@@ -137,9 +137,6 @@ class ImportList {
     }
 
     ClassType getClassByShortName(String shortName) {
-        if ("JavaParser".equals(shortName)) {
-            System.out.println("Looking for class " + shortName + "\n");
-        }
         shortName = stripGeneric(shortName);
         shortName = processForNested(shortName);
         String scope = getScope(shortName);
@@ -163,10 +160,6 @@ class ImportList {
         }
         if (ra.classWithNameExists(className + "$" + shortName)) {
             return ra.getClassTypeByName(className + "$" + shortName);
-        }
-        if ("JavaParser".equals(shortName)) {
-            System.out.println("Class " + shortName + " not found\n");
-
         }
         return ra.createErrorClassType("Unknown class: " + shortName);
     }

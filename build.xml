@@ -5,7 +5,13 @@
 
 	<target name="main">
 		<seams>
-			<src path="../sample_projects/jtags_0.7"/>
+			<classpath>
+				<fileset dir="target">
+					<include name="**/*.jar"/>
+				</fileset>
+			</classpath>
+
+			<src path="src/main/java"/>
 			<include name="**/*.java"/>
 		</seams>
 	</target>

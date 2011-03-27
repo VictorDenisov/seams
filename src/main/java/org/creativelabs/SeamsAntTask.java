@@ -109,9 +109,6 @@ public class SeamsAntTask extends MatchingTask {
 
             DirectoryScanner ds = this.getDirectoryScanner(srcDir);
             String[] files = ds.getIncludedFiles();
-            for (String s : files) {
-                System.out.println(s);
-            }
 
             scanDir(srcDir, new File("target"), files);
         }
