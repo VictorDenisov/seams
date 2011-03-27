@@ -61,33 +61,25 @@ public class FileClassLoader extends ClassLoader {
 
         int size = (int)entry.getSize();
 
-        byte buff[] = new byte[size];
 
-        DataInputStream dis = new DataInputStream (is);
-
-        dis.readFully(buff);
-
-        dis.close();
-
-        return buff;
+        return loadClassData(is, size);
     }
 
     private byte[] readFromFile(String name) throws IOException {
         String filename = name.replace('.', File.separatorChar) + ".class";
 
-        return loadClassData(filename);
-    }
-
-    private byte[] loadClassData(String filename) throws IOException {
-        // Create a file object relative to directory provided
         File f = new File (root, filename);
 
-        int size = (int)f.length();
+        FileInputStream fis = new FileInputStream(f);
 
+        return loadClassData(fis, (int)f.length());
+    }
+
+    private byte[] loadClassData(InputStream is, int size) throws IOException {
+        // Create a file object relative to directory provided
         byte buff[] = new byte[size];
 
-        FileInputStream fis = new FileInputStream(f);
-        DataInputStream dis = new DataInputStream (fis);
+        DataInputStream dis = new DataInputStream (is);
 
         dis.readFully(buff);
 
