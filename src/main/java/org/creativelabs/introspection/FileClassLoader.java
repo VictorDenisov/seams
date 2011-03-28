@@ -34,10 +34,10 @@ public class FileClassLoader extends ClassLoader {
                 byte[] data;
 
                 try {
-                    if (root.endsWith(".jar")) {
-                        data = readFromJarFile(root, name);
-                    } else {
+                    if (new File(root).isDirectory()) {
                         data = readFromFile(root, name);
+                    } else {
+                        data = readFromJarFile(root, name);
                     }
                 } catch (IOException e) {
                     continue filesloop;

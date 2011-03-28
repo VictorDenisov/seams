@@ -40,4 +40,18 @@ public class FileClassLoaderTest {
         assertEquals("Sample", sample.getName());
         assertEquals("Test", test.getName());
     }
+
+    @Test
+    public void testLoadClassFromFolderNamedAsJarFile() throws Exception {
+        String[] data = new String[]{"testdata/classloaderdata/sample.jar",
+            "testdata/classloaderdata/folder.jar"};
+
+        FileClassLoader loader = new FileClassLoader(data);
+
+        Class sample = loader.loadClass("Sample");
+        Class folder = loader.loadClass("Folder");
+
+        assertEquals("Sample", sample.getName());
+        assertEquals("Folder", folder.getName());
+    }
 }
