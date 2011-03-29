@@ -20,10 +20,6 @@ class TypeFinder {
         this.imports = imports;
     }
 
-    public TypeFinder(VariableList varType, ImportList imports) {
-        this(ReflectionAbstractionImpl.create(), varType, imports);
-    }
-
     ClassType determineType(Expression expr) {
         if (expr instanceof NameExpr) {
             return determineType((NameExpr) expr);

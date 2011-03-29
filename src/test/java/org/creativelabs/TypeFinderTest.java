@@ -42,7 +42,7 @@ public class TypeFinderTest {
         VariableList varTypes = ConstructionHelper.createEmptyVariableList();
         varTypes.put("string", new ClassTypeStub(String.class.getName()));
 
-        ClassType type = new TypeFinder(varTypes, null).determineType(expr);
+        ClassType type = new TypeFinder(ra, varTypes, null).determineType(expr);
 
         assertEquals("java.lang.String", type.toString());
     }
@@ -55,7 +55,7 @@ public class TypeFinderTest {
         VariableList varTypes = ConstructionHelper.createEmptyVariableList();
         varTypes.put("string", new ClassTypeStub(String.class.getName()));
 
-        ClassType type = new TypeFinder(varTypes, imports).determineType(expr);
+        ClassType type = new TypeFinder(ra, varTypes, imports).determineType(expr);
 
         assertEquals("java.lang.String", type.toString());
     }
@@ -69,7 +69,7 @@ public class TypeFinderTest {
         VariableList varTypes = ConstructionHelper.createEmptyVariableList();
         varTypes.put("x", ra.getClassTypeByName(int.class.getName()));
 
-        ClassType type = new TypeFinder(varTypes, imports).determineType(expr);
+        ClassType type = new TypeFinder(ra, varTypes, imports).determineType(expr);
 
         assertEquals("java.lang.String", type.toString());
     }
@@ -82,7 +82,7 @@ public class TypeFinderTest {
         varTypes.put("x", ra.getClassTypeByName(String.class.getName()));
         varTypes.put("str", ra.getClassTypeByName(String.class.getName()));
 
-        ClassType type = new TypeFinder(varTypes, null).determineType(expr);
+        ClassType type = new TypeFinder(ra, varTypes, null).determineType(expr);
 
         assertEquals("int", type.toString());
     }
@@ -96,7 +96,7 @@ public class TypeFinderTest {
 
         ImportList imports = ParseHelper.createImportList("import org.apache.log4j.Logger;");
 
-        ClassType type = new TypeFinder(varTypes, imports).determineType(expr);
+        ClassType type = new TypeFinder(ra, varTypes, imports).determineType(expr);
 
         assertEquals("org.apache.log4j.Logger", type.toString());
     }
@@ -107,7 +107,7 @@ public class TypeFinderTest {
         Expression expr = ParseHelper.createExpression("x = y");
 
         String result = "noException";
-            ClassType type = new TypeFinder(null, null).determineType(expr);
+            ClassType type = new TypeFinder(ra, null, null).determineType(expr);
         assertEquals("UnsupportedExpressionException", result);
     }
 
@@ -131,7 +131,7 @@ public class TypeFinderTest {
         VariableList varTypes = ConstructionHelper.createEmptyVariableList();
         varTypes.put("str", ra.getClassTypeByName(String.class.getName()));
 
-        ClassType type = new TypeFinder(varTypes, imports).determineType(expr);
+        ClassType type = new TypeFinder(ra, varTypes, imports).determineType(expr);
 
         assertEquals(expectedValue, type.toString());
     }
@@ -140,7 +140,7 @@ public class TypeFinderTest {
     public void testDetermineTypeIntLiteral() throws Exception {
         Expression expr = ParseHelper.createExpression("1");
 
-        ClassType type = new TypeFinder(null, null).determineType(expr);
+        ClassType type = new TypeFinder(ra, null, null).determineType(expr);
 
         assertEquals("java.lang.Integer", type.toString());
     }
@@ -153,7 +153,7 @@ public class TypeFinderTest {
         VariableList varTypes = ConstructionHelper.createEmptyVariableList();
         varTypes.put("str", ra.getClassTypeByName(String.class.getName()));
 
-        ClassType type = new TypeFinder(varTypes, null).determineType(expr);
+        ClassType type = new TypeFinder(ra, varTypes, null).determineType(expr);
 
         assertEquals("int", type.toString());
 
@@ -167,7 +167,7 @@ public class TypeFinderTest {
         VariableList varTypes = ConstructionHelper.createEmptyVariableList();
         varTypes.put("str", new ClassTypeStub(String.class.getName()));
 
-        ClassType type = new TypeFinder(varTypes, null).determineType(expr);
+        ClassType type = new TypeFinder(ra, varTypes, null).determineType(expr);
 
         assertEquals("java.lang.String", type.toString());
 
@@ -264,7 +264,7 @@ public class TypeFinderTest {
         VariableList varTypes = ConstructionHelper.createEmptyVariableList();
         varTypes.put("this", ra.getClassTypeByName("org.creativelabs.MainApp"));
 
-        ClassType type = new TypeFinder(varTypes, null).determineType(expr);
+        ClassType type = new TypeFinder(ra, varTypes, null).determineType(expr);
 
         assertEquals("org.creativelabs.ImportList", type.toString());
     }
@@ -276,7 +276,7 @@ public class TypeFinderTest {
         VariableList varTypes = ConstructionHelper.createEmptyVariableList();
         ImportList imports = ConstructionHelper.createEmptyImportList();
 
-        ClassType type = new TypeFinder(varTypes, imports).determineType(expr);
+        ClassType type = new TypeFinder(ra, varTypes, imports).determineType(expr);
 
         assertEquals("int", type.toString());
     }
@@ -290,7 +290,7 @@ public class TypeFinderTest {
         varTypes.put("str", new ClassTypeStub(String.class.getName()));
 
         ClassType type = null;
-        type = new TypeFinder(varTypes, imports).determineType(expr);
+        type = new TypeFinder(ra, varTypes, imports).determineType(expr);
         assertEquals(expectedValue, type.toString());
     }
 
@@ -314,7 +314,7 @@ public class TypeFinderTest {
         VariableList varTypes = ConstructionHelper.createEmptyVariableList();
         varTypes.put("str", new ClassTypeStub(String.class.getName()));
 
-        ClassType type = new TypeFinder(varTypes, null).determineType(expr);
+        ClassType type = new TypeFinder(ra, varTypes, null).determineType(expr);
 
         assertEquals("java.lang.String", type.toString());
 
@@ -328,7 +328,7 @@ public class TypeFinderTest {
         VariableList varTypes = ConstructionHelper.createEmptyVariableList();
         varTypes.put("super", new ClassTypeStub("org.creativelabs.A"));
 
-        ClassType type = new TypeFinder(varTypes, null).determineType(expr);
+        ClassType type = new TypeFinder(ra, varTypes, null).determineType(expr);
 
         assertEquals("org.creativelabs.A", type.toString());
     }
@@ -365,7 +365,7 @@ public class TypeFinderTest {
     @Test(dataProvider = "binary-ops-list")
     public void testBinaryExpression(String expression, String expectedType, ImportList imports) throws Exception{
         BinaryExpr expr = (BinaryExpr) ((AssignExpr) ParseHelper.createExpression(expression)).getValue();
-        ClassType type = new TypeFinder(null, imports).determineType(expr);
+        ClassType type = new TypeFinder(ra, null, imports).determineType(expr);
         assertEquals(expectedType, type.toString());
     }
 
@@ -400,7 +400,7 @@ public class TypeFinderTest {
         VariableList varTypes = ConstructionHelper.createEmptyVariableList();
         varTypes.put("super", new ClassTypeStub("org.creativelabs.A"));
 
-        ClassType type = new TypeFinder(varTypes, null).determineType(expr);
+        ClassType type = new TypeFinder(ra, varTypes, null).determineType(expr);
 
         assertEquals("org.creativelabs.A", type.toString());
     }

@@ -35,7 +35,7 @@ public class TypeFinderFieldAccessExprTest {
         VariableList varTypes = ConstructionHelper.createEmptyVariableList();
         varTypes.put("str", ra.getClassTypeByName(String.class.getName()));
 
-        ClassType type = new TypeFinder(varTypes, null).determineType(expr);
+        ClassType type = new TypeFinder(ra, varTypes, null).determineType(expr);
         assertEquals("java.util.Comparator<java.lang.String, >", type.toString());
     }
 
@@ -48,7 +48,7 @@ public class TypeFinderFieldAccessExprTest {
 
         ImportList imports = ParseHelper.createImportList("import org.apache.log4j.lf5.LogLevel;");
 
-        ClassType type = new TypeFinder(varTypes, imports).determineType(expr);
+        ClassType type = new TypeFinder(ra, varTypes, imports).determineType(expr);
 
         assertEquals("org.apache.log4j.lf5.LogLevel", type.toString());
     }
@@ -76,7 +76,7 @@ public class TypeFinderFieldAccessExprTest {
         VariableList varList = ConstructionHelper.createEmptyVariableList();
 
         ImportList imports = ConstructionHelper.createEmptyImportList();
-        TypeFinder typeFinder = new TypeFinder(varList, imports);
+        TypeFinder typeFinder = new TypeFinder(ra, varList, imports);
 
         ClassType type = typeFinder.determineType(expr);
 
@@ -89,7 +89,7 @@ public class TypeFinderFieldAccessExprTest {
         VariableList varList = ConstructionHelper.createEmptyVariableList();
 
         ImportList imports = ParseHelper.createImportList("import java.awt.event.*;");
-        TypeFinder typeFinder = new TypeFinder(varList, imports);
+        TypeFinder typeFinder = new TypeFinder(ra, varList, imports);
 
         ClassType type = typeFinder.determineType(expr);
 
@@ -115,7 +115,7 @@ public class TypeFinderFieldAccessExprTest {
         varList.put("this", ra.getClassTypeByName(
                     "org.creativelabs.TypeFinderFieldAccessExprTest$JFrameDescendant"));
 
-        TypeFinder typeFinder = new TypeFinder(varList, importList);
+        TypeFinder typeFinder = new TypeFinder(ra, varList, importList);
 
         ClassType result = typeFinder.determineType(expr);
 
