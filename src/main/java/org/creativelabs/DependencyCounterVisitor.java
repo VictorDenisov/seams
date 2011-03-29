@@ -14,9 +14,12 @@ class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
 
     private ImportList imports;
 
-    DependencyCounterVisitor(VariableList classFields, ImportList imports) {
+    private ReflectionAbstraction ra;
+
+    DependencyCounterVisitor(VariableList classFields, ImportList imports, ReflectionAbstraction ra) {
         this.classFields = classFields;
         this.imports = imports;
+        this.ra = ra;
     }
 
     private Set<Dependency> dependencies = new HashSet<Dependency>();
@@ -88,8 +91,7 @@ class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
     public void visit(VariableDeclarationExpr n, Object o) {
         for (VariableDeclarator v : n.getVars()) {
             ClassType classType = imports.getClassByType(n.getType());
-            classType = ReflectionAbstractionImpl.create()
-                .convertToArray(classType, v.getId().getArrayCount());
+            classType = ra.convertToArray(classType, v.getId().getArrayCount());
 
             localVariables.put(v.getId().getName(), classType);
             ExpressionSeparatorVisitor esv = new ExpressionSeparatorVisitor(internalInstances);

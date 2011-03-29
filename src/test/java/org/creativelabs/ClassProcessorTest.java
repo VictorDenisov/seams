@@ -23,8 +23,8 @@ public class ClassProcessorTest {
         private StringBuffer logString;
 
         DependencyCounterVisitorToStringLogger(StringBuffer logString, 
-                VariableList classFields, ImportList imports) {
-            super(classFields, imports);
+                VariableList classFields, ImportList imports, ReflectionAbstraction ra) {
+            super(classFields, imports, ra);
             this.logString = logString;
         }
 
@@ -44,7 +44,7 @@ public class ClassProcessorTest {
             methodArgumentsList = methodArguments;
             logString.append("build; ");
             return new DependencyCounterVisitorToStringLogger(logString,
-                    null, null);
+                    null, null, (null));
         }
     }
 

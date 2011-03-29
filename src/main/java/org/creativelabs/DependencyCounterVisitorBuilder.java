@@ -1,5 +1,7 @@
 package org.creativelabs;
 
+import org.creativelabs.introspection.*;
+
 import japa.parser.ast.body.*;
 import japa.parser.ast.stmt.*;
 import japa.parser.ast.expr.*;
@@ -11,6 +13,8 @@ public class DependencyCounterVisitorBuilder {
     protected VariableList classFields;
 
     protected VariableList methodArguments;
+
+    protected ReflectionAbstraction reflectionAbstraction;
 
     public DependencyCounterVisitorBuilder setImports(ImportList importsArg) {
         this.imports = importsArg;
@@ -24,6 +28,11 @@ public class DependencyCounterVisitorBuilder {
 
     public DependencyCounterVisitorBuilder setMethodArguments(VariableList methodArgsArg) {
         this.methodArguments = methodArgsArg;
+        return this;
+    }
+
+    public DependencyCounterVisitorBuilder setReflectionAbstraction(ReflectionAbstraction reflectionAbstraction) {
+        this.reflectionAbstraction = reflectionAbstraction;
         return this;
     }
 
@@ -48,6 +57,6 @@ public class DependencyCounterVisitorBuilder {
         VariableList externalVariables = new VariableListBuilder().buildEmpty();
         externalVariables.addAll(classFields);
         externalVariables.addAll(methodArguments);
-        return new DependencyCounterVisitor(externalVariables, imports);
+        return new DependencyCounterVisitor(externalVariables, imports, reflectionAbstraction);
     }
 }

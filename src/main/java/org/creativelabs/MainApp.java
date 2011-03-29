@@ -72,9 +72,13 @@ final class MainApp {
     }
 
     private static void processClass(ClassOrInterfaceDeclaration typeDeclaration, String fileName, ReportBuilder reportBuilder) {
+        DependencyCounterVisitorBuilder depCountBuilder = new DependencyCounterVisitorBuilder();
+        depCountBuilder.setReflectionAbstraction(ReflectionAbstractionImpl.create());
+
         ClassProcessor classProcessor = new ClassProcessorBuilder()
                 .setTypeDeclaration(typeDeclaration)
                 .setImports(imports)
+                .setDependencyCounterBuilder(depCountBuilder)
                 .buildClassProcessor();
         classProcessor.compute();
         classProcessor.buildReport(reportBuilder);

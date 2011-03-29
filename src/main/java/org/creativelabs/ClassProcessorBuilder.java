@@ -24,14 +24,20 @@ public class ClassProcessorBuilder {
         return this;
     }
 
+    public ClassProcessorBuilder setDependencyCounterBuilder(
+            DependencyCounterVisitorBuilder dependencyCounterBuilder) {
+
+        this.dependencyCounterBuilder = dependencyCounterBuilder;
+        return this;
+    }
+
     public ClassProcessorBuilder setTypeDeclaration(ClassOrInterfaceDeclaration typeDeclarationVal) {
         this.typeDeclaration = typeDeclarationVal;
         return this;
     }
 
     DependencyCounterVisitorBuilder constructDependencyCounterVisitor() {
-        DependencyCounterVisitorBuilder builder = new DependencyCounterVisitorBuilder();
-        return builder
+        return dependencyCounterBuilder
             .setClassFields(fieldList)
             .setImports(imports);
     }
