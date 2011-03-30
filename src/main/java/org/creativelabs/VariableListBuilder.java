@@ -51,7 +51,7 @@ public class VariableListBuilder {
                 Type type = fd.getType();
                 for (VariableDeclarator vardecl : fd.getVariables()) {
                     ClassType classType = imports.getClassByType(type);
-                    classType = ReflectionAbstractionImpl.create().convertToArray(classType, vardecl.getId().getArrayCount());
+                    classType = ra.convertToArray(classType, vardecl.getId().getArrayCount());
                     result.fieldTypes.put(vardecl.getId().getName(), classType);
                 }
             }

@@ -13,7 +13,7 @@ import org.creativelabs.ssa.SimpleSsaForm;
 import org.creativelabs.ui.*;
 import org.creativelabs.report.*;
 import org.creativelabs.graph.*;
-import org.creativelabs.introspection.ReflectionAbstractionImpl;
+import org.creativelabs.introspection.*;
 
 final class MainApp {
 
@@ -72,12 +72,18 @@ final class MainApp {
     }
 
     private static void processClass(ClassOrInterfaceDeclaration typeDeclaration, String fileName, ReportBuilder reportBuilder) {
+        ReflectionAbstraction ra = ReflectionAbstractionImpl.create();
+
         DependencyCounterVisitorBuilder depCountBuilder = new DependencyCounterVisitorBuilder();
-        depCountBuilder.setReflectionAbstraction(ReflectionAbstractionImpl.create());
+        depCountBuilder.setReflectionAbstraction(ra);
+
+        VariableListBuilder variableListBuilder = new VariableListBuilder();
+        variableListBuilder.setReflectionAbstraction(ra);
 
         ClassProcessor classProcessor = new ClassProcessorBuilder()
                 .setTypeDeclaration(typeDeclaration)
                 .setImports(imports)
+                .setVariableListBuilder(variableListBuilder)
                 .setDependencyCounterBuilder(depCountBuilder)
                 .buildClassProcessor();
         classProcessor.compute();

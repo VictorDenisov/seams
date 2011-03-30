@@ -15,8 +15,15 @@ public class ClassProcessorBuilder {
 
     protected DependencyCounterVisitorBuilder dependencyCounterBuilder;
 
+    protected VariableListBuilder variableListBuilder;
+
     public ClassProcessorBuilder setImports(ImportList importsVal) {
         this.imports = importsVal;
+        return this;
+    }
+
+    public ClassProcessorBuilder setVariableListBuilder(VariableListBuilder variableListBuilder) {
+        this.variableListBuilder = variableListBuilder;
         return this;
     }
 
@@ -43,7 +50,7 @@ public class ClassProcessorBuilder {
     }
 
     VariableList constructVariableList() {
-        return new VariableListBuilder().setImports(imports).buildFromClass(typeDeclaration);
+        return variableListBuilder.setImports(imports).buildFromClass(typeDeclaration);
     }
 
     ClassProcessor buildClassProcessor() {
