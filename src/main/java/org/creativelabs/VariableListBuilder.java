@@ -11,6 +11,13 @@ import java.util.*;
 public class VariableListBuilder {
 
     private ImportList imports;
+    
+    private ReflectionAbstraction ra;
+
+    public VariableListBuilder setReflectionAbstraction(ReflectionAbstraction ra) {
+        this.ra = ra;
+        return this;
+    }
 
     public VariableListBuilder setImports(ImportList imports) {
         this.imports = imports;
@@ -18,8 +25,7 @@ public class VariableListBuilder {
     }
 
     public VariableList buildFromMethod(MethodDeclaration methodDeclaration) {
-        VariableList result = new VariableList();
-        ReflectionAbstraction ra = ReflectionAbstractionImpl.create();
+        VariableList result = new VariableList(ra);
         if (methodDeclaration.getParameters() == null) {
             return result;
         }
@@ -38,7 +44,7 @@ public class VariableListBuilder {
     }
 
     public VariableList buildFromClass(ClassOrInterfaceDeclaration classDeclaration) {
-        VariableList result = new VariableList();
+        VariableList result = new VariableList(ra);
         for (BodyDeclaration bd : classDeclaration.getMembers()) {
             if (bd instanceof FieldDeclaration) {
                 FieldDeclaration fd = (FieldDeclaration) bd;
@@ -54,6 +60,6 @@ public class VariableListBuilder {
     }
 
     public VariableList buildEmpty() {
-        return new VariableList();
+        return new VariableList(ra);
     }
 }

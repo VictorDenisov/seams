@@ -55,6 +55,7 @@ public class ClassProcessorTest {
             = new DependencyCounterVisitorToStringLoggerBuilder();
         dependencyVisitorBuilder.logString = logString;
         dependencyVisitorBuilder
+            .setReflectionAbstraction(ReflectionAbstractionImpl.create())
             .setImports(ConstructionHelper.createEmptyImportList())
             .setClassFields(ConstructionHelper.createEmptyVariableList());
 

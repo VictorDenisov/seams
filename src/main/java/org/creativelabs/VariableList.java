@@ -11,8 +11,11 @@ import java.util.*;
 class VariableList {
 
     protected Map<String, ClassType> fieldTypes = new HashMap<String, ClassType>();
+    
+    private ReflectionAbstraction ra;
 
-    protected VariableList() {
+    protected VariableList(ReflectionAbstraction ra) {
+        this.ra = ra;
     }
 
     List<String> getNames() {
@@ -22,7 +25,7 @@ class VariableList {
     ClassType getFieldTypeAsClass(String fieldName) {
         ClassType result = fieldTypes.get(fieldName);
         if (result == null) {
-            result = ReflectionAbstractionImpl.create().createErrorClassType(fieldName + " doesn't exist");
+            result = ra.createErrorClassType(fieldName + " doesn't exist");
         }
         return result;
     }

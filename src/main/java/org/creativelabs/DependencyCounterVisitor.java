@@ -16,15 +16,18 @@ class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
 
     private ReflectionAbstraction ra;
 
+    private VariableListBuilder variableListBuilder = new VariableListBuilder();
+
     DependencyCounterVisitor(VariableList classFields, ImportList imports, ReflectionAbstraction ra) {
         this.classFields = classFields;
         this.imports = imports;
         this.ra = ra;
+        this.variableListBuilder = variableListBuilder.setReflectionAbstraction(ra);
     }
 
     private Set<Dependency> dependencies = new HashSet<Dependency>();
 
-    protected VariableList localVariables = new VariableListBuilder().buildEmpty();
+    protected VariableList localVariables = variableListBuilder.buildEmpty();
 
     private InternalInstancesGraph internalInstances = new InternalInstancesGraph();
 
@@ -52,7 +55,7 @@ class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
     }
 
     protected ClassType runTypeFinder(Expression n) {
-        VariableList vList = new VariableListBuilder().buildEmpty();
+        VariableList vList = variableListBuilder.buildEmpty();
         vList.addAll(classFields);
         vList.addAll(localVariables);
         ClassType type = null;

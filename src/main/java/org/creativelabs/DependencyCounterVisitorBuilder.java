@@ -14,6 +14,8 @@ public class DependencyCounterVisitorBuilder {
 
     protected VariableList methodArguments;
 
+    protected VariableListBuilder variableListBuilder = new VariableListBuilder();
+
     protected ReflectionAbstraction reflectionAbstraction;
 
     public DependencyCounterVisitorBuilder setImports(ImportList importsArg) {
@@ -33,6 +35,7 @@ public class DependencyCounterVisitorBuilder {
 
     public DependencyCounterVisitorBuilder setReflectionAbstraction(ReflectionAbstraction reflectionAbstraction) {
         this.reflectionAbstraction = reflectionAbstraction;
+        variableListBuilder = variableListBuilder.setReflectionAbstraction(reflectionAbstraction);
         return this;
     }
 
@@ -40,7 +43,7 @@ public class DependencyCounterVisitorBuilder {
         if (imports == null) {
             throw new IllegalStateException("Imports should be not null for this operation");
         }
-        this.methodArguments = new VariableListBuilder().setImports(imports).buildFromMethod(md);
+        this.methodArguments = variableListBuilder.setImports(imports).buildFromMethod(md);
         return this;
     }
 
@@ -54,7 +57,7 @@ public class DependencyCounterVisitorBuilder {
         if (methodArguments == null) {
             throw new IllegalStateException("Method arguments can't be null");
         }
-        VariableList externalVariables = new VariableListBuilder().buildEmpty();
+        VariableList externalVariables = variableListBuilder.buildEmpty();
         externalVariables.addAll(classFields);
         externalVariables.addAll(methodArguments);
         return new DependencyCounterVisitor(externalVariables, imports, reflectionAbstraction);

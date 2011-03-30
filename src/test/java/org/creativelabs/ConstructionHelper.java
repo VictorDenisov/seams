@@ -9,18 +9,28 @@ import java.util.*;
 
 public class ConstructionHelper {
 
+    private static ReflectionAbstraction ra = ReflectionAbstractionImpl.create();
+
     public static VariableList createEmptyVariableList() {
-        return new VariableListBuilder().buildEmpty();
+        return new VariableListBuilder()
+            .setReflectionAbstraction(ra)
+            .buildEmpty();
     }
 
     public static VariableList createVariableListFromClassFields(ClassOrInterfaceDeclaration cd,
             ImportList imports) {
-        return new VariableListBuilder().setImports(imports).buildFromClass(cd);
+        return new VariableListBuilder()
+            .setReflectionAbstraction(ra)
+            .setImports(imports)
+            .buildFromClass(cd);
     }
 
     public static VariableList createVariableListFromMethodArgs(MethodDeclaration md,
             ImportList imports) {
-        return new VariableListBuilder().setImports(imports).buildFromMethod(md);
+        return new VariableListBuilder()
+            .setReflectionAbstraction(ra)
+            .setImports(imports)
+            .buildFromMethod(md);
     }
 
     /**

@@ -14,6 +14,9 @@ import static org.creativelabs.AssertHelper.*;
 
 public class VariableListBuilderTest {
 
+    private VariableListBuilder variableListBuilder = new VariableListBuilder()
+        .setReflectionAbstraction(ReflectionAbstractionImpl.create());
+
     @Test
     public void testConstructor() throws Exception {
         ClassOrInterfaceDeclaration classDeclaration = 
@@ -22,7 +25,7 @@ public class VariableListBuilderTest {
         ImportList imports = ConstructionHelper.createEmptyImportList();
         imports = spy(imports);
 
-        VariableList fieldList = new VariableListBuilder()
+        VariableList fieldList = variableListBuilder
             .setImports(imports)
             .buildFromClass(classDeclaration);
 
@@ -37,7 +40,7 @@ public class VariableListBuilderTest {
 
         ImportList imports = ConstructionHelper.createEmptyImportList();
 
-        VariableList fieldList = new VariableListBuilder()
+        VariableList fieldList = variableListBuilder
             .setImports(imports)
             .buildFromClass(classDeclaration);
         
@@ -55,7 +58,7 @@ public class VariableListBuilderTest {
         ImportList imports = ParseHelper.createImportList("");
         imports = spy(imports);
 
-        VariableList varList = new VariableListBuilder()
+        VariableList varList = variableListBuilder
             .setImports(imports)
             .buildFromMethod(md);
 
@@ -70,7 +73,7 @@ public class VariableListBuilderTest {
 
         ImportList imports = ParseHelper.createImportList("");
 
-        VariableList varList = new VariableListBuilder()
+        VariableList varList = variableListBuilder
             .setImports(imports)
             .buildFromMethod(md);
 
@@ -83,7 +86,7 @@ public class VariableListBuilderTest {
 
         ImportList imports = ConstructionHelper.createEmptyImportList();
 
-        VariableList varList = new VariableListBuilder()
+        VariableList varList = variableListBuilder
             .setImports(imports)
             .buildFromMethod(md);
 
@@ -95,7 +98,7 @@ public class VariableListBuilderTest {
         MethodDeclaration md = ParseHelper.createMethodDeclaration("void method(String args[]) {}");
         ImportList imports = ConstructionHelper.createEmptyImportList();
 
-        VariableList varList = new VariableListBuilder()
+        VariableList varList = variableListBuilder
             .setImports(imports)
             .buildFromMethod(md);
 

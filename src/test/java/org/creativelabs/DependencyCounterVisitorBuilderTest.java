@@ -6,6 +6,8 @@ import japa.parser.ast.body.*;
 import japa.parser.ast.stmt.*;
 import japa.parser.ast.expr.*;
 
+import org.creativelabs.introspection.*;
+
 import static org.testng.AssertJUnit.*;
 
 public class DependencyCounterVisitorBuilderTest {
@@ -92,6 +94,7 @@ public class DependencyCounterVisitorBuilderTest {
         ImportList imports = ConstructionHelper.createEmptyImportList();
         VariableList classFields = ConstructionHelper.createEmptyVariableList();
 
+        builder.setReflectionAbstraction(ReflectionAbstractionImpl.create());
         builder.setImports(imports);
         builder.setClassFields(classFields);
         builder.setConstructedMethodArguments(md);
