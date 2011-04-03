@@ -72,6 +72,8 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
 
     private HashMap<String, String> arrayChar;
 
+    private ClassLoader classLoader;
+
     private void addToBoxing(String data, Class clazz) {
         if (!boxingMap.containsKey(data)) {
             boxingMap.put(data, new ArrayList<Class>());
@@ -88,7 +90,16 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         return new HookReflectionAbstraction(new ReflectionAbstractionImpl());
     }
 
+    public ReflectionAbstractionImpl(ClassLoader classLoader) {
+        init();
+        this.classLoader = classLoader;
+    }
+
     public ReflectionAbstractionImpl() {
+        this(ReflectionAbstractionImpl.class.getClassLoader());
+    }
+
+    private void init() {
         boxingMap = new HashMap<String, ArrayList<Class>>();
 
         addToBoxing("byte", Byte.class);
@@ -138,18 +149,18 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         arrayChar.put("boolean", "Z");
     }
 
-    private Class getClass(String type) throws ClassNotFoundException {
-        if (primitivesMap.containsKey(type)) {
-            return primitivesMap.get(type);
+    private Class getClass(String className) throws ClassNotFoundException {
+        if (primitivesMap.containsKey(className)) {
+            return primitivesMap.get(className);
         } else {
-            return Class.forName(type);
+            return Class.forName(className, true, classLoader);
         }
     }
 
     @Override
     public boolean classWithNameExists(String className) {
         try {
-            Class.forName(className);
+            Class.forName(className, true, classLoader);
             return true;
         } catch (ClassNotFoundException e) {
             return false;
@@ -161,7 +172,7 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         for (int i = 0; i < types.length; ++i) {
             if (types[i] instanceof ClassTypeNull) {
                 try {
-                    result[i] = Class.forName("java.lang.Object");
+                    result[i] = getClass("java.lang.Object");
                 } catch (Exception e) {
                     //java.lang.Object always exists
                 }
@@ -444,7 +455,7 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
                 className = takeArrayName(previous.clazz);
             }
             className = "[" + className;
-            result.clazz = Class.forName(className);
+            result.clazz = getClass(className);
             return result;
         } catch (Exception e) {
             return createErrorClassType(e.toString());
