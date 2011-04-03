@@ -79,6 +79,11 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         boxingMap.get(data).add(clazz);
     }
 
+    /** 
+     * Only for test purposes only.
+     *
+     * @deprecated
+     */
     public static ReflectionAbstraction create() {
         return new HookReflectionAbstraction(new ReflectionAbstractionImpl());
     }
