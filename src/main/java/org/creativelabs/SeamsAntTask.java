@@ -9,6 +9,7 @@ import org.apache.tools.ant.types.*;
 import org.apache.tools.ant.taskdefs.MatchingTask;
 
 import org.creativelabs.report.*;
+import org.creativelabs.introspection.*;
 
 public class SeamsAntTask extends MatchingTask {
     private String msg;
@@ -16,6 +17,7 @@ public class SeamsAntTask extends MatchingTask {
     protected File[] compileList = new File[0];
     private File destDir;
     private Path classpath;
+    private ReflectionAbstraction ra = new HookReflectionAbstraction(new ReflectionAbstractionImpl());
 
     public void setDestdir(File destDir) {
         this.destDir = destDir;
@@ -136,7 +138,7 @@ public class SeamsAntTask extends MatchingTask {
             DataCollector dataCollector = new DataCollector();
 
             for (File file : compileList) {
-                MainApp.processFileOrDirectory(file, dataCollector);
+                MainApp.processFileOrDirectory(file, dataCollector, ra);
             }
             dataCollector.buildDetailedDependencyReport();
             dataCollector.buildNumberOfErrorsReport();

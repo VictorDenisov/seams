@@ -1,6 +1,6 @@
 package org.creativelabs.introspection;
 
-class HookReflectionAbstraction implements ReflectionAbstraction {
+public class HookReflectionAbstraction implements ReflectionAbstraction {
 
     private ReflectionAbstraction ra;
 

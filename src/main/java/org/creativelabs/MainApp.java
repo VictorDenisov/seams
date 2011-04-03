@@ -37,6 +37,7 @@ final class MainApp {
     }
 
     public static void main(String... args) throws Exception {
+        ReflectionAbstraction ra = new HookReflectionAbstraction(new ReflectionAbstractionImpl());
         CommandLineParser parser = new PosixParser();
         Options options = new Options();
         options.addOption("h", "help", false, "Print this usage information");
@@ -64,15 +65,15 @@ final class MainApp {
 
             for (String path : commandLine.getOptionValues('f')) {
                 File file = new File(path);
-                processFileOrDirectory(file, dataCollector);
+                processFileOrDirectory(file, dataCollector, ra);
             }
             dataCollector.buildDetailedDependencyReport();
             dataCollector.buildNumberOfErrorsReport();
         }
     }
 
-    private static void processClass(ClassOrInterfaceDeclaration typeDeclaration, String fileName, ReportBuilder reportBuilder) {
-        ReflectionAbstraction ra = ReflectionAbstractionImpl.create();
+    private static void processClass(ClassOrInterfaceDeclaration typeDeclaration, String fileName, ReportBuilder reportBuilder,
+            ReflectionAbstraction ra) {
 
         DependencyCounterVisitorBuilder depCountBuilder = new DependencyCounterVisitorBuilder();
         depCountBuilder.setReflectionAbstraction(ra);
@@ -116,13 +117,14 @@ final class MainApp {
         */
     }
 
-    public static void processFileOrDirectory(File fileOrDirectory, ReportBuilder reportBuilder) throws Exception {
+    public static void processFileOrDirectory(File fileOrDirectory, ReportBuilder reportBuilder,
+            ReflectionAbstraction ra) throws Exception {
         if (!fileOrDirectory.exists()) {
             throw new IllegalArgumentException(fileOrDirectory.getAbsolutePath() + " doesn't exist");
         }
         if (fileOrDirectory.isDirectory()) {
             for (File directory : fileOrDirectory.listFiles()) {
-                processFileOrDirectory(directory, reportBuilder);
+                processFileOrDirectory(directory, reportBuilder, ra);
             }
         } else {
             String fileName = fileOrDirectory.getName();
@@ -132,11 +134,11 @@ final class MainApp {
                 for (TypeDeclaration typeDeclaration : cu.getTypes()) {
                     if (typeDeclaration instanceof ClassOrInterfaceDeclaration) {
                         imports =
-                                new ImportList(ReflectionAbstractionImpl.create(), cu,
+                                new ImportList(ra, cu,
                                         (ClassOrInterfaceDeclaration) typeDeclaration);
 
                         processClass((ClassOrInterfaceDeclaration) typeDeclaration,
-                                fileOrDirectory.getAbsolutePath(), reportBuilder);
+                                fileOrDirectory.getAbsolutePath(), reportBuilder, ra);
                     }
                 }
             }
