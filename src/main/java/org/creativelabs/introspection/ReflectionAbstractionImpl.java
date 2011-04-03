@@ -80,7 +80,7 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
     }
 
     public static ReflectionAbstraction create() {
-        return new ReflectionAbstractionImpl();
+        return new HookReflectionAbstraction(new ReflectionAbstractionImpl());
     }
 
     public ReflectionAbstractionImpl() {
