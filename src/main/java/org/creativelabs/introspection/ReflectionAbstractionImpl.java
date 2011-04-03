@@ -80,10 +80,10 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
     }
 
     public static ReflectionAbstraction create() {
-        return new HookReflectionAbstraction(new ReflectionAbstractionImpl());
+        return new ReflectionAbstractionImpl();
     }
 
-    ReflectionAbstractionImpl() {
+    public ReflectionAbstractionImpl() {
         boxingMap = new HashMap<String, ArrayList<Class>>();
 
         addToBoxing("byte", Byte.class);

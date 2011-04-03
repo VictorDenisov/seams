@@ -4,7 +4,7 @@ class HookReflectionAbstraction implements ReflectionAbstraction {
 
     private ReflectionAbstraction ra;
 
-    HookReflectionAbstraction(ReflectionAbstractionImpl ra) {
+    public HookReflectionAbstraction(ReflectionAbstractionImpl ra) {
         this.ra = ra;
     }
     
