@@ -23,6 +23,6 @@ public class ConstructionHelperTest {
         ClassType result = ConstructionHelper.createClassTypeFromNotation(ra, "java.io.class[][][]");
 
         verify(ra).getClassTypeByName(eq("java.io.class"));
-        verify(ra).convertToArray(any(ClassType.class), eq(3));
+        verify(ra).addArrayDepth(any(ClassType.class), eq(3));
     }
 }

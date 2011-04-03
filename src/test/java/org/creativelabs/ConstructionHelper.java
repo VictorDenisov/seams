@@ -43,7 +43,7 @@ public class ConstructionHelper {
         } else {
             int dimension = (className.length() - positionOfBracket) / 2;
             ClassType classType = ra.getClassTypeByName(className.substring(0, positionOfBracket));
-            ClassType result = ra.convertToArray(classType, dimension);
+            ClassType result = ra.addArrayDepth(classType, dimension);
             return result;
         }
     }

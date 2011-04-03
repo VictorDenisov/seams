@@ -396,7 +396,7 @@ public class ReflectionAbstractionImplTest {
     @Test
     public void testLengthArrayField() throws Exception {
         ClassType clazz = ra.getClassTypeByName("java.lang.String");
-        clazz = ra.convertToArray(clazz, 1);
+        clazz = ra.addArrayDepth(clazz, 1);
         ClassType result = ra.getFieldType(clazz, "length");
         
         assertEquals("int", result.toString());
@@ -600,7 +600,7 @@ public class ReflectionAbstractionImplTest {
     public void testConvertToArrayFromPrimitive() throws Exception {
         ClassType classType = ra.getClassTypeByName("byte");
 
-        classType = ra.convertToArray(classType, 1);
+        classType = ra.addArrayDepth(classType, 1);
 
         assertEquals("[B", classType.toString());
     }

@@ -16,8 +16,6 @@ public interface ReflectionAbstraction {
 
     ClassType getNestedClass(ClassType className, String nestedClassName);
 
-    ClassType convertToArray(ClassType classType, int dimension);
-
     ClassType getElementType(ClassType classType);
 
     ClassType createNullClassType();

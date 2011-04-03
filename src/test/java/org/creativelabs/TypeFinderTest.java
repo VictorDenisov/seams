@@ -647,7 +647,7 @@ public class TypeFinderTest {
                     "org.creativelabs.introspection.ClassType");
 
         ClassType argsType = ra.getClassTypeByName("java.lang.reflect.Type");
-        argsType = ra.convertToArray(argsType, 1);
+        argsType = ra.addArrayDepth(argsType, 1);
 
         VariableList varList = ConstructionHelper.createEmptyVariableList();
         varList.put("map", mapType);
@@ -665,7 +665,7 @@ public class TypeFinderTest {
         ImportList importList = ParseHelper.createImportList("");
 
         ClassType argsType = ra.getClassTypeByName("java.lang.String");
-        argsType = ra.convertToArray(argsType, 2);
+        argsType = ra.addArrayDepth(argsType, 2);
 
         VariableList varList = ConstructionHelper.createEmptyVariableList();
         varList.put("x", argsType);

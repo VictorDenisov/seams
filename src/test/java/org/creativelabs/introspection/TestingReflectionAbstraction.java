@@ -152,15 +152,6 @@ public class TestingReflectionAbstraction implements ReflectionAbstraction {
     }
 
     @Override
-    public ClassType convertToArray(ClassType classType, int dimension) {
-        StringBuffer buffer = new StringBuffer();
-        for (int i = 0; i < dimension; i++){
-            buffer.append("[]");
-        }
-        return new ClassTypeStub(classType.toString() + buffer);
-    }
-
-    @Override
     public ClassType getElementType(ClassType classType) {
         return new ClassTypeStub(classType.toString().
             substring(0, classType.toString().lastIndexOf("[")));
@@ -178,6 +169,10 @@ public class TestingReflectionAbstraction implements ReflectionAbstraction {
 
     @Override
     public ClassType addArrayDepth(ClassType classType, int count) {
-        return null;
+        StringBuffer buffer = new StringBuffer();
+        for (int i = 0; i < count; i++){
+            buffer.append("[]");
+        }
+        return new ClassTypeStub(classType.toString() + buffer);
     }
 }

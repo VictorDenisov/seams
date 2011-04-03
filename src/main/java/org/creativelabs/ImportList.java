@@ -109,12 +109,12 @@ class ImportList {
 
                 ClassType result = getClassByClassOrInterfaceType(classType);
 
-                return ra.convertToArray(result, ((ReferenceType) type).getArrayCount());
+                return ra.addArrayDepth(result, ((ReferenceType) type).getArrayCount());
             } else {
                 PrimitiveType classType = (PrimitiveType) innerType;
                 ClassType result = getClassByShortName(classType.toString());
 
-                return ra.convertToArray(result, ((ReferenceType) type).getArrayCount());
+                return ra.addArrayDepth(result, ((ReferenceType) type).getArrayCount());
             }
         } else if (type instanceof ClassOrInterfaceType) {
             ClassOrInterfaceType classType = (ClassOrInterfaceType) type;
