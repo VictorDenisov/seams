@@ -2,6 +2,7 @@ package org.creativelabs;
 
 import java.io.*;
 import java.util.*;
+import java.net.*;
 
 import org.apache.tools.ant.*;
 import org.apache.tools.ant.util.*;
@@ -18,6 +19,7 @@ public class SeamsAntTask extends MatchingTask {
     private File destDir;
     private Path classpath;
     private ReflectionAbstraction ra = new HookReflectionAbstraction(new ReflectionAbstractionImpl());
+    private ClassLoader classLoader;
 
     public void setDestdir(File destDir) {
         this.destDir = destDir;
@@ -97,9 +99,21 @@ public class SeamsAntTask extends MatchingTask {
         checkParameters();
         resetFileLists();
 
-        for (String s : classpath.list()) {
-            System.out.println(s);
+        String[] fileList = classpath.list();
+        URL[] urls = new URL[fileList.length];
+        try {
+            for (int i = 0; i < fileList.length; ++i) {
+                urls[i] = new File(fileList[i]).toURL();
+
+                System.out.println(urls[i]);
+            }
+        } catch (MalformedURLException e) {
+            throw new BuildException(e);
         }
+
+        classLoader = new URLClassLoader(urls);
+
+        ra = new HookReflectionAbstraction(new ReflectionAbstractionImpl(classLoader));
         // scan source directories and dest directory to build up
         // compile lists
         String[] list = src.list();

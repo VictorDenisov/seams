@@ -6,7 +6,22 @@
 	<target name="main">
 		<seams>
 			<classpath>
-				<fileset dir="target">
+				<fileset dir="/home/victor/.m2/repository/net/sourceforge/collections/collections-generic">
+					<include name="**/*.jar"/>
+				</fileset>
+				<fileset dir="/home/victor/.m2/repository/javaparser">
+					<include name="**/*.jar"/>
+				</fileset>
+				<fileset dir="/home/victor/.m2/repository/commons-cli">
+					<include name="**/*.jar"/>
+				</fileset>
+				<fileset dir="/home/victor/.m2/repository/org/apache/ant/ant">
+					<include name="**/*.jar"/>
+				</fileset>
+				<fileset dir="/home/victor/.m2/repository/jfree">
+					<include name="**/*.jar"/>
+				</fileset>
+				<fileset dir="/home/victor/.m2/repository/net/sf/jung">
 					<include name="**/*.jar"/>
 				</fileset>
 				<pathelement path="target/classes"/>
