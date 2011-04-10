@@ -1,6 +1,11 @@
 package org.creativelabs.graph;
 
-import java.util.*;
+import org.creativelabs.graph.edge.condition.EdgeCondition;
+import org.creativelabs.graph.edge.condition.EmptyEdgeCondition;
+
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class ToStringGraphBuilder implements GraphBuilder {
 
@@ -20,29 +25,48 @@ public class ToStringGraphBuilder implements GraphBuilder {
         }
     }
 
-    private TreeMap<StringVertex, ArrayList<StringVertex>> map 
-        = new TreeMap<StringVertex, ArrayList<StringVertex>>();
+    private Map<StringVertex, ArrayList<StringVertex>> edgesMap
+            = new TreeMap<StringVertex, ArrayList<StringVertex>>();
+    private Map<StringVertex, ArrayList<EdgeCondition>> conditionsMap
+            = new TreeMap<StringVertex, ArrayList<EdgeCondition>>();
 
+    @Override
     public Vertex addVertex(String label) {
         return new StringVertex(label);
     }
 
-    public void addEdge(Vertex from, Vertex to) {
-        ArrayList<StringVertex> list = null;
-        if (map.containsKey(from)) {
-            list = map.get(from);
+    @Override
+    public void addEdge(Vertex from, Vertex to, EdgeCondition condition) {
+        ArrayList<StringVertex> vertexes = null;
+        if (edgesMap.containsKey(from)) {
+            vertexes = edgesMap.get(from);
         } else {
-            list = new ArrayList<StringVertex>();
-            map.put((StringVertex) from, list);
+            vertexes = new ArrayList<StringVertex>();
+            edgesMap.put((StringVertex) from, vertexes);
         }
-        list.add((StringVertex) to);
+        vertexes.add((StringVertex) to);
+
+        ArrayList<EdgeCondition> conditions = null;
+        if (conditionsMap.containsKey(from)) {
+            conditions = conditionsMap.get(from);
+        } else {
+            conditions = new ArrayList<EdgeCondition>();
+            conditionsMap.put((StringVertex) from, conditions);
+        }
+        conditions.add(condition);
     }
 
     public String toString() {
         StringBuffer result = new StringBuffer("{");
-        for (Map.Entry<StringVertex, ArrayList<StringVertex>> entry : map.entrySet()) {
-            for (StringVertex to : entry.getValue()) {
-                result.append(entry.getKey().getLabel() + " -> " + to.getLabel() + ", ");
+        for (Map.Entry<StringVertex, ArrayList<StringVertex>> entry : edgesMap.entrySet()) {
+            StringVertex key = entry.getKey();
+            for (int i = 0; i < entry.getValue().size(); i++) {
+                if (conditionsMap.get(key).get(i) instanceof EmptyEdgeCondition) {
+                    result.append(key.getLabel() + " -> " + entry.getValue().get(i).getLabel() + ", ");
+                } else {
+                    result.append(key.getLabel() + " -> " + entry.getValue().get(i).getLabel()
+                            + " [" + conditionsMap.get(key).get(i).getStringRepresentation() + "], ");
+                }
             }
         }
         return result.toString() + "}";

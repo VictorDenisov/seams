@@ -1,5 +1,8 @@
 package org.creativelabs.graph;
 
+import org.creativelabs.graph.edge.condition.EdgeCondition;
+import org.creativelabs.graph.edge.condition.EmptyEdgeCondition;
+
 import java.io.*;
 
 public class GraphvizGraphBuilder implements GraphBuilder {
@@ -31,12 +34,19 @@ public class GraphvizGraphBuilder implements GraphBuilder {
         printWriter.println("    ratio=fill");
     }
 
+    @Override
     public Vertex addVertex(String label) {
         return new GraphvizVertex(label);
     }
 
-    public void addEdge(Vertex from, Vertex to) {
-        printWriter.println("    " + from.toString() + " -> " + to.toString() + ";");
+    @Override
+    public void addEdge(Vertex from, Vertex to, EdgeCondition condition) {
+        if (condition instanceof EmptyEdgeCondition) {
+            printWriter.println("    " + from.getLabel() + " -> " + to.getLabel() + ";");
+        } else {
+            printWriter.println("    " + from.getLabel() + " -> " + to.getLabel() + " [label = \"" +
+                    condition.getStringRepresentation() + "\"];");
+        }
     }
 
     public void finalizeGraph() {

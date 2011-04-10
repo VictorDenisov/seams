@@ -1,10 +1,10 @@
 package org.creativelabs.graph;
 
+import org.creativelabs.graph.edge.condition.EmptyEdgeCondition;
+import org.creativelabs.graph.edge.condition.StringEdgeCondition;
 import org.testng.annotations.Test;
-import org.testng.annotations.Configuration;
 
-import static org.testng.AssertJUnit.*;
-import static org.creativelabs.AssertHelper.*;
+import static org.testng.AssertJUnit.assertEquals;
 
 public class ToStringGraphBuilderTest {
 
@@ -17,14 +17,25 @@ public class ToStringGraphBuilderTest {
     }
 
     @Test
-    public void testAddEdge() {
+    public void testAddEdgeWithEmptyCondition() {
         ToStringGraphBuilder gb = new ToStringGraphBuilder();
         Vertex a = gb.addVertex("a");
         Vertex b = gb.addVertex("b");
 
-        gb.addEdge(a, b);
+        gb.addEdge(a, b, new EmptyEdgeCondition());
 
         assertEquals("{a -> b, }", gb.toString());
+    }
+
+    @Test
+    public void testAddEdgeWithStringCondition() {
+        ToStringGraphBuilder gb = new ToStringGraphBuilder();
+        Vertex a = gb.addVertex("a");
+        Vertex b = gb.addVertex("b");
+
+        gb.addEdge(a, b, new StringEdgeCondition("someLabel"));
+
+        assertEquals("{a -> b [(someLabel)], }", gb.toString());
     }
 
     @Test
@@ -34,8 +45,8 @@ public class ToStringGraphBuilderTest {
         Vertex b = gb.addVertex("b");
         Vertex c = gb.addVertex("c");
 
-        gb.addEdge(a, b);
-        gb.addEdge(a, c);
+        gb.addEdge(a, b, new EmptyEdgeCondition());
+        gb.addEdge(a, c, new EmptyEdgeCondition());
 
         assertEquals("{a -> b, a -> c, }", gb.toString());
     }
