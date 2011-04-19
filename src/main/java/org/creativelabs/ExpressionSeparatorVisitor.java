@@ -1,10 +1,9 @@
 package org.creativelabs;
 
-import japa.parser.ast.body.*;
 import japa.parser.ast.expr.*;
-import japa.parser.ast.stmt.*;
 import japa.parser.ast.visitor.VoidVisitorAdapter;
-import java.util.*;
+import org.creativelabs.iig.InternalInstancesGraph;
+import org.creativelabs.iig.SimpleInternalInstancesGraph;
 
 public class ExpressionSeparatorVisitor extends VoidVisitorAdapter<Object> {
 

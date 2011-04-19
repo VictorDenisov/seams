@@ -1,8 +1,12 @@
 package org.creativelabs.report;
 
-import java.util.*;
-import java.io.*;
-import org.creativelabs.*;
+import org.creativelabs.Dependency;
+import org.creativelabs.iig.InternalInstancesGraph;
+
+import java.io.PrintWriter;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 public class OverviewReportBuilder implements ReportBuilder {
 

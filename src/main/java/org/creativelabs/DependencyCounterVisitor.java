@@ -5,6 +5,8 @@ import japa.parser.ast.expr.*;
 import japa.parser.ast.body.*;
 import japa.parser.ast.visitor.*;
 
+import org.creativelabs.iig.InternalInstancesGraph;
+import org.creativelabs.iig.SimpleInternalInstancesGraph;
 import org.creativelabs.introspection.*;
 
 import java.util.*;
@@ -23,7 +25,7 @@ class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
 
     protected VariableList localVariables = new VariableListBuilder().buildEmpty();
 
-    private InternalInstancesGraph internalInstances = new InternalInstancesGraph();
+    private InternalInstancesGraph internalInstances = new SimpleInternalInstancesGraph();
 
     Set<Dependency> getDependencies() {
         return Collections.unmodifiableSet(dependencies);

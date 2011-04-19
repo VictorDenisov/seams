@@ -1,8 +1,14 @@
 package org.creativelabs.report;
 
-import java.util.*;
-import org.creativelabs.*;
-import java.io.*;
+import org.creativelabs.Dependency;
+import org.creativelabs.iig.InternalInstancesGraph;
+
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class DataCollector implements ReportBuilder {
 

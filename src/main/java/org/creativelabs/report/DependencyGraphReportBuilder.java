@@ -2,6 +2,9 @@ package org.creativelabs.report;
 
 import org.creativelabs.graph.*;
 import org.creativelabs.*;
+import org.creativelabs.graph.edge.condition.EmptyEdgeCondition;
+import org.creativelabs.iig.InternalInstancesGraph;
+
 import java.util.*;
 
 public class DependencyGraphReportBuilder implements ReportBuilder {
@@ -34,7 +37,7 @@ public class DependencyGraphReportBuilder implements ReportBuilder {
                 vertex = graphBuilder.addVertex(str);
             }
             try {
-                graphBuilder.addEdge(classVertex, vertex);
+                graphBuilder.addEdge(classVertex, vertex, new EmptyEdgeCondition());
             } catch (Exception e) {
             }
         }

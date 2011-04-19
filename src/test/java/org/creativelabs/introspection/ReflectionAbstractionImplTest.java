@@ -1,10 +1,10 @@
 package org.creativelabs.introspection;
 
-import org.testng.annotations.*;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
 
-import java.util.*;
-
-import java.lang.reflect.*;
+import java.lang.reflect.Method;
 
 import static org.testng.AssertJUnit.*;
 
@@ -252,7 +252,7 @@ public class ReflectionAbstractionImplTest {
         ClassType result = ra.getReturnType(className, "getInternalInstances", new ClassType[0]);
 
         assertEquals(
-                "java.util.Map<java.lang.String, org.creativelabs.InternalInstancesGraph, >", 
+                "java.util.Map<java.lang.String, org.creativelabs.iig.InternalInstancesGraph, >",
                 result.toString());
     }
 

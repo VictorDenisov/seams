@@ -6,7 +6,9 @@ import japa.parser.ast.body.VariableDeclarator;
 import japa.parser.ast.expr.*;
 import japa.parser.ast.stmt.*;
 import japa.parser.ast.visitor.VoidVisitorAdapter;
-import org.creativelabs.InternalInstancesGraph;
+import org.creativelabs.iig.ConditionInternalInstancesGraph;
+import org.creativelabs.iig.InternalInstancesGraph;
+import org.creativelabs.iig.SimpleInternalInstancesGraph;
 
 import java.util.*;
 
@@ -17,7 +19,7 @@ public class SsaFormConverter extends VoidVisitorAdapter<VariablesHolder> {
 
     public static final String SEPARATOR = "#";
 
-    private InternalInstancesGraph graph = new InternalInstancesGraph();
+    private InternalInstancesGraph graph = new SimpleInternalInstancesGraph();
 
     private MethodDeclaration methodDeclaration;
 

@@ -19,7 +19,7 @@ public class SsaDrawer implements Drawer {
 
     @Override
     public void draw(int width, int height, JFrame frame) {
-        //TODO implement drawing ssa form
+        throw new UnsupportedOperationException("Draw operation is not supported by SsaDrawer.");
     }
 
     @Override

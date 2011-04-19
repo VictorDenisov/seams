@@ -1,8 +1,13 @@
 package org.creativelabs.report;
 
-import java.util.*;
-import org.creativelabs.*;
-import org.creativelabs.introspection.*;
+import org.creativelabs.Dependency;
+import org.creativelabs.iig.InternalInstancesGraph;
+import org.creativelabs.introspection.ClassTypeError;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 public class ErrorCountDependencyReport implements ReportBuilder {
     private int count = 0;

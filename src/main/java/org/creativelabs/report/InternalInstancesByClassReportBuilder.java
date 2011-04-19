@@ -1,14 +1,16 @@
 package org.creativelabs.report;
 
-import java.util.*;
-import java.io.*;
-import org.creativelabs.*;
-import org.creativelabs.ui.*;
-
+import org.creativelabs.Dependency;
+import org.creativelabs.iig.InternalInstancesGraph;
+import org.creativelabs.ui.ChartDrawer;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 public class InternalInstancesByClassReportBuilder implements ReportBuilder {
 

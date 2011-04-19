@@ -2,6 +2,9 @@ package org.creativelabs;
 
 import japa.parser.ast.body.*;
 import japa.parser.ast.stmt.BlockStmt;
+import org.creativelabs.iig.ConditionInternalInstancesGraph;
+import org.creativelabs.iig.InternalInstancesGraph;
+import org.creativelabs.iig.SimpleInternalInstancesGraph;
 import org.creativelabs.report.ReportBuilder;
 import org.creativelabs.ssa.SsaFormAstRepresentation;
 import org.creativelabs.ssa.SsaFormConverter;
@@ -20,7 +23,7 @@ class ClassProcessor {
             = new HashMap<String, InternalInstancesGraph>();
     protected Set<SsaFormAstRepresentation> forms = new HashSet<SsaFormAstRepresentation>();
 
-    protected InternalInstancesGraph ssaInternalInstancesGraph = new InternalInstancesGraph();
+    protected InternalInstancesGraph ssaInternalInstancesGraph = new SimpleInternalInstancesGraph();
 
     ClassProcessor(ClassOrInterfaceDeclaration typeDeclaration,
                    DependencyCounterVisitorBuilder dependencyCounterBuilder) {

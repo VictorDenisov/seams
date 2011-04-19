@@ -1,8 +1,13 @@
 package org.creativelabs.report;
 
-import java.util.*;
-import java.io.*;
-import org.creativelabs.*;
+import org.creativelabs.Dependency;
+import org.creativelabs.iig.InternalInstancesGraph;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Collection;
+import java.util.Map;
 
 public class DetailedDependencyReportBuilder implements ReportBuilder {
 

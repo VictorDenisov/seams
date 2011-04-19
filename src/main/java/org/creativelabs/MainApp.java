@@ -7,6 +7,7 @@ import japa.parser.ast.body.TypeDeclaration;
 import org.apache.commons.cli.*;
 import org.creativelabs.chart.BarChartBuilder;
 import org.creativelabs.graph.JungGraphBuilder;
+import org.creativelabs.iig.InternalInstancesGraph;
 import org.creativelabs.introspection.ReflectionAbstractionImpl;
 import org.creativelabs.report.DataCollector;
 import org.creativelabs.report.ReportBuilder;
@@ -17,6 +18,7 @@ import org.creativelabs.ui.SsaDrawer;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.Map;
 
 final class MainApp {
@@ -75,7 +77,7 @@ final class MainApp {
         }
     }
 
-    private static void processClass(ClassOrInterfaceDeclaration typeDeclaration, String fileName, ReportBuilder reportBuilder) {
+    private static void processClass(ClassOrInterfaceDeclaration typeDeclaration, String fileName, ReportBuilder reportBuilder) throws FileNotFoundException {
         ClassProcessor classProcessor = new ClassProcessorBuilder()
                 .setTypeDeclaration(typeDeclaration)
                 .setImports(imports)
@@ -105,11 +107,16 @@ final class MainApp {
                 new SsaDrawer(form).saveToFile(IMAGE_WIDTH, IMAGE_HEIGHT,
                         fileName + "." + form.getMethodName());
             }
-            InternalInstancesGraph graph = classProcessor.getSsaInternalInstancesGraph();
-            JungGraphBuilder graphBuilder = new JungGraphBuilder();
-            graph.buildGraph(graphBuilder);
-            new JungDrawer(graphBuilder.getGraph()).saveToFile(2 * IMAGE_WIDTH, 2 * IMAGE_HEIGHT,
-                    fileName);
+//            SimpleInternalInstancesGraph graph = classProcessor.getSsaInternalInstancesGraph();
+//            JungGraphBuilder graphBuilder = new JungGraphBuilder();
+//            graph.buildGraph(graphBuilder);
+//            new JungDrawer(graphBuilder.getGraph()).saveToFile(2 * IMAGE_WIDTH, 2 * IMAGE_HEIGHT,
+//                    fileName);
+
+//            PrintWriter printWriter = new PrintWriter(classProcessor.);
+//            GraphvizGraphBuilder graphBuilder = new GraphvizGraphBuilder(printWriter);
+//            graph.buildGraph(graphBuilder);
+//            new GraphvizDrawer().saveToFile(IMAGE_WIDTH, IMAGE_HEIGHT, fileName);
         }
     }
 

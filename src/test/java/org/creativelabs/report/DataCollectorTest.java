@@ -1,16 +1,11 @@
 package org.creativelabs.report;
 
 import org.creativelabs.*;
-import org.creativelabs.graph.*;
-import org.creativelabs.introspection.*;
+import org.creativelabs.iig.InternalInstancesGraph;
 import org.testng.annotations.*;
-
-import japa.parser.ast.body.*;
-import japa.parser.ast.stmt.*;
 
 import java.util.*;
 
-import static org.testng.AssertJUnit.*;
 import static org.mockito.Mockito.*;
 
 public class DataCollectorTest {
