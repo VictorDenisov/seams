@@ -2,11 +2,13 @@ package org.creativelabs.report;
 
 import org.creativelabs.Dependency;
 import org.creativelabs.iig.InternalInstancesGraph;
+import org.creativelabs.ssa.SsaFormAstRepresentation;
 
 import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class OverviewReportBuilder implements ReportBuilder {
 
@@ -28,6 +30,10 @@ public class OverviewReportBuilder implements ReportBuilder {
             resultMap.put(entry.getKey(), entry.getValue().toSet().size());
         }
         internalInstancesCount.put(className, resultMap);
+    }
+
+    @Override
+    public void setSsaFormRepresentations(String className, Set<SsaFormAstRepresentation> ssaFormRepresentations) {
     }
 
     public void saveToFile(PrintWriter writer) throws Exception {

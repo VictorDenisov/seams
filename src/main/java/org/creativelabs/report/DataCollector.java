@@ -2,13 +2,11 @@ package org.creativelabs.report;
 
 import org.creativelabs.Dependency;
 import org.creativelabs.iig.InternalInstancesGraph;
+import org.creativelabs.ssa.SsaFormAstRepresentation;
 
 import java.io.FileWriter;
 import java.io.PrintWriter;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class DataCollector implements ReportBuilder {
 
@@ -17,6 +15,7 @@ public class DataCollector implements ReportBuilder {
     private class ClassData {
         private Map<String, Collection<Dependency>> dependencies;
         private Map<String, InternalInstancesGraph> internalInstances;
+        private Set<SsaFormAstRepresentation> ssaFormRepresentations;
     }
     
     public void setDependencies(String className, Map<String, Collection<Dependency>> dependencies) {
@@ -41,15 +40,32 @@ public class DataCollector implements ReportBuilder {
         cd.internalInstances = instances;
     }
 
+    @Override
+    public void setSsaFormRepresentations(String className, Set<SsaFormAstRepresentation> ssaFormRepresentations) {
+        ClassData cd;
+        if (map.containsKey(className)) {
+            cd = map.get(className);
+        } else {
+            cd = new ClassData();
+            map.put(className, cd);
+        }
+        cd.ssaFormRepresentations = ssaFormRepresentations;
+    }
+
     public void buildReport(ReportBuilder reportBuilder) {
         for (Map.Entry<String, ClassData> entry : map.entrySet()) {
             reportBuilder.setDependencies(entry.getKey(), entry.getValue().dependencies);
             reportBuilder.setInternalInstances(entry.getKey(), entry.getValue().internalInstances);
+            reportBuilder.setSsaFormRepresentations(entry.getKey(), entry.getValue().ssaFormRepresentations);
         }
     }
 
     public void buildDetailedDependencyReport() {
         buildReport(new DetailedDependencyReportBuilder());
+    }
+
+    public void buildSsaFormRepresentationReport() {
+        buildReport(new SsaFormRepresentationsReportBuilder());
     }
 
     public void buildNumberOfErrorsReport() throws Exception {

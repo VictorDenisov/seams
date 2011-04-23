@@ -2,6 +2,7 @@ package org.creativelabs.report;
 
 import org.creativelabs.Dependency;
 import org.creativelabs.iig.InternalInstancesGraph;
+import org.creativelabs.ssa.SsaFormAstRepresentation;
 import org.creativelabs.ui.ChartDrawer;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
@@ -11,6 +12,7 @@ import org.jfree.data.category.DefaultCategoryDataset;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class OverviewChartReportBuilder implements ReportBuilder {
 
@@ -31,6 +33,10 @@ public class OverviewChartReportBuilder implements ReportBuilder {
             resultMap.put(entry.getKey(), entry.getValue().toSet().size());
         }
         internalInstancesCount.put(className, resultMap);
+    }
+
+    @Override
+    public void setSsaFormRepresentations(String className, Set<SsaFormAstRepresentation> ssaFormRepresentations) {
     }
 
     public JFreeChart getChart() throws Exception {

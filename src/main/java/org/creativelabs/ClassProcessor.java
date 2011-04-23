@@ -2,7 +2,6 @@ package org.creativelabs;
 
 import japa.parser.ast.body.*;
 import japa.parser.ast.stmt.BlockStmt;
-import org.creativelabs.iig.ConditionInternalInstancesGraph;
 import org.creativelabs.iig.InternalInstancesGraph;
 import org.creativelabs.iig.SimpleInternalInstancesGraph;
 import org.creativelabs.report.ReportBuilder;
@@ -34,6 +33,7 @@ class ClassProcessor {
     public void buildReport(ReportBuilder reportBuilder) {
         reportBuilder.setDependencies(typeDeclaration.getName(), dependencies);
         reportBuilder.setInternalInstances(typeDeclaration.getName(), internalInstances);
+        reportBuilder.setSsaFormRepresentations(typeDeclaration.getName(), forms);
     }
 
     public DependenciesChart getDependenciesChart() {

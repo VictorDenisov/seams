@@ -2,12 +2,14 @@ package org.creativelabs.report;
 
 import org.creativelabs.Dependency;
 import org.creativelabs.iig.InternalInstancesGraph;
+import org.creativelabs.ssa.SsaFormAstRepresentation;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 public class DetailedDependencyReportBuilder implements ReportBuilder {
 
@@ -16,6 +18,10 @@ public class DetailedDependencyReportBuilder implements ReportBuilder {
     }
 
     public void setInternalInstances(String className, Map<String, InternalInstancesGraph> instances) {
+    }
+
+    @Override
+    public void setSsaFormRepresentations(String className, Set<SsaFormAstRepresentation> ssaFormRepresentations) {
     }
 
     private void outData(Map<String, Collection<Dependency>> deps, String fileName) {

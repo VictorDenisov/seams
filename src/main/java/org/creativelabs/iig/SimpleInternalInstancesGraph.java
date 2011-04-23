@@ -1,8 +1,8 @@
 package org.creativelabs.iig;
 
 import org.creativelabs.graph.*;
-import org.creativelabs.graph.edge.condition.EdgeCondition;
-import org.creativelabs.graph.edge.condition.EmptyEdgeCondition;
+import org.creativelabs.graph.condition.Condition;
+import org.creativelabs.graph.condition.EmptyCondition;
 
 import java.util.*;
 
@@ -20,7 +20,7 @@ public class SimpleInternalInstancesGraph implements InternalInstancesGraph {
     }
 
     @Override
-    public void add(String from, String to, EdgeCondition condition) {
+    public void add(String from, String to, Condition condition) {
         fromVertexes.add(from);
         toVertexes.add(to);
     }
@@ -40,13 +40,13 @@ public class SimpleInternalInstancesGraph implements InternalInstancesGraph {
         vertexes.addAll(fromVertexes);
         vertexes.addAll(toVertexes);
         for (String vertex : vertexes) {
-            map.put(vertex, graphBuilder.addVertex(vertex));
+            map.put(vertex, graphBuilder.addVertex(vertex, new EmptyCondition(), new EmptyCondition()));
         }
 
         for (int i = 0; i < fromVertexes.size(); i++) {
             Vertex a = map.get(fromVertexes.get(i));
             Vertex b = map.get(toVertexes.get(i));
-            graphBuilder.addEdge(a, b, new EmptyEdgeCondition());
+            graphBuilder.addEdge(a, b, new EmptyCondition());
         }
     }
 }

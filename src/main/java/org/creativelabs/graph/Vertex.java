@@ -1,6 +1,9 @@
 package org.creativelabs.graph;
 
-public interface Vertex {
+import org.creativelabs.graph.condition.VertexConditions;
+
+public interface Vertex extends VertexConditions {
 
     String getLabel();
+
 }

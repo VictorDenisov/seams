@@ -1,15 +1,15 @@
-package org.creativelabs.graph.edge.condition;
+package org.creativelabs.graph.condition;
 
 /**
  * @author azotcsit
  *         Date: 08.04.11
  *         Time: 22:21
  */
-public class StringEdgeCondition implements EdgeCondition {
+public class StringCondition implements Condition {
 
     private StringBuilder condition;
 
-    public StringEdgeCondition(String condition) {
+    public StringCondition(String condition) {
         this.condition = new StringBuilder()
                 .append("(")
                 .append(condition)
@@ -22,8 +22,8 @@ public class StringEdgeCondition implements EdgeCondition {
     }
 
     @Override
-    public EdgeCondition and(EdgeCondition condition) {
-        if (!(condition instanceof EmptyEdgeCondition)) {
+    public Condition and(Condition condition) {
+        if (!(condition instanceof EmptyCondition)) {
             this.condition = new StringBuilder().append("(")
                     .append(this.condition)
                     .append("&&")
@@ -34,8 +34,8 @@ public class StringEdgeCondition implements EdgeCondition {
     }
 
     @Override
-    public EdgeCondition or(EdgeCondition condition) {
-        if (!(condition instanceof EmptyEdgeCondition)) {
+    public Condition or(Condition condition) {
+        if (!(condition instanceof EmptyCondition)) {
             this.condition = new StringBuilder().append("(")
                     .append(this.condition)
                     .append("||")
@@ -46,7 +46,7 @@ public class StringEdgeCondition implements EdgeCondition {
     }
 
     @Override
-    public EdgeCondition not() {
+    public Condition not() {
         this.condition = new StringBuilder().append("(!")
                 .append(this.condition)
                 .append(")");

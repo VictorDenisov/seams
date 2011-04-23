@@ -3,11 +3,9 @@ package org.creativelabs.report;
 import org.creativelabs.Dependency;
 import org.creativelabs.iig.InternalInstancesGraph;
 import org.creativelabs.introspection.ClassTypeError;
+import org.creativelabs.ssa.SsaFormAstRepresentation;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ErrorCountDependencyReport implements ReportBuilder {
     private int count = 0;
@@ -27,6 +25,10 @@ public class ErrorCountDependencyReport implements ReportBuilder {
     }
 
     public void setInternalInstances(String className, Map<String, InternalInstancesGraph> instances) {
+    }
+
+    @Override
+    public void setSsaFormRepresentations(String className, Set<SsaFormAstRepresentation> ssaFormRepresentations) {
     }
 
     public int getCount() {

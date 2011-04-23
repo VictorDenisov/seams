@@ -1,17 +1,17 @@
 package org.creativelabs.report;
 
-import org.creativelabs.*;
-import org.creativelabs.graph.*;
-import org.creativelabs.introspection.*;
+import org.creativelabs.Dependency;
+import org.creativelabs.graph.ToStringGraphBuilder;
+import org.creativelabs.introspection.ClassTypeStub;
 import org.testng.annotations.Test;
 
-import japa.parser.ast.body.*;
-import japa.parser.ast.stmt.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
+import java.util.TreeMap;
 
-import java.util.*;
-
-import static org.testng.AssertJUnit.*;
-import static org.mockito.Mockito.*;
+import static org.creativelabs.graph.condition.VertexConditions.EMPTY_CONDITIONS_STRING;
+import static org.testng.AssertJUnit.assertEquals;
 
 public class DependencyGraphReportBuilderTest {
 
@@ -35,7 +35,10 @@ public class DependencyGraphReportBuilderTest {
         map.put("methodC", deps);
         reportBuilder.setDependencies("ClassB", map);
 
-        assertEquals("{ClassA -> Map, ClassA -> String, ClassB -> ClassA, ClassB -> Map, }",
+        assertEquals("{ClassA" + EMPTY_CONDITIONS_STRING + " -> Map" + EMPTY_CONDITIONS_STRING +
+                ", ClassA" + EMPTY_CONDITIONS_STRING + " -> String" + EMPTY_CONDITIONS_STRING +
+                ", ClassB" + EMPTY_CONDITIONS_STRING + " -> ClassA" + EMPTY_CONDITIONS_STRING +
+                ", ClassB" + EMPTY_CONDITIONS_STRING + " -> Map" + EMPTY_CONDITIONS_STRING + ", }",
                 graphBuilder.toString());
     }
 
@@ -63,7 +66,10 @@ public class DependencyGraphReportBuilderTest {
         map.put("methodC", deps);
         reportBuilder.setDependencies("ClassB", map);
 
-        assertEquals("{ClassA -> Map, ClassA -> String, ClassB -> ClassA, ClassB -> Map, }",
+        assertEquals("{ClassA" + EMPTY_CONDITIONS_STRING + " -> Map" + EMPTY_CONDITIONS_STRING +
+                ", ClassA" + EMPTY_CONDITIONS_STRING + " -> String" + EMPTY_CONDITIONS_STRING +
+                ", ClassB" + EMPTY_CONDITIONS_STRING + " -> ClassA" + EMPTY_CONDITIONS_STRING +
+                ", ClassB" + EMPTY_CONDITIONS_STRING + " -> Map" + EMPTY_CONDITIONS_STRING + ", }",
                 graphBuilder.toString());
     }
 }

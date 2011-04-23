@@ -1,4 +1,4 @@
-package org.creativelabs.graph.edge.condition;
+package org.creativelabs.graph.condition;
 
 import org.testng.annotations.Test;
 
@@ -12,21 +12,21 @@ import static org.testng.Assert.assertEquals;
 public class EmptyEdgeConditionTest {
     @Test
     public void testGetStringRepresentation() throws Exception {
-        assertEquals("", new EmptyEdgeCondition().getStringRepresentation());
+        assertEquals("", new EmptyCondition().getStringRepresentation());
     }
 
     @Test(expectedExceptions = UnsupportedOperationException.class)
     public void testAnd() throws Exception {
-        new EmptyEdgeCondition().and(new EmptyEdgeCondition());
+        new EmptyCondition().and(new EmptyCondition());
     }
 
     @Test(expectedExceptions = UnsupportedOperationException.class)
     public void testOr() throws Exception {
-        new EmptyEdgeCondition().and(new EmptyEdgeCondition());
+        new EmptyCondition().and(new EmptyCondition());
     }
 
     @Test(expectedExceptions = UnsupportedOperationException.class)
     public void testNot() throws Exception {
-        new EmptyEdgeCondition().not();
+        new EmptyCondition().not();
     }
 }

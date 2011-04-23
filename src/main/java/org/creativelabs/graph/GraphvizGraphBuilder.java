@@ -1,7 +1,7 @@
 package org.creativelabs.graph;
 
-import org.creativelabs.graph.edge.condition.EdgeCondition;
-import org.creativelabs.graph.edge.condition.EmptyEdgeCondition;
+import org.creativelabs.graph.condition.Condition;
+import org.creativelabs.graph.condition.EmptyCondition;
 
 import java.io.*;
 
@@ -10,19 +10,32 @@ public class GraphvizGraphBuilder implements GraphBuilder {
     private static class GraphvizVertex implements Vertex {
 
         private String label;
+        private Condition internalCondition;
+        private Condition externalCondition;
 
-        public GraphvizVertex(String label) {
+        private GraphvizVertex(String label, Condition internalCondition, Condition externalCondition) {
             this.label = label;
-        }
-
-        public String getLabel() {
-            return label;
+            this.internalCondition = internalCondition;
+            this.externalCondition = externalCondition;
         }
 
         @Override
-        public String toString() {
-            return label;
+        public String getLabel() {
+            return label + "[" +
+                    internalCondition.getStringRepresentation() + " | " +
+                    externalCondition.getStringRepresentation() + "]";
         }
+
+        @Override
+        public Condition getInternalCondition() {
+            return internalCondition;
+        }
+
+        @Override
+        public Condition getExternalCondition() {
+            return externalCondition;
+        }
+
     }
 
     private PrintWriter printWriter;
@@ -35,13 +48,13 @@ public class GraphvizGraphBuilder implements GraphBuilder {
     }
 
     @Override
-    public Vertex addVertex(String label) {
-        return new GraphvizVertex(label);
+    public Vertex addVertex(String label, Condition internalCondition, Condition externalCondition) {
+        return new GraphvizVertex(label, internalCondition, externalCondition);
     }
 
     @Override
-    public void addEdge(Vertex from, Vertex to, EdgeCondition condition) {
-        if (condition instanceof EmptyEdgeCondition) {
+    public void addEdge(Vertex from, Vertex to, Condition condition) {
+        if (condition instanceof EmptyCondition) {
             printWriter.println("    " + from.getLabel() + " -> " + to.getLabel() + ";");
         } else {
             printWriter.println("    " + from.getLabel() + " -> " + to.getLabel() + " [label = \"" +

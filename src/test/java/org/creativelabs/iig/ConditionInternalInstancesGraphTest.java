@@ -8,6 +8,8 @@ import org.testng.annotations.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import static org.creativelabs.graph.condition.VertexConditions.EMPTY_CONDITIONS_STRING;
+
 /**
  * @author azotcsit
  * Date: 10.04.11
@@ -30,7 +32,8 @@ public class ConditionInternalInstancesGraphTest {
         InternalInstancesGraph graph = new ConditionInternalInstancesGraph();
         graph.add("source", "target");
         String resultValue = internalInstancesToString(graph);
-        AssertJUnit.assertEquals("{source -> target, }", resultValue);
+        AssertJUnit.assertEquals("{source" + EMPTY_CONDITIONS_STRING + " -> target" + EMPTY_CONDITIONS_STRING + ", }",
+                resultValue);
     }
 
     @Test
@@ -39,7 +42,9 @@ public class ConditionInternalInstancesGraphTest {
         graph.add("source", "target1");
         graph.add("source", "target2");
         String resultValue = internalInstancesToString(graph);
-        AssertJUnit.assertEquals("{source -> target1, source -> target2, }", resultValue);
+        AssertJUnit.assertEquals("{source" + EMPTY_CONDITIONS_STRING + " -> target1" + EMPTY_CONDITIONS_STRING +
+                ", source" + EMPTY_CONDITIONS_STRING + " -> target2" + EMPTY_CONDITIONS_STRING + ", }",
+                resultValue);
     }
 
     @Test
@@ -63,8 +68,8 @@ public class ConditionInternalInstancesGraphTest {
         InternalInstancesGraph graph = new ConditionInternalInstancesGraph();
         graph.add("source", "target");
 
-        ToStringGraphBuilder gb = new ToStringGraphBuilder();
-        graph.buildGraph(gb);
-        AssertJUnit.assertEquals("{source -> target, }", gb.toString());
+        String resultValue = internalInstancesToString(graph);
+        AssertJUnit.assertEquals("{source" + EMPTY_CONDITIONS_STRING + " -> target" + EMPTY_CONDITIONS_STRING + ", }",
+                resultValue);
     }
 }

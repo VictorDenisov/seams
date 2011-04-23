@@ -73,6 +73,7 @@ final class MainApp {
                 processFileOrDirectory(file, dataCollector);
             }
             dataCollector.buildDetailedDependencyReport();
+            dataCollector.buildSsaFormRepresentationReport();
             dataCollector.buildNumberOfErrorsReport();
         }
     }

@@ -1,13 +1,13 @@
 package org.creativelabs.graph;
 
-import edu.uci.ics.jung.graph.*;
+import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.util.EdgeType;
-
-import org.creativelabs.graph.edge.condition.EmptyEdgeCondition;
-import org.creativelabs.graph.edge.condition.StringEdgeCondition;
+import org.creativelabs.graph.condition.EmptyCondition;
+import org.creativelabs.graph.condition.StringCondition;
 import org.testng.annotations.Test;
 
-import static org.testng.AssertJUnit.*;
+import static org.creativelabs.graph.condition.VertexConditions.EMPTY_CONDITIONS_STRING;
+import static org.testng.AssertJUnit.assertEquals;
 
 public class JungGraphBuilderTest {
 
@@ -19,23 +19,23 @@ public class JungGraphBuilderTest {
     @Test
     public void testAddVertex() {
         JungGraphBuilder builder = new JungGraphBuilder();
-        Vertex v = builder.addVertex("label");
-        assertEquals("label", v.getLabel());
+        Vertex v = builder.addVertex("label", new EmptyCondition(), new EmptyCondition());
+        assertEquals("label" + EMPTY_CONDITIONS_STRING, v.getLabel());
     }
 
     @Test
     public void testToStringReturnsLabel() {
         JungGraphBuilder builder = new JungGraphBuilder();
-        Vertex v = builder.addVertex("label");
-        assertEquals("label", v.toString());
+        Vertex v = builder.addVertex("label", new EmptyCondition(), new EmptyCondition());
+        assertEquals("label" + EMPTY_CONDITIONS_STRING, v.getLabel());
     }
 
     @Test
     public void testAddEdgeWithEmptyCondition() {
         JungGraphBuilder builder = new JungGraphBuilder();
-        Vertex a = builder.addVertex("a");
-        Vertex b = builder.addVertex("b");
-        builder.addEdge(a, b, new EmptyEdgeCondition());
+        Vertex a = builder.addVertex("a", new EmptyCondition(), new EmptyCondition());
+        Vertex b = builder.addVertex("b", new EmptyCondition(), new EmptyCondition());
+        builder.addEdge(a, b, new EmptyCondition());
         Graph graph = builder.getGraph();
         assertEquals(2, graph.getVertices().size());
         assertEquals(1, graph.getEdgeCount());
@@ -45,9 +45,9 @@ public class JungGraphBuilderTest {
     @Test
     public void testAddEdgeWithStringCondition() {
         JungGraphBuilder builder = new JungGraphBuilder();
-        Vertex a = builder.addVertex("a");
-        Vertex b = builder.addVertex("b");
-        builder.addEdge(a, b, new StringEdgeCondition("someLabel"));
+        Vertex a = builder.addVertex("a", new EmptyCondition(), new EmptyCondition());
+        Vertex b = builder.addVertex("b", new EmptyCondition(), new EmptyCondition());
+        builder.addEdge(a, b, new StringCondition("someLabel"));
         Graph graph = builder.getGraph();
         assertEquals(2, graph.getVertices().size());
         assertEquals(1, graph.getEdgeCount());

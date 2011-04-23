@@ -1,8 +1,8 @@
 package org.creativelabs.iig;
 
 import org.creativelabs.graph.*;
-import org.creativelabs.graph.edge.condition.EdgeCondition;
-import org.creativelabs.graph.edge.condition.EmptyEdgeCondition;
+import org.creativelabs.graph.condition.Condition;
+import org.creativelabs.graph.condition.EmptyCondition;
 
 import java.util.*;
 
@@ -16,17 +16,17 @@ import java.util.*;
 public class ConditionInternalInstancesGraph implements InternalInstancesGraph {
     private List<String> fromVertexes = new ArrayList<String>();
     private List<String> toVertexes = new ArrayList<String>();
-    private List<EdgeCondition> conditions = new ArrayList<EdgeCondition>();
+    private List<Condition> conditions = new ArrayList<Condition>();
 
     @Override
     public void add(String from, String to) {
         fromVertexes.add(from);
         toVertexes.add(to);
-        conditions.add(new EmptyEdgeCondition());
+        conditions.add(new EmptyCondition());
     }
 
     @Override
-    public void add(String from, String to, EdgeCondition condition) {
+    public void add(String from, String to, Condition condition) {
         fromVertexes.add(from);
         toVertexes.add(to);
         conditions.add(condition);
@@ -47,7 +47,7 @@ public class ConditionInternalInstancesGraph implements InternalInstancesGraph {
         vertexes.addAll(fromVertexes);
         vertexes.addAll(toVertexes);
         for (String vertex : vertexes) {
-            map.put(vertex, graphBuilder.addVertex(vertex));
+            map.put(vertex, graphBuilder.addVertex(vertex, new EmptyCondition(), new EmptyCondition()));
         }
 
         for (int i = 0; i < fromVertexes.size(); i++) {

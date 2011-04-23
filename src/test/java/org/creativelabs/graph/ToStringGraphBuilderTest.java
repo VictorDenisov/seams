@@ -1,9 +1,10 @@
 package org.creativelabs.graph;
 
-import org.creativelabs.graph.edge.condition.EmptyEdgeCondition;
-import org.creativelabs.graph.edge.condition.StringEdgeCondition;
+import org.creativelabs.graph.condition.EmptyCondition;
+import org.creativelabs.graph.condition.StringCondition;
 import org.testng.annotations.Test;
 
+import static org.creativelabs.graph.condition.VertexConditions.EMPTY_CONDITIONS_STRING;
 import static org.testng.AssertJUnit.assertEquals;
 
 public class ToStringGraphBuilderTest {
@@ -11,43 +12,48 @@ public class ToStringGraphBuilderTest {
     @Test
     public void testAddVertex() {
         ToStringGraphBuilder gb = new ToStringGraphBuilder();
-        Vertex vert = gb.addVertex("label");
+        Vertex vertex = gb.addVertex("label", new EmptyCondition(), new EmptyCondition());
 
-        assertEquals("label", vert.getLabel());
+        assertEquals("label" + EMPTY_CONDITIONS_STRING, vertex.getLabel());
     }
 
     @Test
     public void testAddEdgeWithEmptyCondition() {
-        ToStringGraphBuilder gb = new ToStringGraphBuilder();
-        Vertex a = gb.addVertex("a");
-        Vertex b = gb.addVertex("b");
+        ToStringGraphBuilder graphBuilder = new ToStringGraphBuilder();
+        Vertex a = graphBuilder.addVertex("a", new EmptyCondition(), new EmptyCondition());
+        Vertex b = graphBuilder.addVertex("b", new EmptyCondition(), new EmptyCondition());
 
-        gb.addEdge(a, b, new EmptyEdgeCondition());
+        graphBuilder.addEdge(a, b, new EmptyCondition());
 
-        assertEquals("{a -> b, }", gb.toString());
+        assertEquals("{a" + EMPTY_CONDITIONS_STRING + " -> b" + EMPTY_CONDITIONS_STRING + ", }",
+                graphBuilder.toString());
     }
 
     @Test
     public void testAddEdgeWithStringCondition() {
-        ToStringGraphBuilder gb = new ToStringGraphBuilder();
-        Vertex a = gb.addVertex("a");
-        Vertex b = gb.addVertex("b");
+        ToStringGraphBuilder graphBuilder = new ToStringGraphBuilder();
+        Vertex a = graphBuilder.addVertex("a", new EmptyCondition(), new EmptyCondition());
+        Vertex b = graphBuilder.addVertex("b", new EmptyCondition(), new EmptyCondition());
 
-        gb.addEdge(a, b, new StringEdgeCondition("someLabel"));
+        graphBuilder.addEdge(a, b, new StringCondition("someLabel"));
 
-        assertEquals("{a -> b [(someLabel)], }", gb.toString());
+        assertEquals("{a" + EMPTY_CONDITIONS_STRING + " -> b" + EMPTY_CONDITIONS_STRING +
+                " [(someLabel)], }",
+                graphBuilder.toString());
     }
 
     @Test
     public void testSeveralEdgesFromA() {
-        ToStringGraphBuilder gb = new ToStringGraphBuilder();
-        Vertex a = gb.addVertex("a");
-        Vertex b = gb.addVertex("b");
-        Vertex c = gb.addVertex("c");
+        ToStringGraphBuilder graphBuilder = new ToStringGraphBuilder();
+        Vertex a = graphBuilder.addVertex("a", new EmptyCondition(), new EmptyCondition());
+        Vertex b = graphBuilder.addVertex("b", new EmptyCondition(), new EmptyCondition());
+        Vertex c = graphBuilder.addVertex("c", new EmptyCondition(), new EmptyCondition());
 
-        gb.addEdge(a, b, new EmptyEdgeCondition());
-        gb.addEdge(a, c, new EmptyEdgeCondition());
+        graphBuilder.addEdge(a, b, new EmptyCondition());
+        graphBuilder.addEdge(a, c, new EmptyCondition());
 
-        assertEquals("{a -> b, a -> c, }", gb.toString());
+        assertEquals("{a" + EMPTY_CONDITIONS_STRING + " -> b" + EMPTY_CONDITIONS_STRING +
+                ", a" + EMPTY_CONDITIONS_STRING + " -> c" + EMPTY_CONDITIONS_STRING + ", }",
+                graphBuilder.toString());
     }
 }
