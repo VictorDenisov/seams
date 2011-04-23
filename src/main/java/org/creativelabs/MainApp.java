@@ -11,10 +11,8 @@ import org.creativelabs.iig.InternalInstancesGraph;
 import org.creativelabs.introspection.ReflectionAbstractionImpl;
 import org.creativelabs.report.DataCollector;
 import org.creativelabs.report.ReportBuilder;
-import org.creativelabs.ssa.SsaFormAstRepresentation;
 import org.creativelabs.ui.ChartDrawer;
 import org.creativelabs.ui.JungDrawer;
-import org.creativelabs.ui.SsaDrawer;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -49,7 +47,6 @@ final class MainApp {
         options.addOption("d", "dependency", false, "Create files with dependencies");
         options.addOption("g", "graph", false, "Create files with graphs");
         options.addOption("c", "chart", false, "Create file with chart");
-        options.addOption("s", "ssa", false, "Create ssa form");
         options.addOptionGroup(new OptionGroup());
         Option option = OptionBuilder.
                 isRequired(true).
@@ -102,22 +99,6 @@ final class MainApp {
             DependenciesChart chart = classProcessor.getDependenciesChart();
             chart.buildChart(chartBuilder);
             new ChartDrawer(chartBuilder.getChart()).saveToFile(IMAGE_WIDTH, IMAGE_HEIGHT, fileName);
-        }
-        if (commandLine.hasOption('s')) {
-            for (SsaFormAstRepresentation form : classProcessor.getForms()) {
-                new SsaDrawer(form).saveToFile(IMAGE_WIDTH, IMAGE_HEIGHT,
-                        fileName + "." + form.getMethodName());
-            }
-//            SimpleInternalInstancesGraph graph = classProcessor.getSsaInternalInstancesGraph();
-//            JungGraphBuilder graphBuilder = new JungGraphBuilder();
-//            graph.buildGraph(graphBuilder);
-//            new JungDrawer(graphBuilder.getGraph()).saveToFile(2 * IMAGE_WIDTH, 2 * IMAGE_HEIGHT,
-//                    fileName);
-
-//            PrintWriter printWriter = new PrintWriter(classProcessor.);
-//            GraphvizGraphBuilder graphBuilder = new GraphvizGraphBuilder(printWriter);
-//            graph.buildGraph(graphBuilder);
-//            new GraphvizDrawer().saveToFile(IMAGE_WIDTH, IMAGE_HEIGHT, fileName);
         }
     }
 
