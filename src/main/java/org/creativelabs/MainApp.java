@@ -19,7 +19,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.Map;
 
-final class MainApp {
+public final class MainApp {
 
     private static ImportList imports;
 
@@ -36,6 +36,8 @@ final class MainApp {
 
     private static CommandLine commandLine = null;
 
+    public static boolean NEED_TO_REWRITE_OLD_REPORT = false;
+
     private MainApp() {
 
     }
@@ -47,6 +49,7 @@ final class MainApp {
         options.addOption("d", "dependency", false, "Create files with dependencies");
         options.addOption("g", "graph", false, "Create files with graphs");
         options.addOption("c", "chart", false, "Create file with chart");
+        options.addOption("r", "rewrite", false, "Rewrite old reports");
         options.addOptionGroup(new OptionGroup());
         Option option = OptionBuilder.
                 isRequired(true).
@@ -61,6 +64,9 @@ final class MainApp {
                 || commandLine.getOptions().length == 0) {
             printUsage(options);
             System.exit(0);
+        }
+        if (commandLine.hasOption('r')) {
+            NEED_TO_REWRITE_OLD_REPORT = true;
         }
         if (commandLine.hasOption('f')) {
             DataCollector dataCollector = new DataCollector();

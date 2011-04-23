@@ -1,6 +1,7 @@
 package org.creativelabs.report;
 
 import org.creativelabs.Dependency;
+import org.creativelabs.MainApp;
 import org.creativelabs.iig.InternalInstancesGraph;
 import org.creativelabs.ssa.SsaFormAstRepresentation;
 
@@ -34,7 +35,7 @@ public class SsaFormRepresentationsReportBuilder implements ReportBuilder {
     private void outData(Set<SsaFormAstRepresentation> ssaFormRepresentations, String fileName) {
         try {
             File file = new File(fileName + ".ssa");
-            if (file.createNewFile()) {
+            if (file.createNewFile() || MainApp.NEED_TO_REWRITE_OLD_REPORT) {
                 PrintWriter writer = new PrintWriter(file);
                 printSsaFormRepresentations(ssaFormRepresentations, writer);
                 writer.flush();
@@ -47,8 +48,14 @@ public class SsaFormRepresentationsReportBuilder implements ReportBuilder {
 
     private void printSsaFormRepresentations(Set<SsaFormAstRepresentation> ssaFormRepresentations, PrintWriter writer) {
         for (SsaFormAstRepresentation ssaFormRepresentation : ssaFormRepresentations) {
+            removeJavadocComment(ssaFormRepresentation);
             writer.println(ssaFormRepresentation.getAst());
             writer.println();
         }
+
+    }
+
+    private void removeJavadocComment(SsaFormAstRepresentation ssaFormRepresentation) {
+        ssaFormRepresentation.getAst().setJavaDoc(null);
     }
 }
