@@ -7,7 +7,7 @@ import japa.parser.ast.visitor.VoidVisitorAdapter;
 import java.util.Set;
 
 /**
- * Finds name of variables which are using into the visited code.
+ * Finds names of variables which are using into the visited code.
  */
 public class NameVisitor extends VoidVisitorAdapter<Set<String>> {
 

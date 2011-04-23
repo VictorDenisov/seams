@@ -8,7 +8,7 @@ import japa.parser.ast.visitor.VoidVisitorAdapter;
 import java.util.Set;
 
 /**
- * Sets to the argument all assigned variables.
+ * Finds names of variables which are modifying into the visited code.
  */
 public class AssignVisitor extends VoidVisitorAdapter<Set<String>> {
 
