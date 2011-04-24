@@ -1,9 +1,9 @@
 package org.creativelabs.ui;
 
-import edu.uci.ics.jung.algorithms.layout.*;
+import edu.uci.ics.jung.algorithms.layout.KKLayout;
+import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.visualization.BasicVisualizationServer;
-import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
 import org.creativelabs.graph.Vertex;
 
 import javax.imageio.ImageIO;
@@ -30,7 +30,7 @@ public class JungDrawer implements Drawer {
         BasicVisualizationServer<Vertex, String> vv =
                 new BasicVisualizationServer<Vertex, String>(layout);
         vv.setPreferredSize(new Dimension(width, height)); //Sets the viewing area size
-        vv.getRenderContext().setVertexLabelTransformer(new ToStringLabeller<Vertex>());
+        vv.getRenderContext().setVertexLabelTransformer(new getLabelLabeller<Vertex>());
 
         frame.getContentPane().add(vv);
         frame.pack();
