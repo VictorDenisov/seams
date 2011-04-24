@@ -48,12 +48,20 @@ public abstract class Statement extends Node {
         usingVariables.add(variableName);
     }
 
+    public void addUsingVariables(Set<String> variableNames) {
+        usingVariables.addAll(variableNames);
+    }
+
     public Set<String> getModifyingVariables() {
         return modifyingVariables;
     }
 
     public void addModifyingVariable(String variableName) {
         modifyingVariables.add(variableName);
+    }
+
+    public void addModifyingVariables(Set<String> variableNames) {
+        modifyingVariables.addAll(variableNames);
     }
 
 }

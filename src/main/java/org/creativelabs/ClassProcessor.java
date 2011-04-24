@@ -7,6 +7,7 @@ import org.creativelabs.iig.SimpleInternalInstancesGraph;
 import org.creativelabs.report.ReportBuilder;
 import org.creativelabs.ssa.SsaFormAstRepresentation;
 import org.creativelabs.ssa.SsaFormConverter;
+import org.creativelabs.ssa.UsingModifyingVariablesVisitor;
 import org.creativelabs.ssa.VariablesHolder;
 
 import java.util.*;
@@ -92,6 +93,8 @@ class ClassProcessor {
     }
 
     void findSsaForm(MethodDeclaration md) {
+        addUsingModifyingVariablesInformation(md);
+
         SsaFormConverter visitor = new SsaFormConverter(ssaInternalInstancesGraph);
         Map<String, Integer> map = new HashMap<String, Integer>();
         for (BodyDeclaration bd : typeDeclaration.getMembers()) {
@@ -113,6 +116,10 @@ class ClassProcessor {
         forms.add(form);
         //TODO: To add graphs for all methods
         ssaInternalInstancesGraph = visitor.getGraph();
+    }
+
+    private void addUsingModifyingVariablesInformation(MethodDeclaration methodDeclaration) {
+        new UsingModifyingVariablesVisitor().visit(methodDeclaration.getBody());
     }
 
 }
