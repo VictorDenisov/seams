@@ -43,7 +43,7 @@ public class GraphvizGraphBuilder implements GraphBuilder {
     public GraphvizGraphBuilder(PrintWriter printWriter) {
         this.printWriter = printWriter;
         printWriter.println("digraph G {");
-        printWriter.println("    size=\"60,30\"");
+        printWriter.println("    size=\"120,60\"");
         printWriter.println("    ratio=fill");
     }
 
@@ -55,9 +55,9 @@ public class GraphvizGraphBuilder implements GraphBuilder {
     @Override
     public void addEdge(Vertex from, Vertex to, Condition condition) {
         if (condition instanceof EmptyCondition) {
-            printWriter.println("    " + from.getLabel() + " -> " + to.getLabel() + ";");
+            printWriter.println("    \"" + from.getLabel() + "\" -> \"" + to.getLabel() + "\";");
         } else {
-            printWriter.println("    " + from.getLabel() + " -> " + to.getLabel() + " [label = \"" +
+            printWriter.println("    \"" + from.getLabel() + "\" -> \"" + to.getLabel() + "\" [label = \"" +
                     condition.getStringRepresentation() + "\"];");
         }
     }
