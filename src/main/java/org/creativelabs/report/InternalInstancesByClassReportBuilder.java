@@ -3,7 +3,7 @@ package org.creativelabs.report;
 import org.creativelabs.Dependency;
 import org.creativelabs.iig.InternalInstancesGraph;
 import org.creativelabs.ssa.SsaFormAstRepresentation;
-import org.creativelabs.ui.ChartDrawer;
+import org.creativelabs.drawer.ChartDrawer;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
