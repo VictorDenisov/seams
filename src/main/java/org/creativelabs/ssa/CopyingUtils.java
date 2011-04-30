@@ -10,7 +10,6 @@ import java.io.ObjectOutputStream;
  *
  * @param <T> generic type
  */
-@Deprecated
 public class CopyingUtils <T> {
 
     public T copy(Object o) {
@@ -24,7 +23,7 @@ public class CopyingUtils <T> {
             ObjectInputStream in = new ObjectInputStream(bin);
             Object ret = in.readObject();
             in.close();
-            return (T) o;
+            return (T) ret;
         } catch (Exception e) {
             System.out.println(e);
         }
