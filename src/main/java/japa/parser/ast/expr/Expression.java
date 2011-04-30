@@ -1,45 +1,30 @@
-package japa.parser.ast.stmt;
-
+package japa.parser.ast.expr;
 
 import japa.parser.ast.Node;
-import org.creativelabs.ssa.PhiNode;
 
 import java.io.Serializable;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
 /**
  * It's hacked class.
- * Has been added information about using, modifying variables into statement and phi nodes.
+ * Has been added information about using, modifying variables into expressions.
  *
- * @author azotov
+ * @author azotcsit
+ *         Date: 24.04.11
+ *         Time: 18:27
  */
-public abstract class Statement extends Node implements Serializable {
+public abstract class Expression extends Node implements Serializable {
 
-    public Statement() {
+    public Expression() {
     }
 
-    public Statement(int beginLine, int beginColumn, int endLine, int endColumn) {
+    public Expression(int beginLine, int beginColumn, int endLine, int endColumn) {
         super(beginLine, beginColumn, endLine, endColumn);
     }
 
-    private Set<PhiNode> phiNodes = new HashSet<PhiNode>();
-
     private Set<String> usingVariables = new TreeSet<String>();
     private Set<String> modifyingVariables = new TreeSet<String>();
-
-    public Set<PhiNode> getPhiNodes() {
-        return phiNodes;
-    }
-
-    public void addPhi(PhiNode phiNode){
-        phiNodes.add(phiNode);
-    }
-
-    public void removePhiNodes(){
-        phiNodes.clear();
-    }
 
     public Set<String> getUsingVariables() {
         return usingVariables;
