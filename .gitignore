@@ -5,6 +5,7 @@ patches
 seams.iml
 *.deps
 *.jpg
+*.png
 *.ssa
 errors.txt
 *.sty

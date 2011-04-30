@@ -11,8 +11,8 @@ import org.creativelabs.iig.InternalInstancesGraph;
 import org.creativelabs.introspection.ReflectionAbstractionImpl;
 import org.creativelabs.report.DataCollector;
 import org.creativelabs.report.ReportBuilder;
-import org.creativelabs.ui.ChartDrawer;
-import org.creativelabs.ui.GraphvizDrawer;
+import org.creativelabs.drawer.ChartDrawer;
+import org.creativelabs.drawer.GraphvizDrawer;
 
 import java.io.File;
 import java.io.FileInputStream;
