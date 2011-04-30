@@ -1,23 +1,24 @@
 package org.creativelabs;
 
-import japa.parser.ParseException;
 import japa.parser.ast.CompilationUnit;
 import japa.parser.ast.body.ClassOrInterfaceDeclaration;
 import japa.parser.ast.body.MethodDeclaration;
 import japa.parser.ast.expr.*;
 import japa.parser.ast.stmt.ExpressionStmt;
-import japa.parser.ast.stmt.Statement;
 import org.creativelabs.introspection.*;
-import org.testng.annotations.*;
-import java.util.*;
-import java.lang.reflect.*;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
-import org.creativelabs.introspection.ReflectionAbstractionImplTest;
-import static org.testng.AssertJUnit.*;
-import static org.creativelabs.AssertHelper.*;
-import static org.mockito.Mockito.*;
+import static org.creativelabs.AssertHelper.assertEqualsList;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.testng.AssertJUnit.assertEquals;
+import static org.testng.AssertJUnit.assertTrue;
 
 public class TypeFinderTest {
 
@@ -471,7 +472,7 @@ public class TypeFinderTest {
         varList.put("IMAGE_WIDTH", ra.getClassTypeByName("int"));
         varList.put("IMAGE_HEIGHT", ra.getClassTypeByName("int"));
         varList.put("fileName", ra.getClassTypeByName("java.lang.String"));
-        ImportList imports = ParseHelper.createImportList("import org.creativelabs.ui.ChartDrawer;");
+        ImportList imports = ParseHelper.createImportList("import org.creativelabs.drawer.ChartDrawer;");
 
         TypeFinder typeFinder = new TypeFinder(ra, varList, imports);
         ClassType type = typeFinder.determineType(expr);
