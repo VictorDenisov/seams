@@ -2,12 +2,12 @@ package japa.parser.ast.stmt;
 
 
 import japa.parser.ast.Node;
+import japa.parser.ast.helper.UMVariablesHolder;
 import org.creativelabs.ssa.PhiNode;
 
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * It's hacked class.
@@ -25,9 +25,7 @@ public abstract class Statement extends Node implements Serializable {
     }
 
     private Set<PhiNode> phiNodes = new HashSet<PhiNode>();
-
-    private Set<String> usingVariables = new TreeSet<String>();
-    private Set<String> modifyingVariables = new TreeSet<String>();
+    private UMVariablesHolder variablesHolder = new UMVariablesHolder();
 
     public Set<PhiNode> getPhiNodes() {
         return phiNodes;
@@ -41,28 +39,8 @@ public abstract class Statement extends Node implements Serializable {
         phiNodes.clear();
     }
 
-    public Set<String> getUsingVariables() {
-        return usingVariables;
-    }
-
-    public void addUsingVariable(String variableName) {
-        usingVariables.add(variableName);
-    }
-
-    public void addUsingVariables(Set<String> variableNames) {
-        usingVariables.addAll(variableNames);
-    }
-
-    public Set<String> getModifyingVariables() {
-        return modifyingVariables;
-    }
-
-    public void addModifyingVariable(String variableName) {
-        modifyingVariables.add(variableName);
-    }
-
-    public void addModifyingVariables(Set<String> variableNames) {
-        modifyingVariables.addAll(variableNames);
+    public UMVariablesHolder getVariablesHolder() {
+        return variablesHolder;
     }
 
 }

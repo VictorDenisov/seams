@@ -1,10 +1,9 @@
 package japa.parser.ast.expr;
 
 import japa.parser.ast.Node;
+import japa.parser.ast.helper.UMVariablesHolder;
 
 import java.io.Serializable;
-import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * It's hacked class.
@@ -23,31 +22,9 @@ public abstract class Expression extends Node implements Serializable {
         super(beginLine, beginColumn, endLine, endColumn);
     }
 
-    private Set<String> usingVariables = new TreeSet<String>();
-    private Set<String> modifyingVariables = new TreeSet<String>();
+    private UMVariablesHolder variablesHolder = new UMVariablesHolder();
 
-    public Set<String> getUsingVariables() {
-        return usingVariables;
+    public UMVariablesHolder getVariablesHolder() {
+        return variablesHolder;
     }
-
-    public void addUsingVariable(String variableName) {
-        usingVariables.add(variableName);
-    }
-
-    public void addUsingVariables(Set<String> variableNames) {
-        usingVariables.addAll(variableNames);
-    }
-
-    public Set<String> getModifyingVariables() {
-        return modifyingVariables;
-    }
-
-    public void addModifyingVariable(String variableName) {
-        modifyingVariables.add(variableName);
-    }
-
-    public void addModifyingVariables(Set<String> variableNames) {
-        modifyingVariables.addAll(variableNames);
-    }
-
 }
