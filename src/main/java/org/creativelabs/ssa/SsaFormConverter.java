@@ -6,6 +6,7 @@ import japa.parser.ast.body.VariableDeclarator;
 import japa.parser.ast.expr.*;
 import japa.parser.ast.stmt.*;
 import japa.parser.ast.visitor.VoidVisitorAdapter;
+import org.creativelabs.graph.condition.StringCondition;
 import org.creativelabs.iig.InternalInstancesGraph;
 import org.creativelabs.iig.SimpleInternalInstancesGraph;
 
@@ -81,7 +82,7 @@ public class SsaFormConverter extends VoidVisitorAdapter<VariablesHolder> {
             n.setValue(new SsaFinder(arg, false).determineSsa(n.getValue()));
             n.setTarget(new SsaFinder(arg, true).determineSsa(n.getTarget()));
             graph.add(methodDeclaration.getName() + SEPARATOR + n.getTarget().toString(),
-                    methodDeclaration.getName() + SEPARATOR + n.getTarget().toString());
+                    methodDeclaration.getName() + SEPARATOR + n.getValue().toString());
         }
     }
 
@@ -100,6 +101,7 @@ public class SsaFormConverter extends VoidVisitorAdapter<VariablesHolder> {
         new SsaFinder(arg, false).determineSsa(n.getCondition());
 
         VariablesHolder thenVariables = arg.copy();
+        thenVariables.getCondition().and(new StringCondition(n.getCondition().toString()));
 
         Set<String> assigningVariables = new HashSet<String>();
         new AssignVisitor().visit(n, assigningVariables);
@@ -109,6 +111,7 @@ public class SsaFormConverter extends VoidVisitorAdapter<VariablesHolder> {
 
         VariablesHolder elseVariables = thenVariables.copy();
         elseVariables.setReadVariables(arg.getReadVariables());
+        elseVariables.getCondition().and((new StringCondition(n.getCondition().toString())).not());
 
         Statement elseStmt = n.getElseStmt();
         if (elseStmt != null) {
@@ -193,7 +196,10 @@ public class SsaFormConverter extends VoidVisitorAdapter<VariablesHolder> {
     @Override
     public void visit(WhileStmt n, VariablesHolder arg) {
 
+        new SsaFinder(arg, false).determineSsa(n.getCondition());
+
         VariablesHolder holder = arg.copy();
+        holder.getCondition().and(new StringCondition(n.getCondition().toString()));
 
         Set<String> assigningVariables = new HashSet<String>();
         new AssignVisitor().visit(n, assigningVariables);
@@ -211,8 +217,6 @@ public class SsaFormConverter extends VoidVisitorAdapter<VariablesHolder> {
                 arg.increaseIndex(var);
             }
         }
-
-        new SsaFinder(arg, false).determineSsa(n.getCondition());
 
         for (String var : assigningVariables) {
             if (assigningVariables.contains(var)) {
@@ -297,16 +301,14 @@ public class SsaFormConverter extends VoidVisitorAdapter<VariablesHolder> {
         Map<String, Integer> map = new HashMap<String, Integer>();
         if (n.getParameters() != null) {
             for (Parameter parameter : n.getParameters()) {
-                graph.add(n.getName() + SsaFormConverter.SEPARATOR + parameter.getId().getName(),
-                        parameter.getId().getName() + SsaFormConverter.SEPARATOR + 0);
+                graph.add(n.getName() + SEPARATOR + parameter.getId().getName() + SEPARATOR + 0,
+                        parameter.getId().getName() + SEPARATOR + 0);
                 map.put(parameter.getId().getName(), 0);
                 parameter.getId().setName(parameter.getId().getName() + SEPARATOR + 0);
             }
         }
-        VariablesHolder holder = new VariablesHolder(map);
-        if (arg != null) {
-            holder.mergeHolders(arg);
-        }
+        VariablesHolder holder = new VariablesHolder(map, arg.getCondition());
+        holder.mergeHolders(arg);
         visit(n.getBody(), holder);
 
         methodDeclaration = n;
@@ -341,6 +343,7 @@ public class SsaFormConverter extends VoidVisitorAdapter<VariablesHolder> {
 
         Set<String> conditionsVars = new HashSet<String>();
         new NameVisitor().visit((VariableDeclarationExpr) n.getVariable(), conditionsVars);
+        //TODO add condition to processing of variables holder
 
         VariablesHolder holder = arg.copy();
 
@@ -392,24 +395,7 @@ public class SsaFormConverter extends VoidVisitorAdapter<VariablesHolder> {
      * @param arg       of type VariablesHolder
      */
     private void getStmt(Statement statement, VariablesHolder arg) {
-        if (statement instanceof BlockStmt) {
-            visit((BlockStmt) statement, arg);
-        } else if (statement instanceof ExpressionStmt) {
-            visit((ExpressionStmt) statement, arg);
-        } else if (statement instanceof IfStmt) {
-            visit((IfStmt) statement, arg);
-        } else if (statement instanceof ForStmt) {
-            visit((ForStmt) statement, arg);
-        } else if (statement instanceof WhileStmt) {
-            visit((WhileStmt) statement, arg);
-        } else if (statement instanceof ReturnStmt) {
-            visit((ReturnStmt) statement, arg);
-        } else if (statement instanceof TryStmt) {
-            visit((TryStmt) statement, arg);
-        } else if (statement instanceof ForeachStmt) {
-            visit((ForeachStmt) statement, arg);
-        }
-        //TODO remove null return value
+       VoidVisitorHelper.<VariablesHolder>visitStatement(statement, arg, this);
     }
 
     /**
@@ -419,15 +405,7 @@ public class SsaFormConverter extends VoidVisitorAdapter<VariablesHolder> {
      * @param arg        of type VariablesHolder
      */
     private void getExpr(Expression expression, VariablesHolder arg) {
-        if (expression instanceof AssignExpr) {
-            visit((AssignExpr) expression, arg);
-        } else if (expression instanceof VariableDeclarationExpr) {
-            visit((VariableDeclarationExpr) expression, arg);
-        } else if (expression instanceof MethodCallExpr) {
-            visit((MethodCallExpr) expression, arg);
-        } else if (expression instanceof CastExpr) {
-            visit((CastExpr) expression, arg);
-        }
+        VoidVisitorHelper.<VariablesHolder>visitExpression(expression, arg, this);
     }
 
     /**
