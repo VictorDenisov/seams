@@ -1,4 +1,4 @@
-package org.creativelabs.ui;
+package org.creativelabs.drawer;
 
 import javax.swing.*;
 import java.io.File;
@@ -36,7 +36,7 @@ public class GraphvizDrawer implements Drawer {
 
             int status = convertingToPng.waitFor();
             if (status != SUCCESS) {
-                throw new IOException("Could not convert dot file " + fileName + ".dot to png");
+                throw new IOException("Could not convert dot file " + fileName + ".dot to png.");
             }
         }
 

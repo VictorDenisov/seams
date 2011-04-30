@@ -1,4 +1,4 @@
-package org.creativelabs.ui;
+package org.creativelabs.drawer;
 
 import org.apache.commons.collections15.Transformer;
 

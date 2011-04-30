@@ -1,4 +1,4 @@
-package org.creativelabs.ui;
+package org.creativelabs.drawer;
 
 import edu.uci.ics.jung.algorithms.layout.KKLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;

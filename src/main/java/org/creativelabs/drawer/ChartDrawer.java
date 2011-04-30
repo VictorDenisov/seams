@@ -1,9 +1,8 @@
-package org.creativelabs.ui;
+package org.creativelabs.drawer;
 
 import org.jfree.chart.*;
 import org.jfree.chart.axis.*;
 import org.jfree.chart.plot.*;
-import org.jfree.data.category.*;
 
 import javax.swing.*;
 import java.awt.*;
