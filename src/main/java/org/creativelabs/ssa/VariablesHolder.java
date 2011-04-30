@@ -1,9 +1,14 @@
 package org.creativelabs.ssa;
 
+import org.creativelabs.graph.condition.Condition;
+import org.creativelabs.graph.condition.EmptyCondition;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+//TODO need to create javadoc and tests.
 
 /**
  * Stores variable's indexes
@@ -20,6 +25,7 @@ public class VariablesHolder {
      */
     private Map<String, Integer> writeVariables = new HashMap<String, Integer>();
 
+    private Condition condition = new EmptyCondition();
 
     public VariablesHolder(Map<String, Integer> readVariables, Map<String, Integer> writeVariables) {
         this.readVariables = readVariables;
@@ -29,6 +35,16 @@ public class VariablesHolder {
     public VariablesHolder(Map<String, Integer> writeVariables) {
         this.readVariables = copy(writeVariables);
         this.writeVariables = writeVariables;
+    }
+
+    public VariablesHolder(Map<String, Integer> writeVariables, Condition condition) {
+        this(writeVariables);
+        this.condition = condition;
+    }
+
+    public VariablesHolder(Map<String, Integer> readVariables, Map<String, Integer> writeVariables, Condition condition) {
+        this(readVariables, writeVariables);
+        this.condition = condition;
     }
 
     public Map<String, Integer> getReadVariables() {
@@ -45,6 +61,14 @@ public class VariablesHolder {
 
     public void setWriteVariables(Map<String, Integer> writeVariables) {
         this.writeVariables = writeVariables;
+    }
+
+    public Condition getCondition() {
+        return condition;
+    }
+
+    public void setCondition(Condition condition) {
+        this.condition = condition;
     }
 
     public Integer read(String name) {
@@ -164,9 +188,15 @@ public class VariablesHolder {
         return result;
     }
 
+    private Condition copy(Condition condition) {
+        return new CopyingUtils<Condition>().copy(condition);
+    }
+
 
     public VariablesHolder copy() {
-        return new VariablesHolder(copy(readVariables), copy(writeVariables));
+        VariablesHolder holder = new VariablesHolder(copy(readVariables), copy(writeVariables));
+        holder.setCondition(copy(this.getCondition()));
+        return holder;
     }
 
     private Map<String, Integer> getCurrentVariables(boolean read) {
