@@ -2,12 +2,12 @@ package org.creativelabs;
 
 import japa.parser.ast.body.*;
 import japa.parser.ast.stmt.BlockStmt;
+import org.creativelabs.graph.condition.StringCondition;
 import org.creativelabs.iig.InternalInstancesGraph;
 import org.creativelabs.iig.SimpleInternalInstancesGraph;
 import org.creativelabs.report.ReportBuilder;
 import org.creativelabs.ssa.SsaFormAstRepresentation;
 import org.creativelabs.ssa.SsaFormConverter;
-import org.creativelabs.ssa.UsingModifyingVariablesVisitor;
 import org.creativelabs.ssa.VariablesHolder;
 
 import java.util.*;
@@ -104,14 +104,15 @@ class ClassProcessor {
                     map.put(vardecl.getId().getName(), 0);
 
                     visitor.addToGraph(vardecl.getId().getName(),
-                            md.getName() + SsaFormConverter.SEPARATOR + vardecl.getId().getName());
+                            md.getName() + SsaFormConverter.SEPARATOR + vardecl.getId().getName() + 0);
 
-                    visitor.addToGraph(md.getName() + SsaFormConverter.SEPARATOR + vardecl.getId().getName(),
-                            vardecl.getId().getName() + SsaFormConverter.SEPARATOR + 0);
+//                    visitor.addToGraph(md.getName() + SsaFormConverter.SEPARATOR + vardecl.getId().getName(),
+//                            vardecl.getId().getName() + SsaFormConverter.SEPARATOR + 0);
                 }
             }
         }
-        visitor.visit(md, new VariablesHolder(map));
+        VariablesHolder holder = new VariablesHolder(map, new StringCondition("true"));
+        visitor.visit(md, holder);
         SsaFormAstRepresentation form = new SsaFormAstRepresentation(md.getName(), md);
         forms.add(form);
         //TODO: To add graphs for all methods
@@ -119,7 +120,7 @@ class ClassProcessor {
     }
 
     private void addUsingModifyingVariablesInformation(MethodDeclaration methodDeclaration) {
-        new UsingModifyingVariablesVisitor().visit(methodDeclaration.getBody());
+//        new UsingModifyingVariablesVisitor().visit(methodDeclaration.getBody());
     }
 
 }

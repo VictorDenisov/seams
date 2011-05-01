@@ -123,6 +123,15 @@ public class SsaFormConverter extends VoidVisitorAdapter<VariablesHolder> {
         List<String> vars = new ArrayList<String>(assigningVariables);
         Collections.sort(vars);
 
+        //TODO
+        List<String> vars2 = new ArrayList<String>(((Statement) n.getThenStmt()).getVariablesHolder().getModifyingVariables());
+
+        if (elseStmt != null) {
+            vars2.addAll(((Statement) n.getElseStmt()).getVariablesHolder().getModifyingVariables());
+        }
+        Collections.sort(vars2);
+        assert vars.equals(vars2);
+
         for (String name : vars) {
             Integer newIndex = Math.max(thenVariables.read(name) == null ? -1 : thenVariables.read(name), elseVariables.read(name) == null ? -1 : elseVariables.read(name)) + 1;
             addPhi(n, new PhiNode(name, newIndex, PhiNode.Mode.AFTER, elseVariables.getPhiIndexes(thenVariables, name)));
@@ -204,8 +213,22 @@ public class SsaFormConverter extends VoidVisitorAdapter<VariablesHolder> {
         Set<String> assigningVariables = new HashSet<String>();
         new AssignVisitor().visit(n, assigningVariables);
 
+        //TODO
+        List<String> vars = new ArrayList<String>(assigningVariables);
+        Collections.sort(vars);
+        List<String> vars2 = new ArrayList<String>(((Statement) n.getBody()).getVariablesHolder().getModifyingVariables());
+        Collections.sort(vars2);
+        assert vars.equals(vars2);
+
         Set<String> conditionsVars = new HashSet<String>();
         new NameVisitor().visit((BinaryExpr) n.getCondition(), conditionsVars);
+
+        //TODO
+        List<String> vars3 = new ArrayList<String>(conditionsVars);
+        Collections.sort(vars3);
+        vars2 = new ArrayList<String>(((Expression) n.getCondition()).getVariablesHolder().getUsingVariables());
+        Collections.sort(vars2);
+        assert vars3.equals(vars2);
 
         //phi nodes with only one variable's index
         Set<PhiNode> beforeWhilePhiNodes = new HashSet<PhiNode>();
@@ -228,7 +251,7 @@ public class SsaFormConverter extends VoidVisitorAdapter<VariablesHolder> {
         Set<PhiNode> inWhilePhiNodes = new HashSet<PhiNode>();
 
         for (String name : holder.getDifferenceInVariables(arg, false)) {
-            inWhilePhiNodes.add(new PhiNode(name, holder.read(name), PhiNode.Mode.BEFORE, arg.read(name)));
+            inWhilePhiNodes.add(new PhiNode(name, holder.read(name) == null ? 0 : holder.read(name), PhiNode.Mode.BEFORE, arg.read(name)));
         }
 
         addAllPhi(((BlockStmt) n.getBody()).getStmts().get(0), inWhilePhiNodes);
@@ -341,9 +364,24 @@ public class SsaFormConverter extends VoidVisitorAdapter<VariablesHolder> {
         Set<String> assigningVariables = new HashSet<String>();
         new AssignVisitor().visit(n, assigningVariables);
 
+        //TODO
+        List<String> vars = new ArrayList<String>(assigningVariables);
+        Collections.sort(vars);
+        List<String> vars2 = new ArrayList<String>(((Statement) n.getBody()).getVariablesHolder().getModifyingVariables());
+        Collections.sort(vars2);
+        assert vars.equals(vars2);
+
+
         Set<String> conditionsVars = new HashSet<String>();
         new NameVisitor().visit((VariableDeclarationExpr) n.getVariable(), conditionsVars);
         //TODO add condition to processing of variables holder
+
+        //TODO
+        List<String> vars3 = new ArrayList<String>(conditionsVars);
+        Collections.sort(vars3);
+        vars2 = new ArrayList<String>(((Expression) n.getVariable()).getVariablesHolder().getUsingVariables());
+        Collections.sort(vars2);
+        assert vars3.equals(vars2);
 
         VariablesHolder holder = arg.copy();
 
@@ -364,7 +402,7 @@ public class SsaFormConverter extends VoidVisitorAdapter<VariablesHolder> {
 
         for (String name : assigningVariables) {
             if (!conditionsVars.contains(name)) {
-                inWhilePhiNodes.add(new PhiNode(name, holder.read(name), PhiNode.Mode.BEFORE, arg.read(name)));
+                inWhilePhiNodes.add(new PhiNode(name, holder.read(name) == null ? 0 : holder.read(name), PhiNode.Mode.BEFORE, arg.read(name)));
             }
         }
 
@@ -395,7 +433,7 @@ public class SsaFormConverter extends VoidVisitorAdapter<VariablesHolder> {
      * @param arg       of type VariablesHolder
      */
     private void getStmt(Statement statement, VariablesHolder arg) {
-       VoidVisitorHelper.<VariablesHolder>visitStatement(statement, arg, this);
+        VoidVisitorHelper.<VariablesHolder>visitStatement(statement, arg, this);
     }
 
     /**

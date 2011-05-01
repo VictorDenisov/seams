@@ -21,8 +21,8 @@ public class GraphvizGraphBuilderTest {
         graphBuilder.addEdge(a, b, new EmptyCondition());
         graphBuilder.finalizeGraph();
 
-        assertEquals("digraph G {\n    size=\"60,30\"\n    ratio=fill\n    a" + EMPTY_CONDITIONS_STRING +
-                " -> b" + EMPTY_CONDITIONS_STRING + ";\n}\n",
+        assertEquals("digraph G {\n    size=\"120,60\"\n    ratio=fill\n    \"a" + EMPTY_CONDITIONS_STRING +
+                "\" -> \"b" + EMPTY_CONDITIONS_STRING + "\";\n}\n",
                 stringWriter.toString());
     }
 
@@ -36,8 +36,8 @@ public class GraphvizGraphBuilderTest {
         graphBuilder.addEdge(a, b, new StringCondition("someLabel"));
         graphBuilder.finalizeGraph();
 
-        assertEquals("digraph G {\n    size=\"60,30\"\n    ratio=fill\n    a" + EMPTY_CONDITIONS_STRING +
-                " -> b" + EMPTY_CONDITIONS_STRING + " [label = \"(someLabel)\"];\n}\n",
+        assertEquals("digraph G {\n    size=\"120,60\"\n    ratio=fill\n    \"a" + EMPTY_CONDITIONS_STRING +
+                "\" -> \"b" + EMPTY_CONDITIONS_STRING + "\" [label = \"(someLabel)\"];\n}\n",
                 stringWriter.toString());
     }
 }

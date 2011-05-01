@@ -28,10 +28,13 @@ public class VoidVisitorHelper {
             visitor.visit((TryStmt) statement, arg);
         } else if (statement instanceof ForeachStmt) {
             visitor.visit((ForeachStmt) statement, arg);
-        }
+        } else if (statement instanceof ThrowStmt) {
+            visitor.visit((ThrowStmt) statement, arg);
+        } else {
         //TODO to remove exception
-        throw new UnsupportedOperationException("VoidVisitorHelper is not support statement of type " +
-                statement.getClass());
+        throw new UnsupportedOperationException("VoidVisitorHelper is not support statement for " +
+                statement.getClass() + ".");
+        }
     }
 
     public static<T> void visitExpression(Expression expression, T arg, VoidVisitorAdapter<T> visitor) {
@@ -43,10 +46,31 @@ public class VoidVisitorHelper {
             visitor.visit((MethodCallExpr) expression, arg);
         } else if (expression instanceof CastExpr) {
             visitor.visit((CastExpr) expression, arg);
-        }
+        } else if (expression instanceof NameExpr) {
+            visitor.visit((NameExpr) expression, arg);
+        } else if (expression instanceof IntegerLiteralExpr) {
+            visitor.visit((IntegerLiteralExpr) expression, arg);
+        } else if (expression instanceof BinaryExpr) {
+            visitor.visit((BinaryExpr) expression, arg);
+        } else if (expression instanceof ArrayAccessExpr) {
+            visitor.visit((ArrayAccessExpr) expression, arg);
+        } else if (expression instanceof ArrayCreationExpr) {
+            visitor.visit((ArrayCreationExpr) expression, arg);
+        } else if (expression instanceof ObjectCreationExpr) {
+            visitor.visit((ObjectCreationExpr) expression, arg);
+        } else if (expression instanceof InstanceOfExpr) {
+            visitor.visit((InstanceOfExpr) expression, arg);
+        } else if (expression instanceof EnclosedExpr) {
+            visitor.visit((EnclosedExpr) expression, arg);
+        } else if (expression instanceof ArrayInitializerExpr) {
+            visitor.visit((ArrayInitializerExpr) expression, arg);
+        } else if (expression instanceof UnaryExpr) {
+            visitor.visit((UnaryExpr) expression, arg);
+        } else {
         //TODO to remove exception
-        throw new UnsupportedOperationException("VoidVisitorHelper is not support expression of type " +
-                expression.getClass());
+        throw new UnsupportedOperationException("VoidVisitorHelper is not support expression for " +
+                expression.getClass() + ".");
+        }
     }
 
 }

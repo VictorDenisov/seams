@@ -40,4 +40,18 @@ public class UMVariablesHolder implements Serializable {
         modifyingVariables.addAll(variableNames);
     }
 
+    public void setCopy(UMVariablesHolder holder) {
+        for (String s: holder.getUsingVariables()) {
+            usingVariables.add(s);
+        }
+        for (String s: holder.getModifyingVariables()) {
+            modifyingVariables.add(s);
+        }
+    }
+
+    public void add(UMVariablesHolder holder) {
+        addUsingVariables(holder.getUsingVariables());
+        addModifyingVariables(holder.getModifyingVariables());
+    }
+
 }
