@@ -420,41 +420,25 @@ public class SsaFormConverterTest {
         assertEquals(expectedResult, actualResult);
     }
 
-//    @Test()
-//    public void testOneNestedWhileStmt() throws Exception {
-//        MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("void method(int x){" +
-//                "while (x < 2) {" +
-//                    "x = x - 1;" +
-//                    "int y = x;" +
-//                    "while (y < 2) {" +
-//                        "x = x - y;" +
-//                    "}" +
-//                    "}" +
-//                "}");
-//
-//        SsaFormConverter visitor = new SsaFormConverter();
-//        StringBuilder actualResult = visitor.visit(methodDeclaration, null);
-//
-//        StringBuilder expectedResult = new StringBuilder();
-//        expectedResult.append("repeat\n");
-//        expectedResult.append("begin\n");
-//            expectedResult.append("x1 <- #phi(x0,x5)\n");
-//            expectedResult.append("x2 <- x1 minus 1\n");
-//            expectedResult.append("y0 <- x2\n");
-//            expectedResult.append("repeat\n");
-//            expectedResult.append("begin\n");
-//                expectedResult.append("x3 <- #phi(x2,x4)\n");
-//                expectedResult.append("x4 <- x3 minus y0\n");
-//            expectedResult.append("end\n");
-//            expectedResult.append("until(y0 less 2)\n");
-//            expectedResult.append("x5 <- #phi(x2,x4)\n");
-//        expectedResult.append("end\n");
-//        expectedResult.append("until(x0 less 2)\n");
-//        expectedResult.append("x6 <- #phi(x0,x5)\n");
-//
-//        assertEquals(expectedResult.toString(), actualResult.toString());
-//    }
-//
+    @Test()
+    public void testEmptyWhileStmt() throws Exception {
+        MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("void method(int x){" +
+                "while (method(x)) {" +
+                "}" +
+                "}");
+
+        SsaFormConverter visitor = new SsaFormConverter();
+        visitor.visit(methodDeclaration, null);
+        String actualResult = visitor.getMethodDeclaration().toString();
+
+        String expectedResult = "void method(int x#0) {\n" +
+                "    while (method(x#0)) {\n" +
+                "    }\n" +
+                "}";
+
+        assertEquals(expectedResult, actualResult);
+    }
+
     @Test
     public void testArrayAccess() throws Exception {
         MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("void method(int x){" +

@@ -62,7 +62,13 @@ public class SsaFormConverter extends VoidVisitorAdapter<VariablesHolder> {
     @Override
     public void visit(AssignExpr n, VariablesHolder arg) {
         if (n.getTarget() instanceof ArrayAccessExpr) {
-            String arrayName = ((NameExpr) ((ArrayAccessExpr) n.getTarget()).getName()).getName();
+
+            String arrayName = null;
+            if (((ArrayAccessExpr) n.getTarget()).getName() instanceof FieldAccessExpr) {
+                arrayName = ((FieldAccessExpr) ((ArrayAccessExpr) n.getTarget()).getName()).getField();
+            } else {
+                arrayName = ((NameExpr) ((ArrayAccessExpr) n.getTarget()).getName()).getName();
+            }
 
             new SsaFinder(arg, false).determineSsa(((ArrayAccessExpr) n.getTarget()).getIndex());
 
@@ -209,7 +215,13 @@ public class SsaFormConverter extends VoidVisitorAdapter<VariablesHolder> {
         for (String var : assigningVariables) {
             holder.increaseIndex(var);
             if (assigningVariables.contains(var)) {
-                beforeWhilePhiNodes.add(new PhiNode(var, arg.read(var) + 1, PhiNode.Mode.BEFORE, arg.read(var)));
+                if (arg.read(var) != null) {
+                    beforeWhilePhiNodes.add(new PhiNode(var, (arg.read(var) == null ? 0 : arg.read(var)) + 1,
+                            PhiNode.Mode.BEFORE, arg.read(var)));
+                } else {
+                    beforeWhilePhiNodes.add(new PhiNode(var, (arg.read(var) == null ? 0 : arg.read(var)) + 1,
+                            PhiNode.Mode.BEFORE));
+                }
                 arg.increaseIndex(var);
             }
         }
@@ -235,8 +247,12 @@ public class SsaFormConverter extends VoidVisitorAdapter<VariablesHolder> {
             }
         }
 
-        addAllPhi(((BlockStmt) n.getBody()).getStmts().get(0), inWhilePhiNodes);
-        addAllPhi(n, beforeWhilePhiNodes);
+        if (!inWhilePhiNodes.isEmpty()) {
+            addAllPhi(((BlockStmt) n.getBody()).getStmts().get(0), inWhilePhiNodes);
+        }
+        if (!beforeWhilePhiNodes.isEmpty()) {
+            addAllPhi(n, beforeWhilePhiNodes);
+        }
 
         getStmt(n.getBody(), holder);
 
@@ -302,7 +318,7 @@ public class SsaFormConverter extends VoidVisitorAdapter<VariablesHolder> {
         //TODO copy of n
 //        n = new CopyingUtils<MethodDeclaration>().copy(n);
 
-        new UsingModifyingVariablesVisitor().visit(n,new UMVariablesHolder());
+        new UsingModifyingVariablesVisitor().visit(n, new UMVariablesHolder());
 
         methodDeclaration = n;
         Map<String, Integer> map = new HashMap<String, Integer>();
@@ -333,11 +349,13 @@ public class SsaFormConverter extends VoidVisitorAdapter<VariablesHolder> {
     public void visit(TryStmt n, VariablesHolder arg) {
         getStmt(n.getTryBlock(), arg);
 
-        for (CatchClause catchClause : n.getCatchs()) {
-            VariablesHolder holder = arg.copy();
-            holder.write(catchClause.getExcept().getId().getName(), 0);
-            new SsaFinder(holder, false).determineSsa(catchClause.getExcept().getId());
-            visit(catchClause.getCatchBlock(), holder);
+        if (n.getCatchs() != null) {
+            for (CatchClause catchClause : n.getCatchs()) {
+                VariablesHolder holder = arg.copy();
+                holder.write(catchClause.getExcept().getId().getName(), 0);
+                new SsaFinder(holder, false).determineSsa(catchClause.getExcept().getId());
+                visit(catchClause.getCatchBlock(), holder);
+            }
         }
 
         if (n.getFinallyBlock() != null) {
@@ -348,7 +366,7 @@ public class SsaFormConverter extends VoidVisitorAdapter<VariablesHolder> {
     @Override
     public void visit(ForeachStmt n, VariablesHolder arg) {
 
-        Set<String> assigningVariables = ((Statement) n.getBody()).getVariablesHolder().getModifyingVariables() ;
+        Set<String> assigningVariables = ((Statement) n.getBody()).getVariablesHolder().getModifyingVariables();
 
         Set<String> conditionsVars = ((Expression) n.getVariable()).getVariablesHolder().getUsingVariables();
 
@@ -381,9 +399,13 @@ public class SsaFormConverter extends VoidVisitorAdapter<VariablesHolder> {
             }
         }
 
-        if (((BlockStmt) n.getBody()).getStmts() != null) {
-            addAllPhi(((BlockStmt) n.getBody()).getStmts().get(0), inWhilePhiNodes);
-            getStmt(n.getBody(), holder);
+        if (n.getBody() instanceof BlockStmt) {
+            if (((BlockStmt) n.getBody()).getStmts() != null) {
+                addAllPhi(((BlockStmt) n.getBody()).getStmts().get(0), inWhilePhiNodes);
+                getStmt(n.getBody(), holder);
+            }
+        } else {
+            //TODO
         }
 
         for (PhiNode node : inWhilePhiNodes) {
