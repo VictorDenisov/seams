@@ -6,8 +6,8 @@ import japa.parser.ast.helper.UMVariablesHolder;
 import org.creativelabs.ssa.PhiNode;
 
 import java.io.Serializable;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * It's hacked class.
@@ -24,7 +24,7 @@ public abstract class Statement extends Node implements Serializable {
         super(beginLine, beginColumn, endLine, endColumn);
     }
 
-    private Set<PhiNode> phiNodes = new HashSet<PhiNode>();
+    private Set<PhiNode> phiNodes = new TreeSet<PhiNode>();
     private UMVariablesHolder variablesHolder = new UMVariablesHolder();
 
     public Set<PhiNode> getPhiNodes() {

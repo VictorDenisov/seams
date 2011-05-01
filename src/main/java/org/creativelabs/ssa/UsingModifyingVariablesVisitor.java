@@ -49,8 +49,11 @@ public class UsingModifyingVariablesVisitor extends VoidVisitorAdapter<UMVariabl
 
     @Override
     public void visit(AssignExpr n, UMVariablesHolder arg) {
-        arg.addUsingVariable(((NameExpr) n.getTarget()).getName());
-        arg.addModifyingVariable(((NameExpr) n.getTarget()).getName());
+        UMVariablesHolder holder = new UMVariablesHolder();
+        VoidVisitorHelper.<UMVariablesHolder>visitExpression(n.getTarget(), holder, this);
+        holder.addModifyingVariables(holder.getUsingVariables());
+        ((Expression) n).getVariablesHolder().setCopy(holder);
+        arg.add(holder);
 
         VoidVisitorHelper.<UMVariablesHolder>visitExpression(n.getValue(), arg, this);
     }

@@ -15,7 +15,7 @@ import java.util.*;
  *
  * @author azotov
  */
-public class PhiNode {
+public class PhiNode implements Comparable<PhiNode>{
     /**
      * Variable's name.
      */
@@ -110,6 +110,12 @@ public class PhiNode {
 
     public void setMode(Mode mode) {
         this.mode = mode;
+    }
+
+    @Override
+    public int compareTo(PhiNode o) {
+        //TODO to change realisation
+        return this.hashCode() - o.hashCode();
     }
 
     /**

@@ -32,6 +32,7 @@ public class GraphvizDrawer implements Drawer {
         private static final String WINDOWS = "Windows";
 
         public void convert(String fileName) throws IOException, InterruptedException {
+            //TODO to uncomment!!!!
 //            Process convertingToPng = Runtime.getRuntime().exec(getArgs(fileName));
 //
 //            int status = convertingToPng.waitFor();

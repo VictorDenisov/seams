@@ -4,6 +4,7 @@ import japa.parser.ast.body.MethodDeclaration;
 import japa.parser.ast.body.Parameter;
 import japa.parser.ast.body.VariableDeclarator;
 import japa.parser.ast.expr.*;
+import japa.parser.ast.helper.UMVariablesHolder;
 import japa.parser.ast.stmt.*;
 import japa.parser.ast.visitor.VoidVisitorAdapter;
 import org.creativelabs.graph.condition.StringCondition;
@@ -98,41 +99,34 @@ public class SsaFormConverter extends VoidVisitorAdapter<VariablesHolder> {
 
     @Override
     public void visit(IfStmt n, VariablesHolder arg) {
+        //processing of the condition
         new SsaFinder(arg, false).determineSsa(n.getCondition());
 
+        Set<String> assigningVariables = ((Statement) n.getThenStmt()).getVariablesHolder().getModifyingVariables();
+
+        //processing of the then branch
         VariablesHolder thenVariables = arg.copy();
         thenVariables.getCondition().and(new StringCondition(n.getCondition().toString()));
-
-        Set<String> assigningVariables = new HashSet<String>();
-        new AssignVisitor().visit(n, assigningVariables);
 
         Statement thenStmt = n.getThenStmt();
         getStmt(thenStmt, thenVariables);
 
-        VariablesHolder elseVariables = thenVariables.copy();
-        elseVariables.setReadVariables(arg.getReadVariables());
-        elseVariables.getCondition().and((new StringCondition(n.getCondition().toString())).not());
 
+        //processing of the else branch
         Statement elseStmt = n.getElseStmt();
+        VariablesHolder elseVariables;
         if (elseStmt != null) {
+            elseVariables = thenVariables.copy();
+            elseVariables.setReadVariables(arg.getReadVariables());
+            elseVariables.getCondition().and((new StringCondition(n.getCondition().toString())).not());
+
             getStmt(elseStmt, elseVariables);
+            assigningVariables.addAll(((Statement) n.getElseStmt()).getVariablesHolder().getModifyingVariables());
         } else {
             elseVariables = arg.copy();
         }
 
-        List<String> vars = new ArrayList<String>(assigningVariables);
-        Collections.sort(vars);
-
-        //TODO
-        List<String> vars2 = new ArrayList<String>(((Statement) n.getThenStmt()).getVariablesHolder().getModifyingVariables());
-
-        if (elseStmt != null) {
-            vars2.addAll(((Statement) n.getElseStmt()).getVariablesHolder().getModifyingVariables());
-        }
-        Collections.sort(vars2);
-        assert vars.equals(vars2);
-
-        for (String name : vars) {
+        for (String name : assigningVariables) {
             Integer newIndex = Math.max(thenVariables.read(name) == null ? -1 : thenVariables.read(name), elseVariables.read(name) == null ? -1 : elseVariables.read(name)) + 1;
             addPhi(n, new PhiNode(name, newIndex, PhiNode.Mode.AFTER, elseVariables.getPhiIndexes(thenVariables, name)));
             elseVariables.write(name, newIndex);
@@ -204,33 +198,12 @@ public class SsaFormConverter extends VoidVisitorAdapter<VariablesHolder> {
 
     @Override
     public void visit(WhileStmt n, VariablesHolder arg) {
-
-        new SsaFinder(arg, false).determineSsa(n.getCondition());
+        Set<String> assigningVariables = ((Statement) n.getBody()).getVariablesHolder().getModifyingVariables();
 
         VariablesHolder holder = arg.copy();
         holder.getCondition().and(new StringCondition(n.getCondition().toString()));
 
-        Set<String> assigningVariables = new HashSet<String>();
-        new AssignVisitor().visit(n, assigningVariables);
-
-        //TODO
-        List<String> vars = new ArrayList<String>(assigningVariables);
-        Collections.sort(vars);
-        List<String> vars2 = new ArrayList<String>(((Statement) n.getBody()).getVariablesHolder().getModifyingVariables());
-        Collections.sort(vars2);
-        assert vars.equals(vars2);
-
-        Set<String> conditionsVars = new HashSet<String>();
-        new NameVisitor().visit((BinaryExpr) n.getCondition(), conditionsVars);
-
-        //TODO
-        List<String> vars3 = new ArrayList<String>(conditionsVars);
-        Collections.sort(vars3);
-        vars2 = new ArrayList<String>(((Expression) n.getCondition()).getVariablesHolder().getUsingVariables());
-        Collections.sort(vars2);
-        assert vars3.equals(vars2);
-
-        //phi nodes with only one variable's index
+        //phi nodes with only the one variable's index
         Set<PhiNode> beforeWhilePhiNodes = new HashSet<PhiNode>();
 
         for (String var : assigningVariables) {
@@ -240,6 +213,10 @@ public class SsaFormConverter extends VoidVisitorAdapter<VariablesHolder> {
                 arg.increaseIndex(var);
             }
         }
+
+        //processing of the condition
+        new SsaFinder(arg, false).determineSsa(n.getCondition());
+
 
         for (String var : assigningVariables) {
             if (assigningVariables.contains(var)) {
@@ -251,7 +228,11 @@ public class SsaFormConverter extends VoidVisitorAdapter<VariablesHolder> {
         Set<PhiNode> inWhilePhiNodes = new HashSet<PhiNode>();
 
         for (String name : holder.getDifferenceInVariables(arg, false)) {
-            inWhilePhiNodes.add(new PhiNode(name, holder.read(name) == null ? 0 : holder.read(name), PhiNode.Mode.BEFORE, arg.read(name)));
+            if (arg.read(name) != null) {
+                inWhilePhiNodes.add(new PhiNode(name, holder.read(name) == null ? 0 : holder.read(name), PhiNode.Mode.BEFORE, arg.read(name)));
+            } else {
+                inWhilePhiNodes.add(new PhiNode(name, holder.read(name) == null ? 0 : holder.read(name), PhiNode.Mode.BEFORE));
+            }
         }
 
         addAllPhi(((BlockStmt) n.getBody()).getStmts().get(0), inWhilePhiNodes);
@@ -320,6 +301,9 @@ public class SsaFormConverter extends VoidVisitorAdapter<VariablesHolder> {
     public void visit(MethodDeclaration n, VariablesHolder arg) {
         //TODO copy of n
 //        n = new CopyingUtils<MethodDeclaration>().copy(n);
+
+        new UsingModifyingVariablesVisitor().visit(n,new UMVariablesHolder());
+
         methodDeclaration = n;
         Map<String, Integer> map = new HashMap<String, Integer>();
         if (n.getParameters() != null) {
@@ -329,6 +313,9 @@ public class SsaFormConverter extends VoidVisitorAdapter<VariablesHolder> {
                 map.put(parameter.getId().getName(), 0);
                 parameter.getId().setName(parameter.getId().getName() + SEPARATOR + 0);
             }
+        }
+        if (arg == null) {
+            arg = new VariablesHolder(map);
         }
         VariablesHolder holder = new VariablesHolder(map, arg.getCondition());
         holder.mergeHolders(arg);
@@ -361,27 +348,11 @@ public class SsaFormConverter extends VoidVisitorAdapter<VariablesHolder> {
     @Override
     public void visit(ForeachStmt n, VariablesHolder arg) {
 
-        Set<String> assigningVariables = new HashSet<String>();
-        new AssignVisitor().visit(n, assigningVariables);
+        Set<String> assigningVariables = ((Statement) n.getBody()).getVariablesHolder().getModifyingVariables() ;
 
-        //TODO
-        List<String> vars = new ArrayList<String>(assigningVariables);
-        Collections.sort(vars);
-        List<String> vars2 = new ArrayList<String>(((Statement) n.getBody()).getVariablesHolder().getModifyingVariables());
-        Collections.sort(vars2);
-        assert vars.equals(vars2);
+        Set<String> conditionsVars = ((Expression) n.getVariable()).getVariablesHolder().getUsingVariables();
 
-
-        Set<String> conditionsVars = new HashSet<String>();
-        new NameVisitor().visit((VariableDeclarationExpr) n.getVariable(), conditionsVars);
         //TODO add condition to processing of variables holder
-
-        //TODO
-        List<String> vars3 = new ArrayList<String>(conditionsVars);
-        Collections.sort(vars3);
-        vars2 = new ArrayList<String>(((Expression) n.getVariable()).getVariablesHolder().getUsingVariables());
-        Collections.sort(vars2);
-        assert vars3.equals(vars2);
 
         VariablesHolder holder = arg.copy();
 
@@ -402,7 +373,11 @@ public class SsaFormConverter extends VoidVisitorAdapter<VariablesHolder> {
 
         for (String name : assigningVariables) {
             if (!conditionsVars.contains(name)) {
-                inWhilePhiNodes.add(new PhiNode(name, holder.read(name) == null ? 0 : holder.read(name), PhiNode.Mode.BEFORE, arg.read(name)));
+                if (arg.read(name) != null) {
+                    inWhilePhiNodes.add(new PhiNode(name, holder.read(name) == null ? 0 : holder.read(name), PhiNode.Mode.BEFORE, arg.read(name)));
+                } else {
+                    inWhilePhiNodes.add(new PhiNode(name, holder.read(name) == null ? 0 : holder.read(name), PhiNode.Mode.BEFORE));
+                }
             }
         }
 

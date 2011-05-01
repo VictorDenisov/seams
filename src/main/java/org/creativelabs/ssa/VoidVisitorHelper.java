@@ -11,7 +11,7 @@ import japa.parser.ast.visitor.VoidVisitorAdapter;
  */
 public class VoidVisitorHelper {
 
-    public static<T> void visitStatement(Statement statement, T arg, VoidVisitorAdapter<T> visitor) {
+    public static <T> void visitStatement(Statement statement, T arg, VoidVisitorAdapter<T> visitor) {
         if (statement instanceof BlockStmt) {
             visitor.visit((BlockStmt) statement, arg);
         } else if (statement instanceof ExpressionStmt) {
@@ -30,14 +30,18 @@ public class VoidVisitorHelper {
             visitor.visit((ForeachStmt) statement, arg);
         } else if (statement instanceof ThrowStmt) {
             visitor.visit((ThrowStmt) statement, arg);
+        } else if (statement instanceof BreakStmt) {
+            visitor.visit((BreakStmt) statement, arg);
+        } else if (statement instanceof AssertStmt) {
+            visitor.visit((AssertStmt) statement, arg);
         } else {
-        //TODO to remove exception
-        throw new UnsupportedOperationException("VoidVisitorHelper is not support statement for " +
-                statement.getClass() + ".");
+            //TODO to remove exception
+            throw new UnsupportedOperationException("VoidVisitorHelper is not support statement for " +
+                    statement.getClass() + ".");
         }
     }
 
-    public static<T> void visitExpression(Expression expression, T arg, VoidVisitorAdapter<T> visitor) {
+    public static <T> void visitExpression(Expression expression, T arg, VoidVisitorAdapter<T> visitor) {
         if (expression instanceof AssignExpr) {
             visitor.visit((AssignExpr) expression, arg);
         } else if (expression instanceof VariableDeclarationExpr) {
@@ -67,9 +71,9 @@ public class VoidVisitorHelper {
         } else if (expression instanceof UnaryExpr) {
             visitor.visit((UnaryExpr) expression, arg);
         } else {
-        //TODO to remove exception
-        throw new UnsupportedOperationException("VoidVisitorHelper is not support expression for " +
-                expression.getClass() + ".");
+            //TODO to remove exception
+            throw new UnsupportedOperationException("VoidVisitorHelper is not support expression for " +
+                    expression.getClass() + ".");
         }
     }
 
