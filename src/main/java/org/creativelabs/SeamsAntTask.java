@@ -95,10 +95,7 @@ public class SeamsAntTask extends MatchingTask {
         }
     }
 
-    public void execute() throws BuildException {
-        checkParameters();
-        resetFileLists();
-
+    public URL[] getUrlsFromFileList() {
         String[] fileList = classpath.list();
         URL[] urls = new URL[fileList.length];
         try {
@@ -112,6 +109,14 @@ public class SeamsAntTask extends MatchingTask {
         }
 
         classLoader = new URLClassLoader(urls);
+        return urls;
+    }
+
+    public void execute() throws BuildException {
+        checkParameters();
+        resetFileLists();
+
+        URL[] urls = getUrlsFromFileList();
 
         ra = new HookReflectionAbstraction(new ReflectionAbstractionImpl(classLoader));
         // scan source directories and dest directory to build up
