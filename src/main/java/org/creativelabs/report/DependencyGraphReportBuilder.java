@@ -38,7 +38,7 @@ public class DependencyGraphReportBuilder implements ReportBuilder {
                 vertex = graphBuilder.addVertex(str, new EmptyCondition(), new EmptyCondition());
             }
             try {
-                graphBuilder.addEdge(classVertex, vertex, new EmptyCondition());
+                graphBuilder.addEdge(classVertex, vertex);
             } catch (Exception e) {
             }
         }

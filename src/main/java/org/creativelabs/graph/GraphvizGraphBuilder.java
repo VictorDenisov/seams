@@ -1,9 +1,8 @@
 package org.creativelabs.graph;
 
 import org.creativelabs.graph.condition.Condition;
-import org.creativelabs.graph.condition.EmptyCondition;
 
-import java.io.*;
+import java.io.PrintWriter;
 
 public class GraphvizGraphBuilder implements GraphBuilder {
 
@@ -21,9 +20,10 @@ public class GraphvizGraphBuilder implements GraphBuilder {
 
         @Override
         public String getLabel() {
-            return label + "[" +
+            return (label + "[" +
                     internalCondition.getStringRepresentation() + " | " +
-                    externalCondition.getStringRepresentation() + "]";
+                    externalCondition.getStringRepresentation() + "]").
+                    replace("\"", "'");
         }
 
         @Override
@@ -53,13 +53,8 @@ public class GraphvizGraphBuilder implements GraphBuilder {
     }
 
     @Override
-    public void addEdge(Vertex from, Vertex to, Condition condition) {
-        if (condition instanceof EmptyCondition) {
-            printWriter.println("    \"" + from.getLabel() + "\" -> \"" + to.getLabel() + "\";");
-        } else {
-            printWriter.println("    \"" + from.getLabel() + "\" -> \"" + to.getLabel() + "\" [label = \"" +
-                    condition.getStringRepresentation() + "\"];");
-        }
+    public void addEdge(Vertex from, Vertex to) {
+        printWriter.println("    \"" + from.getLabel() + "\" -> \"" + to.getLabel() + "\";");
     }
 
     public void finalizeGraph() {

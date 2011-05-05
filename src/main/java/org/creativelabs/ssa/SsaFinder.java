@@ -57,6 +57,12 @@ public class SsaFinder {
 
     NameExpr determineSsa(NameExpr expr) {
         String variableName = expr.getName();
+
+        boolean isClassWithStaticMethod = Character.isUpperCase(variableName.charAt(0));
+        if (isClassWithStaticMethod) {
+            return expr;
+        }
+
         Integer variableIndex = variables.read(variableName);
         if (variableIndex != null) {
             if (isNeededToIncreaseIndex) {

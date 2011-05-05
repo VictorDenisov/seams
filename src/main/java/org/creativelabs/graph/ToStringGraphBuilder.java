@@ -1,7 +1,6 @@
 package org.creativelabs.graph;
 
 import org.creativelabs.graph.condition.Condition;
-import org.creativelabs.graph.condition.EmptyCondition;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -55,7 +54,7 @@ public class ToStringGraphBuilder implements GraphBuilder {
     }
 
     @Override
-    public void addEdge(Vertex from, Vertex to, Condition condition) {
+    public void addEdge(Vertex from, Vertex to) {
         ArrayList<StringVertex> vertexes;
         if (edgesMap.containsKey(from)) {
             vertexes = edgesMap.get(from);
@@ -64,15 +63,6 @@ public class ToStringGraphBuilder implements GraphBuilder {
             edgesMap.put((StringVertex) from, vertexes);
         }
         vertexes.add((StringVertex) to);
-
-        ArrayList<Condition> conditions = null;
-        if (conditionsMap.containsKey(from)) {
-            conditions = conditionsMap.get(from);
-        } else {
-            conditions = new ArrayList<Condition>();
-            conditionsMap.put((StringVertex) from, conditions);
-        }
-        conditions.add(condition);
     }
 
     public String toString() {
@@ -80,12 +70,7 @@ public class ToStringGraphBuilder implements GraphBuilder {
         for (Map.Entry<StringVertex, ArrayList<StringVertex>> entry : edgesMap.entrySet()) {
             StringVertex key = entry.getKey();
             for (int i = 0; i < entry.getValue().size(); i++) {
-                if (conditionsMap.get(key).get(i) instanceof EmptyCondition) {
-                    result.append(key.getLabel() + " -> " + entry.getValue().get(i).getLabel() + ", ");
-                } else {
-                    result.append(key.getLabel() + " -> " + entry.getValue().get(i).getLabel()
-                            + " [" + conditionsMap.get(key).get(i).getStringRepresentation() + "], ");
-                }
+                result.append(key.getLabel() + " -> " + entry.getValue().get(i).getLabel() + ", ");
             }
         }
         return result.toString() + "}";

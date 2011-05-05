@@ -4,6 +4,7 @@ patches
 .idea
 seams.iml
 *.deps
+*.dot
 *.jpg
 *.png
 *.ssa

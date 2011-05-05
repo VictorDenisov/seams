@@ -115,7 +115,7 @@ class ClassProcessor {
         visitor.visit(md, holder);
         SsaFormAstRepresentation form = new SsaFormAstRepresentation(md.getName(), md);
         forms.add(form);
-        //TODO: To add graphs for all methods
+        //TODO: To addEdge graphs for all methods
         ssaInternalInstancesGraph = visitor.getGraph();
     }
 

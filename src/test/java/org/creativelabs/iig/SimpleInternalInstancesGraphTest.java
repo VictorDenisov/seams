@@ -26,7 +26,7 @@ public class SimpleInternalInstancesGraphTest {
     @Test
     public void testAdd() {
         InternalInstancesGraph graph = new SimpleInternalInstancesGraph();
-        graph.add("source", "target");
+        graph.addEdge("source", "target");
         String resultValue = internalInstancesToString(graph);
         AssertJUnit.assertEquals("{source" + EMPTY_CONDITIONS_STRING + " -> target" + EMPTY_CONDITIONS_STRING + ", }",
                 resultValue);
@@ -35,8 +35,8 @@ public class SimpleInternalInstancesGraphTest {
     @Test
     public void testAddMultipleOutgoingVertexes() {
         InternalInstancesGraph graph = new SimpleInternalInstancesGraph();
-        graph.add("source", "target1");
-        graph.add("source", "target2");
+        graph.addEdge("source", "target1");
+        graph.addEdge("source", "target2");
         String resultValue = internalInstancesToString(graph);
         AssertJUnit.assertEquals("{source" + EMPTY_CONDITIONS_STRING + " -> target1" + EMPTY_CONDITIONS_STRING +
                 ", source" + EMPTY_CONDITIONS_STRING + " -> target2" + EMPTY_CONDITIONS_STRING + ", }",
@@ -46,14 +46,14 @@ public class SimpleInternalInstancesGraphTest {
     @Test
     public void testContains() {
         InternalInstancesGraph graph = new SimpleInternalInstancesGraph();
-        graph.add("source", "target");
+        graph.addEdge("source", "target");
         AssertJUnit.assertTrue(graph.contains("source"));
     }
 
     @Test
     public void testToSet() {
         InternalInstancesGraph graph = new SimpleInternalInstancesGraph();
-        graph.add("source", "target");
+        graph.addEdge("source", "target");
         ArrayList<String> res = new ArrayList<String> (graph.toSet());
 
         AssertHelper.assertEqualsList(Arrays.asList(new String[]{"source"}), res);
@@ -62,7 +62,7 @@ public class SimpleInternalInstancesGraphTest {
     @Test
     public void testBuildGraph() {
         InternalInstancesGraph graph = new SimpleInternalInstancesGraph();
-        graph.add("source", "target");
+        graph.addEdge("source", "target");
 
         String resultValue = internalInstancesToString(graph);
         AssertJUnit.assertEquals("{source" + EMPTY_CONDITIONS_STRING + " -> target" + EMPTY_CONDITIONS_STRING + ", }",

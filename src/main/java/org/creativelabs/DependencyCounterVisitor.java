@@ -80,7 +80,7 @@ class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
             ExpressionSeparatorVisitor esv = new ExpressionSeparatorVisitor(internalInstances);
             n.getValue().accept(esv, null);
             if (esv.isAssignedInternalInstance()) {
-                internalInstances.add(n.getTarget().toString(), esv.getValue());
+                internalInstances.addEdge(n.getTarget().toString(), esv.getValue());
             }
         }
         super.visit(n, o);
@@ -98,7 +98,7 @@ class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
             if (v.getInit() != null) {
                 v.getInit().accept(esv, null);
                 if (esv.isAssignedInternalInstance()) {
-                    internalInstances.add(v.getId().getName(), esv.getValue());
+                    internalInstances.addEdge(v.getId().getName(), esv.getValue());
                 }
             }
         }

@@ -14,15 +14,24 @@ public class SimpleInternalInstancesGraph implements InternalInstancesGraph {
     private List<String> toVertexes = new ArrayList<String>();
 
     @Override
-    public void add(String from, String to) {
+    public void addEdge(String from, String to) {
         fromVertexes.add(from);
         toVertexes.add(to);
     }
 
     @Override
-    public void add(String from, String to, Condition condition) {
-        fromVertexes.add(from);
-        toVertexes.add(to);
+    public void addVertexConditions(String vertex, Condition internalCondition, Condition externalCondition) {
+        //no operations
+    }
+
+    @Override
+    public Condition getInternalVertexCondition(String vertex) {
+        return new EmptyCondition();
+    }
+
+    @Override
+    public Condition getExternalVertexCondition(String vertex) {
+        return new EmptyCondition();
     }
 
     public boolean contains(String variable) {
@@ -46,7 +55,7 @@ public class SimpleInternalInstancesGraph implements InternalInstancesGraph {
         for (int i = 0; i < fromVertexes.size(); i++) {
             Vertex a = map.get(fromVertexes.get(i));
             Vertex b = map.get(toVertexes.get(i));
-            graphBuilder.addEdge(a, b, new EmptyCondition());
+            graphBuilder.addEdge(a, b);
         }
     }
 }

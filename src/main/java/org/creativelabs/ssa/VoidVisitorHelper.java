@@ -194,7 +194,7 @@ public class VoidVisitorHelper {
         } else if (node instanceof Comment) {
             visitComment((Comment) node, arg, visitor);
         } else {
-            //TODO: to add processing other constructions
+            //TODO: to addEdge processing other constructions
             throw new UnsupportedOperationException("VoidVisitorHelper is not support node for " +
                     node.getClass() + ".");
         }

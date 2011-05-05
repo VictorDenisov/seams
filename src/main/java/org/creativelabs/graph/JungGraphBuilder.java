@@ -1,9 +1,9 @@
 package org.creativelabs.graph;
 
-import edu.uci.ics.jung.graph.*;
-import edu.uci.ics.jung.graph.util.*;
+import edu.uci.ics.jung.graph.Graph;
+import edu.uci.ics.jung.graph.SparseMultigraph;
+import edu.uci.ics.jung.graph.util.EdgeType;
 import org.creativelabs.graph.condition.Condition;
-import org.creativelabs.graph.condition.EmptyCondition;
 
 public class JungGraphBuilder implements GraphBuilder {
 
@@ -47,13 +47,9 @@ public class JungGraphBuilder implements GraphBuilder {
         return vertex;
     }
 
-    public void addEdge(Vertex from, Vertex to, Condition condition) {
+    public void addEdge(Vertex from, Vertex to) {
         graph.addVertex(from);
-        if (condition instanceof EmptyCondition) {
-            graph.addEdge(from.getLabel() + " -- " + to.getLabel(), from, to, EdgeType.DIRECTED);
-        } else {
-            graph.addEdge(condition.getStringRepresentation(), from, to, EdgeType.DIRECTED);
-        }
+        graph.addEdge(from.getLabel() + " -- " + to.getLabel(), from, to, EdgeType.DIRECTED);
     }
 
     public Graph<Vertex, String> getGraph() {

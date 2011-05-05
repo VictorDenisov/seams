@@ -7,7 +7,7 @@ import org.creativelabs.graph.condition.EmptyCondition;
 import java.util.*;
 
 /**
- * It's internal instances graph with edge conditions.
+ * It's internal instances graph with edge edgeConditions.
  *
  * @author azotcsit
  * Date: 09.04.11
@@ -16,20 +16,37 @@ import java.util.*;
 public class ConditionInternalInstancesGraph implements InternalInstancesGraph {
     private List<String> fromVertexes = new ArrayList<String>();
     private List<String> toVertexes = new ArrayList<String>();
-    private List<Condition> conditions = new ArrayList<Condition>();
+    private Map<String, Condition> internalVertexConditions = new HashMap<String, Condition>();
+    private Map<String, Condition> externalVertexConditions = new HashMap<String, Condition>();
 
     @Override
-    public void add(String from, String to) {
+    public void addEdge(String from, String to) {
         fromVertexes.add(from);
         toVertexes.add(to);
-        conditions.add(new EmptyCondition());
     }
 
     @Override
-    public void add(String from, String to, Condition condition) {
-        fromVertexes.add(from);
-        toVertexes.add(to);
-        conditions.add(condition);
+    public void addVertexConditions(String vertex, Condition internalCondition, Condition externalCondition) {
+        internalVertexConditions.put(vertex, internalCondition);
+        externalVertexConditions.put(vertex, externalCondition);
+    }
+
+    @Override
+    public Condition getInternalVertexCondition(String vertex) {
+        Condition condition = internalVertexConditions.get(vertex);
+        if (condition == null) {
+            return new EmptyCondition();
+        }
+        return condition;
+    }
+
+    @Override
+    public Condition getExternalVertexCondition(String vertex) {
+        Condition condition = externalVertexConditions.get(vertex);
+        if (condition == null) {
+            return new EmptyCondition();
+        }
+        return condition;
     }
 
     public boolean contains(String variable) {
@@ -47,13 +64,22 @@ public class ConditionInternalInstancesGraph implements InternalInstancesGraph {
         vertexes.addAll(fromVertexes);
         vertexes.addAll(toVertexes);
         for (String vertex : vertexes) {
-            map.put(vertex, graphBuilder.addVertex(vertex, new EmptyCondition(), new EmptyCondition()));
+            if (internalVertexConditions.containsKey(vertex)
+                    && externalVertexConditions.containsKey(vertex)) {
+                map.put(vertex, graphBuilder.addVertex(vertex,
+                        internalVertexConditions.get(vertex),
+                        externalVertexConditions.get(vertex)));
+            } else {
+                map.put(vertex, graphBuilder.addVertex(vertex,
+                        new EmptyCondition(),
+                        new EmptyCondition()));
+            }
         }
 
         for (int i = 0; i < fromVertexes.size(); i++) {
             Vertex a = map.get(fromVertexes.get(i));
             Vertex b = map.get(toVertexes.get(i));
-            graphBuilder.addEdge(a, b, conditions.get(i));
+            graphBuilder.addEdge(a, b);
         }
     }
 }

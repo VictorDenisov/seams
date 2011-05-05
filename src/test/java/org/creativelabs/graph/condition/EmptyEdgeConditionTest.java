@@ -15,18 +15,26 @@ public class EmptyEdgeConditionTest {
         assertEquals("", new EmptyCondition().getStringRepresentation());
     }
 
-    @Test(expectedExceptions = UnsupportedOperationException.class)
+    @Test
     public void testAnd() throws Exception {
-        new EmptyCondition().and(new EmptyCondition());
+        EmptyCondition thisCondition = new EmptyCondition();
+        EmptyCondition otherCondition = new EmptyCondition();
+
+        assertEquals(thisCondition.and(otherCondition), otherCondition);
     }
 
-    @Test(expectedExceptions = UnsupportedOperationException.class)
+    @Test
     public void testOr() throws Exception {
-        new EmptyCondition().and(new EmptyCondition());
+        EmptyCondition thisCondition = new EmptyCondition();
+        EmptyCondition otherCondition = new EmptyCondition();
+
+        assertEquals(thisCondition.or(otherCondition), otherCondition);
     }
 
-    @Test(expectedExceptions = UnsupportedOperationException.class)
+    @Test
     public void testNot() throws Exception {
-        new EmptyCondition().not();
+        EmptyCondition thisCondition = new EmptyCondition();
+
+        assertEquals(thisCondition.not(), thisCondition);
     }
 }

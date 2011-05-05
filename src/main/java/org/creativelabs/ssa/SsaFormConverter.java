@@ -7,9 +7,10 @@ import japa.parser.ast.expr.*;
 import japa.parser.ast.helper.UMVariablesHolder;
 import japa.parser.ast.stmt.*;
 import japa.parser.ast.visitor.VoidVisitorAdapter;
+import org.creativelabs.graph.condition.Condition;
 import org.creativelabs.graph.condition.StringCondition;
+import org.creativelabs.iig.ConditionInternalInstancesGraph;
 import org.creativelabs.iig.InternalInstancesGraph;
-import org.creativelabs.iig.SimpleInternalInstancesGraph;
 
 import java.util.*;
 
@@ -20,9 +21,11 @@ public class SsaFormConverter extends VoidVisitorAdapter<VariablesHolder> {
 
     public static final String SEPARATOR = "#";
 
-    private InternalInstancesGraph graph = new SimpleInternalInstancesGraph();
+    private InternalInstancesGraph graph = new ConditionInternalInstancesGraph();
 
     private MethodDeclaration methodDeclaration;
+
+    private String methodName;
 
     public SsaFormConverter() {
     }
@@ -40,7 +43,7 @@ public class SsaFormConverter extends VoidVisitorAdapter<VariablesHolder> {
     }
 
     public void addToGraph(String from, String to) {
-        graph.add(from, to);
+        graph.addEdge(from, to);
     }
 
     @Override
@@ -51,8 +54,22 @@ public class SsaFormConverter extends VoidVisitorAdapter<VariablesHolder> {
             arg.write(variableName, 0);
             variableDeclarator.setInit(new SsaFinder(arg, false).determineSsa(variableDeclarator.getInit()));
             variableDeclarator.getId().setName(variableName + SEPARATOR + 0);
-            graph.add(methodDeclaration.getName() + SEPARATOR + variableName + SEPARATOR + 0,
-                    methodDeclaration.getName() + SEPARATOR + variableDeclarator.getInit().toString());
+
+            String target = methodName + SEPARATOR + variableName;
+            String value = methodName + SEPARATOR + variableDeclarator.getInit().toString();
+
+//            //TODO check methods!
+//            graph.addVertexConditions(value,
+//                    new StringCondition("true"),
+//                    new StringCondition("false"));
+
+            graph.addVertexConditions(target + SEPARATOR + 0,
+                    new StringCondition("true"),
+                    new StringCondition("false"));
+
+            //TODO to delete
+            graph.addEdge(target + SEPARATOR + 0,
+                    target + SEPARATOR + 0);
         }
 
 
@@ -83,13 +100,29 @@ public class SsaFormConverter extends VoidVisitorAdapter<VariablesHolder> {
 
             arg.increaseIndex(arrayName);
             n.setTarget(new NameExpr(arrayName + SEPARATOR + arg.read(arrayName)));
-            graph.add(methodDeclaration.getName() + SEPARATOR + arrayName + SEPARATOR + arg.read(arrayName),
-                    methodDeclaration.getName() + SEPARATOR + expressions.get(0).toString());
+
+            String value = methodName + SEPARATOR + arrayName + SEPARATOR + arg.read(arrayName);
+            String target = methodName + SEPARATOR + expressions.get(0).toString();
+
+            graph.addVertexConditions(target,
+                    graph.getInternalVertexCondition(target).or(graph.getInternalVertexCondition(value)),
+                    graph.getExternalVertexCondition(target).or(graph.getExternalVertexCondition(value)));
+
+            graph.addEdge(methodName + SEPARATOR + arrayName + SEPARATOR + arg.read(arrayName),
+                    methodName + SEPARATOR + expressions.get(2).toString());
         } else {
             n.setValue(new SsaFinder(arg, false).determineSsa(n.getValue()));
             n.setTarget(new SsaFinder(arg, true).determineSsa(n.getTarget()));
-            graph.add(methodDeclaration.getName() + SEPARATOR + n.getTarget().toString(),
-                    methodDeclaration.getName() + SEPARATOR + n.getValue().toString());
+
+            String value = methodName + SEPARATOR + n.getValue().toString();
+            String target = methodName + SEPARATOR + n.getTarget().toString();
+
+            graph.addVertexConditions(target,
+                    graph.getInternalVertexCondition(target).or(graph.getInternalVertexCondition(value)),
+                    graph.getExternalVertexCondition(target).or(graph.getExternalVertexCondition(value)));
+
+            graph.addEdge(methodName + SEPARATOR + n.getTarget().toString(),
+                    methodName + SEPARATOR + n.getValue().toString());
         }
     }
 
@@ -154,7 +187,6 @@ public class SsaFormConverter extends VoidVisitorAdapter<VariablesHolder> {
 //        VariablesHolder holder2 = holder1.copy();
 //
 //        Set<String> usingVariables = new HashSet<String>();
-//        new AssignVisitor().visit(n, usingVariables);
 //
 //        for (String var : usingVariables) {
 //            holder2.increaseIndex(var);
@@ -182,8 +214,8 @@ public class SsaFormConverter extends VoidVisitorAdapter<VariablesHolder> {
 //        new SsaFinder(holder1, false).determineSsa((BinaryExpr) n.getCompare());
 //        List<Expression> phisInCondition = new ArrayList<Expression>();
 ////        String[] s = holder1.getPhi(holder2, "i");
-////        phisInCondition.add(new NameExpr(s[0]));
-////        phisInCondition.add(new NameExpr(s[1]));
+////        phisInCondition.addEdge(new NameExpr(s[0]));
+////        phisInCondition.addEdge(new NameExpr(s[1]));
 //        ((BinaryExpr) n.getCompare()).setLeft(
 //                new MethodCallExpr(
 //                        null,
@@ -315,29 +347,43 @@ public class SsaFormConverter extends VoidVisitorAdapter<VariablesHolder> {
 
     @Override
     public void visit(MethodDeclaration n, VariablesHolder arg) {
-        //TODO copy of n
-//        n = new CopyingUtils<MethodDeclaration>().copy(n);
-
-        new UsingModifyingVariablesVisitor().visit(n, new UMVariablesHolder());
-
+//        methodDeclaration = new CopyingUtils<MethodDeclaration>().copy(n);
         methodDeclaration = n;
+        methodName = methodDeclaration.getName();
+
+        new UsingModifyingVariablesVisitor().visit(methodDeclaration, new UMVariablesHolder());
+        Condition condition = new StringCondition("true");
+
         Map<String, Integer> map = new HashMap<String, Integer>();
-        if (n.getParameters() != null) {
-            for (Parameter parameter : n.getParameters()) {
-                graph.add(n.getName() + SEPARATOR + parameter.getId().getName() + SEPARATOR + 0,
-                        parameter.getId().getName() + SEPARATOR + 0);
+        if (methodDeclaration.getParameters() != null) {
+            for (Parameter parameter : methodDeclaration.getParameters()) {
+
+                String target = methodName + SEPARATOR + parameter.getId().getName();
+                String value = parameter.getId().getName();
+
+                graph.addVertexConditions(value + SEPARATOR + 0,
+                        new StringCondition("false"),
+                        new StringCondition("true"));
+
+                graph.addVertexConditions(target + SEPARATOR + 0,
+                        new StringCondition("false"),
+                        new StringCondition("true"));
+
+                graph.addEdge(target + SEPARATOR + 0,
+                        value + SEPARATOR + 0);
+
                 map.put(parameter.getId().getName(), 0);
+
                 parameter.getId().setName(parameter.getId().getName() + SEPARATOR + 0);
             }
         }
-        if (arg == null) {
-            arg = new VariablesHolder(map);
-        }
-        VariablesHolder holder = new VariablesHolder(map, arg.getCondition());
-        holder.mergeHolders(arg);
-        visit(n.getBody(), holder);
+        VariablesHolder holder = new VariablesHolder(map, condition);
 
-        methodDeclaration = n;
+        if (arg != null) {
+            holder.mergeHolders(arg);
+        }
+
+        visit(methodDeclaration.getBody(), holder);
     }
 
     @Override
@@ -370,7 +416,7 @@ public class SsaFormConverter extends VoidVisitorAdapter<VariablesHolder> {
 
         Set<String> conditionsVars = ((Expression) n.getVariable()).getVariablesHolder().getUsingVariables();
 
-        //TODO add condition to processing of variables holder
+        //TODO addEdge condition to processing of variables holder
 
         VariablesHolder holder = arg.copy();
 
@@ -404,8 +450,15 @@ public class SsaFormConverter extends VoidVisitorAdapter<VariablesHolder> {
                 addAllPhi(((BlockStmt) n.getBody()).getStmts().get(0), inWhilePhiNodes);
                 getStmt(n.getBody(), holder);
             }
+        } else if (n.getBody() instanceof IfStmt) {
+            BlockStmt blockStmt = new BlockStmt();
+            blockStmt.setStmts(Arrays.asList(n.getBody()));
+            n.setBody(blockStmt);
+
+            addAllPhi((BlockStmt) n.getBody(), inWhilePhiNodes);
+            getStmt(n.getBody(), holder);
         } else {
-            //TODO
+            //no operations
         }
 
         for (PhiNode node : inWhilePhiNodes) {
@@ -474,4 +527,17 @@ public class SsaFormConverter extends VoidVisitorAdapter<VariablesHolder> {
             stmt.addPhi(phiNode);
         }
     }
+
+    private static Condition[] getMethodConditions(MethodCallExpr expr) {
+        List<Expression> exprArgs = expr.getArgs();
+        List<String> args = new ArrayList<String>();
+        if (exprArgs != null) {
+            for (Expression exprArg : exprArgs) {
+                args.add(exprArg.toString());
+            }
+        }
+
+        return new Condition[] {new StringCondition("!_!"), new StringCondition("!_!")};
+    }
+
 }
