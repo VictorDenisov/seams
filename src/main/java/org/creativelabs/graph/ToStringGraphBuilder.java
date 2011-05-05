@@ -2,9 +2,7 @@ package org.creativelabs.graph;
 
 import org.creativelabs.graph.condition.Condition;
 
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 public class ToStringGraphBuilder implements GraphBuilder {
 
@@ -45,12 +43,14 @@ public class ToStringGraphBuilder implements GraphBuilder {
 
     private Map<StringVertex, ArrayList<StringVertex>> edgesMap
             = new TreeMap<StringVertex, ArrayList<StringVertex>>();
-    private Map<StringVertex, ArrayList<Condition>> conditionsMap
-            = new TreeMap<StringVertex, ArrayList<Condition>>();
+
+    private Set<StringVertex> vertexes = new TreeSet<StringVertex>();
 
     @Override
     public Vertex addVertex(String label, Condition internalCondition, Condition externalCondition) {
-        return new StringVertex(label, internalCondition, externalCondition);
+        StringVertex vertex = new StringVertex(label, internalCondition, externalCondition);
+        vertexes.add(vertex);
+        return vertex;
     }
 
     @Override
@@ -73,6 +73,19 @@ public class ToStringGraphBuilder implements GraphBuilder {
                 result.append(key.getLabel() + " -> " + entry.getValue().get(i).getLabel() + ", ");
             }
         }
+
+        Set<StringVertex> edgeVertexes = new HashSet<StringVertex>();
+        for (Map.Entry<StringVertex, ArrayList<StringVertex>> entry : edgesMap.entrySet()) {
+            edgeVertexes.add(entry.getKey());
+            edgeVertexes.addAll(entry.getValue());
+        }
+
+        for (StringVertex vertex : vertexes) {
+            if (!edgeVertexes.contains(vertex)) {
+                result.append(vertex.getLabel() + ", ");
+            }
+        }
+
         return result.toString() + "}";
     }
 

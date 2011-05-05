@@ -34,4 +34,17 @@ public class JungGraphBuilderTest {
         assertEquals(1, graph.getEdges(EdgeType.DIRECTED).size());
     }
 
+    @Test
+    public void testAddVertexAddEdge() {
+        JungGraphBuilder builder = new JungGraphBuilder();
+        Vertex a = builder.addVertex("a", new EmptyCondition(), new EmptyCondition());
+        Vertex b = builder.addVertex("b", new EmptyCondition(), new EmptyCondition());
+        Vertex c = builder.addVertex("c", new EmptyCondition(), new EmptyCondition());
+        builder.addEdge(a, b);
+        Graph graph = builder.getGraph();
+        assertEquals(3, graph.getVertices().size());
+        assertEquals(1, graph.getEdgeCount());
+        assertEquals(1, graph.getEdges(EdgeType.DIRECTED).size());
+    }
+
 }

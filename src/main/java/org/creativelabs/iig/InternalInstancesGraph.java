@@ -12,7 +12,6 @@ import java.util.Set;
  */
 public interface InternalInstancesGraph {
     void addEdge(String source, String target);
-    //TODO to implement vertexes without edges
     void addVertexConditions(String vertex, Condition internalCondition, Condition externalCondition);
     Condition getInternalVertexCondition(String vertex);
     Condition getExternalVertexCondition(String vertex);

@@ -9,11 +9,20 @@ import static org.testng.AssertJUnit.assertEquals;
 public class ToStringGraphBuilderTest {
 
     @Test
+    public void testSimpleAddVertex() {
+        ToStringGraphBuilder gb = new ToStringGraphBuilder();
+        Vertex vertex = gb.addVertex("label", new EmptyCondition(), new EmptyCondition());
+
+        assertEquals("label" + EMPTY_CONDITIONS_STRING, vertex.getLabel());
+    }
+
+    @Test
     public void testAddVertex() {
         ToStringGraphBuilder gb = new ToStringGraphBuilder();
         Vertex vertex = gb.addVertex("label", new EmptyCondition(), new EmptyCondition());
 
         assertEquals("label" + EMPTY_CONDITIONS_STRING, vertex.getLabel());
+        assertEquals("{label" + EMPTY_CONDITIONS_STRING + ", }", gb.toString());
     }
 
     @Test
@@ -40,6 +49,20 @@ public class ToStringGraphBuilderTest {
 
         assertEquals("{a" + EMPTY_CONDITIONS_STRING + " -> b" + EMPTY_CONDITIONS_STRING +
                 ", a" + EMPTY_CONDITIONS_STRING + " -> c" + EMPTY_CONDITIONS_STRING + ", }",
+                graphBuilder.toString());
+    }
+
+    @Test
+    public void testAddVertexAddEdge() {
+        ToStringGraphBuilder graphBuilder = new ToStringGraphBuilder();
+        Vertex a = graphBuilder.addVertex("a", new EmptyCondition(), new EmptyCondition());
+        Vertex b = graphBuilder.addVertex("b", new EmptyCondition(), new EmptyCondition());
+        Vertex c = graphBuilder.addVertex("c", new EmptyCondition(), new EmptyCondition());
+
+        graphBuilder.addEdge(a, b);
+
+        assertEquals("{a" + EMPTY_CONDITIONS_STRING + " -> b" + EMPTY_CONDITIONS_STRING +
+                ", c"+ EMPTY_CONDITIONS_STRING +", }",
                 graphBuilder.toString());
     }
 }

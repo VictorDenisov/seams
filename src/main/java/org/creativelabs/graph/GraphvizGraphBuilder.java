@@ -3,10 +3,11 @@ package org.creativelabs.graph;
 import org.creativelabs.graph.condition.Condition;
 
 import java.io.PrintWriter;
+import java.util.*;
 
 public class GraphvizGraphBuilder implements GraphBuilder {
 
-    private static class GraphvizVertex implements Vertex {
+    private static class GraphvizVertex implements Vertex, Comparable<GraphvizVertex> {
 
         private String label;
         private Condition internalCondition;
@@ -36,7 +37,16 @@ public class GraphvizGraphBuilder implements GraphBuilder {
             return externalCondition;
         }
 
+        @Override
+        public int compareTo(GraphvizVertex o) {
+            return this.getLabel().compareTo(o.getLabel());
+        }
     }
+
+    private Map<GraphvizVertex, ArrayList<GraphvizVertex>> edgesMap
+            = new TreeMap<GraphvizVertex, ArrayList<GraphvizVertex>>();
+
+    private Set<GraphvizVertex> vertexes = new TreeSet<GraphvizVertex>();
 
     private PrintWriter printWriter;
 
@@ -49,15 +59,45 @@ public class GraphvizGraphBuilder implements GraphBuilder {
 
     @Override
     public Vertex addVertex(String label, Condition internalCondition, Condition externalCondition) {
-        return new GraphvizVertex(label, internalCondition, externalCondition);
+        GraphvizVertex vertex = new GraphvizVertex(label, internalCondition, externalCondition);
+        vertexes.add(vertex);
+        return vertex;
     }
 
     @Override
     public void addEdge(Vertex from, Vertex to) {
-        printWriter.println("    \"" + from.getLabel() + "\" -> \"" + to.getLabel() + "\";");
+        ArrayList<GraphvizVertex> vertexes;
+        if (edgesMap.containsKey(from)) {
+            vertexes = edgesMap.get(from);
+        } else {
+            vertexes = new ArrayList<GraphvizVertex>();
+            edgesMap.put((GraphvizVertex) from, vertexes);
+        }
+        vertexes.add((GraphvizVertex) to);
+
     }
 
     public void finalizeGraph() {
+
+        for (Map.Entry<GraphvizVertex, ArrayList<GraphvizVertex>> entry : edgesMap.entrySet()) {
+            GraphvizVertex key = entry.getKey();
+            for (GraphvizVertex value : entry.getValue()) {
+                printWriter.println("    \"" + key.getLabel() + "\" -> \"" + value.getLabel() + "\";");
+            }
+        }
+
+        Set<GraphvizVertex> edgeVertexes = new HashSet<GraphvizVertex>();
+        for (Map.Entry<GraphvizVertex, ArrayList<GraphvizVertex>> entry : edgesMap.entrySet()) {
+            edgeVertexes.add(entry.getKey());
+            edgeVertexes.addAll(entry.getValue());
+        }
+
+        for (GraphvizVertex vertex : vertexes) {
+            if (!edgeVertexes.contains(vertex)) {
+                printWriter.println("    \"" + vertex.getLabel() + "\";");
+            }
+        }
+
         printWriter.println("}");
     }
 
