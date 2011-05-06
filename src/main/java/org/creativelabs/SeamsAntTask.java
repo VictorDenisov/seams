@@ -18,7 +18,7 @@ public class SeamsAntTask extends MatchingTask {
     protected File[] compileList = new File[0];
     private File destDir;
     private Path classpath;
-    private ReflectionAbstraction ra = new HookReflectionAbstraction(new ReflectionAbstractionImpl());
+    private ReflectionAbstraction ra = null;
     private ClassLoader classLoader;
 
     public void setDestdir(File destDir) {

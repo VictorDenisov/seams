@@ -58,4 +58,14 @@ public class ImportListClassLookUpTest {
         assertEquals("java.util.Map<K, V, >", result.toString());
     }
 
+    @Test
+    public void testGetClassByShortName_FromDefaultPackage() throws Exception {
+        ReflectionAbstraction ra = mock(ReflectionAbstraction.class);
+        when(ra.classWithNameExists("Main")).thenReturn(true);
+
+        ImportList imports = new ParseHelper(ra).createImportListRA("");
+        imports.getClassByShortName("Main");
+        verify(ra).getClassTypeByName("Main");
+    }
+
 }

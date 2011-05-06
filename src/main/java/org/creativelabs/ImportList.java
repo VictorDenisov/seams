@@ -10,7 +10,7 @@ import org.creativelabs.introspection.*;
 
 import java.util.*;
 
-class ImportList {
+public class ImportList {
 
     private List<ImportDeclaration> list = new ArrayList<ImportDeclaration>();
 
@@ -18,7 +18,7 @@ class ImportList {
 
     protected String className;
 
-    ImportList(ReflectionAbstraction ra, CompilationUnit cu, ClassOrInterfaceDeclaration cd) {
+    public ImportList(ReflectionAbstraction ra, CompilationUnit cu, ClassOrInterfaceDeclaration cd) {
         this(ra, cu);
         if (cu.getPackage() != null) {
             className = cu.getPackage().getName().toString() + "." + cd.getName();
@@ -27,7 +27,7 @@ class ImportList {
         }
     }
 
-    ImportList(ReflectionAbstraction ra, CompilationUnit cu) {
+    public ImportList(ReflectionAbstraction ra, CompilationUnit cu) {
         this.ra = ra;
         if (cu.getPackage() != null) {
             list.add(new ImportDeclaration(new NameExpr(cu.getPackage().getName().toString()), false, true));
@@ -37,7 +37,8 @@ class ImportList {
             list.addAll(cu.getImports());
         }
     }
-    List<String> getImports() {
+
+    public List<String> getImports() {
         List<String> result = new ArrayList<String>();
         for (ImportDeclaration d : list) {
             result.add(d.getName().toString());
@@ -83,7 +84,7 @@ class ImportList {
         return result;
     }
 
-    ClassType getClassByClassOrInterfaceType(ClassOrInterfaceType classType) {
+    public ClassType getClassByClassOrInterfaceType(ClassOrInterfaceType classType) {
         ClassType result = null;
         if (classType.getScope() == null) {
             result = getClassByShortName(classType.toString());
@@ -100,7 +101,7 @@ class ImportList {
         return result;
     }
 
-    ClassType getClassByType(Type type) {
+    public ClassType getClassByType(Type type) {
         if (type instanceof ReferenceType) {
             Type innerType = ((ReferenceType) type).getType();
 
@@ -136,7 +137,7 @@ class ImportList {
 
     }
 
-    ClassType getClassByShortName(String shortName) {
+    public ClassType getClassByShortName(String shortName) {
         shortName = stripGeneric(shortName);
         shortName = processForNested(shortName);
         String scope = getScope(shortName);
@@ -160,6 +161,9 @@ class ImportList {
         }
         if (ra.classWithNameExists(className + "$" + shortName)) {
             return ra.getClassTypeByName(className + "$" + shortName);
+        }
+        if (ra.classWithNameExists(shortName)) {
+            return ra.getClassTypeByName(shortName);
         }
         return ra.createErrorClassType("Unknown class: " + shortName);
     }
