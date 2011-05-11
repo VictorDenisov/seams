@@ -3,6 +3,8 @@ package org.creativelabs;
 import org.testng.annotations.*;
 import japa.parser.ast.CompilationUnit;
 import japa.parser.ast.type.*;
+import japa.parser.ast.expr.*;
+import japa.parser.ast.stmt.*;
 import japa.parser.ast.body.*;
 
 import java.util.List;
@@ -68,4 +70,21 @@ public class ImportListClassLookUpTest {
         verify(ra).getClassTypeByName("Main");
     }
 
+    @Test
+    public void testGetClassByType_IteratorWithWildcardEmpty() throws Exception {
+        VariableDeclarationExpr expr = (VariableDeclarationExpr)ParseHelper.createExpression("Iterator<?> iter");
+        Type type = expr.getType();
+        /*
+        WildcardType tt = (WildcardType)((ClassOrInterfaceType)((ReferenceType)type).getType()).getTypeArgs().get(0);
+        System.out.println(tt.getClass().toString());
+        System.out.println(tt.getExtends() + "");
+        System.out.println(tt.getSuper() + "");
+        */
+
+        ImportList imports = ParseHelper.createImportList("import java.util.*;");
+
+        ClassType classType = imports.getClassByType(type);
+
+        assertEquals("java.util.Iterator<java.lang.Object, >", classType.toString());
+    }
 }

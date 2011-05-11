@@ -123,6 +123,8 @@ public class ImportList {
             ClassType result = getClassByClassOrInterfaceType(classType);
 
             return result;
+        } else if (type instanceof WildcardType) {
+            return getClassByShortName("Object");
         } else {
             return getClassByShortName(type.toString());
         }
