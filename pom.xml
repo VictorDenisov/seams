@@ -41,7 +41,7 @@
                     <target>${compileSource}</target>
                 </configuration>
             </plugin>
-				<!-- 
+	    <!--
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>aspectj-maven-plugin</artifactId>
@@ -60,7 +60,7 @@
                     <target>${compileSource}</target>
                 </configuration>
             </plugin>
-  -->
+	    -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>

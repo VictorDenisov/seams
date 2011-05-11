@@ -1,5 +1,5 @@
-aspect LoggerImportList {
-    before(): call(* *(..)) && target(org.creativelabs.ImportList){
+aspect LoggerTypeFinder {
+    before(): call(* *(..)) && target(org.creativelabs.TypeFinder){
         String callName = thisJoinPointStaticPart.getSignature().getName();
         Object[] args = thisJoinPoint.getArgs();
         String[] argValues = new String[args.length];
@@ -12,14 +12,10 @@ aspect LoggerImportList {
         System.out.println(callName + " " + argString.toString());
     }
 
-    after() returning(Object x): call(* *(..)) && target(org.creativelabs.ImportList) {
+    after() returning(Object x): call(* *(..)) && target(org.creativelabs.TypeFinder) {
 
         String callName = thisJoinPointStaticPart.getSignature().getName();
 
         System.out.println("Back from " + callName + " " + x);
-    }
-
-    after(org.creativelabs.ImportList c): this(c) && execution(*.new(..)){
-        System.out.println("ImportList constructor " + c.className);
     }
 }
