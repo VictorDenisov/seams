@@ -234,7 +234,7 @@ public class ImportListTest {
         CompilationUnit cu = ParseHelper.createCompilationUnit(
                 "package org.creativelabs; public class Main { public static class Nested {}}");
         ReflectionAbstraction ra = mock(ReflectionAbstraction.class);
-        when(ra.classWithNameExists("org.creativelabs.Main$Nested")).thenReturn(true);
+
         when(ra.classWithNameExists("org.creativelabs.Main$Nested")).thenReturn(true);
 
         ImportList imports = 

@@ -87,4 +87,13 @@ public class ImportListClassLookUpTest {
 
         assertEquals("java.util.Iterator<java.lang.Object, >", classType.toString());
     }
+
+    @Test
+    public void testGetClassByShortName_ForNestedClass() throws Exception {
+        ImportList imports = ParseHelper.createImportList("import java.util.Map.Entry;");
+
+        ClassType classType = imports.getClassByShortName("Entry");
+
+        assertEquals("java.util.Map$Entry<K, V, >", classType.toString());
+    }
 }

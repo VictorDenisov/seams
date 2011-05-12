@@ -157,7 +157,16 @@ public class ImportList {
                 if (id.getName().getName().equals(scope)) {
                     String className = id.getName().toString();
                     className = className.substring(0, className.length() - scope.length());
-                    return ra.getClassTypeByName(className + shortName);
+
+                    String fullClassName = className + shortName;
+                    if (ra.classWithNameExists(fullClassName)) {
+                        return ra.getClassTypeByName(fullClassName);
+                    }
+                    int ind = fullClassName.lastIndexOf(".");
+                    fullClassName = fullClassName.substring(0, ind) + "$" + fullClassName.substring(ind + 1, fullClassName.length());
+                    if (ra.classWithNameExists(fullClassName)) {
+                        return ra.getClassTypeByName(fullClassName);
+                    }
                 }
             }
         }
