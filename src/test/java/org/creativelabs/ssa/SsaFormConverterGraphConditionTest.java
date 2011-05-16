@@ -16,9 +16,9 @@ import static junit.framework.Assert.assertEquals;
 public class SsaFormConverterGraphConditionTest {
 
     @Test
-    public void testSimpleAssignVariable() throws Exception {
-        MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("void mainMethod(int x){" +
-                "x = x;" +
+    public void testSimpleDeclareVariableByConstant() throws Exception {
+        MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("void mainMethod(){" +
+                "int x = 0;" +
                 "}");
 
         SsaFormConverter visitor = new SsaFormConverter();
@@ -27,8 +27,80 @@ public class SsaFormConverterGraphConditionTest {
         GraphBuilder builder = new ToStringGraphBuilder();
         visitor.getGraph().buildGraph(builder);
 
-        String expectedResult = "{mainMethod#x#0[(false) | (true)] -> x#0[(false) | (true)], " +
-                "mainMethod#x#1[(false) | (true)] -> mainMethod#x#0[(false) | (true)], }";
+        String expectedResult = "{mainMethod()#x#0[true | false], }";
+
+        assertEquals(expectedResult, builder.toString());
+    }
+
+    @Test
+    public void testSimpleDeclareVariableByArgument() throws Exception {
+        MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("void mainMethod(int y){" +
+                "int x = y;" +
+                "}");
+
+        SsaFormConverter visitor = new SsaFormConverter();
+        visitor.visit(methodDeclaration, null);
+
+        GraphBuilder builder = new ToStringGraphBuilder();
+        visitor.getGraph().buildGraph(builder);
+
+        String expectedResult = "{mainMethod(int, )#x#0[false | true] -> mainMethod(int, )#y#0[false | true], " +
+                "mainMethod(int, )#y#0[false | true] -> y#0[false | true], }";
+
+        assertEquals(expectedResult, builder.toString());
+    }
+
+    @Test
+    public void testSimpleDeclareVariableByVariable() throws Exception {
+        MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("void mainMethod(){" +
+                "int y = 1;" +
+                "int x = y;" +
+                "}");
+
+        SsaFormConverter visitor = new SsaFormConverter();
+        visitor.visit(methodDeclaration, null);
+
+        GraphBuilder builder = new ToStringGraphBuilder();
+        visitor.getGraph().buildGraph(builder);
+
+        String expectedResult = "{mainMethod()#x#0[true | false] -> mainMethod()#y#0[true | false], }";
+
+        assertEquals(expectedResult, builder.toString());
+    }
+
+    @Test
+    public void testSimpleAssignVariableByConstant() throws Exception {
+        MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("void mainMethod(int x){" +
+                "x = 1;" +
+                "}");
+
+        SsaFormConverter visitor = new SsaFormConverter();
+        visitor.visit(methodDeclaration, null);
+
+        GraphBuilder builder = new ToStringGraphBuilder();
+        visitor.getGraph().buildGraph(builder);
+
+        String expectedResult = "{mainMethod(int, )#x#0[false | true] -> x#0[false | true], " +
+                "mainMethod(int, )#x#1[true | false], }";
+
+        assertEquals(expectedResult, builder.toString());
+    }
+
+    @Test
+    public void testSimpleAssignVariableByVariable() throws Exception {
+        MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("void mainMethod(int x, int y){" +
+                "x = y;" +
+                "}");
+
+        SsaFormConverter visitor = new SsaFormConverter();
+        visitor.visit(methodDeclaration, null);
+
+        GraphBuilder builder = new ToStringGraphBuilder();
+        visitor.getGraph().buildGraph(builder);
+
+        String expectedResult = "{mainMethod(int, int, )#x#0[false | true] -> x#0[false | true], " +
+                "mainMethod(int, int, )#x#1[false | true] -> mainMethod(int, int, )#y#0[false | true], " +
+                "mainMethod(int, int, )#y#0[false | true] -> y#0[false | true], }";
 
         assertEquals(expectedResult, builder.toString());
     }
@@ -55,11 +127,9 @@ public class SsaFormConverterGraphConditionTest {
     }
 
     @Test
-    public void testIf1() throws Exception {
+    public void testSimpleDeclareVariableByBinary1() throws Exception {
         MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("void mainMethod(int x){" +
-                "if (x < 2) {" +
-                    "int y = x;" +
-                "}" +
+                "int y = x + 2;" +
                 "}");
 
         SsaFormConverter visitor = new SsaFormConverter();
@@ -68,8 +138,65 @@ public class SsaFormConverterGraphConditionTest {
         GraphBuilder builder = new ToStringGraphBuilder();
         visitor.getGraph().buildGraph(builder);
 
-        String expectedResult = "{mainMethod#x#0[(false) | (true)] -> x#0[(false) | (true)], " +
-                "mainMethod#y#0[(false) | (true)] -> mainMethod#y#0[(false) | (true)], }";
+        String expectedResult = "{mainMethod(int, )#x#0[false | true] -> x#0[false | true], " +
+                "mainMethod(int, )#y#0[false | true] -> mainMethod(int, )#x#0[false | true], }";
+
+        assertEquals(expectedResult, builder.toString());
+    }
+
+    @Test
+    public void testSimpleDeclareVariableByBinary2() throws Exception {
+        MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("void mainMethod(int x, int z){" +
+                "int y = x + z;" +
+                "}");
+
+        SsaFormConverter visitor = new SsaFormConverter();
+        visitor.visit(methodDeclaration, null);
+
+        GraphBuilder builder = new ToStringGraphBuilder();
+        visitor.getGraph().buildGraph(builder);
+
+        String expectedResult = "{mainMethod(int, int, )#x#0[false | true] -> x#0[false | true], " +
+                "mainMethod(int, int, )#y#0[false | true] -> mainMethod(int, int, )#x#0[false | true], " +
+                "mainMethod(int, int, )#y#0[false | true] -> mainMethod(int, int, )#z#0[false | true], " +
+                "mainMethod(int, int, )#z#0[false | true] -> z#0[false | true], }";
+
+        assertEquals(expectedResult, builder.toString());
+    }
+
+    @Test
+    public void testSimpleDeclareVariableByBinary3() throws Exception {
+        MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("void mainMethod(){" +
+                "int y = 1 + 2;" +
+                "}");
+
+        SsaFormConverter visitor = new SsaFormConverter();
+        visitor.visit(methodDeclaration, null);
+
+        GraphBuilder builder = new ToStringGraphBuilder();
+        visitor.getGraph().buildGraph(builder);
+
+        String expectedResult = "{mainMethod()#y#0[true | false], }";
+
+        assertEquals(expectedResult, builder.toString());
+    }
+
+    @Test
+    public void testIf1() throws Exception {
+        MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("void mainMethod(int x){" +
+                "if (x < 2) {" +
+                    "int y = x;" +
+                "}" +
+                "int z = y;" +
+                "}");
+
+        SsaFormConverter visitor = new SsaFormConverter();
+        visitor.visit(methodDeclaration, null);
+
+        GraphBuilder builder = new ToStringGraphBuilder();
+        visitor.getGraph().buildGraph(builder);
+
+        String expectedResult = "";
 
         assertEquals(expectedResult, builder.toString());
     }
@@ -83,6 +210,7 @@ public class SsaFormConverterGraphConditionTest {
                 "} else {" +
                 "    y = 1;" +
                 "}" +
+                "int z = y;" +
                 "}");
 
         SsaFormConverter visitor = new SsaFormConverter();
@@ -91,11 +219,34 @@ public class SsaFormConverterGraphConditionTest {
         GraphBuilder builder = new ToStringGraphBuilder();
         visitor.getGraph().buildGraph(builder);
 
-        //TODO !!!!
-        String expectedResult = "{mainMethod#x#0[(false) | (true)] -> x#0[(false) | (true)], " +
-                "mainMethod#y#0[(true) | (false)] -> mainMethod#y#0[(true) | (false)], " +
-                "mainMethod#y#1[(false) | (true)] -> mainMethod#x#0[(false) | (true)], " +
-                "mainMethod#y#2[ | ] -> mainMethod#1[ | ], }";
+        String expectedResult = "";
+
+        assertEquals(expectedResult, builder.toString());
+    }
+
+    @Test
+    public void testComplexInnerIf() throws Exception {
+        MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("void mainMethod(int x){" +
+                "int y = 0;" +
+                "if (x < 2) {" +
+                    "if (x < 2) {" +
+                    "    y = x;" +
+                    "} else {" +
+                    "    int z = 1;" +
+                    "}" +
+                "    y = 2;" +
+                "} else {" +
+                "    y = 1;" +
+                "}" +
+                "}");
+
+        SsaFormConverter visitor = new SsaFormConverter();
+        visitor.visit(methodDeclaration, null);
+
+        GraphBuilder builder = new ToStringGraphBuilder();
+        visitor.getGraph().buildGraph(builder);
+
+        String expectedResult = "";
 
         assertEquals(expectedResult, builder.toString());
     }

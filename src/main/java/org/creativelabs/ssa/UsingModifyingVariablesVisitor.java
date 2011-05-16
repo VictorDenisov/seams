@@ -2,7 +2,6 @@ package org.creativelabs.ssa;
 
 import japa.parser.ast.body.VariableDeclaratorId;
 import japa.parser.ast.expr.*;
-import japa.parser.ast.helper.UMVariablesHolder;
 import japa.parser.ast.stmt.*;
 import japa.parser.ast.visitor.VoidVisitorAdapter;
 
@@ -30,21 +29,28 @@ public class UsingModifyingVariablesVisitor extends VoidVisitorAdapter<UMVariabl
     }
 
     @Override
+    public void visit(FieldAccessExpr n, UMVariablesHolder arg) {
+        VoidVisitorHelper.<UMVariablesHolder>visitExpression(n.getScope(), arg, this);
+        arg.addUsingVariable(n.getField());
+    }
+
+    @Override
     public void visit(VariableDeclaratorId n, UMVariablesHolder arg) {
         arg.addUsingVariable(n.getName());
-        arg.addModifyingVariable(n.getName());
+        if (!isCondition) {
+            arg.addModifyingVariable(n.getName());
+        }
     }
 
     @Override
     public void visit(VariableDeclarationExpr n, UMVariablesHolder arg) {
-        if (isCondition) {
-            UMVariablesHolder holder = new UMVariablesHolder();
-            super.visit(n, holder);
-            ((Expression) n).getVariablesHolder().add(holder);
-            arg.add(holder);
-        } else {
-            super.visit(n, arg);
-        }
+        boolean condition = isCondition;
+        isCondition = true;
+        UMVariablesHolder holder = new UMVariablesHolder();
+        super.visit(n, holder);
+        ((Expression) n).getVariablesHolder().add(holder);
+        arg.add(holder);
+        isCondition = condition;
     }
 
     @Override

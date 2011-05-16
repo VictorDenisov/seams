@@ -1,9 +1,7 @@
 package japa.parser.ast.expr;
 
 import japa.parser.ast.Node;
-import japa.parser.ast.helper.UMVariablesHolder;
-
-import java.io.Serializable;
+import org.creativelabs.ssa.UMVariablesHolder;
 
 /**
  * It's hacked class.
@@ -13,7 +11,7 @@ import java.io.Serializable;
  *         Date: 24.04.11
  *         Time: 18:27
  */
-public abstract class Expression extends Node implements Serializable {
+public abstract class Expression extends Node {
 
     public Expression() {
     }

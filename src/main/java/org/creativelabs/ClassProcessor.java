@@ -2,7 +2,7 @@ package org.creativelabs;
 
 import japa.parser.ast.body.*;
 import japa.parser.ast.stmt.BlockStmt;
-import org.creativelabs.graph.condition.StringCondition;
+import org.creativelabs.graph.condition.EmptyCondition;
 import org.creativelabs.iig.InternalInstancesGraph;
 import org.creativelabs.iig.SimpleInternalInstancesGraph;
 import org.creativelabs.report.ReportBuilder;
@@ -73,7 +73,7 @@ class ClassProcessor {
             if (bd instanceof MethodDeclaration) {
                 MethodDeclaration md = (MethodDeclaration) bd;
                 findOutgoingDependencies(md);
-                findSsaForm(md);
+                buildInternalInstancesGraph(md);
             }
         }
     }
@@ -92,35 +92,30 @@ class ClassProcessor {
         }
     }
 
-    void findSsaForm(MethodDeclaration md) {
-        addUsingModifyingVariablesInformation(md);
-
-        SsaFormConverter visitor = new SsaFormConverter(ssaInternalInstancesGraph);
+    void buildInternalInstancesGraph(MethodDeclaration md) {
         Map<String, Integer> map = new HashMap<String, Integer>();
+        Set<String> fields = new HashSet<String>();
         for (BodyDeclaration bd : typeDeclaration.getMembers()) {
             if (bd instanceof FieldDeclaration) {
                 FieldDeclaration fd = (FieldDeclaration) bd;
                 for (VariableDeclarator vardecl : fd.getVariables()) {
                     map.put(vardecl.getId().getName(), 0);
+                    fields.add(vardecl.getId().getName());
 
-                    visitor.addToGraph(vardecl.getId().getName(),
+                    ssaInternalInstancesGraph.addEdge(vardecl.getId().getName(),
                             md.getName() + SsaFormConverter.SEPARATOR + vardecl.getId().getName() + 0);
 
-//                    visitor.addToGraph(md.getName() + SsaFormConverter.SEPARATOR + vardecl.getId().getName(),
-//                            vardecl.getId().getName() + SsaFormConverter.SEPARATOR + 0);
                 }
             }
         }
-        VariablesHolder holder = new VariablesHolder(map, new StringCondition("true"));
+
+        SsaFormConverter visitor = new SsaFormConverter(ssaInternalInstancesGraph);
+        VariablesHolder holder = new VariablesHolder(map, new EmptyCondition());
+        holder.setFieldsNames(fields);
         visitor.visit(md, holder);
         SsaFormAstRepresentation form = new SsaFormAstRepresentation(md.getName(), md);
         forms.add(form);
-        //TODO: To addEdge graphs for all methods
         ssaInternalInstancesGraph = visitor.getGraph();
-    }
-
-    private void addUsingModifyingVariablesInformation(MethodDeclaration methodDeclaration) {
-//        new UsingModifyingVariablesVisitor().visit(methodDeclaration.getBody());
     }
 
 }

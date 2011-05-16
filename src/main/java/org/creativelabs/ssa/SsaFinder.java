@@ -74,6 +74,7 @@ public class SsaFinder {
         } else {
             expr.setName(variableName + " " + NOT_CONTAINS);
         }
+
         return expr;
     }
 

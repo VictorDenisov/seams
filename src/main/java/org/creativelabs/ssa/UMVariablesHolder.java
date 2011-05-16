@@ -1,4 +1,4 @@
-package japa.parser.ast.helper;
+package org.creativelabs.ssa;
 
 import java.io.Serializable;
 import java.util.Set;

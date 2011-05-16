@@ -14,6 +14,7 @@ import java.util.*;
  * Time: 0:40
  */
 public class ConditionInternalInstancesGraph implements InternalInstancesGraph {
+    private Set<String> allVertexes = new HashSet<String>();
     private List<String> fromVertexes = new ArrayList<String>();
     private List<String> toVertexes = new ArrayList<String>();
     private Map<String, Condition> internalVertexConditions = new HashMap<String, Condition>();
@@ -21,12 +22,15 @@ public class ConditionInternalInstancesGraph implements InternalInstancesGraph {
 
     @Override
     public void addEdge(String from, String to) {
+        allVertexes.add(from);
+        allVertexes.add(to);
         fromVertexes.add(from);
         toVertexes.add(to);
     }
 
     @Override
     public void addVertexConditions(String vertex, Condition internalCondition, Condition externalCondition) {
+        allVertexes.add(vertex);
         internalVertexConditions.put(vertex, internalCondition);
         externalVertexConditions.put(vertex, externalCondition);
     }
@@ -58,17 +62,14 @@ public class ConditionInternalInstancesGraph implements InternalInstancesGraph {
     }
 
     public void buildGraph(GraphBuilder graphBuilder) {
-        Set<String> vertexes = new HashSet<String>();
         Map<String, Vertex> map = new HashMap<String, Vertex>();
 
-        vertexes.addAll(fromVertexes);
-        vertexes.addAll(toVertexes);
-        for (String vertex : vertexes) {
+        for (String vertex : allVertexes) {
             if (internalVertexConditions.containsKey(vertex)
                     && externalVertexConditions.containsKey(vertex)) {
                 map.put(vertex, graphBuilder.addVertex(vertex,
-                        internalVertexConditions.get(vertex),
-                        externalVertexConditions.get(vertex)));
+                        internalVertexConditions.get(vertex).copy(),
+                        externalVertexConditions.get(vertex).copy()));
             } else {
                 map.put(vertex, graphBuilder.addVertex(vertex,
                         new EmptyCondition(),

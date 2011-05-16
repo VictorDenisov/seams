@@ -27,4 +27,9 @@ public class EmptyCondition implements Condition {
     public Condition not() {
         return this;
     }
+
+    @Override
+    public Condition copy() {
+        return new EmptyCondition();
+    }
 }

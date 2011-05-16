@@ -1,12 +1,10 @@
 package org.creativelabs.ssa;
 
+import org.creativelabs.ImportList;
 import org.creativelabs.graph.condition.Condition;
 import org.creativelabs.graph.condition.EmptyCondition;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 //TODO need to create javadoc and tests.
 
@@ -25,7 +23,12 @@ public class VariablesHolder {
      */
     private Map<String, Integer> writeVariables = new HashMap<String, Integer>();
 
+    private Set<String> fieldsNames = new HashSet<String>();
+
     private Condition condition = new EmptyCondition();
+
+    private Class aClass;
+    private ImportList importList;
 
     public VariablesHolder(Map<String, Integer> readVariables, Map<String, Integer> writeVariables) {
         this.readVariables = readVariables;
@@ -188,15 +191,19 @@ public class VariablesHolder {
         return result;
     }
 
-    private Condition copy(Condition condition) {
-        return new CopyingUtils<Condition>().copy(condition);
-    }
-
-
     public VariablesHolder copy() {
         VariablesHolder holder = new VariablesHolder(copy(readVariables), copy(writeVariables));
-        holder.setCondition(copy(this.getCondition()));
+        holder.setFieldsNames(copy(fieldsNames));
+        holder.setCondition(this.getCondition().copy());
         return holder;
+    }
+
+    private Set<String> copy(Set<String> arguments) {
+        Set<String> args = new HashSet<String>();
+        for (String arg : arguments) {
+            args.add(arg);
+        }
+        return args;
     }
 
     private Map<String, Integer> getCurrentVariables(boolean read) {
@@ -205,6 +212,26 @@ public class VariablesHolder {
         } else {
             return writeVariables;
         }
+    }
+
+    public void addFieldName(String fieldName) {
+        fieldsNames.add(fieldName);
+    }
+
+    public void addFieldNames(Collection<String> fieldNames) {
+        fieldsNames.addAll(fieldNames);
+    }
+
+    public Set<String> getFieldsNames() {
+        return fieldsNames;
+    }
+
+    public boolean containField(String fieldName) {
+        return fieldsNames.contains(fieldName);
+    }
+
+    public void setFieldsNames(Set<String> fieldsNames) {
+        this.fieldsNames = fieldsNames;
     }
 
 }

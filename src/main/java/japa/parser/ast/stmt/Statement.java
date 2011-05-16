@@ -2,10 +2,9 @@ package japa.parser.ast.stmt;
 
 
 import japa.parser.ast.Node;
-import japa.parser.ast.helper.UMVariablesHolder;
+import org.creativelabs.ssa.UMVariablesHolder;
 import org.creativelabs.ssa.PhiNode;
 
-import java.io.Serializable;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -15,7 +14,7 @@ import java.util.TreeSet;
  *
  * @author azotov
  */
-public abstract class Statement extends Node implements Serializable {
+public abstract class Statement extends Node {
 
     public Statement() {
     }

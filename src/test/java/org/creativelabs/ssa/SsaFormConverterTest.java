@@ -81,7 +81,7 @@ public class SsaFormConverterTest {
 
         String expectedResult =
                 "void method(int x#0, int ar#0[]) {\n" +
-                        "    ar#1 = Update(ar#0, 2, x);\n" +
+                        "    ar#1 = Update(ar#0, 2, x#0);\n" +
                         "}";
 
         assertEquals(expectedResult, actualResult);
@@ -99,7 +99,7 @@ public class SsaFormConverterTest {
 
         String expectedResult =
                 "void method(int x#0, int ar#0[], int i#0) {\n" +
-                        "    ar#1 = Update(ar#0, i#0, x);\n" +
+                        "    ar#1 = Update(ar#0, i#0, x#0);\n" +
                         "}";
 
         assertEquals(expectedResult, actualResult);
@@ -218,6 +218,85 @@ public class SsaFormConverterTest {
                         "    }\n" +
                         "    x#3 = #phi(x#1, x#2);\n" +
                         "    y#2 = #phi(y#0, y#1);\n" +
+                        "}";
+
+        assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
+    public void testSmartIfStmt2() throws Exception {
+
+        MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("public void visit(AssignExpr n, Object o) {\n" +
+                "        if (n.getValue() != null) {\n" +
+                "            ExpressionSeparatorVisitor esv = new ExpressionSeparatorVisitor(internalInstances);\n" +
+                "            n.getValue().accept(esv, null);\n" +
+                "            if (esv.isAssignedInternalInstance()) {\n" +
+                "                internalInstances.addEdge(n.getTarget().toString(), esv.getValue());\n" +
+                "            }\n" +
+                "        }\n" +
+                "        super.visit(n, o);\n" +
+                "    }");
+
+        SsaFormConverter visitor = new SsaFormConverter();
+        VariablesHolder holder = createVariablesHolder(
+                new HashMap<String, Integer>() {
+                    {
+                        put("internalInstances", 0);
+                    }
+                });
+        holder.addFieldName("internalInstances");
+        visitor.visit(methodDeclaration, holder);
+        String actualResult = visitor.getMethodDeclaration().toString();
+
+        String expectedResult =
+                "public void visit(AssignExpr n#0, Object o#0) {\n" +
+                        "    if (n#0.getValue() != null) {\n" +
+                        "        ExpressionSeparatorVisitor esv#0 = new ExpressionSeparatorVisitor(this.internalInstances#0);\n" +
+                        "        n#0.getValue().accept(esv#0, null);\n" +
+                        "        if (esv#0.isAssignedInternalInstance()) {\n" +
+                        "            this.internalInstances#0.addEdge(n#0.getTarget().toString(), esv#0.getValue());\n" +
+                        "        }\n" +
+                        "    }\n" +
+                        "    super.visit(n#0, o#0);\n" +
+                        "}";
+
+        assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
+    public void testIfStmtInTry() throws Exception {
+
+        MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("void outData(Map<String, Collection<Dependency>> deps, String fileName) {\n" +
+                "        try {\n" +
+                "            File file = new File(fileName + \".deps\");\n" +
+                "            if (file.createNewFile() || MainApp.NEED_TO_REWRITE_OLD_REPORT) {\n" +
+                "                PrintWriter writer = new PrintWriter(file);\n" +
+                "                printDeps(deps, writer);\n" +
+                "                writer.flush();\n" +
+                "                writer.close();\n" +
+                "            }\n" +
+                "        } catch (IOException e) {\n" +
+                "            e.printStackTrace();\n" +
+                "        }\n" +
+                "    }");
+
+        SsaFormConverter visitor = new SsaFormConverter();
+        visitor.visit(methodDeclaration, null);
+        String actualResult = visitor.getMethodDeclaration().toString();
+
+        String expectedResult =
+                "void outData(Map<String, Collection<Dependency>> deps#0, String fileName#0) {\n" +
+                        "    try {\n" +
+                        "        File file#0 = new File(fileName#0 + \".deps\");\n" +
+                        "        if (file#0.createNewFile() || MainApp.NEED_TO_REWRITE_OLD_REPORT) {\n" +
+                        "            PrintWriter writer#0 = new PrintWriter(file#0);\n" +
+                        "            printDeps(deps#0, writer#0);\n" +
+                        "            writer#0.flush();\n" +
+                        "            writer#0.close();\n" +
+                        "        }\n" +
+                        "    } catch (IOException e#0) {\n" +
+                        "        e#0.printStackTrace();\n" +
+                        "    }\n" +
                         "}";
 
         assertEquals(expectedResult, actualResult);
@@ -447,15 +526,21 @@ public class SsaFormConverterTest {
 
 
         SsaFormConverter visitor = new SsaFormConverter();
-        visitor.visit(methodDeclaration, createVariablesHolder(
-                new HashMap<String, Integer>(){
-                    {put("a", 2);}
-                    {put("i", 1);}
-                }));
+        VariablesHolder holder = createVariablesHolder(
+                new HashMap<String, Integer>() {
+                    {
+                        put("a", 2);
+                    }
+
+                    {
+                        put("i", 1);
+                    }
+                });
+        visitor.visit(methodDeclaration, holder);
         String actualResult = visitor.getMethodDeclaration().toString();
 
         String expectedResult = "void method(int x#0) {\n" +
-                "    x#1 = Access(a#2, i#1);\n" +
+                "    x#1 = #Access(a#2, i#1);\n" +
                 "}";
 
         assertEquals(expectedResult, actualResult);
@@ -712,6 +797,31 @@ public class SsaFormConverterTest {
     }
 
     @Test
+    public void testInnerForeachStmt() throws Exception {
+        MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("void method(Set<ComplexClass> set){" +
+                "for (ComplexClass cc : set) {" +
+                "    for (String value : cc.values) {" +
+                    "    System.out.println(value);" +
+                "    }" +
+                "}" +
+                "}");
+
+        SsaFormConverter visitor = new SsaFormConverter();
+        visitor.visit(methodDeclaration, null);
+        String actualResult = visitor.getMethodDeclaration().toString();
+
+        String expectedResult = "void method(Set<ComplexClass> set#0) {\n" +
+                "    for (ComplexClass cc#0 = set#0.#next() : set#0) {\n" +
+                "        for (String value#0 = cc#0.values.#next() : cc#0.values) {\n" +
+                "            System.out.println(value#0);\n" +
+                "        }\n" +
+                "    }\n" +
+                "}";
+
+        assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
     public void testObjectMethodScope() throws Exception {
         MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("void method(A a){" +
                 "a.method();" +
@@ -864,6 +974,178 @@ public class SsaFormConverterTest {
         String expectedResult = "void method(List<A> a#0) {\n" +
                 "    Collections.sort(a#0);\n" +
                 "}";
+
+        assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
+    public void testThisStmtInFields1() throws Exception {
+
+        MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("void visit(MethodCallExpr n, Object o) {\n" +
+                "        ScopeDetectorVisitor scopeDetector = new ScopeDetectorVisitor();\n" +
+                "        scopeDetector.visit(n, o);\n" +
+                "        String name = scopeDetector.getName();\n" +
+                "        if (internalInstances.contains(name)) {\n" +
+                "            assignedInternalInstance = true;\n" +
+                "            value = name;\n" +
+                "        }\n" +
+                "    }");
+
+        SsaFormConverter visitor = new SsaFormConverter();
+        VariablesHolder holder = createVariablesHolder(
+                new HashMap<String, Integer>() {
+                    {
+                        put("internalInstances", 0);
+                    }
+
+                    {
+                        put("assignedInternalInstance", 0);
+                    }
+
+                    {
+                        put("value", 0);
+                    }
+                });
+        holder.addFieldName("internalInstances");
+        holder.addFieldName("assignedInternalInstance");
+        holder.addFieldName("value");
+        visitor.visit(methodDeclaration, holder);
+        String actualResult = visitor.getMethodDeclaration().toString();
+
+        String expectedResult =
+                "void visit(MethodCallExpr n#0, Object o#0) {\n" +
+                        "    ScopeDetectorVisitor scopeDetector#0 = new ScopeDetectorVisitor();\n" +
+                        "    scopeDetector#0.visit(n#0, o#0);\n" +
+                        "    String name#0 = scopeDetector#0.getName();\n" +
+                        "    if (this.internalInstances#0.contains(name#0)) {\n" +
+                        "        this.assignedInternalInstance#1 = true;\n" +
+                        "        this.value#1 = name#0;\n" +
+                        "    }\n" +
+                        "    this.assignedInternalInstance#2 = #phi(this.assignedInternalInstance#0, this.assignedInternalInstance#1);\n" +
+                        "    this.value#2 = #phi(this.value#0, this.value#1);\n" +
+                        "}";
+
+        assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
+    public void testThisStmtInFields2() throws Exception {
+
+        MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("void visit(MethodCallExpr n, Object o) {\n" +
+                "        ScopeDetectorVisitor scopeDetector = new ScopeDetectorVisitor();\n" +
+                "        scopeDetector.visit(n, o);\n" +
+                "        String name = scopeDetector.getName();\n" +
+                "        if (this.internalInstances.contains(name)) {\n" +
+                "            this.assignedInternalInstance = true;\n" +
+                "            this.value = name;\n" +
+                "        }\n" +
+                "    }");
+
+        SsaFormConverter visitor = new SsaFormConverter();
+        VariablesHolder holder = createVariablesHolder(
+                new HashMap<String, Integer>() {
+                    {put("internalInstances", 0);}
+                    {put("assignedInternalInstance", 0);}
+                    {put("value", 0);}
+                });
+        holder.addFieldName("internalInstances");
+        holder.addFieldName("assignedInternalInstance");
+        holder.addFieldName("value");
+        visitor.visit(methodDeclaration, holder);
+        String actualResult = visitor.getMethodDeclaration().toString();
+
+        String expectedResult =
+                "void visit(MethodCallExpr n#0, Object o#0) {\n" +
+                        "    ScopeDetectorVisitor scopeDetector#0 = new ScopeDetectorVisitor();\n" +
+                        "    scopeDetector#0.visit(n#0, o#0);\n" +
+                        "    String name#0 = scopeDetector#0.getName();\n" +
+                        "    if (this.internalInstances#0.contains(name#0)) {\n" +
+                        "        this.assignedInternalInstance#1 = true;\n" +
+                        "        this.value#1 = name#0;\n" +
+                        "    }\n" +
+                        "    this.assignedInternalInstance#2 = #phi(this.assignedInternalInstance#0, this.assignedInternalInstance#1);\n" +
+                        "    this.value#2 = #phi(this.value#0, this.value#1);\n" +
+                        "}";
+
+        assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
+    public void testArrayDimensionsExpr() throws Exception {
+
+        MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("ClassType processTypeArguments(ClassOrInterfaceType classType) {\n" +
+                "        ClassType[] args = new ClassType[classType.getTypeArgs().size()];\n" +
+                "    }");
+
+        SsaFormConverter visitor = new SsaFormConverter();
+        visitor.visit(methodDeclaration, createVariablesHolder(
+                new HashMap<String, Integer>()));
+        String actualResult = visitor.getMethodDeclaration().toString();
+
+        String expectedResult =
+                "ClassType processTypeArguments(ClassOrInterfaceType classType#0) {\n" +
+                "    ClassType[] args#0 = new ClassType[classType#0.getTypeArgs().size()];\n" +
+                "}";
+
+        assertEquals(expectedResult, actualResult);
+    }
+
+    //TODO
+    @Test
+    public void testForStmt() throws Exception {
+
+        MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("void buildGraph(GraphBuilder graphBuilder) {\n" +
+                "        for (int i = 0; i < fromVertexes.size(); i++) {\n" +
+                "            Vertex a = map.get(fromVertexes.get(i));\n" +
+                "            Vertex b = map.get(toVertexes.get(i));\n" +
+                "            graphBuilder.addEdge(a, b);\n" +
+                "        }\n" +
+                "    }");
+
+        SsaFormConverter visitor = new SsaFormConverter();
+        VariablesHolder holder = createVariablesHolder(
+                new HashMap<String, Integer>() {
+                    {put("fromVertexes", 0);}
+                    {put("toVertexes", 0);}
+                    {put("map", 0);}
+                });
+        holder.addFieldName("fromVertexes");
+        holder.addFieldName("toVertexes");
+        holder.addFieldName("map");
+        visitor.visit(methodDeclaration, holder);
+        String actualResult = visitor.getMethodDeclaration().toString();
+
+        String expectedResult =
+                "void buildGraph(GraphBuilder graphBuilder#0) {\n" +
+                        "    for (int i#0 = 0; i#0 < this.fromVertexes#0.size(); i#1++) {\n" +
+                        "        Vertex a#0 = this.map#0.get(this.fromVertexes#0.get(i#1));\n" +
+                        "        Vertex b#0 = this.map#0.get(this.toVertexes#0.get(i#1));\n" +
+                        "        graphBuilder#0.addEdge(a#0, b#0);\n" +
+                        "    }\n" +
+                        "}";
+
+        assertEquals(expectedResult, actualResult);
+    }
+
+    //TODO
+    @Test
+    public void testInnerField() throws Exception {
+
+        MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("void setDependencies(Map<String, Collection<Dependency>> dependencies) {\n" +
+                "        ClassData cd = new ClassData();\n" +
+                "        cd.dependencies = dependencies;\n" +
+                "    }");
+
+        SsaFormConverter visitor = new SsaFormConverter();
+        visitor.visit(methodDeclaration, createVariablesHolder(
+                new HashMap<String, Integer>()));
+        String actualResult = visitor.getMethodDeclaration().toString();
+
+        String expectedResult =
+                "void setDependencies(Map<String, Collection<Dependency>> dependencies#0) {\n" +
+                        "    ClassData cd#0 = new ClassData();\n" +
+                        "    cd#0.dependencies = dependencies#0;\n" +
+                        "}";
 
         assertEquals(expectedResult, actualResult);
     }

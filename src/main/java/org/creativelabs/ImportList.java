@@ -10,7 +10,7 @@ import org.creativelabs.introspection.*;
 
 import java.util.*;
 
-class ImportList {
+public class ImportList {
 
     private List<ImportDeclaration> list = new ArrayList<ImportDeclaration>();
 

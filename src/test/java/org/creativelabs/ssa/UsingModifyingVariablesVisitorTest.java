@@ -3,7 +3,6 @@ package org.creativelabs.ssa;
 import japa.parser.ParseException;
 import japa.parser.ast.body.MethodDeclaration;
 import japa.parser.ast.expr.*;
-import japa.parser.ast.helper.UMVariablesHolder;
 import japa.parser.ast.stmt.*;
 import org.creativelabs.ParseHelper;
 import org.testng.annotations.Test;

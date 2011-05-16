@@ -16,6 +16,10 @@ public class StringCondition implements Condition {
                 .append(")");
     }
 
+    private StringCondition(StringBuilder condition) {
+        this.condition = new StringBuilder(condition);
+    }
+
     @Override
     public String getStringRepresentation() {
         return condition.toString();
@@ -24,32 +28,36 @@ public class StringCondition implements Condition {
     @Override
     public Condition and(Condition condition) {
         if (!(condition instanceof EmptyCondition)) {
-            this.condition = new StringBuilder().append("(")
+            return new StringCondition(new StringBuilder().append("(")
                     .append(this.condition)
                     .append("&&")
                     .append(condition.getStringRepresentation())
-                    .append(")");
+                    .append(")"));
         }
-        return this;
+        return this.copy();
     }
 
     @Override
     public Condition or(Condition condition) {
         if (!(condition instanceof EmptyCondition)) {
-            this.condition = new StringBuilder().append("(")
+            return new StringCondition(new StringBuilder().append("(")
                     .append(this.condition)
                     .append("||")
                     .append(condition.getStringRepresentation())
-                    .append(")");
+                    .append(")"));
         }
-        return this;
+        return this.copy();
     }
 
     @Override
     public Condition not() {
-        this.condition = new StringBuilder().append("(!")
+        return new StringCondition(new StringBuilder().append("(!")
                 .append(this.condition)
-                .append(")");
-        return this;
+                .append(")"));
+    }
+
+    @Override
+    public Condition copy() {
+        return new StringCondition(this.condition);
     }
 }

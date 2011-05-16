@@ -1,15 +1,14 @@
-package org.creativelabs.graph.condition.bool;
+package org.creativelabs.graph.condition.other;
 
 import org.creativelabs.graph.condition.Condition;
 
 /**
- * @autor azotcsit
+ * @author azotcsit
  * Date: 19.04.11
- * Time: 23:24
+ * Time: 23:27
  */
-public class MethodBooleanCondition implements Condition {
-
-
+//TODO: to implement
+public class VariableOrLiteralBooleanCondition implements Condition {
 
     @Override
     public String getStringRepresentation() {
@@ -28,6 +27,11 @@ public class MethodBooleanCondition implements Condition {
 
     @Override
     public Condition not() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public Condition copy() {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }

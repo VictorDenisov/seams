@@ -1,11 +1,15 @@
-package org.creativelabs.graph.condition;
+package org.creativelabs.graph.condition.other;
+
+import org.creativelabs.graph.condition.Condition;
 
 /**
- * @author azotcsit
+ * @autor azotcsit
  * Date: 19.04.11
- * Time: 23:15
+ * Time: 23:24
  */
-public class ComplexBooleanCondition implements Condition {
+//TODO: to implement
+public class MethodBooleanCondition implements Condition {
+
     @Override
     public String getStringRepresentation() {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
@@ -23,6 +27,11 @@ public class ComplexBooleanCondition implements Condition {
 
     @Override
     public Condition not() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public Condition copy() {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }
