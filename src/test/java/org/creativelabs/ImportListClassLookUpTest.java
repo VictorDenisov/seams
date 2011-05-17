@@ -96,4 +96,16 @@ public class ImportListClassLookUpTest {
 
         assertEquals("java.util.Map$Entry<K, V, >", classType.toString());
     }
+
+    @Test
+    public void testGetClassByShortName_ForTwoTimesNestedClass() throws Exception {
+        TestingReflectionAbstraction ra = new TestingReflectionAbstraction();
+        ra.addClass("org.apache.NioEndpoint$Handler$SocketState", "org.apache.NioEndpoint$Handler$SocketState");
+
+        ImportList imports = new ParseHelper(ra).createImportListRA("import org.apache.NioEndpoint.Handler.SocketState;");
+
+        ClassType classType = imports.getClassByShortName("SocketState");
+
+        assertEquals("org.apache.NioEndpoint$Handler$SocketState", classType.toString());
+    }
 }

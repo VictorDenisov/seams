@@ -162,10 +162,16 @@ public class ImportList {
                     if (ra.classWithNameExists(fullClassName)) {
                         return ra.getClassTypeByName(fullClassName);
                     }
-                    int ind = fullClassName.lastIndexOf(".");
-                    fullClassName = fullClassName.substring(0, ind) + "$" + fullClassName.substring(ind + 1, fullClassName.length());
-                    if (ra.classWithNameExists(fullClassName)) {
-                        return ra.getClassTypeByName(fullClassName);
+                    for (;;) {
+                        int ind = fullClassName.lastIndexOf(".");
+                        if (ind < 0) {
+                            break;
+                        }
+                        fullClassName = fullClassName.substring(0, ind) + "$" 
+                            + fullClassName.substring(ind + 1, fullClassName.length());
+                        if (ra.classWithNameExists(fullClassName)) {
+                            return ra.getClassTypeByName(fullClassName);
+                        }
                     }
                 }
             }
