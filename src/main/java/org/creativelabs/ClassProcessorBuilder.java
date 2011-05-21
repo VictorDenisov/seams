@@ -2,6 +2,7 @@ package org.creativelabs;
 
 import japa.parser.ast.body.*;
 import japa.parser.ast.stmt.*;
+import japa.parser.ast.type.*;
 
 import org.creativelabs.introspection.*;
 
@@ -66,8 +67,8 @@ public class ClassProcessorBuilder {
         ClassType classValue = null;
 
         if (typeDeclaration.getExtends() != null) {
-            String classShortName = typeDeclaration.getExtends().get(0).getName();
-            classValue = imports.getClassByShortName(classShortName);
+            ClassOrInterfaceType classShortName = typeDeclaration.getExtends().get(0);
+            classValue = imports.getClassByClassOrInterfaceType(classShortName);
         } else {
             classValue = imports.getClassByShortName("Object");
         }

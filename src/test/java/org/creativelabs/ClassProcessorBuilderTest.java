@@ -4,10 +4,12 @@ import org.testng.annotations.Test;
 
 import japa.parser.ast.body.*;
 import japa.parser.ast.stmt.*;
+import japa.parser.ast.type.*;
 
 import java.util.*;
 
 import static org.testng.AssertJUnit.*;
+import static org.mockito.Mockito.*;
 
 public class ClassProcessorBuilderTest {
 
@@ -58,6 +60,21 @@ public class ClassProcessorBuilderTest {
 
         assertEquals("org.creativelabs.ImportList", builder.thisValue);
         assertEquals("java.lang.Object", builder.superValue);
+    }
+
+    @Test
+    public void testClassProcessorBuilderUsesClassOrInterfaceDeclaration() throws Exception {
+        ClassProcessorBuilder builder = new ClassProcessorBuilderTestSpecific();
+
+        ClassOrInterfaceDeclaration classDeclaration = ParseHelper.createClassDeclaration(
+                "class ImportList extends org.main.SampleParent {}");
+        ImportList imports = mock(ImportList.class);
+
+        ClassProcessor classProcessor = builder
+            .setImports(imports)
+            .setTypeDeclaration(classDeclaration)
+            .buildClassProcessor();
+        verify(imports).getClassByClassOrInterfaceType(any(ClassOrInterfaceType.class));
     }
 
 }
