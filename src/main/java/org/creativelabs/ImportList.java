@@ -182,6 +182,12 @@ public class ImportList {
         if (ra.classWithNameExists(shortName)) {
             return ra.getClassTypeByName(shortName);
         }
+        ClassType clazz = ra.getClassTypeByName(className);
+        ClassType classType = ra.findClassInTypeHierarchy(clazz, shortName);
+        if (classType != null) {
+            return classType;
+        }
         return ra.createErrorClassType("Unknown class: " + shortName);
     }
+
 }

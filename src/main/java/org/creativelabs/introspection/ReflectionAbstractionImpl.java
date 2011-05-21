@@ -408,6 +408,16 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
     }
 
     @Override
+    public ClassType findClassInTypeHierarchy(ClassType classType, String nestedName) {
+        ClassType res = getNestedClass(classType, nestedName);
+        if (!(res instanceof ClassTypeErrorImpl)) {
+            return res;
+        }
+        
+        return res;
+    }
+
+    @Override
     public ClassType getNestedClass(ClassType className, String nestedClassName) {
         try {
             ClassTypeImpl classNameImpl = (ClassTypeImpl) className;

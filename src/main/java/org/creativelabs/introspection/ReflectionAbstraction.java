@@ -23,4 +23,6 @@ public interface ReflectionAbstraction {
     ClassType addArrayDepth(ClassType classType);
 
     ClassType addArrayDepth(ClassType classType, int count);
+
+    ClassType findClassInTypeHierarchy(ClassType classType, String nestedClassName);
 }

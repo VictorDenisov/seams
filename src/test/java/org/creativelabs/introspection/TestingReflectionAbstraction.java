@@ -175,4 +175,9 @@ public class TestingReflectionAbstraction implements ReflectionAbstraction {
         }
         return new ClassTypeStub(classType.toString() + buffer);
     }
+
+    @Override 
+    public ClassType findClassInTypeHierarchy(ClassType classType, String nestedName) {
+        return null;
+    }
 }

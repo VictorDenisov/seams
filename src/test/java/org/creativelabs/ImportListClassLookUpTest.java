@@ -108,4 +108,21 @@ public class ImportListClassLookUpTest {
 
         assertEquals("org.apache.NioEndpoint$Handler$SocketState", classType.toString());
     }
+
+    @Test
+    public void testGetClassByShortName_ForTwoNestedClassFromThis() throws Exception {
+        ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
+
+        CompilationUnit cu = ParseHelper.createCompilationUnit(
+                "package java.util; public class Map {}");
+
+        ClassOrInterfaceDeclaration cd = (ClassOrInterfaceDeclaration)cu.getTypes().get(0);
+
+        ImportList imports = new ImportList(ra, cu, cd);
+
+        ClassType classType = imports.getClassByShortName("Entry");
+
+        assertEquals("java.util.Map$Entry<K, V, >", 
+                classType.toString());
+    }
 }

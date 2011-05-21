@@ -53,11 +53,18 @@ public class HookReflectionAbstraction implements ReflectionAbstraction {
         return ra.createNullClassType();
     }
 
+    @Override
     public ClassType addArrayDepth(ClassType classType) {
         return ra.addArrayDepth(classType);
     }
 
+    @Override
     public ClassType addArrayDepth(ClassType classType, int count) {
         return ra.addArrayDepth(classType, count);
+    }
+
+    @Override
+    public ClassType findClassInTypeHierarchy(ClassType classType, String nestedName) {
+        return ra.findClassInTypeHierarchy(classType, nestedName);
     }
 }
