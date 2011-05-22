@@ -125,4 +125,22 @@ public class ImportListClassLookUpTest {
         assertEquals("java.util.Map$Entry<K, V, >", 
                 classType.toString());
     }
+
+    @Test
+    public void testGetClassByShortName_ForTwoNestedClassFromSuper() throws Exception {
+        ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
+
+        CompilationUnit cu = ParseHelper.createCompilationUnit(
+                "package org.creativelabs.samples; "
+                + "public class SampleClass extends SampleSuperClass {}");
+
+        ClassOrInterfaceDeclaration cd = (ClassOrInterfaceDeclaration)cu.getTypes().get(0);
+
+        ImportList imports = new ImportList(ra, cu, cd);
+
+        ClassType classType = imports.getClassByShortName("SampleNestedClass");
+
+        assertEquals("org.creativelabs.samples.SampleSuperClass$SampleNestedClass", 
+                classType.toString());
+    }
 }

@@ -409,12 +409,34 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
 
     @Override
     public ClassType findClassInTypeHierarchy(ClassType classType, String nestedName) {
-        ClassType res = getNestedClass(classType, nestedName);
-        if (!(res instanceof ClassTypeErrorImpl)) {
+        try {
+            ClassType res = getNestedClass(classType, nestedName);
+
+            if (!(res instanceof ClassTypeErrorImpl)) {
+                return res;
+            }
+
+            ClassTypeImpl classNameImpl = (ClassTypeImpl) classType;
+            Class[] list = classNameImpl.clazz.getInterfaces();
+            if (list == null) {
+                return res;
+            }
+            ClassTypeImpl interm = new ClassTypeImpl();
+            for (Class clazz : list) {
+                interm.clazz = clazz;
+                res = findClassInTypeHierarchy(interm, nestedName);
+
+                if (!(res instanceof ClassTypeErrorImpl)) {
+                    return res;
+                }
+            }
+            interm.clazz = classNameImpl.clazz.getSuperclass();
+            res = findClassInTypeHierarchy(interm, nestedName);
+            
             return res;
+        } catch (Exception e) {
+            return createErrorClassType(e.toString());
         }
-        
-        return res;
     }
 
     @Override
