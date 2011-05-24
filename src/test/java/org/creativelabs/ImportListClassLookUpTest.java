@@ -130,6 +130,7 @@ public class ImportListClassLookUpTest {
     public void testGetClassByShortName_ForTwoNestedClassFromSuper() throws Exception {
         ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
 
+        //TODO There is duplication in SampleClass and this line.
         CompilationUnit cu = ParseHelper.createCompilationUnit(
                 "package org.creativelabs.samples; "
                 + "public class SampleClass extends SampleSuperClass {}");
@@ -141,6 +142,25 @@ public class ImportListClassLookUpTest {
         ClassType classType = imports.getClassByShortName("SampleNestedClass");
 
         assertEquals("org.creativelabs.samples.SampleSuperClass$SampleNestedClass", 
+                classType.toString());
+    }
+
+    @Test
+    public void testGetClassByShortName_ForNestedClassWithSameNameAsInJavaLang() throws Exception {
+        ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
+
+        //TODO There is duplication in SampleClass and this line.
+        CompilationUnit cu = ParseHelper.createCompilationUnit(
+                "package org.creativelabs.samples; "
+                + "public class SampleClass extends SampleSuperClass {}");
+
+        ClassOrInterfaceDeclaration cd = (ClassOrInterfaceDeclaration)cu.getTypes().get(0);
+
+        ImportList imports = new ImportList(ra, cu, cd);
+
+        ClassType classType = imports.getClassByShortName("Compiler");
+
+        assertEquals("org.creativelabs.samples.SampleClass$Compiler",
                 classType.toString());
     }
 }

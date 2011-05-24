@@ -146,6 +146,9 @@ public class ImportList {
         if (classIsPrimitive(shortName)) {
             return ra.getClassTypeByName(shortName);
         }
+        if (ra.classWithNameExists(className + "$" + shortName)) {
+            return ra.getClassTypeByName(className + "$" + shortName);
+        }
         for (ImportDeclaration id : list) {
             if (id.isAsterisk()) {
                 String className = id.getName().toString() + "." + shortName;
@@ -175,9 +178,6 @@ public class ImportList {
                     }
                 }
             }
-        }
-        if (ra.classWithNameExists(className + "$" + shortName)) {
-            return ra.getClassTypeByName(className + "$" + shortName);
         }
         if (ra.classWithNameExists(shortName)) {
             return ra.getClassTypeByName(shortName);
