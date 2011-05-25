@@ -37,7 +37,7 @@ public class ImportListTest {
 
         List<String> imports = importList.getImports();
 
-        assertEqualsList(Arrays.asList(new String[]{"java.lang", "java.util"}), imports);
+        assertEqualsList(Arrays.asList(new String[]{"java.util", "java.lang"}), imports);
     }
 
     @Test
@@ -46,7 +46,7 @@ public class ImportListTest {
 
         List<String> imports = importList.getImports();
 
-        assertEqualsList(Arrays.asList(new String[]{"java.lang", "org.apache.log4j"}), imports);
+        assertEqualsList(Arrays.asList(new String[]{"org.apache.log4j", "java.lang"}), imports);
     }
 
     @Test
@@ -54,7 +54,7 @@ public class ImportListTest {
 
         List<String> imports = importList.getImports();
 
-        assertEqualsList(Arrays.asList(new String[]{"java.lang", "org.apache.log4j.Logger"}), imports);
+        assertEqualsList(Arrays.asList(new String[]{"org.apache.log4j.Logger", "java.lang"}), imports);
     }
 
     @Test

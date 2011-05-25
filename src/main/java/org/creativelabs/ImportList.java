@@ -32,10 +32,10 @@ public class ImportList {
         if (cu.getPackage() != null) {
             list.add(new ImportDeclaration(new NameExpr(cu.getPackage().getName().toString()), false, true));
         }
-        list.add(new ImportDeclaration(new NameExpr("java.lang"), false, true));
         if (cu.getImports() != null) {
             list.addAll(cu.getImports());
         }
+        list.add(new ImportDeclaration(new NameExpr("java.lang"), false, true));
     }
 
     public List<String> getImports() {

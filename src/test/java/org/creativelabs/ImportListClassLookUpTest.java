@@ -163,4 +163,24 @@ public class ImportListClassLookUpTest {
         assertEquals("org.creativelabs.samples.SampleClass$Compiler",
                 classType.toString());
     }
+
+    @Test
+    public void testGetClassByShortName_ForImportedClassWithSameNameAsInJavaLang() throws Exception {
+        ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
+
+        //TODO There is duplication in SampleImportedClass and this line.
+        CompilationUnit cu = ParseHelper.createCompilationUnit(
+                "package org.creativelabs.samples; "
+                +"import org.creativelabs.samples.mycompiler.Compiler; "
+                + "public class SampleImportedClass {}");
+
+        ClassOrInterfaceDeclaration cd = (ClassOrInterfaceDeclaration)cu.getTypes().get(0);
+
+        ImportList imports = new ImportList(ra, cu, cd);
+
+        ClassType classType = imports.getClassByShortName("Compiler");
+
+        assertEquals("org.creativelabs.samples.mycompiler.Compiler",
+                classType.toString());
+    }
 }
