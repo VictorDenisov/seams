@@ -153,14 +153,14 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         if (primitivesMap.containsKey(className)) {
             return primitivesMap.get(className);
         } else {
-            return Class.forName(className, true, classLoader);
+            return Class.forName(className, false, classLoader);
         }
     }
 
     @Override
     public boolean classWithNameExists(String className) {
         try {
-            Class.forName(className, true, classLoader);
+            Class.forName(className, false, classLoader);
             return true;
         } catch (Throwable e) {
             return false;
