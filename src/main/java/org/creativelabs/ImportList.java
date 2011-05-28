@@ -190,4 +190,19 @@ public class ImportList {
         return ra.createErrorClassType("Unknown class: " + shortName);
     }
 
+    public ClassType findStaticMethod(String methodName, ClassType[] types) {
+        for (ImportDeclaration decl : list) {
+            if (decl.isStatic()) {
+                if (decl.isAsterisk()) {
+                    ClassType classType = ra.getClassTypeByName(decl.getName().toString());
+                    ClassType result = ra.getReturnType(classType, methodName, types);
+                    if (!(result instanceof ClassTypeError)) {
+                        return result;
+                    }
+                }
+            }
+        }
+        return ra.createErrorClassType("There is no such static method");
+    }
+
 }

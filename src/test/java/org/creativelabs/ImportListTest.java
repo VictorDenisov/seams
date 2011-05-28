@@ -244,4 +244,18 @@ public class ImportListTest {
 
         verify(ra).getClassTypeByName("org.creativelabs.Main$Nested");
     }
+
+    @Test
+    public void testFindStaticMethod() throws Exception {
+        ReflectionAbstraction ra = new ReflectionAbstractionImpl();
+
+        ImportList imports = ParseHelper.createImportList("import static java.lang.Math.*;");
+
+        ClassType[] types = new ClassType[1];
+        types[0] = ra.getClassTypeByName("double");
+
+        ClassType type = imports.findStaticMethod("abs", types);
+
+        assertEquals("double", type.toString());
+    }
 }
