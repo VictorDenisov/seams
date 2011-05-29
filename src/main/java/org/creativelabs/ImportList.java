@@ -205,4 +205,27 @@ public class ImportList {
         return ra.createErrorClassType("There is no such static method");
     }
 
+    public ClassType findStaticField(String fieldName) {
+        for (ImportDeclaration decl : list) {
+            if (decl.isStatic()) {
+                if (decl.isAsterisk()) {
+                    ClassType classType = ra.getClassTypeByName(decl.getName().toString());
+                    ClassType result = ra.getFieldType(classType, fieldName);
+                    if (!(result instanceof ClassTypeError)) {
+                        return result;
+                    }
+                } else {
+                    String wholeName = decl.getName().toString();
+                    String name = decl.getName().getName();
+                    String scope = wholeName.substring(0, wholeName.length() - name.length() - 1);
+                    if (name.equals(fieldName)) {
+                        ClassType classType = ra.getClassTypeByName(scope);
+                        return ra.getFieldType(classType, fieldName);
+                    }
+                }
+            }
+        }
+        return ra.createErrorClassType("There is no such static field");
+    }
+
 }

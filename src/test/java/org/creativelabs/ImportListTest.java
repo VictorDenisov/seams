@@ -258,4 +258,26 @@ public class ImportListTest {
 
         assertEquals("double", type.toString());
     }
+
+    @Test
+    public void testFindStaticField() throws Exception {
+        ReflectionAbstraction ra = new ReflectionAbstractionImpl();
+
+        ImportList imports = ParseHelper.createImportList("import static java.lang.Math.*;");
+
+        ClassType type = imports.findStaticField("PI");
+
+        assertEquals("double", type.toString());
+    }
+
+    @Test
+    public void testFindStaticField_exactImport() throws Exception {
+        ReflectionAbstraction ra = new ReflectionAbstractionImpl();
+
+        ImportList imports = ParseHelper.createImportList("import static java.lang.Math.PI;");
+
+        ClassType type = imports.findStaticField("PI");
+
+        assertEquals("double", type.toString());
+    }
 }
