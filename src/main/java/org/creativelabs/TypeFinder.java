@@ -84,8 +84,11 @@ class TypeFinder {
                 ClassType thisType = varType.getFieldTypeAsClass("this");
                 result = reflectionAbstraction.getFieldType(thisType, name);
             }
-            return result;
+            if (!(result instanceof ClassTypeError)) {
+                return result;
+            }
         }
+        return imports.findStaticField(name);
     }
 
     private boolean isFullClassName(String className){

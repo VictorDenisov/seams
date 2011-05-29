@@ -121,4 +121,18 @@ public class TypeFinderFieldAccessExprTest {
 
         assertEquals("javax.swing.JRootPane", result.toString());
     }
+
+    @Test
+    public void testAccessImportedStaticFields() throws Exception {
+        Expression expr = ParseHelper.createExpression("PI");
+
+        ImportList importList = ParseHelper.createImportList("import static java.lang.Math.PI;");
+        VariableList varList = ConstructionHelper.createEmptyVariableList();
+
+        TypeFinder typeFinder = new TypeFinder(ra, varList, importList);
+
+        ClassType result = typeFinder.determineType(expr);
+
+        assertEquals("double", result.toString());
+    }
 }
