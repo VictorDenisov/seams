@@ -71,9 +71,7 @@ class TypeFinder {
 
     private ClassType determineType(NameExpr expr) {
         String name = expr.getName();
-        if (isFullClassName(name)){
-            return reflectionAbstraction.getClassTypeByName(name);
-        }
+
         ClassType result = null;
         if (imports != null) {
             result = imports.getClassByShortName(name);
@@ -270,7 +268,7 @@ class TypeFinder {
     }
 
     private ClassType determineType(VariableDeclarationExpr expr) {
-        return determineType(new NameExpr(expr.getType().toString()));
+        return imports.getClassByType(expr.getType());
     }
 
 }
