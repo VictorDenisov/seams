@@ -183,4 +183,21 @@ public class ImportListClassLookUpTest {
         assertEquals("org.creativelabs.samples.mycompiler.Compiler",
                 classType.toString());
     }
+
+    @Test
+    public void testGetClassByShortName_ForGenericTypes() throws Exception {
+        ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
+
+        CompilationUnit cu = ParseHelper.createCompilationUnit(
+                "package org.creativelabs.samples; "
+                + "public class SampleImportedClass<K, V> {}");
+
+        ClassOrInterfaceDeclaration cd = (ClassOrInterfaceDeclaration)cu.getTypes().get(0);
+
+        ImportList imports = new ImportList(ra, cu, cd);
+
+        ClassType classType = imports.getClassByShortName("K");
+
+        assertEquals("java.lang.Object", classType.toString());
+    }
 }

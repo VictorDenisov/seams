@@ -5,6 +5,7 @@ import japa.parser.ast.ImportDeclaration;
 import japa.parser.ast.expr.NameExpr;
 import japa.parser.ast.type.*;
 import japa.parser.ast.body.*;
+import japa.parser.ast.*;
 
 import org.creativelabs.introspection.*;
 
@@ -18,8 +19,15 @@ public class ImportList {
 
     protected String className;
 
+    protected HashSet<String> typeArgs = new HashSet<String>();
+
     public ImportList(ReflectionAbstraction ra, CompilationUnit cu, ClassOrInterfaceDeclaration cd) {
         this(ra, cu);
+        if (cd.getTypeParameters() != null) {
+            for (TypeParameter tp : cd.getTypeParameters()) {
+                typeArgs.add(tp.getName());
+            }
+        }
         if (cu.getPackage() != null) {
             className = cu.getPackage().getName().toString() + "." + cd.getName();
         } else {
@@ -140,6 +148,9 @@ public class ImportList {
     }
 
     public ClassType getClassByShortName(String shortName) {
+        if (typeArgs.contains(shortName)) {
+            return ra.getClassTypeByName("java.lang.Object");
+        }
         shortName = stripGeneric(shortName);
         shortName = processForNested(shortName);
         String scope = getScope(shortName);
