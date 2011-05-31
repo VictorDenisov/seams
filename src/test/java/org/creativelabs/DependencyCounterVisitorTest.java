@@ -44,9 +44,9 @@ public class DependencyCounterVisitorTest {
     public void testVisitNameExprClass() throws Exception {
         ImportList importList = ConstructionHelper.createEmptyImportList();
         DependencyCounterVisitor dc = new DependencyCounterVisitor(
-                ConstructionHelper.createEmptyVariableList(), importList, ra);
+        ConstructionHelper.createEmptyVariableList(), importList, ra);
 
-        MethodCallExpr expr = (MethodCallExpr)ParseHelper.createExpression("String.valueOf(true)");
+        MethodCallExpr expr = (MethodCallExpr)ParseHelper.createExpression("String.valueOf(true)"); 
 
         dc.visit(expr, null);
 
@@ -164,17 +164,16 @@ public class DependencyCounterVisitorTest {
     }
 
     @Test
-    public void testSSSS() throws Exception {
-        MethodDeclaration decl = ParseHelper.createMethodDeclaration("public void ttt() "
-                + "{ class C {int var;}}");
-        
+    public void testObjectCreationExpr() throws Exception {
+        ObjectCreationExpr expr = (ObjectCreationExpr) ParseHelper.createExpression("new MyObject() {}");
+
         ImportList imports = ConstructionHelper.createEmptyImportList();
         VariableList varList = ConstructionHelper.createEmptyVariableList();
 
-        DependencyCounterVisitor dependencyCounter = 
-            spy(new DependencyCounterVisitor(varList, imports));
-        decl.accept(dependencyCounter, null);
-
-        verify(dependencyCounter, never()).visit(any(FieldDeclaration.class), eq(null));
+        DependencyCounterVisitor dependencyCounter = new DependencyCounterVisitor(varList, imports, ra);
+        dependencyCounter.visit(expr, null);
+        
+        assertEquals(1, dependencyCounter.getDependencies().size());
+        assertEquals("MyObject", ((Dependency)dependencyCounter.getDependencies().iterator().next()).getExpression());
     }
 }

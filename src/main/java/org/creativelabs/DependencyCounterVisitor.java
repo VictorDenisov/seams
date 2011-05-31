@@ -118,6 +118,13 @@ class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
     @Override
     public void visit(TypeDeclarationStmt n, Object o) {
     }
+
+    @Override
+    public void visit(ObjectCreationExpr n, Object o) {
+        ClassType classType = imports.getClassByClassOrInterfaceType(n.getType());
+
+        dependencies.add(new Dependency(n.getType().toString(), classType));
+    }
 }
 
 // vim: set ts=4 sw=4 et:
