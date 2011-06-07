@@ -200,4 +200,22 @@ public class ImportListClassLookUpTest {
 
         assertEquals("java.lang.Object", classType.toString());
     }
+
+    @Test
+    public void testGetClassSameAsInCurrentPackage() throws Exception {
+        ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
+
+        CompilationUnit cu = ParseHelper.createCompilationUnit(
+                "package org.creativelabs.samples; "
+                + "import java.util.HashMap;"
+                + "public class SampleUsingClass {}");
+
+        ClassOrInterfaceDeclaration cd = (ClassOrInterfaceDeclaration)cu.getTypes().get(0);
+
+        ImportList imports = new ImportList(ra, cu, cd);
+
+        ClassType classType = imports.getClassByShortName("HashMap");
+
+        assertEquals("java.util.HashMap<K, V, >", classType.toString());
+    }
 }

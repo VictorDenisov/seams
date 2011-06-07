@@ -37,11 +37,11 @@ public class ImportList {
 
     public ImportList(ReflectionAbstraction ra, CompilationUnit cu) {
         this.ra = ra;
-        if (cu.getPackage() != null) {
-            list.add(new ImportDeclaration(new NameExpr(cu.getPackage().getName().toString()), false, true));
-        }
         if (cu.getImports() != null) {
             list.addAll(cu.getImports());
+        }
+        if (cu.getPackage() != null) {
+            list.add(new ImportDeclaration(new NameExpr(cu.getPackage().getName().toString()), false, true));
         }
         list.add(new ImportDeclaration(new NameExpr("java.lang"), false, true));
     }
