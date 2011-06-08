@@ -3,6 +3,8 @@ package org.creativelabs.ssa.visitor;
 import japa.parser.ast.body.VariableDeclarator;
 import japa.parser.ast.expr.*;
 import japa.parser.ast.visitor.GenericVisitorAdapter;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.creativelabs.Constants;
 import org.creativelabs.graph.condition.Condition;
 import org.creativelabs.graph.condition.bool.FalseBooleanCondition;
@@ -23,6 +25,8 @@ import java.util.TreeSet;
  */
 public class ExpressionStmtVisitor extends GenericVisitorAdapter<Expression, MultiHolder> {
 
+    Log log = LogFactory.getLog(ExpressionStmtVisitor.class);
+
     private boolean isNeededToIncreaseIndex;
 
     private InternalInstancesGraph graph;
@@ -34,14 +38,25 @@ public class ExpressionStmtVisitor extends GenericVisitorAdapter<Expression, Mul
         this.methodName = methodName;
     }
 
+    private boolean isCamelStyleClassName(String s) {
+        if (Character.isLowerCase(s.charAt(0))) {
+            return false;
+        }
+        for (int i = 1; i < s.length(); i++) {
+            if (Character.isLowerCase(s.charAt(i))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public Expression visit(NameExpr n, MultiHolder arg) {
         String variableName = n.getName();
 
-//        boolean isClassWithStaticMethod = Character.isUpperCase(variableName.charAt(0));
-//        if (isClassWithStaticMethod) {
-//            return n;
-//        }
+        if (isCamelStyleClassName(variableName)) {
+            return n;
+        }
 
         Integer variableIndex = arg.read(variableName);
         if (variableIndex != null) {
@@ -52,6 +67,8 @@ public class ExpressionStmtVisitor extends GenericVisitorAdapter<Expression, Mul
             }
             n.setName(variableName + Constants.SEPARATOR + variableIndex);
         } else {
+            log.error("Variable [name=" + variableName
+                    + "] is not contain in variables list.");
             n.setName(variableName + " " + Constants.NOT_CONTAINS);
         }
 
@@ -315,12 +332,6 @@ public class ExpressionStmtVisitor extends GenericVisitorAdapter<Expression, Mul
                 n.setField(name + Constants.SEPARATOR + arg.read(name));
             }
         }
-
-        if (Character.isUpperCase(n.getScope().toString().charAt(0))) {
-            return n;
-        }
-
-
 
         n.setScope(GenericVisitorHelper.visitExpression(n.getScope(), arg, this));
         return n;

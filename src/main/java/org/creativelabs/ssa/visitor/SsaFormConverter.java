@@ -473,7 +473,7 @@ public class SsaFormConverter extends VoidVisitorAdapter<MultiHolder> {
         }
 
         visit(methodDeclaration.getBody(), holder);
-        System.out.println(methodDeclaration);
+//        System.out.println(methodDeclaration);
     }
 
     /**

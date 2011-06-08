@@ -12,12 +12,18 @@ import static junit.framework.Assert.assertEquals;
 
 public class SsaFormConverterTest {
 
-    private SimpleMultiHolder createVariablesHolder(Map<String, Integer> map){
+    private SimpleMultiHolder createVariablesHolder(Map<String, Integer> map) {
         SimpleConditionHolder conditionHolder = new SimpleConditionHolder();
         SimpleClassFieldsHolder fieldsHolder = new SimpleClassFieldsHolder();
+        SimpleMethodArgsHolder methodArgsHolder = new SimpleMethodArgsHolder();
         SimpleVariablesHolder variablesHolder = new SimpleVariablesHolder(map);
         SimpleMethodModifiersHolder modifiersHolder = new SimpleMethodModifiersHolder();
-        return new SimpleMultiHolder(conditionHolder, fieldsHolder, variablesHolder, modifiersHolder);
+        return new SimpleMultiHolder(
+                conditionHolder,
+                fieldsHolder,
+                methodArgsHolder,
+                variablesHolder,
+                modifiersHolder);
     }
 
     @Test
@@ -94,9 +100,10 @@ public class SsaFormConverterTest {
 
     @Test
     public void testArrayWitVariableIndexAssignExpr() throws Exception {
-        MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("void method(int x, int ar[], int i){" +
-                "ar[i] = x;" +
-                "}");
+        MethodDeclaration methodDeclaration =
+                ParseHelper.createMethodDeclaration("void method(int x, int ar[], int i){" +
+                        "ar[i] = x;" +
+                        "}");
 
         SsaFormConverter visitor = new SsaFormConverter();
         visitor.visit(methodDeclaration, null);
@@ -231,16 +238,17 @@ public class SsaFormConverterTest {
     @Test
     public void testSmartIfStmt2() throws Exception {
 
-        MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("public void visit(AssignExpr n, Object o) {\n" +
-                "        if (n.getValue() != null) {\n" +
-                "            ExpressionSeparatorVisitor esv = new ExpressionSeparatorVisitor(internalInstances);\n" +
-                "            n.getValue().accept(esv, null);\n" +
-                "            if (esv.isAssignedInternalInstance()) {\n" +
-                "                internalInstances.addEdge(n.getTarget().toString(), esv.getValue());\n" +
-                "            }\n" +
-                "        }\n" +
-                "        super.visit(n, o);\n" +
-                "    }");
+        MethodDeclaration methodDeclaration =
+                ParseHelper.createMethodDeclaration("public void visit(AssignExpr n, Object o) {\n" +
+                        "        if (n.getValue() != null) {\n" +
+                        "            ExpressionSeparatorVisitor esv = new ExpressionSeparatorVisitor(internalInstances);\n" +
+                        "            n.getValue().accept(esv, null);\n" +
+                        "            if (esv.isAssignedInternalInstance()) {\n" +
+                        "                internalInstances.addEdge(n.getTarget().toString(), esv.getValue());\n" +
+                        "            }\n" +
+                        "        }\n" +
+                        "        super.visit(n, o);\n" +
+                        "    }");
 
         SsaFormConverter visitor = new SsaFormConverter();
         SimpleMultiHolder holder = createVariablesHolder(
@@ -651,7 +659,7 @@ public class SsaFormConverterTest {
                 "A y = new A(x);" +
                 "}");
 
-         SsaFormConverter visitor = new SsaFormConverter();
+        SsaFormConverter visitor = new SsaFormConverter();
         visitor.visit(methodDeclaration, null);
         String actualResult = visitor.getMethodDeclaration().toString();
 
@@ -751,9 +759,9 @@ public class SsaFormConverterTest {
     public void testTryStmtWithoutFinallyBlock() throws Exception {
         MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("int method(int x){" +
                 "try {" +
-                    "x = 2;" +
+                "x = 2;" +
                 "} catch (Exception e) {" +
-                    "e.printStackTrace();" +
+                "e.printStackTrace();" +
                 "}" +
                 "}");
 
@@ -776,11 +784,11 @@ public class SsaFormConverterTest {
     public void testTryStmtWithFinallyBlock() throws Exception {
         MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("int method(int x){" +
                 "try {" +
-                    "x = 2;" +
+                "x = 2;" +
                 "} catch (Exception e) {" +
-                    "e.printStackTrace();" +
+                "e.printStackTrace();" +
                 "} finally {" +
-                    "x = 1;" +
+                "x = 1;" +
                 "}" +
                 "}");
 
@@ -805,8 +813,8 @@ public class SsaFormConverterTest {
     public void testForeachStmtArray() throws Exception {
         MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("void method(int[] ar, int x){" +
                 "for (int i : ar) {" +
-                    "x = i;" +
-                    "i = 2;" +
+                "x = i;" +
+                "i = 2;" +
                 "}" +
                 "}");
 
@@ -831,7 +839,7 @@ public class SsaFormConverterTest {
         MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("void method(Set<ComplexClass> set){" +
                 "for (ComplexClass cc : set) {" +
                 "    for (String value : cc.values) {" +
-                    "    System.out.println(value);" +
+                "    System.out.println(value);" +
                 "    }" +
                 "}" +
                 "}");
@@ -1074,9 +1082,17 @@ public class SsaFormConverterTest {
         SsaFormConverter visitor = new SsaFormConverter();
         SimpleMultiHolder holder = createVariablesHolder(
                 new HashMap<String, Integer>() {
-                    {put("internalInstances", 0);}
-                    {put("assignedInternalInstance", 0);}
-                    {put("value", 0);}
+                    {
+                        put("internalInstances", 0);
+                    }
+
+                    {
+                        put("assignedInternalInstance", 0);
+                    }
+
+                    {
+                        put("value", 0);
+                    }
                 });
         holder.addFieldName("internalInstances");
         holder.addFieldName("assignedInternalInstance");
@@ -1114,8 +1130,8 @@ public class SsaFormConverterTest {
 
         String expectedResult =
                 "ClassType processTypeArguments(ClassOrInterfaceType classType#0) {\n" +
-                "    ClassType[] args#0 = new ClassType[classType#0.getTypeArgs().size()];\n" +
-                "}";
+                        "    ClassType[] args#0 = new ClassType[classType#0.getTypeArgs().size()];\n" +
+                        "}";
 
         assertEquals(expectedResult, actualResult);
     }
@@ -1135,9 +1151,17 @@ public class SsaFormConverterTest {
         SsaFormConverter visitor = new SsaFormConverter();
         SimpleMultiHolder holder = createVariablesHolder(
                 new HashMap<String, Integer>() {
-                    {put("fromVertexes", 0);}
-                    {put("toVertexes", 0);}
-                    {put("map", 0);}
+                    {
+                        put("fromVertexes", 0);
+                    }
+
+                    {
+                        put("toVertexes", 0);
+                    }
+
+                    {
+                        put("map", 0);
+                    }
                 });
         holder.addFieldName("fromVertexes");
         holder.addFieldName("toVertexes");
@@ -1175,6 +1199,45 @@ public class SsaFormConverterTest {
                 "void setDependencies(Map<String, Collection<Dependency>> dependencies#0) {\n" +
                         "    ClassData cd#0 = new ClassData();\n" +
                         "    cd#0.dependencies = dependencies#0;\n" +
+                        "}";
+
+        assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
+    public void testStaticMethodsProcessing() throws Exception {
+
+        MethodDeclaration methodDeclaration =
+                ParseHelper.createMethodDeclaration(
+                        "public static <T> void visitComment(Comment comment, T arg, VoidVisitorAdapter<T> visitor) {\n" +
+                                "        if (comment instanceof LineComment) {\n" +
+                                "            visitor.visit((LineComment) comment, arg);\n" +
+                                "        } else if (comment instanceof BlockComment) {\n" +
+                                "            visitor.visit((BlockComment) comment, arg);\n" +
+                                "        } else if (comment instanceof JavadocComment) {\n" +
+                                "            visitor.visit((JavadocComment) comment, arg);\n" +
+                                "        } else {\n" +
+                                "            throw new UnsupportedOperationException(\"VoidVisitorHelper is not support comment for \" +\n" +
+                                "                    comment.getClass() + \".\");\n" +
+                                "        }\n" +
+                                "    }");
+
+        SsaFormConverter visitor = new SsaFormConverter();
+        visitor.visit(methodDeclaration, createVariablesHolder(
+                new HashMap<String, Integer>()));
+        String actualResult = visitor.getMethodDeclaration().toString();
+
+        String expectedResult =
+                "public static <T> void visitComment(Comment comment#0, T arg#0, VoidVisitorAdapter<T> visitor#0) {\n" +
+                        "    if (comment#0 instanceof LineComment) {\n" +
+                        "        visitor#0.visit((LineComment) comment#0, arg#0);\n" +
+                        "    } else if (comment#0 instanceof BlockComment) {\n" +
+                        "        visitor#0.visit((BlockComment) comment#0, arg#0);\n" +
+                        "    } else if (comment#0 instanceof JavadocComment) {\n" +
+                        "        visitor#0.visit((JavadocComment) comment#0, arg#0);\n" +
+                        "    } else {\n" +
+                        "        throw new UnsupportedOperationException(\"VoidVisitorHelper is not support comment for \" + comment.getClass() + \".\");\n" +
+                        "    }\n" +
                         "}";
 
         assertEquals(expectedResult, actualResult);
