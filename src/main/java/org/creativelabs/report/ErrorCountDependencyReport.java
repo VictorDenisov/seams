@@ -1,9 +1,9 @@
 package org.creativelabs.report;
 
-import org.creativelabs.Dependency;
+import org.creativelabs.typefinder.Dependency;
 import org.creativelabs.iig.InternalInstancesGraph;
 import org.creativelabs.introspection.ClassTypeError;
-import org.creativelabs.ssa.SsaFormAstRepresentation;
+import org.creativelabs.ssa.representation.SsaFormRepresentation;
 
 import java.util.*;
 
@@ -28,7 +28,7 @@ public class ErrorCountDependencyReport implements ReportBuilder {
     }
 
     @Override
-    public void setSsaFormRepresentations(String className, Set<SsaFormAstRepresentation> ssaFormRepresentations) {
+    public void setSsaFormRepresentations(String className, Set<SsaFormRepresentation> ssaFormRepresentations) {
     }
 
     public int getCount() {

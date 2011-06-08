@@ -1,9 +1,9 @@
 package org.creativelabs.report;
 
-import org.creativelabs.Dependency;
-import org.creativelabs.iig.InternalInstancesGraph;
-import org.creativelabs.ssa.SsaFormAstRepresentation;
+import org.creativelabs.typefinder.Dependency;
 import org.creativelabs.drawer.ChartDrawer;
+import org.creativelabs.iig.InternalInstancesGraph;
+import org.creativelabs.ssa.representation.SsaFormRepresentation;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
@@ -30,7 +30,7 @@ public class InternalInstancesByClassReportBuilder implements ReportBuilder {
     }
 
     @Override
-    public void setSsaFormRepresentations(String className, Set<SsaFormAstRepresentation> ssaFormRepresentations) {
+    public void setSsaFormRepresentations(String className, Set<SsaFormRepresentation> ssaFormRepresentations) {
     }
 
     public JFreeChart getChart() throws Exception {

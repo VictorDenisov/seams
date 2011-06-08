@@ -1,6 +1,6 @@
 package org.creativelabs.report;
 
-import org.creativelabs.Dependency;
+import org.creativelabs.typefinder.Dependency;
 import org.creativelabs.graph.ToStringGraphBuilder;
 import org.creativelabs.introspection.ClassTypeStub;
 import org.testng.annotations.Test;

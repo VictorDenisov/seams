@@ -1,6 +1,6 @@
 package org.creativelabs.iig;
 
-import org.creativelabs.AssertHelper;
+import org.creativelabs.typefinder.AssertHelper;
 import org.creativelabs.graph.ToStringGraphBuilder;
 import org.testng.AssertJUnit;
 import org.testng.annotations.Test;

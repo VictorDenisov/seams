@@ -1,9 +1,13 @@
 package org.creativelabs;
 
 import japa.parser.ast.body.*;
-import japa.parser.ast.stmt.*;
 
 import org.creativelabs.introspection.*;
+import org.creativelabs.ssa.holder.SimpleMultiHolderBuilder;
+import org.creativelabs.typefinder.DependencyCounterVisitorBuilder;
+import org.creativelabs.typefinder.ImportList;
+import org.creativelabs.typefinder.VariableList;
+import org.creativelabs.typefinder.VariableListBuilder;
 
 public class ClassProcessorBuilder {
 
@@ -42,10 +46,10 @@ public class ClassProcessorBuilder {
 
     ClassProcessor buildClassProcessor() {
         if (imports == null) {
-            throw new IllegalStateException();
+            throw new IllegalStateException("Imports couldn't be null.");
         }
         if (typeDeclaration == null) {
-            throw new IllegalStateException();
+            throw new IllegalStateException("TypeDeclaration couldn't be null.");
         }
         fieldList = constructVariableList();
         fieldList.put("this", imports.getClassByShortName(typeDeclaration.getName()));
@@ -62,6 +66,14 @@ public class ClassProcessorBuilder {
         fieldList.put("super", classValue);
 
         dependencyCounterBuilder = constructDependencyCounterVisitor();
-        return new ClassProcessor(typeDeclaration, dependencyCounterBuilder);
+
+        SimpleMultiHolderBuilder holderBuilder = new SimpleMultiHolderBuilder()
+        .setImportList(imports)
+        .setClassType(classValue);
+
+        return new ClassProcessor(
+                    typeDeclaration,
+                    dependencyCounterBuilder,
+                    holderBuilder);
     }
 }

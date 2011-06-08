@@ -1,7 +1,8 @@
 package japa.parser.ast.expr;
 
 import japa.parser.ast.Node;
-import org.creativelabs.ssa.UMVariablesHolder;
+import org.creativelabs.ssa.holder.SimpleUsingModifyingVariablesHolder;
+import org.creativelabs.ssa.holder.UsingModifyingVariablesHolder;
 
 /**
  * It's hacked class.
@@ -20,9 +21,9 @@ public abstract class Expression extends Node {
         super(beginLine, beginColumn, endLine, endColumn);
     }
 
-    private UMVariablesHolder variablesHolder = new UMVariablesHolder();
+    private UsingModifyingVariablesHolder variablesHolder = new SimpleUsingModifyingVariablesHolder();
 
-    public UMVariablesHolder getVariablesHolder() {
+    public UsingModifyingVariablesHolder getVariablesHolder() {
         return variablesHolder;
     }
 }

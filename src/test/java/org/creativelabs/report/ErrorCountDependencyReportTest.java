@@ -1,12 +1,9 @@
 package org.creativelabs.report;
 
-import org.creativelabs.*;
-import org.creativelabs.graph.*;
+import org.creativelabs.copy.CopyingUtils;
 import org.creativelabs.introspection.*;
+import org.creativelabs.typefinder.Dependency;
 import org.testng.annotations.*;
-
-import japa.parser.ast.body.*;
-import japa.parser.ast.stmt.*;
 
 import java.util.*;
 
@@ -22,6 +19,11 @@ public class ErrorCountDependencyReportTest {
 
         public String getShortString() {
             return "";
+        }
+
+        @Override
+        public <ClassTypeErrorImpl> ClassTypeErrorImpl copy() {
+            return CopyingUtils.<ClassTypeErrorImpl>copy(this);
         }
     }
 

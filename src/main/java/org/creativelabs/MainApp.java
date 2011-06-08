@@ -6,6 +6,7 @@ import japa.parser.ast.body.ClassOrInterfaceDeclaration;
 import japa.parser.ast.body.TypeDeclaration;
 import org.apache.commons.cli.*;
 import org.creativelabs.chart.BarChartBuilder;
+import org.creativelabs.typefinder.DependenciesChart;
 import org.creativelabs.graph.GraphvizGraphBuilder;
 import org.creativelabs.iig.InternalInstancesGraph;
 import org.creativelabs.introspection.ReflectionAbstractionImpl;
@@ -13,6 +14,7 @@ import org.creativelabs.report.DataCollector;
 import org.creativelabs.report.ReportBuilder;
 import org.creativelabs.drawer.ChartDrawer;
 import org.creativelabs.drawer.GraphvizDrawer;
+import org.creativelabs.typefinder.ImportList;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -22,6 +24,8 @@ import java.io.PrintWriter;
 public final class MainApp {
 
     private static ImportList imports;
+
+    private static String packageName;
 
     private static final int IMAGE_WIDTH = 2000;
 
@@ -84,6 +88,7 @@ public final class MainApp {
     private static void processClass(ClassOrInterfaceDeclaration typeDeclaration, String fileName, ReportBuilder reportBuilder) throws FileNotFoundException {
         ClassProcessor classProcessor = new ClassProcessorBuilder()
                 .setTypeDeclaration(typeDeclaration)
+                .setPackage(packageName)
                 .setImports(imports)
                 .buildClassProcessor();
         classProcessor.compute();
@@ -128,6 +133,7 @@ public final class MainApp {
             if (fileName.endsWith(".java")) {
                 FileInputStream fis = new FileInputStream(fileOrDirectory);
                 CompilationUnit cu = JavaParser.parse(fis);
+                packageName = cu.getPackage().getName().getName();
                 for (TypeDeclaration typeDeclaration : cu.getTypes()) {
                     if (typeDeclaration instanceof ClassOrInterfaceDeclaration) {
                         imports =

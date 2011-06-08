@@ -1,5 +1,7 @@
 package org.creativelabs.introspection;
 
+import org.creativelabs.copy.CopyingUtils;
+
 public class ClassTypeStub implements ClassType {
 
     private String className;
@@ -20,5 +22,10 @@ public class ClassTypeStub implements ClassType {
     @Override
     public String getShortString() {
         return toStringRepresentation();
+    }
+
+    @Override
+    public <ClassTypeStub> ClassTypeStub copy() {
+        return CopyingUtils.<ClassTypeStub>copy(this);
     }
 }

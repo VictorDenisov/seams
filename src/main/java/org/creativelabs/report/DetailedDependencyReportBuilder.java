@@ -1,9 +1,9 @@
 package org.creativelabs.report;
 
-import org.creativelabs.Dependency;
+import org.creativelabs.typefinder.Dependency;
 import org.creativelabs.MainApp;
 import org.creativelabs.iig.InternalInstancesGraph;
-import org.creativelabs.ssa.SsaFormAstRepresentation;
+import org.creativelabs.ssa.representation.SsaFormRepresentation;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,7 +22,7 @@ public class DetailedDependencyReportBuilder implements ReportBuilder {
     }
 
     @Override
-    public void setSsaFormRepresentations(String className, Set<SsaFormAstRepresentation> ssaFormRepresentations) {
+    public void setSsaFormRepresentations(String className, Set<SsaFormRepresentation> ssaFormRepresentations) {
     }
 
     private void outData(Map<String, Collection<Dependency>> deps, String fileName) {

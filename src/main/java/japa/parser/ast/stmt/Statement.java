@@ -2,8 +2,9 @@ package japa.parser.ast.stmt;
 
 
 import japa.parser.ast.Node;
-import org.creativelabs.ssa.UMVariablesHolder;
+import org.creativelabs.ssa.holder.SimpleUsingModifyingVariablesHolder;
 import org.creativelabs.ssa.PhiNode;
+import org.creativelabs.ssa.holder.UsingModifyingVariablesHolder;
 
 import java.util.Set;
 import java.util.TreeSet;
@@ -24,7 +25,7 @@ public abstract class Statement extends Node {
     }
 
     private Set<PhiNode> phiNodes = new TreeSet<PhiNode>();
-    private UMVariablesHolder variablesHolder = new UMVariablesHolder();
+    private UsingModifyingVariablesHolder variablesHolder = new SimpleUsingModifyingVariablesHolder();
 
     public Set<PhiNode> getPhiNodes() {
         return phiNodes;
@@ -38,7 +39,7 @@ public abstract class Statement extends Node {
         phiNodes.clear();
     }
 
-    public UMVariablesHolder getVariablesHolder() {
+    public UsingModifyingVariablesHolder getVariablesHolder() {
         return variablesHolder;
     }
 

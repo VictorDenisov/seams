@@ -1,8 +1,8 @@
 package org.creativelabs.report;
 
-import org.creativelabs.Dependency;
+import org.creativelabs.typefinder.Dependency;
 import org.creativelabs.iig.InternalInstancesGraph;
-import org.creativelabs.ssa.SsaFormAstRepresentation;
+import org.creativelabs.ssa.representation.SsaFormRepresentation;
 
 import java.io.PrintWriter;
 import java.util.Collection;
@@ -33,7 +33,7 @@ public class OverviewReportBuilder implements ReportBuilder {
     }
 
     @Override
-    public void setSsaFormRepresentations(String className, Set<SsaFormAstRepresentation> ssaFormRepresentations) {
+    public void setSsaFormRepresentations(String className, Set<SsaFormRepresentation> ssaFormRepresentations) {
     }
 
     public void saveToFile(PrintWriter writer) throws Exception {

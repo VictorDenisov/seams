@@ -36,4 +36,23 @@ public class TrueBooleanCondition implements Condition {
     public Condition copy() {
         return new TrueBooleanCondition();
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        EmptyCondition that = (EmptyCondition) o;
+
+        if (getStringRepresentation() != null ?
+                !getStringRepresentation().equals(that.getStringRepresentation()) :
+                that.getStringRepresentation() != null)
+            return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return getStringRepresentation().hashCode();
+    }
 }

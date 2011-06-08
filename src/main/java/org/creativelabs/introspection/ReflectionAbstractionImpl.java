@@ -1,5 +1,7 @@
 package org.creativelabs.introspection;
 
+import org.creativelabs.copy.CopyingUtils;
+
 import java.lang.reflect.*;
 import java.util.*;
 
@@ -37,10 +39,22 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         public String getShortString() {
             return clazz.getSimpleName();
         }
+
+        @Override
+        public <ClassTypeImpl> ClassTypeImpl copy() {
+            return CopyingUtils.<ClassTypeImpl>copy(this);
+        }
     }
 
     private static class ClassTypeErrorImpl implements ClassType, ClassTypeError {
         private String message;
+
+        private ClassTypeErrorImpl() {
+        }
+
+        private ClassTypeErrorImpl(String message) {
+            this.message = message;
+        }
 
         @Override
         public String toString() {
@@ -50,6 +64,11 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         @Override
         public String getShortString() {
             return message;
+        }
+
+        @Override
+        public <ClassTypeErrorImpl> ClassTypeErrorImpl copy() {
+            return CopyingUtils.<ClassTypeErrorImpl>copy(this);
         }
     }
 
@@ -63,6 +82,11 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         @Override
         public String getShortString() {
             return "NullClassType";
+        }
+
+        @Override
+        public <ClassTypeNullImpl> ClassTypeNullImpl copy() {
+            return CopyingUtils.<ClassTypeNullImpl>copy(this);
         }
     }
 

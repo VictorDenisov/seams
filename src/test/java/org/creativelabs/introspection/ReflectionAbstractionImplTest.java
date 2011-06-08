@@ -187,7 +187,7 @@ public class ReflectionAbstractionImplTest {
 
     @Test
     public void testGetReturnTypeTypeFinderLiteral() throws Exception {
-        Class className = Class.forName("org.creativelabs.TypeFinder");
+        Class className = Class.forName("org.creativelabs.typefinder.TypeFinder");
         ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
 
         ClassType[] args = new ClassType[] {ra.getClassTypeByName("japa.parser.ast.expr.LiteralExpr")};
@@ -198,7 +198,7 @@ public class ReflectionAbstractionImplTest {
 
     @Test
     public void testGetReturnTypeTypeFinderNameExpr() throws Exception {
-        Class className = Class.forName("org.creativelabs.TypeFinder");
+        Class className = Class.forName("org.creativelabs.typefinder.TypeFinder");
         ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
 
         ClassType[] args = new ClassType[] {ra.getClassTypeByName("japa.parser.ast.expr.NameExpr")};
@@ -258,11 +258,11 @@ public class ReflectionAbstractionImplTest {
 
     @Test
     public void testDependencyCounterVisitorGetDependenciesNonPublicMethod() {
-        ClassType clazz = ra.getClassTypeByName("org.creativelabs.DependencyCounterVisitor");
+        ClassType clazz = ra.getClassTypeByName("org.creativelabs.typefinder.DependencyCounterVisitor");
 
         ClassType result = ra.getReturnType(clazz, "getDependencies", new ClassType[0]);
 
-        assertEquals("java.util.Set<org.creativelabs.Dependency, >", result.toString());
+        assertEquals("java.util.Set<org.creativelabs.typefinder.Dependency, >", result.toString());
     }
 
     @Test

@@ -1,9 +1,9 @@
 package org.creativelabs.report;
 
-import org.creativelabs.Dependency;
+import org.creativelabs.typefinder.Dependency;
 import org.creativelabs.MainApp;
 import org.creativelabs.iig.InternalInstancesGraph;
-import org.creativelabs.ssa.SsaFormAstRepresentation;
+import org.creativelabs.ssa.representation.SsaFormRepresentation;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,11 +28,11 @@ public class SsaFormRepresentationsReportBuilder implements ReportBuilder {
     }
 
     @Override
-    public void setSsaFormRepresentations(String className, Set<SsaFormAstRepresentation> ssaFormRepresentations) {
+    public void setSsaFormRepresentations(String className, Set<SsaFormRepresentation> ssaFormRepresentations) {
         outData(ssaFormRepresentations, "detailedreport/" + className);
     }
 
-    private void outData(Set<SsaFormAstRepresentation> ssaFormRepresentations, String fileName) {
+    private void outData(Set<SsaFormRepresentation> ssaFormRepresentations, String fileName) {
         try {
             File file = new File(fileName + ".ssa");
             if (file.createNewFile() || MainApp.NEED_TO_REWRITE_OLD_REPORT) {
@@ -46,16 +46,12 @@ public class SsaFormRepresentationsReportBuilder implements ReportBuilder {
         }
     }
 
-    private void printSsaFormRepresentations(Set<SsaFormAstRepresentation> ssaFormRepresentations, PrintWriter writer) {
-        for (SsaFormAstRepresentation ssaFormRepresentation : ssaFormRepresentations) {
-            removeJavadocComment(ssaFormRepresentation);
-            writer.println(ssaFormRepresentation.getAst());
+    private void printSsaFormRepresentations(Set<SsaFormRepresentation> ssaFormRepresentations, PrintWriter writer) {
+        for (SsaFormRepresentation ssaFormRepresentation : ssaFormRepresentations) {
+            ssaFormRepresentation.removeRedundantInformation();
+            writer.println(ssaFormRepresentation.getSsaFormStringRepresentation());
             writer.println();
         }
 
-    }
-
-    private void removeJavadocComment(SsaFormAstRepresentation ssaFormRepresentation) {
-        ssaFormRepresentation.getAst().setJavaDoc(null);
     }
 }

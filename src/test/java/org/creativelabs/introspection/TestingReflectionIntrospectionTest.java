@@ -1,8 +1,5 @@
 package org.creativelabs.introspection;
 
-import japa.parser.ast.CompilationUnit;
-import japa.parser.ast.body.ClassOrInterfaceDeclaration;
-import org.creativelabs.ParseHelper;
 import org.testng.annotations.Test;
 
 import static org.testng.AssertJUnit.*;

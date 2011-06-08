@@ -68,8 +68,8 @@ public class ConditionInternalInstancesGraph implements InternalInstancesGraph {
             if (internalVertexConditions.containsKey(vertex)
                     && externalVertexConditions.containsKey(vertex)) {
                 map.put(vertex, graphBuilder.addVertex(vertex,
-                        internalVertexConditions.get(vertex).copy(),
-                        externalVertexConditions.get(vertex).copy()));
+                        internalVertexConditions.get(vertex).<Condition>copy(),
+                        externalVertexConditions.get(vertex).<Condition>copy()));
             } else {
                 map.put(vertex, graphBuilder.addVertex(vertex,
                         new EmptyCondition(),

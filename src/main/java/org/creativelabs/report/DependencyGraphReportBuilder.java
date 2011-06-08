@@ -1,10 +1,11 @@
 package org.creativelabs.report;
 
-import org.creativelabs.graph.*;
-import org.creativelabs.*;
+import org.creativelabs.typefinder.Dependency;
+import org.creativelabs.graph.GraphBuilder;
+import org.creativelabs.graph.Vertex;
 import org.creativelabs.graph.condition.EmptyCondition;
 import org.creativelabs.iig.InternalInstancesGraph;
-import org.creativelabs.ssa.SsaFormAstRepresentation;
+import org.creativelabs.ssa.representation.SsaFormRepresentation;
 
 import java.util.*;
 
@@ -49,7 +50,7 @@ public class DependencyGraphReportBuilder implements ReportBuilder {
     }
 
     @Override
-    public void setSsaFormRepresentations(String className, Set<SsaFormAstRepresentation> ssaFormRepresentations) {
+    public void setSsaFormRepresentations(String className, Set<SsaFormRepresentation> ssaFormRepresentations) {
     }
 
 }

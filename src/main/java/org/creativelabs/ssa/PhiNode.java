@@ -9,6 +9,8 @@ import japa.parser.ast.stmt.ExpressionStmt;
 
 import java.util.*;
 
+import static org.creativelabs.Constants.SEPARATOR;
+
 
 /**
  * Class needed for store information about phi function and phi node.
@@ -163,10 +165,10 @@ public class PhiNode implements Comparable<PhiNode>{
     public ExpressionStmt convertToExprStmt() {
         List<Expression> arguments = new ArrayList<Expression>();
         for (Integer index : indexes) {
-            arguments.add(new NameExpr(name + SsaFormConverter.SEPARATOR + index));
+            arguments.add(new NameExpr(name + SEPARATOR + index));
         }
         expressionStmt = new ExpressionStmt(
-                new AssignExpr(new NameExpr(name + SsaFormConverter.SEPARATOR + leftIndex),
+                new AssignExpr(new NameExpr(name + SEPARATOR + leftIndex),
                         new MethodCallExpr(null, "#phi", arguments),
                         AssignExpr.Operator.assign));
         return expressionStmt;
@@ -174,7 +176,7 @@ public class PhiNode implements Comparable<PhiNode>{
 
     public void addIndexToExprStmt(Integer index) {
         if (expressionStmt != null) {
-            ((MethodCallExpr) ((AssignExpr) expressionStmt.getExpression()).getValue()).getArgs().add(new NameExpr(name + SsaFormConverter.SEPARATOR + index));
+            ((MethodCallExpr) ((AssignExpr) expressionStmt.getExpression()).getValue()).getArgs().add(new NameExpr(name + SEPARATOR + index));
         }
     }
 }

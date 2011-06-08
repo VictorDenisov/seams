@@ -3,12 +3,18 @@ package org.creativelabs;
 import japa.parser.ast.body.*;
 import japa.parser.ast.stmt.BlockStmt;
 import org.creativelabs.graph.condition.EmptyCondition;
+import org.creativelabs.iig.ConditionInternalInstancesGraph;
 import org.creativelabs.iig.InternalInstancesGraph;
-import org.creativelabs.iig.SimpleInternalInstancesGraph;
 import org.creativelabs.report.ReportBuilder;
-import org.creativelabs.ssa.SsaFormAstRepresentation;
-import org.creativelabs.ssa.SsaFormConverter;
-import org.creativelabs.ssa.VariablesHolder;
+import org.creativelabs.ssa.holder.SimpleMultiHolder;
+import org.creativelabs.ssa.holder.SimpleMultiHolderBuilder;
+import org.creativelabs.ssa.representation.AstSsaFormRepresentation;
+import org.creativelabs.ssa.representation.SsaFormRepresentation;
+import org.creativelabs.ssa.visitor.SsaFormConverter;
+import org.creativelabs.typefinder.DependenciesChart;
+import org.creativelabs.typefinder.Dependency;
+import org.creativelabs.typefinder.DependencyCounterVisitor;
+import org.creativelabs.typefinder.DependencyCounterVisitorBuilder;
 
 import java.util.*;
 
@@ -17,18 +23,26 @@ class ClassProcessor {
 
     protected Map<String, Collection<Dependency>> dependencies = new HashMap<String, Collection<Dependency>>();
 
+    private SimpleMultiHolderBuilder holderBuilder;
+
     private DependencyCounterVisitorBuilder dependencyCounterBuilder;
 
     protected Map<String, InternalInstancesGraph> internalInstances
             = new HashMap<String, InternalInstancesGraph>();
-    protected Set<SsaFormAstRepresentation> forms = new HashSet<SsaFormAstRepresentation>();
+    protected Set<SsaFormRepresentation> forms = new HashSet<SsaFormRepresentation>();
 
-    protected InternalInstancesGraph ssaInternalInstancesGraph = new SimpleInternalInstancesGraph();
+    protected InternalInstancesGraph ssaInternalInstancesGraph = new ConditionInternalInstancesGraph();
 
     ClassProcessor(ClassOrInterfaceDeclaration typeDeclaration,
                    DependencyCounterVisitorBuilder dependencyCounterBuilder) {
         this.typeDeclaration = typeDeclaration;
         this.dependencyCounterBuilder = dependencyCounterBuilder;
+    }
+
+    ClassProcessor(ClassOrInterfaceDeclaration typeDeclaration, DependencyCounterVisitorBuilder dependencyCounterBuilder, SimpleMultiHolderBuilder holderBuilder) {
+        this.typeDeclaration = typeDeclaration;
+        this.dependencyCounterBuilder = dependencyCounterBuilder;
+        this.holderBuilder = holderBuilder;
     }
 
     public void buildReport(ReportBuilder reportBuilder) {
@@ -64,7 +78,7 @@ class ClassProcessor {
         return dependencies;
     }
 
-    public Set<SsaFormAstRepresentation> getForms() {
+    public Set<SsaFormRepresentation> getSsaFormRepresentations() {
         return forms;
     }
 
@@ -93,28 +107,39 @@ class ClassProcessor {
     }
 
     void buildInternalInstancesGraph(MethodDeclaration md) {
-        Map<String, Integer> map = new HashMap<String, Integer>();
+        Map<String, Integer> variables = new HashMap<String, Integer>();
         Set<String> fields = new HashSet<String>();
         for (BodyDeclaration bd : typeDeclaration.getMembers()) {
             if (bd instanceof FieldDeclaration) {
                 FieldDeclaration fd = (FieldDeclaration) bd;
                 for (VariableDeclarator vardecl : fd.getVariables()) {
-                    map.put(vardecl.getId().getName(), 0);
+                    variables.put(vardecl.getId().getName(), 0);
                     fields.add(vardecl.getId().getName());
 
                     ssaInternalInstancesGraph.addEdge(vardecl.getId().getName(),
-                            md.getName() + SsaFormConverter.SEPARATOR + vardecl.getId().getName() + 0);
+                            md.getName() + Constants.SEPARATOR + vardecl.getId().getName() + 0);
 
                 }
             }
         }
 
         SsaFormConverter visitor = new SsaFormConverter(ssaInternalInstancesGraph);
-        VariablesHolder holder = new VariablesHolder(map, new EmptyCondition());
-        holder.setFieldsNames(fields);
+
+        holderBuilder.setCondition(new EmptyCondition())
+        .setVariables(variables)
+        .setFieldsNames(fields);
+
+        SimpleMultiHolder holder = holderBuilder.buildMultiHolder();
+        try {
         visitor.visit(md, holder);
-        SsaFormAstRepresentation form = new SsaFormAstRepresentation(md.getName(), md);
-        forms.add(form);
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            System.out.println(typeDeclaration.getName());
+            System.out.println(md.getName() + " " + md.getParameters());
+//            throw e;
+        }
+
+        forms.add(new AstSsaFormRepresentation(md));
         ssaInternalInstancesGraph = visitor.getGraph();
     }
 

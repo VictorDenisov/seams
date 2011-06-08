@@ -1,7 +1,7 @@
 package org.creativelabs.report;
 
-import org.creativelabs.*;
 import org.creativelabs.iig.InternalInstancesGraph;
+import org.creativelabs.typefinder.Dependency;
 import org.testng.annotations.*;
 
 import java.util.*;

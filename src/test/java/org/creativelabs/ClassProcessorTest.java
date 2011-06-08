@@ -1,5 +1,7 @@
 package org.creativelabs;
 
+import org.creativelabs.ssa.holder.SimpleMultiHolderBuilder;
+import org.creativelabs.typefinder.*;
 import org.testng.annotations.Test;
 
 import japa.parser.ast.stmt.*;
@@ -66,7 +68,7 @@ public class ClassProcessorTest {
 
         DependencyCounterVisitorBuilder builder = createEmptyDependencyCounterBuilder(logBuffer);
         
-        ClassProcessor classProcessor = new ClassProcessor(classDecl, builder);
+        ClassProcessor classProcessor = new ClassProcessor(classDecl, builder, new SimpleMultiHolderBuilder());
         classProcessor.compute();
 
         assertEquals("build; visit BlockStmt; ", logBuffer.toString());

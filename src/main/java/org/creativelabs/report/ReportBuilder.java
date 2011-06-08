@@ -1,8 +1,8 @@
 package org.creativelabs.report;
 
-import org.creativelabs.Dependency;
+import org.creativelabs.typefinder.Dependency;
 import org.creativelabs.iig.InternalInstancesGraph;
-import org.creativelabs.ssa.SsaFormAstRepresentation;
+import org.creativelabs.ssa.representation.SsaFormRepresentation;
 
 import java.util.Collection;
 import java.util.Map;
@@ -13,5 +13,5 @@ public interface ReportBuilder {
 
     void setInternalInstances(String className, Map<String, InternalInstancesGraph> instances);
 
-    void setSsaFormRepresentations(String className, Set<SsaFormAstRepresentation> ssaFormRepresentations);
+    void setSsaFormRepresentations(String className, Set<SsaFormRepresentation> ssaFormRepresentations);
 }

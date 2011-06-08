@@ -1,8 +1,8 @@
 package org.creativelabs.report;
 
-import org.creativelabs.Dependency;
+import org.creativelabs.typefinder.Dependency;
 import org.creativelabs.iig.InternalInstancesGraph;
-import org.creativelabs.ssa.SsaFormAstRepresentation;
+import org.creativelabs.ssa.representation.SsaFormRepresentation;
 
 import java.io.FileWriter;
 import java.io.PrintWriter;
@@ -15,7 +15,7 @@ public class DataCollector implements ReportBuilder {
     private class ClassData {
         private Map<String, Collection<Dependency>> dependencies;
         private Map<String, InternalInstancesGraph> internalInstances;
-        private Set<SsaFormAstRepresentation> ssaFormRepresentations;
+        private Set<SsaFormRepresentation> ssaFormRepresentations;
     }
     
     public void setDependencies(String className, Map<String, Collection<Dependency>> dependencies) {
@@ -41,7 +41,7 @@ public class DataCollector implements ReportBuilder {
     }
 
     @Override
-    public void setSsaFormRepresentations(String className, Set<SsaFormAstRepresentation> ssaFormRepresentations) {
+    public void setSsaFormRepresentations(String className, Set<SsaFormRepresentation> ssaFormRepresentations) {
         ClassData cd;
         if (map.containsKey(className)) {
             cd = map.get(className);

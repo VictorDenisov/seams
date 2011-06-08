@@ -1,6 +1,8 @@
 package org.creativelabs.introspection;
 
-public interface ClassType {
+import org.creativelabs.copy.Copyable;
+
+public interface ClassType extends Copyable {
 
     String toString();
 

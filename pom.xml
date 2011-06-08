@@ -78,6 +78,12 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.5</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>com.google.inject</groupId>
             <artifactId>guice</artifactId>
             <version>2.0</version>
@@ -177,19 +183,23 @@
                     <configLocation>${basedir}/checkstyle.xml</configLocation>
                 </configuration>
             </plugin>
-	    <plugin>
-		    <artifactId>maven-pmd-plugin</artifactId>
-		    <version>2.5</version>
-		    <configuration>
-			    <targetJdk>${compileSource}</targetJdk>
-		    </configuration>
-	    </plugin>
-	    <plugin>
-		    <groupId>org.codehaus.mojo</groupId>
-		    <artifactId>findbugs-maven-plugin</artifactId>
-		    <version>2.0.1</version>
-	    </plugin>
-
+            <plugin>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <version>2.5</version>
+                <configuration>
+                    <targetJdk>${compileSource}</targetJdk>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>findbugs-maven-plugin</artifactId>
+                <version>2.0.1</version>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>javancss-maven-plugin</artifactId>
+                <version>2.0-beta-2</version>
+            </plugin>
         </plugins>
     </reporting>
 

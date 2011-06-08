@@ -1,6 +1,8 @@
 package org.creativelabs.introspection;
 
-public interface ReflectionAbstraction {
+import java.io.Serializable;
+
+public interface ReflectionAbstraction extends Serializable {
 
     ClassType getReturnType(ClassType className, String methodName, ClassType[] types);
 

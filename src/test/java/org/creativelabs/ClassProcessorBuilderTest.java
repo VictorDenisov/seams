@@ -1,11 +1,10 @@
 package org.creativelabs;
 
+import org.creativelabs.typefinder.ConstructionHelper;
+import org.creativelabs.typefinder.DependencyCounterVisitorBuilder;
+import org.creativelabs.typefinder.ParseHelper;
+import org.creativelabs.typefinder.VariableList;
 import org.testng.annotations.Test;
-
-import japa.parser.ast.body.*;
-import japa.parser.ast.stmt.*;
-
-import java.util.*;
 
 import static org.testng.AssertJUnit.*;
 
@@ -38,13 +37,13 @@ public class ClassProcessorBuilderTest {
         ClassProcessorBuilderTestSpecific builder = new ClassProcessorBuilderTestSpecific();
         ClassProcessor classProcessor = builder
             .setImports(ParseHelper.createImportList(
-                        "package org.creativelabs; import org.creativelabs.Dependency;"))
+                        "package org.creativelabs.typefinder; import org.creativelabs.typefinder.Dependency;"))
             .setTypeDeclaration(ParseHelper.createClassDeclaration(
                         "class ImportList extends Dependency {}"))
             .buildClassProcessor();
 
-        assertEquals("org.creativelabs.ImportList", builder.thisValue);
-        assertEquals("org.creativelabs.Dependency", builder.superValue);
+        assertEquals("org.creativelabs.typefinder.ImportList", builder.thisValue);
+        assertEquals("org.creativelabs.typefinder.Dependency", builder.superValue);
     }
 
     @Test
@@ -52,11 +51,11 @@ public class ClassProcessorBuilderTest {
         ClassProcessorBuilderTestSpecific builder = new ClassProcessorBuilderTestSpecific();
         ClassProcessor classProcessor = builder
             .setImports(ParseHelper.createImportList(
-                        "package org.creativelabs; import org.creativelabs.Bar;"))
+                        "package org.creativelabs.typefinder; import org.creativelabs.Bar;"))
             .setTypeDeclaration(ParseHelper.createClassDeclaration("class ImportList {}"))
             .buildClassProcessor();
 
-        assertEquals("org.creativelabs.ImportList", builder.thisValue);
+        assertEquals("org.creativelabs.typefinder.ImportList", builder.thisValue);
         assertEquals("java.lang.Object", builder.superValue);
     }
 
