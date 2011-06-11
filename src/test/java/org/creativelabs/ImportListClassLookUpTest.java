@@ -9,7 +9,6 @@ import japa.parser.ast.body.*;
 
 import java.util.List;
 import java.util.Arrays;
-
 import org.creativelabs.introspection.*;
 
 import static org.testng.AssertJUnit.*;
@@ -74,12 +73,6 @@ public class ImportListClassLookUpTest {
     public void testGetClassByType_IteratorWithWildcardEmpty() throws Exception {
         VariableDeclarationExpr expr = (VariableDeclarationExpr)ParseHelper.createExpression("Iterator<?> iter");
         Type type = expr.getType();
-        /*
-        WildcardType tt = (WildcardType)((ClassOrInterfaceType)((ReferenceType)type).getType()).getTypeArgs().get(0);
-        System.out.println(tt.getClass().toString());
-        System.out.println(tt.getExtends() + "");
-        System.out.println(tt.getSuper() + "");
-        */
 
         ImportList imports = ParseHelper.createImportList("import java.util.*;");
 
@@ -217,5 +210,24 @@ public class ImportListClassLookUpTest {
         ClassType classType = imports.getClassByShortName("HashMap");
 
         assertEquals("java.util.HashMap<K, V, >", classType.toString());
+    }
+
+    @Test
+    public void testGetClassDeclaredInTheMethod() throws Exception {
+        ReflectionAbstractionImpl ra = new ReflectionAbstractionImpl();
+
+        CompilationUnit cu = ParseHelper.createCompilationUnit(
+                "package org.creativelabs.samples; "
+                + "public class SampleDeclaringClassInMethod {}");
+
+        ClassOrInterfaceDeclaration cd = (ClassOrInterfaceDeclaration)cu.getTypes().get(0);
+
+        ImportList imports = new ImportList(ra, cu, cd);
+
+        ClassType classType = imports.getClassByShortName("InnerClass");
+
+        assertEquals(
+                "org.creativelabs.samples.SampleDeclaringClassInMethod$1InnerClass",
+                classType.toString());
     }
 }

@@ -136,19 +136,35 @@ public class TestingReflectionAbstraction implements ReflectionAbstraction {
         return classes.keySet().contains(className);
     }
 
+    private class ClassTypeErrorStub implements ClassTypeError {
+        private String message;
+
+        public ClassTypeErrorStub(String message) {
+            this.message = message;
+        }
+
+        public String toString() {
+            return message;
+        }
+
+        public String getShortString() {
+            return message;
+        }
+    }
+
     @Override
     public ClassType createErrorClassType(String message) {
-        return new ClassTypeStub(message);
+        return new ClassTypeErrorStub(message);
     }
 
     @Override
     public ClassType substGenericArgs(ClassType className, ClassType[] args) {
-        return null;
+        return createErrorClassType("");
     }
 
     @Override
     public ClassType getNestedClass(ClassType className, String nestedClassName) {
-        return null;
+        return createErrorClassType("");
     }
 
     @Override
@@ -159,12 +175,12 @@ public class TestingReflectionAbstraction implements ReflectionAbstraction {
 
     @Override
     public ClassType createNullClassType() {
-        return null;
+        return createErrorClassType("");
     }
 
     @Override
     public ClassType addArrayDepth(ClassType classType) {
-        return null;
+        return createErrorClassType("");
     }
 
     @Override
@@ -178,6 +194,6 @@ public class TestingReflectionAbstraction implements ReflectionAbstraction {
 
     @Override 
     public ClassType findClassInTypeHierarchy(ClassType classType, String nestedName) {
-        return null;
+        return createErrorClassType("");
     }
 }

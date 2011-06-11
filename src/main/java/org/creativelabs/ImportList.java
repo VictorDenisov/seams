@@ -195,9 +195,15 @@ public class ImportList {
         }
         ClassType clazz = ra.getClassTypeByName(className);
         ClassType classType = ra.findClassInTypeHierarchy(clazz, shortName);
-        if (classType != null) {
+        if (!(classType instanceof ClassTypeError)) {
             return classType;
         }
+
+        String testingClassName = className + "$1" + shortName;
+        if (ra.classWithNameExists(testingClassName)) {
+            return ra.getClassTypeByName(testingClassName);
+        }
+
         return ra.createErrorClassType("Unknown class: " + shortName);
     }
 

@@ -1,4 +1,4 @@
 package org.creativelabs.introspection;
 
-public interface ClassTypeError {
+public interface ClassTypeError extends ClassType {
 }
