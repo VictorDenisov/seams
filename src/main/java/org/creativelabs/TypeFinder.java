@@ -49,6 +49,8 @@ class TypeFinder {
             return determineType((EnclosedExpr) expr);
         } else if (expr instanceof ClassExpr) {
             return determineType((ClassExpr) expr);
+        } else if (expr instanceof ConditionalExpr) {
+            return determineType((ConditionalExpr) expr);
         }
 
         return reflectionAbstraction.createErrorClassType("unsupported expression");
@@ -164,6 +166,15 @@ class TypeFinder {
 
     private ClassType determineType(ObjectCreationExpr expr) {
         return imports.getClassByType(expr.getType());
+    }
+
+    private ClassType determineType(ConditionalExpr expr) {
+        ClassType thenType = determineType(expr.getThenExpr());
+        ClassType elseType = determineType(expr.getElseExpr());
+        if (!(thenType.toString().equals(elseType.toString()))) {
+            return reflectionAbstraction.createErrorClassType("then and else expressions have different types");
+        }
+        return thenType;
     }
 
     private ClassType determineType(BinaryExpr expr) {

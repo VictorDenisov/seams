@@ -722,4 +722,34 @@ public class TypeFinderTest {
         ClassType result = typeFinder.determineType(expr);
         assertTrue(result instanceof ClassTypeNull);
     }
+
+    @Test
+    public void testConditionalExpression() throws Exception {
+        ConditionalExpr expr = (ConditionalExpr) 
+            (((AssignExpr)ParseHelper.createExpression("x = (1 > 5)?\"hello\":\"bye\";")).getValue());
+
+        ImportList importList = ConstructionHelper.createEmptyImportList();
+        VariableList varList = ConstructionHelper.createEmptyVariableList();
+
+        TypeFinder typeFinder = new TypeFinder(ra, varList, importList);
+
+        ClassType result = typeFinder.determineType(expr);
+
+        assertEquals("java.lang.String", result.toString());
+    }
+
+    @Test
+    public void testConditionalExpressionDifferentTypesInBranches() throws Exception {
+        ConditionalExpr expr = (ConditionalExpr) 
+            (((AssignExpr)ParseHelper.createExpression("x = (1 > 5)?\"hello\":1;")).getValue());
+
+        ImportList importList = ConstructionHelper.createEmptyImportList();
+        VariableList varList = ConstructionHelper.createEmptyVariableList();
+
+        TypeFinder typeFinder = new TypeFinder(ra, varList, importList);
+
+        ClassType result = typeFinder.determineType(expr);
+
+        assertTrue(result instanceof ClassTypeError);
+    }
 }
