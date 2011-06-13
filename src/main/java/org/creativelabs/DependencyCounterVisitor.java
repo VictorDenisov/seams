@@ -44,7 +44,9 @@ class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
         if (n == null) {
             return;
         }
+        localVariables.incDepth();
         super.visit(n, o);
+        localVariables.decDepth();
     }
 
     @Override

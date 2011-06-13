@@ -38,7 +38,7 @@ public class VariableListBuilder {
             if (parameter.isVarArgs()) {
                 classType = ra.addArrayDepth(classType);
             }
-            result.fieldTypes.put(name, classType);
+            result.put(name, classType);
         }
         return result;
     }
@@ -52,7 +52,7 @@ public class VariableListBuilder {
                 for (VariableDeclarator vardecl : fd.getVariables()) {
                     ClassType classType = imports.getClassByType(type);
                     classType = ra.addArrayDepth(classType, vardecl.getId().getArrayCount());
-                    result.fieldTypes.put(vardecl.getId().getName(), classType);
+                    result.put(vardecl.getId().getName(), classType);
                 }
             }
         }

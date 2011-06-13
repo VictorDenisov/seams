@@ -10,7 +10,6 @@ import japa.parser.ast.*;
 import org.creativelabs.introspection.*;
 
 import java.util.*;
-
 public class ImportList {
 
     private List<ImportDeclaration> list = new ArrayList<ImportDeclaration>();
