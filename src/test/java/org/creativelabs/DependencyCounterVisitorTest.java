@@ -176,4 +176,26 @@ public class DependencyCounterVisitorTest {
         assertEquals(1, dependencyCounter.getDependencies().size());
         assertEquals("MyObject", ((Dependency)dependencyCounter.getDependencies().iterator().next()).getExpression());
     }
+
+    /**
+     * There is no need of processing case labels.
+     * Since their processing can be weird.
+     * Processing of Switch expression is enough.
+     */
+    @Test
+    public void testDoesntProcessSwitchLabel() throws Exception {
+        SwitchStmt stmt = (SwitchStmt) ParseHelper.createStatement("switch (x) {case v: break; case y: break;}");
+
+        ImportList imports = ConstructionHelper.createEmptyImportList();
+        VariableList varList = ConstructionHelper.createEmptyVariableList();
+
+        DependencyCounterVisitor dependencyCounter = spy(new DependencyCounterVisitor(varList, imports, ra));
+        dependencyCounter.visit(stmt, null);
+
+        NameExpr exprX = (NameExpr) ParseHelper.createExpression("v");
+        NameExpr exprY = (NameExpr) ParseHelper.createExpression("y");
+
+        verify(dependencyCounter, never()).visit(eq(exprX), eq(null));
+        verify(dependencyCounter, never()).visit(eq(exprY), eq(null));
+    }
 }

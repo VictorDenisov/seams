@@ -39,6 +39,14 @@ class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
         return internalInstances;
     }
 
+    public void visit(SwitchEntryStmt n, Object o) {
+        if (n.getStmts() != null) {
+            for (Statement s : n.getStmts()) {
+                s.accept(this, o);
+            }
+        }
+    }
+
     @Override
     public void visit(BlockStmt n, Object o) {
         if (n == null) {
