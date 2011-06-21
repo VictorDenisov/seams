@@ -32,12 +32,13 @@ public class GraphvizDrawer implements Drawer {
         private static final String WINDOWS = "Windows";
 
         public void convert(String fileName) throws IOException, InterruptedException {
-//            Process convertingToPng = Runtime.getRuntime().exec(getArgs(fileName));
-//
-//            int status = convertingToPng.waitFor();
-//            if (status != SUCCESS) {
-//                throw new IOException("Could not convert dot file " + fileName + ".dot to png.");
-//            }
+            //TODO uncomment on production
+            Process convertingToPng = Runtime.getRuntime().exec(getArgs(fileName));
+
+            int status = convertingToPng.waitFor();
+            if (status != SUCCESS) {
+                throw new IOException("Could not convert dot file " + fileName + ".dot to png.");
+            }
         }
 
         private String[] getArgs(String fileName) {
