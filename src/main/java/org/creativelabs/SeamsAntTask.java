@@ -20,6 +20,27 @@ public class SeamsAntTask extends MatchingTask {
     private Path classpath;
     private ReflectionAbstraction ra = null;
     private ClassLoader classLoader;
+    private List<Report> reports = new ArrayList<Report>();
+    private Set<String> supportedReports = new HashSet<String>();
+
+    public SeamsAntTask() {
+        supportedReports.add("deps-graph");
+        supportedReports.add("deps-detail");
+        supportedReports.add("errors");
+    }
+
+    public static class Report {
+
+        private String name;
+
+        public void setName(String name) {
+            this.name = name;
+        }
+    }
+
+    public void addConfiguredReport(Report report) {
+        reports.add(report);
+    }
 
     public void setDestdir(File destDir) {
         this.destDir = destDir;
@@ -112,7 +133,17 @@ public class SeamsAntTask extends MatchingTask {
         return urls;
     }
 
+    private void checkReports() throws BuildException {
+        for (Report report : reports) {
+            if (!supportedReports.contains(report.name)) {
+                throw new BuildException("unknown report name : " + report.name);
+            }
+        }
+    }
+
     public void execute() throws BuildException {
+        checkReports();
+        
         checkParameters();
         resetFileLists();
 
@@ -159,8 +190,15 @@ public class SeamsAntTask extends MatchingTask {
             for (File file : compileList) {
                 MainApp.processFileOrDirectory(file, dataCollector, ra);
             }
-            dataCollector.buildDetailedDependencyReport();
-            dataCollector.buildNumberOfErrorsReport();
+            for (Report report : reports) {
+                //TODO Duplicating with constructor
+                if (report.name.equals("deps-detail")) {
+                    dataCollector.buildDetailedDependencyReport();
+                }
+                if (report.name.equals("errors")) {
+                    dataCollector.buildNumberOfErrorsReport();
+                }
+            }
         }
     }
 

@@ -5,6 +5,10 @@
 
 	<target name="main">
 		<seams>
+			<report name="deps-graph"/>
+			<report name="deps-detail"/>
+			<report name="errors"/>
+
 			<classpath>
 				<fileset dir="/home/victor/.m2/repository/net/sourceforge/collections/collections-generic">
 					<include name="**/*.jar"/>
