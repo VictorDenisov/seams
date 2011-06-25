@@ -10,27 +10,7 @@ import org.testng.annotations.Test;
 //TODO: to implement
 public class MultiHolderBuilderTest {
     @Test
-    public void testSetConditionHolder() throws Exception {
-
-    }
-
-    @Test
-    public void testSetFieldsHolder() throws Exception {
-
-    }
-
-    @Test
-    public void testSetVariablesHolder() throws Exception {
-
-    }
-
-    @Test
-    public void testSetModifiersHolder() throws Exception {
-
-    }
-
-    @Test
-    public void testBuildMultiHolder() throws Exception {
+    public void testBuild() throws Exception {
 
     }
 }

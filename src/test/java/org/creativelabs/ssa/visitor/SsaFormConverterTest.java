@@ -1,22 +1,26 @@
 package org.creativelabs.ssa.visitor;
 
 import japa.parser.ast.body.MethodDeclaration;
+import org.creativelabs.Constants;
 import org.creativelabs.ssa.holder.*;
+import org.creativelabs.ssa.holder.variable.StringVariable;
+import org.creativelabs.ssa.holder.variable.Variable;
 import org.creativelabs.typefinder.ParseHelper;
 import org.testng.annotations.Test;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
-import static junit.framework.Assert.assertEquals;
+import static org.testng.Assert.assertEquals;
 
 public class SsaFormConverterTest {
 
-    private SimpleMultiHolder createVariablesHolder(Map<String, Integer> map) {
+    private SimpleMultiHolder createVariablesHolder(Map<Variable, Integer> map) {
         SimpleConditionHolder conditionHolder = new SimpleConditionHolder();
         SimpleClassFieldsHolder fieldsHolder = new SimpleClassFieldsHolder();
         SimpleMethodArgsHolder methodArgsHolder = new SimpleMethodArgsHolder();
-        SimpleVariablesHolder variablesHolder = new SimpleVariablesHolder(map);
+        ScopeVariablesHolder variablesHolder = new ScopeVariablesHolder(map);
         SimpleMethodModifiersHolder modifiersHolder = new SimpleMethodModifiersHolder();
         return new SimpleMultiHolder(
                 conditionHolder,
@@ -33,7 +37,7 @@ public class SsaFormConverterTest {
                 "}");
 
         SsaFormConverter visitor = new SsaFormConverter();
-        visitor.visit(methodDeclaration, null);
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
         String actualResult = visitor.getMethodDeclaration().toString();
 
         String expectedResult =
@@ -51,7 +55,7 @@ public class SsaFormConverterTest {
                 "}");
 
         SsaFormConverter visitor = new SsaFormConverter();
-        visitor.visit(methodDeclaration, null);
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
         String actualResult = visitor.getMethodDeclaration().toString();
 
         String expectedResult =
@@ -69,7 +73,7 @@ public class SsaFormConverterTest {
                 "}");
 
         SsaFormConverter visitor = new SsaFormConverter();
-        visitor.visit(methodDeclaration, null);
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
         String actualResult = visitor.getMethodDeclaration().toString();
 
         String expectedResult =
@@ -87,7 +91,7 @@ public class SsaFormConverterTest {
                 "}");
 
         SsaFormConverter visitor = new SsaFormConverter();
-        visitor.visit(methodDeclaration, null);
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
         String actualResult = visitor.getMethodDeclaration().toString();
 
         String expectedResult =
@@ -106,7 +110,7 @@ public class SsaFormConverterTest {
                         "}");
 
         SsaFormConverter visitor = new SsaFormConverter();
-        visitor.visit(methodDeclaration, null);
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
         String actualResult = visitor.getMethodDeclaration().toString();
 
         String expectedResult =
@@ -124,7 +128,7 @@ public class SsaFormConverterTest {
                 "}");
 
         SsaFormConverter visitor = new SsaFormConverter();
-        visitor.visit(methodDeclaration, null);
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
         String actualResult = visitor.getMethodDeclaration().toString();
 
         String expectedResult =
@@ -143,7 +147,7 @@ public class SsaFormConverterTest {
                 "}");
 
         SsaFormConverter visitor = new SsaFormConverter();
-        visitor.visit(methodDeclaration, null);
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
         String actualResult = visitor.getMethodDeclaration().toString();
 
         String expectedResult =
@@ -162,7 +166,7 @@ public class SsaFormConverterTest {
                 "}");
 
         SsaFormConverter visitor = new SsaFormConverter();
-        visitor.visit(methodDeclaration, null);
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
         String actualResult = visitor.getMethodDeclaration().toString();
 
         String expectedResult =
@@ -186,7 +190,7 @@ public class SsaFormConverterTest {
                 "}");
 
         SsaFormConverter visitor = new SsaFormConverter();
-        visitor.visit(methodDeclaration, null);
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
         String actualResult = visitor.getMethodDeclaration().toString();
 
         String expectedResult =
@@ -217,7 +221,7 @@ public class SsaFormConverterTest {
                 "}");
 
         SsaFormConverter visitor = new SsaFormConverter();
-        visitor.visit(methodDeclaration, null);
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
         String actualResult = visitor.getMethodDeclaration().toString();
 
         String expectedResult =
@@ -252,9 +256,9 @@ public class SsaFormConverterTest {
 
         SsaFormConverter visitor = new SsaFormConverter();
         SimpleMultiHolder holder = createVariablesHolder(
-                new HashMap<String, Integer>() {
+                new HashMap<Variable, Integer>() {
                     {
-                        put("internalInstances", 0);
+                        put(new StringVariable("internalInstances", ""), 0);
                     }
                 });
         holder.addFieldName("internalInstances");
@@ -294,14 +298,14 @@ public class SsaFormConverterTest {
                 "    }");
 
         SsaFormConverter visitor = new SsaFormConverter();
-        visitor.visit(methodDeclaration, null);
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
         String actualResult = visitor.getMethodDeclaration().toString();
 
         String expectedResult =
                 "void outData(Map<String, Collection<Dependency>> deps#0, String fileName#0) {\n" +
                         "    try {\n" +
                         "        File file#0 = new File(fileName#0 + \".deps\");\n" +
-                        "        if (file#0.createNewFile() || MainApp.NEED_TO_REWRITE_OLD_REPORT) {\n" +
+                        "        if (file#0.createNewFile() || MainApp.NEED_TO_REWRITE_OLD_REPORT#0) {\n" +
                         "            PrintWriter writer#0 = new PrintWriter(file#0);\n" +
                         "            printDeps(deps#0, writer#0);\n" +
                         "            writer#0.flush();\n" +
@@ -325,7 +329,7 @@ public class SsaFormConverterTest {
                 "}");
 
         SsaFormConverter visitor = new SsaFormConverter();
-        visitor.visit(methodDeclaration, null);
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
         String actualResult = visitor.getMethodDeclaration().toString();
 
         String expectedResult =
@@ -356,7 +360,7 @@ public class SsaFormConverterTest {
                 "}");
 
         SsaFormConverter visitor = new SsaFormConverter();
-        visitor.visit(methodDeclaration, null);
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
         String actualResult = visitor.getMethodDeclaration().toString();
 
         String expectedResult =
@@ -397,7 +401,7 @@ public class SsaFormConverterTest {
                 "}");
 
         SsaFormConverter visitor = new SsaFormConverter();
-        visitor.visit(methodDeclaration, null);
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
         String actualResult = visitor.getMethodDeclaration().toString();
 
         String expectedResult =
@@ -497,7 +501,7 @@ public class SsaFormConverterTest {
                 "}");
 
         SsaFormConverter visitor = new SsaFormConverter();
-        visitor.visit(methodDeclaration, null);
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
         String actualResult = visitor.getMethodDeclaration().toString();
 
         String expectedResult = "void method(int x#0) {\n" +
@@ -520,9 +524,8 @@ public class SsaFormConverterTest {
                 "}" +
                 "}");
 
-        //TODO
         SsaFormConverter visitor = new SsaFormConverter();
-        visitor.visit(methodDeclaration, null);
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
         String actualResult = visitor.getMethodDeclaration().toString();
 
         String expectedResult = "void method(int x#0, boolean b#0) {\n" +
@@ -545,7 +548,7 @@ public class SsaFormConverterTest {
                 "}");
 
         SsaFormConverter visitor = new SsaFormConverter();
-        visitor.visit(methodDeclaration, null);
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
         String actualResult = visitor.getMethodDeclaration().toString();
 
         String expectedResult = "void method(int x#0) {\n" +
@@ -565,13 +568,13 @@ public class SsaFormConverterTest {
 
         SsaFormConverter visitor = new SsaFormConverter();
         SimpleMultiHolder holder = createVariablesHolder(
-                new HashMap<String, Integer>() {
+                new HashMap<Variable, Integer>() {
                     {
-                        put("a", 2);
+                        put(new StringVariable("a", Constants.THIS_SCOPE), 2);
                     }
 
                     {
-                        put("i", 1);
+                        put(new StringVariable("i",Constants.THIS_SCOPE), 1);
                     }
                 });
         visitor.visit(methodDeclaration, holder);
@@ -592,7 +595,7 @@ public class SsaFormConverterTest {
 
 
         SsaFormConverter visitor = new SsaFormConverter();
-        visitor.visit(methodDeclaration, null);
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
         String actualResult = visitor.getMethodDeclaration().toString();
 
         String expectedResult = "void method(int[] x#0) {\n" +
@@ -643,7 +646,7 @@ public class SsaFormConverterTest {
                 "}");
 
         SsaFormConverter visitor = new SsaFormConverter();
-        visitor.visit(methodDeclaration, null);
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
         String actualResult = visitor.getMethodDeclaration().toString();
 
         String expectedResult = "void method() {\n" +
@@ -660,7 +663,7 @@ public class SsaFormConverterTest {
                 "}");
 
         SsaFormConverter visitor = new SsaFormConverter();
-        visitor.visit(methodDeclaration, null);
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
         String actualResult = visitor.getMethodDeclaration().toString();
 
         String expectedResult = "void method(int x#0) {\n" +
@@ -677,7 +680,7 @@ public class SsaFormConverterTest {
                 "}");
 
         SsaFormConverter visitor = new SsaFormConverter();
-        visitor.visit(methodDeclaration, null);
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
         String actualResult = visitor.getMethodDeclaration().toString();
 
         String expectedResult = "void method() {\n" +
@@ -694,7 +697,7 @@ public class SsaFormConverterTest {
                 "}");
 
         SsaFormConverter visitor = new SsaFormConverter();
-        visitor.visit(methodDeclaration, null);
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
         String actualResult = visitor.getMethodDeclaration().toString();
 
         String expectedResult = "void method(int x#0) {\n" +
@@ -711,7 +714,7 @@ public class SsaFormConverterTest {
                 "}");
 
         SsaFormConverter visitor = new SsaFormConverter();
-        visitor.visit(methodDeclaration, null);
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
         String actualResult = visitor.getMethodDeclaration().toString();
 
         String expectedResult = "void method() {\n" +
@@ -728,7 +731,7 @@ public class SsaFormConverterTest {
                 "}");
 
         SsaFormConverter visitor = new SsaFormConverter();
-        visitor.visit(methodDeclaration, null);
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
         String actualResult = visitor.getMethodDeclaration().toString();
 
         String expectedResult = "void method(int x#0) {\n" +
@@ -745,7 +748,7 @@ public class SsaFormConverterTest {
                 "}");
 
         SsaFormConverter visitor = new SsaFormConverter();
-        visitor.visit(methodDeclaration, null);
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
         String actualResult = visitor.getMethodDeclaration().toString();
 
         String expectedResult = "int method(int x#0) {\n" +
@@ -766,7 +769,7 @@ public class SsaFormConverterTest {
                 "}");
 
         SsaFormConverter visitor = new SsaFormConverter();
-        visitor.visit(methodDeclaration, null);
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
         String actualResult = visitor.getMethodDeclaration().toString();
 
         String expectedResult = "int method(int x#0) {\n" +
@@ -793,7 +796,7 @@ public class SsaFormConverterTest {
                 "}");
 
         SsaFormConverter visitor = new SsaFormConverter();
-        visitor.visit(methodDeclaration, null);
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
         String actualResult = visitor.getMethodDeclaration().toString();
 
         String expectedResult = "int method(int x#0) {\n" +
@@ -819,7 +822,7 @@ public class SsaFormConverterTest {
                 "}");
 
         SsaFormConverter visitor = new SsaFormConverter();
-        visitor.visit(methodDeclaration, null);
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
         String actualResult = visitor.getMethodDeclaration().toString();
 
         String expectedResult = "void method(int[] ar#0, int x#0) {\n" +
@@ -845,13 +848,13 @@ public class SsaFormConverterTest {
                 "}");
 
         SsaFormConverter visitor = new SsaFormConverter();
-        visitor.visit(methodDeclaration, null);
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
         String actualResult = visitor.getMethodDeclaration().toString();
 
         String expectedResult = "void method(Set<ComplexClass> set#0) {\n" +
                 "    for (ComplexClass cc#0 = set#0.#next() : set#0) {\n" +
-                "        for (String value#0 = cc#0.values.#next() : cc#0.values) {\n" +
-                "            System.out.println(value#0);\n" +
+                "        for (String value#0 = cc#0.values#0.#next() : cc#0.values#0) {\n" +
+                "            System.out#0.println(value#0);\n" +
                 "        }\n" +
                 "    }\n" +
                 "}";
@@ -866,7 +869,7 @@ public class SsaFormConverterTest {
                 "}");
 
         SsaFormConverter visitor = new SsaFormConverter();
-        visitor.visit(methodDeclaration, null);
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
         String actualResult = visitor.getMethodDeclaration().toString();
 
         String expectedResult = "void method(A a#0) {\n" +
@@ -883,7 +886,7 @@ public class SsaFormConverterTest {
                 "}");
 
         SsaFormConverter visitor = new SsaFormConverter();
-        visitor.visit(methodDeclaration, null);
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
         String actualResult = visitor.getMethodDeclaration().toString();
 
         String expectedResult = "void method() {\n" +
@@ -900,7 +903,7 @@ public class SsaFormConverterTest {
                 "}");
 
         SsaFormConverter visitor = new SsaFormConverter();
-        visitor.visit(methodDeclaration, null);
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
         String actualResult = visitor.getMethodDeclaration().toString();
 
         String expectedResult = "void method() {\n" +
@@ -918,7 +921,7 @@ public class SsaFormConverterTest {
                 "}");
 
         SsaFormConverter visitor = new SsaFormConverter();
-        visitor.visit(methodDeclaration, null);
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
         String actualResult = visitor.getMethodDeclaration().toString();
 
         String expectedResult = "void method(A a#0) {\n" +
@@ -937,7 +940,7 @@ public class SsaFormConverterTest {
                 "}");
 
         SsaFormConverter visitor = new SsaFormConverter();
-        visitor.visit(methodDeclaration, null);
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
         String actualResult = visitor.getMethodDeclaration().toString();
 
         String expectedResult = "void method(A a#0) {\n" +
@@ -955,7 +958,7 @@ public class SsaFormConverterTest {
                 "}");
 
         SsaFormConverter visitor = new SsaFormConverter();
-        visitor.visit(methodDeclaration, null);
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
         String actualResult = visitor.getMethodDeclaration().toString();
 
         String expectedResult = "void method(A a#0) {\n" +
@@ -972,7 +975,7 @@ public class SsaFormConverterTest {
                 "}");
 
         SsaFormConverter visitor = new SsaFormConverter();
-        visitor.visit(methodDeclaration, null);
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
         String actualResult = visitor.getMethodDeclaration().toString();
 
         String expectedResult = "void method(A a#0) {\n" +
@@ -989,7 +992,7 @@ public class SsaFormConverterTest {
                 "}");
 
         SsaFormConverter visitor = new SsaFormConverter();
-        visitor.visit(methodDeclaration, null);
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
         String actualResult = visitor.getMethodDeclaration().toString();
 
         String expectedResult = "void method(A a#0) {\n" +
@@ -1006,7 +1009,7 @@ public class SsaFormConverterTest {
                 "}");
 
         SsaFormConverter visitor = new SsaFormConverter();
-        visitor.visit(methodDeclaration, null);
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
         String actualResult = visitor.getMethodDeclaration().toString();
 
         String expectedResult = "void method(List<A> a#0) {\n" +
@@ -1031,17 +1034,17 @@ public class SsaFormConverterTest {
 
         SsaFormConverter visitor = new SsaFormConverter();
         SimpleMultiHolder holder = createVariablesHolder(
-                new HashMap<String, Integer>() {
+                new HashMap<Variable, Integer>() {
                     {
-                        put("internalInstances", 0);
+                        put(new StringVariable("internalInstances",""), 0);
                     }
 
                     {
-                        put("assignedInternalInstance", 0);
+                        put(new StringVariable("assignedInternalInstance",""), 0);
                     }
 
                     {
-                        put("value", 0);
+                        put(new StringVariable("value",""), 0);
                     }
                 });
         holder.addFieldName("internalInstances");
@@ -1081,17 +1084,17 @@ public class SsaFormConverterTest {
 
         SsaFormConverter visitor = new SsaFormConverter();
         SimpleMultiHolder holder = createVariablesHolder(
-                new HashMap<String, Integer>() {
+                new HashMap<Variable, Integer>() {
                     {
-                        put("internalInstances", 0);
+                        put(new StringVariable("internalInstances",""), 0);
                     }
 
                     {
-                        put("assignedInternalInstance", 0);
+                        put(new StringVariable("assignedInternalInstance",""), 0);
                     }
 
                     {
-                        put("value", 0);
+                        put(new StringVariable("value",""), 0);
                     }
                 });
         holder.addFieldName("internalInstances");
@@ -1125,80 +1128,12 @@ public class SsaFormConverterTest {
 
         SsaFormConverter visitor = new SsaFormConverter();
         visitor.visit(methodDeclaration, createVariablesHolder(
-                new HashMap<String, Integer>()));
+                new HashMap<Variable, Integer>()));
         String actualResult = visitor.getMethodDeclaration().toString();
 
         String expectedResult =
                 "ClassType processTypeArguments(ClassOrInterfaceType classType#0) {\n" +
                         "    ClassType[] args#0 = new ClassType[classType#0.getTypeArgs().size()];\n" +
-                        "}";
-
-        assertEquals(expectedResult, actualResult);
-    }
-
-    //TODO
-    @Test
-    public void testForStmt() throws Exception {
-
-        MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("void buildGraph(GraphBuilder graphBuilder) {\n" +
-                "        for (int i = 0; i < fromVertexes.size(); i++) {\n" +
-                "            Vertex a = map.get(fromVertexes.get(i));\n" +
-                "            Vertex b = map.get(toVertexes.get(i));\n" +
-                "            graphBuilder.addEdge(a, b);\n" +
-                "        }\n" +
-                "    }");
-
-        SsaFormConverter visitor = new SsaFormConverter();
-        SimpleMultiHolder holder = createVariablesHolder(
-                new HashMap<String, Integer>() {
-                    {
-                        put("fromVertexes", 0);
-                    }
-
-                    {
-                        put("toVertexes", 0);
-                    }
-
-                    {
-                        put("map", 0);
-                    }
-                });
-        holder.addFieldName("fromVertexes");
-        holder.addFieldName("toVertexes");
-        holder.addFieldName("map");
-        visitor.visit(methodDeclaration, holder);
-        String actualResult = visitor.getMethodDeclaration().toString();
-
-        String expectedResult =
-                "void buildGraph(GraphBuilder graphBuilder#0) {\n" +
-                        "    for (int i#0 = 0; i#0 < this.fromVertexes#0.size(); i#1++) {\n" +
-                        "        Vertex a#0 = this.map#0.get(this.fromVertexes#0.get(i#1));\n" +
-                        "        Vertex b#0 = this.map#0.get(this.toVertexes#0.get(i#1));\n" +
-                        "        graphBuilder#0.addEdge(a#0, b#0);\n" +
-                        "    }\n" +
-                        "}";
-
-        assertEquals(expectedResult, actualResult);
-    }
-
-    //TODO
-    @Test
-    public void testInnerField() throws Exception {
-
-        MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("void setDependencies(Map<String, Collection<Dependency>> dependencies) {\n" +
-                "        ClassData cd = new ClassData();\n" +
-                "        cd.dependencies = dependencies;\n" +
-                "    }");
-
-        SsaFormConverter visitor = new SsaFormConverter();
-        visitor.visit(methodDeclaration, createVariablesHolder(
-                new HashMap<String, Integer>()));
-        String actualResult = visitor.getMethodDeclaration().toString();
-
-        String expectedResult =
-                "void setDependencies(Map<String, Collection<Dependency>> dependencies#0) {\n" +
-                        "    ClassData cd#0 = new ClassData();\n" +
-                        "    cd#0.dependencies = dependencies#0;\n" +
                         "}";
 
         assertEquals(expectedResult, actualResult);
@@ -1224,7 +1159,7 @@ public class SsaFormConverterTest {
 
         SsaFormConverter visitor = new SsaFormConverter();
         visitor.visit(methodDeclaration, createVariablesHolder(
-                new HashMap<String, Integer>()));
+                new HashMap<Variable, Integer>()));
         String actualResult = visitor.getMethodDeclaration().toString();
 
         String expectedResult =
@@ -1239,6 +1174,370 @@ public class SsaFormConverterTest {
                         "        throw new UnsupportedOperationException(\"VoidVisitorHelper is not support comment for \" + comment.getClass() + \".\");\n" +
                         "    }\n" +
                         "}";
+
+        assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
+    public void testMethod1() throws Exception {
+
+        MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("public ClassType addArrayDepth(ClassType classType) {\n" +
+                "        try {\n" +
+                "            ClassTypeImpl previous = (ClassTypeImpl) classType;\n" +
+                "            ClassTypeImpl result = new ClassTypeImpl();\n" +
+                "            String className = previous.toString();\n" +
+                "            if (!previous.clazz.isArray()) {\n" +
+                "                className = takeArrayName(previous.clazz);\n" +
+                "            }\n" +
+                "            className = \"[\" + className;\n" +
+                "            result.clazz = Class.forName(className);\n" +
+                "            return result;\n" +
+                "        } catch (Exception e) {\n" +
+                "            return createErrorClassType(e.toString());\n" +
+                "        }\n" +
+                "    }");
+
+        SsaFormConverter visitor = new SsaFormConverter();
+        visitor.visit(methodDeclaration, createVariablesHolder(
+                new HashMap<Variable, Integer>()));
+        String actualResult = visitor.getMethodDeclaration().toString();
+
+        String expectedResult = "public ClassType addArrayDepth(ClassType classType#0) {\n" +
+                "    try {\n" +
+                "        ClassTypeImpl previous#0 = (ClassTypeImpl) classType#0;\n" +
+                "        ClassTypeImpl result#0 = new ClassTypeImpl();\n" +
+                "        String className#0 = previous#0.toString();\n" +
+                "        if (!previous#0.clazz#0.isArray()) {\n" +
+                "            className#1 = takeArrayName(previous#0.clazz#0);\n" +
+                "        }\n" +
+                "        className#2 = #phi(className#0, className#1);\n" +
+                "        className#3 = \"[\" + className#2;\n" +
+                "        result#1.clazz#0 = Class.forName(className#3);\n" +
+                "        return result#1;\n" +
+                "    } catch (Exception e#0) {\n" +
+                "        return createErrorClassType(e#0.toString());\n" +
+                "    }\n" +
+                "}";
+
+        assertEquals(expectedResult, actualResult);
+    }
+
+    //TODO
+    @Test
+    public void testMethod3() throws Exception {
+
+        MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("public Expression visit(VariableDeclarationExpr n, MultiHolder arg) {\n" +
+                "        List<VariableDeclarator> vars = n.getVars();\n" +
+                "        for (VariableDeclarator variableDeclarator : vars) {\n" +
+                "            String variableName = variableDeclarator.getId().getName();\n" +
+                "            arg.write(createVariable(variableName, null, arg.getMethodArgsHolder()), 0);\n" +
+                "            if (variableDeclarator.getInit() != null) {\n" +
+                "                variableDeclarator.setInit(GenericVisitorHelper.visitExpression(variableDeclarator.getInit(), arg, this));\n" +
+                "            }\n" +
+                "            variableDeclarator.getId().setName(variableName + Constants.SEPARATOR + 0);\n" +
+                "\n" +
+                "            String target = methodName + Constants.SEPARATOR + variableName;\n" +
+                "\n" +
+                "            Condition[] conditions;\n" +
+                "            if (variableDeclarator.getInit() != null) {\n" +
+                "                Set<String> valuesNames = new TreeSet<String>();\n" +
+                "                conditions = GenericVisitorHelper.visitExpression(\n" +
+                "                        variableDeclarator.getInit(),\n" +
+                "                        valuesNames,\n" +
+                "                        new ConditionFinder(graph, methodName, className, arg.getModifiersHolder(), arg.getVariablesHolder(), arg.getMethodArgsHolder(), arg.getPhiNodesHolder()));\n" +
+                "                for (String name : valuesNames) {\n" +
+                "                    graph.addEdge(target + Constants.SEPARATOR + 0, methodName + Constants.SEPARATOR + name);\n" +
+                "\n" +
+                "                }\n" +
+                "            } else {\n" +
+                "                conditions = new Condition[]{new TrueBooleanCondition(), new FalseBooleanCondition()};\n" +
+                "            }\n" +
+                "\n" +
+                "            if (conditions == null) {\n" +
+                "                throw new IllegalStateException(variableDeclarator.getInit().getClass() + \" is not supported by ConditionFinder.\");\n" +
+                "            }\n" +
+                "\n" +
+                "            graph.addVertexConditions(target + Constants.SEPARATOR + 0,\n" +
+                "                    conditions[0].and(arg.getBasicBlockCondition()),\n" +
+                "                    conditions[1].and(arg.getBasicBlockCondition()));\n" +
+                "        }\n" +
+                "\n" +
+                "        n.setVars(vars);\n" +
+                "        return n;\n" +
+                "    }");
+
+        SsaFormConverter visitor = new SsaFormConverter();
+        SimpleMultiHolder holder = createVariablesHolder(new HashMap<Variable, Integer>());
+        holder.addFieldName("methodName");
+        holder.addFieldName("graph");
+        holder.addFieldName("className");
+        visitor.visit(methodDeclaration, holder);
+        String actualResult = visitor.getMethodDeclaration().toString();
+
+        String expectedResult = "public Expression visit(VariableDeclarationExpr n#0, MultiHolder arg#0) {\n" +
+                "    List<VariableDeclarator> vars#0 = n#0.getVars();\n" +
+                "    for (VariableDeclarator variableDeclarator#0 = vars#0.#next() : vars#0) {\n" +
+                "        conditions#0 = #phi(conditions#3);\n" +
+                "        String variableName#0 = variableDeclarator#0.getId().getName();\n" +
+                "        arg#0.write(createVariable(variableName#0, null, arg#0.getMethodArgsHolder()), 0);\n" +
+                "        if (variableDeclarator#0.getInit() != null) {\n" +
+                "            variableDeclarator#0.setInit(GenericVisitorHelper.visitExpression(variableDeclarator#0.getInit(), arg#0, this));\n" +
+                "        }\n" +
+                "        variableDeclarator#0.getId().setName(variableName#0 + Constants.SEPARATOR#0 + 0);\n" +
+                "        String target#0 = this.methodName#0 + Constants.SEPARATOR#0 + variableName#0;\n" +
+                "        Condition[] conditions#0;\n" +
+                "        if (variableDeclarator#0.getInit() != null) {\n" +
+                "            Set<String> valuesNames#0 = new TreeSet<String>();\n" +
+                "            conditions#1 = GenericVisitorHelper.visitExpression(variableDeclarator#0.getInit(), valuesNames#0, new ConditionFinder(this.graph#0, this.methodName#0, this.className#0, arg#0.getModifiersHolder(), arg#0.getVariablesHolder(), arg#0.getMethodArgsHolder(), arg#0.getPhiNodesHolder()));\n" +
+                "            for (String name#0 = valuesNames#0.#next() : valuesNames#0) {\n" +
+                "                this.graph#0.addEdge(target#0 + Constants.SEPARATOR#0 + 0, this.methodName#0 + Constants.SEPARATOR#0 + name#0);\n" +
+                "            }\n" +
+                "        } else {\n" +
+                "            conditions#2 = new Condition[] { new TrueBooleanCondition(), new FalseBooleanCondition() };\n" +
+                "        }\n" +
+                "        conditions#3 = #phi(conditions#1, conditions#2);\n" +
+                "        if (conditions#3 == null) {\n" +
+                "            throw new IllegalStateException(variableDeclarator.getInit().getClass() + \" is not supported by ConditionFinder.\");\n" +
+                "        }\n" +
+                "        this.graph#0.addVertexConditions(target#0 + Constants.SEPARATOR#0 + 0, #Access(conditions#3, 0).and(arg#0.getBasicBlockCondition()), #Access(conditions#3, 1).and(arg#0.getBasicBlockCondition()));\n" +
+                "    }\n" +
+                "    n#0.setVars(vars#0);\n" +
+                "    return n#0;\n" +
+                "}";
+
+        assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
+    public void testMethod2() throws Exception {
+
+        MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("public ClassType convertToArray(ClassType classType, int dimension) {\n" +
+                "        if (dimension == 0) {\n" +
+                "            return classType;\n" +
+                "        }\n" +
+                "        try {\n" +
+                "            ClassTypeImpl classTypeImpl = (ClassTypeImpl) classType;\n" +
+                "            String className = takeArrayName(classTypeImpl.clazz);\n" +
+                "            for (int i = 0; i < dimension; ++i) {\n" +
+                "                className = \"[\" + className;\n" +
+                "            }\n" +
+                "            ClassTypeImpl result = new ClassTypeImpl();\n" +
+                "            result.clazz = Class.forName(className);\n" +
+                "            return result;\n" +
+                "        } catch (Exception e) {\n" +
+                "            return createErrorClassType(e.toString());\n" +
+                "        }\n" +
+                "    }");
+
+        SsaFormConverter visitor = new SsaFormConverter();
+        visitor.visit(methodDeclaration, createVariablesHolder(
+                new HashMap<Variable, Integer>(){
+                    {
+                        put(new StringVariable("classType",Constants.ARG_SCOPE), 0);
+                    }
+
+                    {
+                        put(new StringVariable("dimension",Constants.ARG_SCOPE), 0);
+                    }
+                }));
+        String actualResult = visitor.getMethodDeclaration().toString();
+
+        String expectedResult = "public ClassType convertToArray(ClassType classType#0, int dimension#0) {\n" +
+                "    if (dimension#0 == 0) {\n" +
+                "        return classType#0;\n" +
+                "    }\n" +
+                "    try {\n" +
+                "        ClassTypeImpl classTypeImpl#0 = (ClassTypeImpl) classType#0;\n" +
+                "        String className#0 = takeArrayName(classTypeImpl#0.clazz#0);\n" +
+                "        for (int i#0 = 0; i#0 < dimension#0; ++i#1) {\n" +
+                "            className#1 = \"[\" + className#0;\n" +
+                "        }\n" +
+                "        ClassTypeImpl result#0 = new ClassTypeImpl();\n" +
+                "        result#1.clazz#0 = Class.forName(className#0);\n" +
+                "        return result#1;\n" +
+                "    } catch (Exception e#0) {\n" +
+                "        return createErrorClassType(e#0.toString());\n" +
+                "    }\n" +
+                "}";
+
+        assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
+    public void testForStmt() throws Exception {
+
+        MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("void buildGraph(GraphBuilder graphBuilder) {\n" +
+                "        for (int i = 0; i < fromVertexes.size(); i++) {\n" +
+                "            Vertex a = map.get(fromVertexes.get(i));\n" +
+                "            Vertex b = map.get(toVertexes.get(i));\n" +
+                "            graphBuilder.addEdge(a, b);\n" +
+                "        }\n" +
+                "    }");
+
+        SsaFormConverter visitor = new SsaFormConverter();
+        SimpleMultiHolder holder = createVariablesHolder(
+                new HashMap<Variable, Integer>() {
+                    {
+                        put(new StringVariable("fromVertexes",Constants.ARG_SCOPE), 0);
+                    }
+
+                    {
+                        put(new StringVariable("toVertexes",Constants.ARG_SCOPE), 0);
+                    }
+
+                    {
+                        put(new StringVariable("map",Constants.ARG_SCOPE), 0);
+                    }
+                });
+        holder.addFieldName("fromVertexes");
+        holder.addFieldName("toVertexes");
+        holder.addFieldName("map");
+        visitor.visit(methodDeclaration, holder);
+        String actualResult = visitor.getMethodDeclaration().toString();
+
+        String expectedResult =
+                "void buildGraph(GraphBuilder graphBuilder#0) {\n" +
+                        "    for (int i#0 = 0; i#0 < this.fromVertexes#0.size(); i#1++) {\n" +
+                        "        Vertex a#0 = this.map#0.get(this.fromVertexes#0.get(i#1));\n" +
+                        "        Vertex b#0 = this.map#0.get(this.toVertexes#0.get(i#1));\n" +
+                        "        graphBuilder#0.addEdge(a#0, b#0);\n" +
+                        "    }\n" +
+                        "}";
+
+        assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
+    public void testInnerField() throws Exception {
+
+        MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("void setDependencies(Map<String, Collection<Dependency>> dependencies) {\n" +
+                "        ClassData cd = new ClassData();\n" +
+                "        cd.dependencies = dependencies;\n" +
+                "    }");
+
+        SsaFormConverter visitor = new SsaFormConverter();
+        visitor.visit(methodDeclaration, createVariablesHolder(
+                new HashMap<Variable, Integer>()));
+        String actualResult = visitor.getMethodDeclaration().toString();
+
+        String expectedResult =
+                "void setDependencies(Map<String, Collection<Dependency>> dependencies#0) {\n" +
+                        "    ClassData cd#0 = new ClassData();\n" +
+                        "    cd#0.dependencies = dependencies#0;\n" +
+                        "}";
+
+        assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
+    public void testMethod4() throws Exception {
+
+        MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("public void actionInternal(ActionCode actionCode, Object param) {\n" +
+                "\n" +
+                "        if (actionCode == ActionCode.CLOSE) {\n" +
+                "            // Close\n" +
+                "            // End the processing of the current request, and stop any further\n" +
+                "            // transactions with the client\n" +
+                "\n" +
+                "            try {\n" +
+                "                outputBuffer.endRequest();\n" +
+                "            } catch (IOException e) {\n" +
+                "                // Set error flag\n" +
+                "                error = true;\n" +
+                "            }\n" +
+                "\n" +
+                "        } else if (actionCode == ActionCode.REQ_SSL_ATTRIBUTE ) {\n" +
+                "\n" +
+                "            try {\n" +
+                "                if (sslSupport != null) {\n" +
+                "                    Object sslO = sslSupport.getCipherSuite();\n" +
+                "                    if (sslO != null)\n" +
+                "                        request.setAttribute\n" +
+                "                            (SSLSupport.CIPHER_SUITE_KEY, sslO);\n" +
+                "                    sslO = sslSupport.getPeerCertificateChain(false);\n" +
+                "                    if (sslO != null)\n" +
+                "                        request.setAttribute\n" +
+                "                            (SSLSupport.CERTIFICATE_KEY, sslO);\n" +
+                "                    sslO = sslSupport.getKeySize();\n" +
+                "                    if (sslO != null)\n" +
+                "                        request.setAttribute\n" +
+                "                            (SSLSupport.KEY_SIZE_KEY, sslO);\n" +
+                "                    sslO = sslSupport.getSessionId();\n" +
+                "                    if (sslO != null)\n" +
+                "                        request.setAttribute\n" +
+                "                            (SSLSupport.SESSION_ID_KEY, sslO);\n" +
+                "                    request.setAttribute(SSLSupport.SESSION_MGR, sslSupport);\n" +
+                "                }\n" +
+                "            } catch (Exception e) {\n" +
+                "                log.warn(sm.getString(\"http11processor.socket.ssl\"), e);\n" +
+                "            }\n" +
+                "\n" +
+                "        } else if (actionCode == ActionCode.REQ_HOST_ADDR_ATTRIBUTE) {\n" +
+                "\n" +
+                "            if ((remoteAddr == null) && (socket != null)) {\n" +
+                "                InetAddress inetAddr = socket.getSocket().getInetAddress();\n" +
+                "                if (inetAddr != null) {\n" +
+                "                    remoteAddr = inetAddr.getHostAddress();\n" +
+                "                }\n" +
+                "            }\n" +
+                "            request.remoteAddr().setString(remoteAddr);\n" +
+                "\n" +
+                "        } else if (actionCode == ActionCode.REQ_LOCAL_NAME_ATTRIBUTE) {\n" +
+                "\n" +
+                "            if ((localName == null) && (socket != null)) {\n" +
+                "                InetAddress inetAddr = socket.getSocket().getLocalAddress();\n" +
+                "                if (inetAddr != null) {\n" +
+                "                    localName = inetAddr.getHostName();\n" +
+                "                }\n" +
+                "            }\n" +
+                "            request.localName().setString(localName);\n" +
+                "\n" +
+                "        } else if (actionCode == ActionCode.REQ_HOST_ATTRIBUTE) {\n" +
+                "\n" +
+                "            if ((remoteHost == null) && (socket != null)) {\n" +
+                "                InetAddress inetAddr = socket.getSocket().getInetAddress();\n" +
+                "                if (inetAddr != null) {\n" +
+                "                    remoteHost = inetAddr.getHostName();\n" +
+                "                }\n" +
+                "                if(remoteHost == null) {\n" +
+                "                    if(remoteAddr != null) {\n" +
+                "                        remoteHost = remoteAddr;\n" +
+                "                    } else { // all we can do is punt\n" +
+                "                        request.remoteHost().recycle();\n" +
+                "                    }\n" +
+                "                }\n" +
+                "            }\n" +
+                "            request.remoteHost().setString(remoteHost);\n" +
+                "\n" +
+                "        } else if (actionCode == ActionCode.REQ_LOCAL_ADDR_ATTRIBUTE) {\n" +
+                "\n" +
+                "            if (localAddr == null)\n" +
+                "               localAddr = socket.getSocket().getLocalAddress().getHostAddress();\n" +
+                "\n" +
+                "            request.localAddr().setString(localAddr);\n" +
+                "\n" +
+                "        }}");
+
+        SsaFormConverter visitor = new SsaFormConverter();
+        SimpleMultiHolder holder = createVariablesHolder(new HashMap<Variable, Integer>(){
+            {
+                        put(new StringVariable("actionCode",Constants.ARG_SCOPE), 0);
+                    }
+
+                    {
+                        put(new StringVariable("param",Constants.ARG_SCOPE), 0);
+                    }
+
+        });
+        holder.addFieldName("remoteAddr");
+        holder.addFieldName("log");
+        holder.addFieldName("sslSupport");
+        holder.addFieldName("outputBuffer");
+        holder.addFieldName("error");
+        visitor.visit(methodDeclaration, holder);
+        String actualResult = visitor.getMethodDeclaration().toString();
+
+        String expectedResult = "";
 
         assertEquals(expectedResult, actualResult);
     }

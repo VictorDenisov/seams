@@ -1,5 +1,7 @@
 package org.creativelabs.ssa.holder;
 
+import org.creativelabs.ssa.holder.variable.Variable;
+
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -12,46 +14,46 @@ import java.util.TreeSet;
  */
 public class SimpleUsingModifyingVariablesHolder implements UsingModifyingVariablesHolder {
 
-    private Set<String> usingVariables;
-    private Set<String> modifyingVariables;
+    private Set<Variable> usingVariables;
+    private Set<Variable> modifyingVariables;
 
     public SimpleUsingModifyingVariablesHolder() {
-        usingVariables = new TreeSet<String>();
-        modifyingVariables = new TreeSet<String>();
+        usingVariables = new TreeSet<Variable>();
+        modifyingVariables = new TreeSet<Variable>();
     }
 
-    public SimpleUsingModifyingVariablesHolder(Set<String> usingVariables, Set<String> modifyingVariables) {
+    public SimpleUsingModifyingVariablesHolder(Set<Variable> usingVariables, Set<Variable> modifyingVariables) {
         this.usingVariables = usingVariables;
         this.modifyingVariables = modifyingVariables;
     }
 
     @Override
-    public Set<String> getUsingVariables() {
+    public Set<Variable> getUsingVariables() {
         return usingVariables;
     }
 
     @Override
-    public void addUsingVariable(String variableName) {
+    public void addUsingVariable(Variable variableName) {
         usingVariables.add(variableName);
     }
 
     @Override
-    public void addUsingVariables(Set<String> variableNames) {
+    public void addUsingVariables(Set<Variable> variableNames) {
         usingVariables.addAll(variableNames);
     }
 
     @Override
-    public Set<String> getModifyingVariables() {
+    public Set<Variable> getModifyingVariables() {
         return modifyingVariables;
     }
 
     @Override
-    public void addModifyingVariable(String variableName) {
+    public void addModifyingVariable(Variable variableName) {
         modifyingVariables.add(variableName);
     }
 
     @Override
-    public void addModifyingVariables(Set<String> variableNames) {
+    public void addModifyingVariables(Set<Variable> variableNames) {
         modifyingVariables.addAll(variableNames);
     }
 

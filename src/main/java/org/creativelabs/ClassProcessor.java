@@ -6,8 +6,11 @@ import org.creativelabs.graph.condition.EmptyCondition;
 import org.creativelabs.iig.ConditionInternalInstancesGraph;
 import org.creativelabs.iig.InternalInstancesGraph;
 import org.creativelabs.report.ReportBuilder;
+import org.creativelabs.ssa.SsaError;
 import org.creativelabs.ssa.holder.SimpleMultiHolder;
 import org.creativelabs.ssa.holder.SimpleMultiHolderBuilder;
+import org.creativelabs.ssa.holder.variable.StringVariable;
+import org.creativelabs.ssa.holder.variable.Variable;
 import org.creativelabs.ssa.representation.AstSsaFormRepresentation;
 import org.creativelabs.ssa.representation.SsaFormRepresentation;
 import org.creativelabs.ssa.visitor.SsaFormConverter;
@@ -31,6 +34,8 @@ class ClassProcessor {
             = new HashMap<String, InternalInstancesGraph>();
     protected Set<SsaFormRepresentation> forms = new HashSet<SsaFormRepresentation>();
 
+    protected Set<SsaError> errors = new HashSet<SsaError>();
+
     protected InternalInstancesGraph ssaInternalInstancesGraph = new ConditionInternalInstancesGraph();
 
     ClassProcessor(ClassOrInterfaceDeclaration typeDeclaration,
@@ -49,6 +54,7 @@ class ClassProcessor {
         reportBuilder.setDependencies(typeDeclaration.getName(), dependencies);
         reportBuilder.setInternalInstances(typeDeclaration.getName(), internalInstances);
         reportBuilder.setSsaFormRepresentations(typeDeclaration.getName(), forms);
+        reportBuilder.setSsaErrors(typeDeclaration.getName(), errors);
     }
 
     public DependenciesChart getDependenciesChart() {
@@ -82,6 +88,10 @@ class ClassProcessor {
         return forms;
     }
 
+    public Set<SsaError> getErrors() {
+        return errors;
+    }
+
     public void compute() {
         for (BodyDeclaration bd : typeDeclaration.getMembers()) {
             if (bd instanceof MethodDeclaration) {
@@ -107,23 +117,25 @@ class ClassProcessor {
     }
 
     void buildInternalInstancesGraph(MethodDeclaration md) {
-        Map<String, Integer> variables = new HashMap<String, Integer>();
+        Map<Variable, Integer> variables = new HashMap<Variable, Integer>();
         Set<String> fields = new HashSet<String>();
         for (BodyDeclaration bd : typeDeclaration.getMembers()) {
             if (bd instanceof FieldDeclaration) {
                 FieldDeclaration fd = (FieldDeclaration) bd;
                 for (VariableDeclarator vardecl : fd.getVariables()) {
-                    variables.put(vardecl.getId().getName(), 0);
+                    String name = vardecl.getId().getName();
+
+                    variables.put(new StringVariable(name, Constants.THIS_SCOPE), 0);
                     fields.add(vardecl.getId().getName());
 
-                    ssaInternalInstancesGraph.addEdge(vardecl.getId().getName(),
-                            md.getName() + Constants.SEPARATOR + vardecl.getId().getName() + 0);
+//                    ssaInternalInstancesGraph.addEdge(vardecl.getId().getName(),
+//                            md.getName() + Constants.SEPARATOR + vardecl.getId().getName() + 0);
 
                 }
             }
         }
 
-        SsaFormConverter visitor = new SsaFormConverter(ssaInternalInstancesGraph);
+        SsaFormConverter visitor = new SsaFormConverter(ssaInternalInstancesGraph, typeDeclaration.getName());
 
         holderBuilder.setCondition(new EmptyCondition())
         .setVariables(variables)
@@ -131,17 +143,13 @@ class ClassProcessor {
 
         SimpleMultiHolder holder = holderBuilder.buildMultiHolder();
         try {
-        visitor.visit(md, holder);
+            visitor.visit(md, holder);
         } catch (RuntimeException e) {
-            e.printStackTrace();
-            System.out.println(typeDeclaration.getName());
-            System.out.println(md.getName() + " " + md.getParameters());
-//            throw e;
+            errors.add(new SsaError(md, e, typeDeclaration.getName()));
         }
 
         forms.add(new AstSsaFormRepresentation(md));
         ssaInternalInstancesGraph = visitor.getGraph();
     }
-
 }
 

@@ -1,71 +1,71 @@
 package org.creativelabs.ssa.holder;
 
+import org.creativelabs.ssa.holder.variable.Variable;
+
 import java.util.*;
 
 /**
- * Stores variable's indexes
- *
  * @author azotcsit
- *         Date: 20.05.11
- *         Time: 22:17
+ *         Date: 13.06.11
+ *         Time: 9:30
  */
-public class SimpleVariablesHolder implements VariablesHolder {
+public class ScopeVariablesHolder implements VariablesHolder {
 
-    /**
+     /**
      * List of variables and they indexes for reading.
      */
-    private Map<String, Integer> readVariables;
+    private Map<Variable, Integer> readVariables;
 
     /**
      * List of variables and they indexes for updating.
      */
-    private Map<String, Integer> writeVariables;
+    private Map<Variable, Integer> writeVariables;
 
-    public SimpleVariablesHolder() {
-        readVariables = new TreeMap<String, Integer>();
-        writeVariables = new TreeMap<String, Integer>();
+    public ScopeVariablesHolder() {
+        readVariables = new TreeMap<Variable, Integer>();
+        writeVariables = new TreeMap<Variable, Integer>();
     }
 
-    public SimpleVariablesHolder(Map<String, Integer> writeVariables) {
+    public ScopeVariablesHolder(Map<Variable, Integer> writeVariables) {
         this.readVariables = copy(writeVariables);
         this.writeVariables = writeVariables;
     }
 
-    public SimpleVariablesHolder(Map<String, Integer> readVariables, Map<String, Integer> writeVariables) {
+    public ScopeVariablesHolder(Map<Variable, Integer> readVariables, Map<Variable, Integer> writeVariables) {
         this.readVariables = readVariables;
         this.writeVariables = writeVariables;
     }
 
-    public Map<String, Integer> getReadVariables() {
+    public Map<Variable, Integer> getReadVariables() {
         return readVariables;
     }
 
-    public Map<String, Integer> getWriteVariables() {
+    public Map<Variable, Integer> getWriteVariables() {
         return writeVariables;
     }
 
-    public void setReadVariables(Map<String, Integer> readVariables) {
+    public void setReadVariables(Map<Variable, Integer> readVariables) {
         this.readVariables = readVariables;
     }
 
-    public void setWriteVariables(Map<String, Integer> writeVariables) {
+    public void setWriteVariables(Map<Variable, Integer> writeVariables) {
         this.writeVariables = writeVariables;
     }
 
-    public Integer read(String variableName) {
+    public Integer read(Variable variableName) {
         return readVariables.get(variableName);
     }
 
-    public Integer readFrom(String variableName, boolean read) {
+    public Integer readFrom(Variable variableName, boolean read) {
         return getCurrentVariables(read).get(variableName);
     }
 
-    public void write(String variableName, Integer index) {
+    public void write(Variable variableName, Integer index) {
         readVariables.put(variableName, index);
         writeVariables.put(variableName, index);
     }
 
-    public void writeTo(String variableName, Integer index, boolean read) {
+    public void writeTo(Variable variableName, Integer index, boolean read) {
         getCurrentVariables(read).put(variableName, index);
     }
 
@@ -77,15 +77,15 @@ public class SimpleVariablesHolder implements VariablesHolder {
      * @param read of type boolean
      * @return List<String>
      */
-    public List<String> getDifferenceInVariables(VariablesHolder holder, boolean read) {
-        List<String> list = new ArrayList<String>();
-        Map<String, Integer> map;
+    public List<Variable> getDifferenceInVariables(VariablesHolder holder, boolean read) {
+        List<Variable> list = new ArrayList<Variable>();
+        Map<Variable, Integer> map;
         if (read) {
             map = holder.getReadVariables();
         } else {
             map = holder.getWriteVariables();
         }
-        for (Map.Entry<String, Integer> entry : getCurrentVariables(read).entrySet()) {
+        for (Map.Entry<Variable, Integer> entry : getCurrentVariables(read).entrySet()) {
             if (map.containsKey(entry.getKey())
                     && !map.get(entry.getKey()).equals(entry.getValue())) {
                 list.add(entry.getKey());
@@ -100,7 +100,7 @@ public class SimpleVariablesHolder implements VariablesHolder {
      * @param variableName name of the variable
      * @return Integer[]
      */
-    public Integer[] getPhiIndexes(VariablesHolder holder, String variableName) {
+    public Integer[] getPhiIndexes(VariablesHolder holder, Variable variableName) {
         Integer index1 = holder.readFrom(variableName, true);
         Integer index2 = readFrom(variableName, true);
         if (index1 == null) {
@@ -113,20 +113,21 @@ public class SimpleVariablesHolder implements VariablesHolder {
                 Math.max(index1, index2)};
     }
 
-    public boolean containsKey(String name, boolean read) {
+    public boolean containsKey(Variable name, boolean read) {
         return getCurrentVariables(read).containsKey(name);
     }
 
-    public void increaseIndex(String variableName) {
+    public void increaseIndex(Variable variableName) {
         if (readVariables.containsKey(variableName)) {
-            readVariables.put(variableName, readVariables.get(variableName) + 1);
+            readVariables.put(variableName.<Variable>copy(), readVariables.get(variableName) + 1);
         }
         if (writeVariables.containsKey(variableName)) {
-            writeVariables.put(variableName, writeVariables.get(variableName) + 1);
+            writeVariables.put(variableName.<Variable>copy(), writeVariables.get(variableName) + 1);
         }
     }
 
-    public void increaseIndexIn(String variableName, boolean read) {
+    @Override
+    public void increaseIndexIn(Variable variableName, boolean read) {
         if (getCurrentVariables(read).containsKey(variableName)) {
             getCurrentVariables(read).put(variableName, getCurrentVariables(read).get(variableName) + 1);
         }
@@ -139,17 +140,17 @@ public class SimpleVariablesHolder implements VariablesHolder {
      */
     public void mergeHolders(VariablesHolder... holders){
         for (VariablesHolder holder : holders){
-            for (Map.Entry<String, Integer> entry : holder.getReadVariables().entrySet()){
+            for (Map.Entry<Variable, Integer> entry : holder.getReadVariables().entrySet()){
                 if (readVariables.containsKey(entry.getKey())) {
-                    String key = entry.getKey();
+                    Variable key = entry.getKey().copy();
                     readVariables.put(key, Math.max(readVariables.get(key), entry.getValue()));
                 } else {
                     readVariables.put(entry.getKey(), entry.getValue());
                 }
             }
-            for (Map.Entry<String, Integer> entry : holder.getWriteVariables().entrySet()){
+            for (Map.Entry<Variable, Integer> entry : holder.getWriteVariables().entrySet()){
                 if (writeVariables.containsKey(entry.getKey())) {
-                    String key = entry.getKey();
+                    Variable key = entry.getKey().copy();
                     writeVariables.put(key, Math.max(writeVariables.get(key), entry.getValue()));
                 } else {
                     writeVariables.put(entry.getKey(), entry.getValue());
@@ -158,27 +159,27 @@ public class SimpleVariablesHolder implements VariablesHolder {
         }
     }
 
-    private Map<String, Integer> copy(Map<String, Integer> map) {
-        Map<String, Integer> result = new HashMap<String, Integer>();
-        for (Map.Entry<String, Integer> entry : map.entrySet()) {
-            result.put(entry.getKey(), entry.getValue());
+    private Map<Variable, Integer> copy(Map<Variable, Integer> map) {
+        Map<Variable, Integer> result = new HashMap<Variable, Integer>();
+        for (Map.Entry<Variable, Integer> entry : map.entrySet()) {
+            result.put(entry.getKey().<Variable>copy(), entry.getValue());
         }
         return result;
     }
 
-    public VariablesHolder copy() {
-        return new SimpleVariablesHolder(copy(readVariables), copy(writeVariables));
+    public ScopeVariablesHolder copy() {
+        return new ScopeVariablesHolder(copy(readVariables), copy(writeVariables));
     }
 
-    private Set<String> copy(Set<String> arguments) {
-        Set<String> args = new HashSet<String>();
-        for (String arg : arguments) {
-            args.add(arg);
+    private Set<Variable> copy(Set<Variable> arguments) {
+        Set<Variable> args = new HashSet<Variable>();
+        for (Variable arg : arguments) {
+            args.add(arg.<Variable>copy());
         }
         return args;
     }
 
-    private Map<String, Integer> getCurrentVariables(boolean read) {
+    private Map<Variable, Integer> getCurrentVariables(boolean read) {
         if (read) {
             return readVariables;
         } else {
@@ -191,7 +192,7 @@ public class SimpleVariablesHolder implements VariablesHolder {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        SimpleVariablesHolder that = (SimpleVariablesHolder) o;
+        ScopeVariablesHolder that = (ScopeVariablesHolder) o;
 
         if (readVariables != null ? !readVariables.equals(that.readVariables) : that.readVariables != null)
             return false;

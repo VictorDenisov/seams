@@ -2,6 +2,7 @@ package org.creativelabs.ssa.holder;
 
 import org.creativelabs.graph.condition.Condition;
 import org.creativelabs.ssa.PhiNode;
+import org.creativelabs.ssa.holder.variable.Variable;
 
 import java.util.Collection;
 import java.util.List;
@@ -21,7 +22,7 @@ public class SimpleMultiHolder implements MultiHolder {
     public SimpleMultiHolder() {
         this.conditionHolder = new SimpleConditionHolder();
         this.fieldsHolder = new SimpleClassFieldsHolder();
-        this.variablesHolder = new SimpleVariablesHolder();
+        this.variablesHolder = new ScopeVariablesHolder();
         this.modifiersHolder = new SimpleMethodModifiersHolder();
         this.phiNodesHolder = new SimplePhiNodesHolder();
         this.methodArgsHolder = new SimpleMethodArgsHolder();
@@ -110,6 +111,36 @@ public class SimpleMultiHolder implements MultiHolder {
     }
 
     @Override
+    public void addCreated(String name) {
+        fieldsHolder.addCreated(name);
+    }
+
+    @Override
+    public void addCreated(Collection<String> names) {
+        fieldsHolder.addCreated(names);
+    }
+
+    @Override
+    public Set<String> getCreated() {
+        return fieldsHolder.getCreated();
+    }
+
+    @Override
+    public void setCreated(Set<String> names) {
+        fieldsHolder.setCreated(names);
+    }
+
+    @Override
+    public boolean containsCreated(String name) {
+        return fieldsHolder.containsCreated(name);
+    }
+
+    @Override
+    public int getCountOfCreated() {
+        return fieldsHolder.getCountOfCreated();
+    }
+
+    @Override
     public void addArgName(String argName) {
         methodArgsHolder.addArgName(argName);
     }
@@ -145,67 +176,67 @@ public class SimpleMultiHolder implements MultiHolder {
     }
 
     @Override
-    public Map<String, Integer> getReadVariables() {
+    public Map<Variable, Integer> getReadVariables() {
         return variablesHolder.getReadVariables();
     }
 
     @Override
-    public void setReadVariables(Map<String, Integer> readVariables) {
+    public void setReadVariables(Map<Variable, Integer> readVariables) {
         variablesHolder.setReadVariables(readVariables);
     }
 
     @Override
-    public Map<String, Integer> getWriteVariables() {
+    public Map<Variable, Integer> getWriteVariables() {
         return variablesHolder.getWriteVariables();
     }
 
     @Override
-    public void setWriteVariables(Map<String, Integer> writeVariables) {
+    public void setWriteVariables(Map<Variable, Integer> writeVariables) {
         variablesHolder.setWriteVariables(writeVariables);
     }
 
     @Override
-    public Integer read(String variableName) {
+    public Integer read(Variable variableName) {
         return variablesHolder.read(variableName);
     }
 
     @Override
-    public void write(String variableName, Integer index) {
+    public void write(Variable variableName, Integer index) {
         variablesHolder.write(variableName, index);
     }
 
     @Override
-    public Integer readFrom(String variableName, boolean read) {
+    public Integer readFrom(Variable variableName, boolean read) {
         return variablesHolder.readFrom(variableName, read);
     }
 
     @Override
-    public void writeTo(String variableName, Integer index, boolean read) {
+    public void writeTo(Variable variableName, Integer index, boolean read) {
         variablesHolder.writeTo(variableName, index, read);
     }
 
     @Override
-    public List<String> getDifferenceInVariables(VariablesHolder holder, boolean read) {
+    public List<Variable> getDifferenceInVariables(VariablesHolder holder, boolean read) {
         return variablesHolder.getDifferenceInVariables(holder, read);
     }
 
     @Override
-    public Integer[] getPhiIndexes(VariablesHolder holder, String variableName) {
+    public Integer[] getPhiIndexes(VariablesHolder holder, Variable variableName) {
         return variablesHolder.getPhiIndexes(holder, variableName);
     }
 
     @Override
-    public void increaseIndex(String variableName) {
+    public void increaseIndex(Variable variableName) {
         variablesHolder.increaseIndex(variableName);
     }
 
     @Override
-    public void increaseIndexIn(String variableName, boolean read) {
+    public void increaseIndexIn(Variable variableName, boolean read) {
         variablesHolder.increaseIndexIn(variableName, read);
     }
 
     @Override
-    public boolean containsKey(String name, boolean read) {
+    public boolean containsKey(Variable name, boolean read) {
         return variablesHolder.containsKey(name, read);
     }
 

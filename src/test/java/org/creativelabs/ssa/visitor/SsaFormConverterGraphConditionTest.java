@@ -5,10 +5,15 @@ import japa.parser.ast.body.ClassOrInterfaceDeclaration;
 import japa.parser.ast.body.MethodDeclaration;
 import org.creativelabs.graph.GraphBuilder;
 import org.creativelabs.graph.ToStringGraphBuilder;
+import org.creativelabs.ssa.holder.*;
+import org.creativelabs.ssa.holder.variable.Variable;
 import org.creativelabs.typefinder.ParseHelper;
 import org.testng.annotations.Test;
 
-import static junit.framework.Assert.assertEquals;
+import java.util.Map;
+import java.util.TreeMap;
+
+import static org.testng.Assert.assertEquals;
 
 /**
  * @author azotcsit
@@ -17,6 +22,20 @@ import static junit.framework.Assert.assertEquals;
  */
 public class SsaFormConverterGraphConditionTest {
 
+    private SimpleMultiHolder createVariablesHolder(Map<Variable, Integer> map) {
+        SimpleConditionHolder conditionHolder = new SimpleConditionHolder();
+        SimpleClassFieldsHolder fieldsHolder = new SimpleClassFieldsHolder();
+        SimpleMethodArgsHolder methodArgsHolder = new SimpleMethodArgsHolder();
+        ScopeVariablesHolder variablesHolder = new ScopeVariablesHolder(map);
+        SimpleMethodModifiersHolder modifiersHolder = new SimpleMethodModifiersHolder();
+        return new SimpleMultiHolder(
+                conditionHolder,
+                fieldsHolder,
+                methodArgsHolder,
+                variablesHolder,
+                modifiersHolder);
+    }
+
     @Test
     public void testSimpleDeclareVariableByConstant() throws Exception {
         MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("void mainMethod(){" +
@@ -24,7 +43,7 @@ public class SsaFormConverterGraphConditionTest {
                 "}");
 
         SsaFormConverter visitor = new SsaFormConverter();
-        visitor.visit(methodDeclaration, null);
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
 
         GraphBuilder builder = new ToStringGraphBuilder();
         visitor.getGraph().buildGraph(builder);
@@ -41,13 +60,12 @@ public class SsaFormConverterGraphConditionTest {
                 "}");
 
         SsaFormConverter visitor = new SsaFormConverter();
-        visitor.visit(methodDeclaration, null);
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
 
         GraphBuilder builder = new ToStringGraphBuilder();
         visitor.getGraph().buildGraph(builder);
 
-        String expectedResult = "{mainMethod(int, )#x#0[false | true] -> mainMethod(int, )#y#0[false | true], " +
-                "mainMethod(int, )#y#0[false | true] -> y#0[false | true], }";
+        String expectedResult = "{mainMethod(int, )#x#0[false | true] -> mainMethod(int, )#y#0[false | true], }";
 
         assertEquals(expectedResult, builder.toString());
     }
@@ -60,7 +78,7 @@ public class SsaFormConverterGraphConditionTest {
                 "}");
 
         SsaFormConverter visitor = new SsaFormConverter();
-        visitor.visit(methodDeclaration, null);
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
 
         GraphBuilder builder = new ToStringGraphBuilder();
         visitor.getGraph().buildGraph(builder);
@@ -77,12 +95,12 @@ public class SsaFormConverterGraphConditionTest {
                 "}");
 
         SsaFormConverter visitor = new SsaFormConverter();
-        visitor.visit(methodDeclaration, null);
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
 
         GraphBuilder builder = new ToStringGraphBuilder();
         visitor.getGraph().buildGraph(builder);
 
-        String expectedResult = "{mainMethod(int, )#x#0[false | true] -> x#0[false | true], " +
+        String expectedResult = "{mainMethod(int, )#x#0[false | true], " +
                 "mainMethod(int, )#x#1[true | false], }";
 
         assertEquals(expectedResult, builder.toString());
@@ -95,14 +113,13 @@ public class SsaFormConverterGraphConditionTest {
                 "}");
 
         SsaFormConverter visitor = new SsaFormConverter();
-        visitor.visit(methodDeclaration, null);
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
 
         GraphBuilder builder = new ToStringGraphBuilder();
         visitor.getGraph().buildGraph(builder);
 
-        String expectedResult = "{mainMethod(int, int, )#x#0[false | true] -> x#0[false | true], " +
-                "mainMethod(int, int, )#x#1[false | true] -> mainMethod(int, int, )#y#0[false | true], " +
-                "mainMethod(int, int, )#y#0[false | true] -> y#0[false | true], }";
+        String expectedResult = "{mainMethod(int, int, )#x#1[false | true] -> mainMethod(int, int, )#y#0[false | true], " +
+                "mainMethod(int, int, )#x#0[false | true], }";
 
         assertEquals(expectedResult, builder.toString());
     }
@@ -115,12 +132,13 @@ public class SsaFormConverterGraphConditionTest {
                 "}");
 
         SsaFormConverter visitor = new SsaFormConverter();
-        visitor.visit(methodDeclaration, null);
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
 
         GraphBuilder builder = new ToStringGraphBuilder();
         visitor.getGraph().buildGraph(builder);
 
-        String expectedResult = "{mainMethod(int, )#x#0[false | true] -> x#0[false | true], " +
+        //TODO
+        String expectedResult = "{mainMethod(int, )#x#0[false | true], " +
                 "mainMethod(int, )#x#1[true | false] -> method[ | ], " +
                 "mainMethod(int, )#y#0[true | false], }";
 
@@ -134,13 +152,12 @@ public class SsaFormConverterGraphConditionTest {
                 "}");
 
         SsaFormConverter visitor = new SsaFormConverter();
-        visitor.visit(methodDeclaration, null);
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
 
         GraphBuilder builder = new ToStringGraphBuilder();
         visitor.getGraph().buildGraph(builder);
 
-        String expectedResult = "{mainMethod(int, )#x#0[false | true] -> x#0[false | true], " +
-                "mainMethod(int, )#y#0[false | true] -> mainMethod(int, )#x#0[false | true], }";
+        String expectedResult = "{mainMethod(int, )#y#0[false | true] -> mainMethod(int, )#x#0[false | true], }";
 
         assertEquals(expectedResult, builder.toString());
     }
@@ -152,13 +169,12 @@ public class SsaFormConverterGraphConditionTest {
                 "}");
 
         SsaFormConverter visitor = new SsaFormConverter();
-        visitor.visit(methodDeclaration, null);
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
 
         GraphBuilder builder = new ToStringGraphBuilder();
         visitor.getGraph().buildGraph(builder);
 
-        String expectedResult = "{mainMethod(int, )#x#0[false | true] -> x#0[false | true], " +
-                "mainMethod(int, )#y#0[false | true] -> mainMethod(int, )#x#0[false | true], }";
+        String expectedResult = "{mainMethod(int, )#y#0[false | true] -> mainMethod(int, )#x#0[false | true], }";
 
         assertEquals(expectedResult, builder.toString());
     }
@@ -170,15 +186,13 @@ public class SsaFormConverterGraphConditionTest {
                 "}");
 
         SsaFormConverter visitor = new SsaFormConverter();
-        visitor.visit(methodDeclaration, null);
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
 
         GraphBuilder builder = new ToStringGraphBuilder();
         visitor.getGraph().buildGraph(builder);
 
-        String expectedResult = "{mainMethod(int, int, )#x#0[false | true] -> x#0[false | true], " +
-                "mainMethod(int, int, )#y#0[false | true] -> mainMethod(int, int, )#x#0[false | true], " +
-                "mainMethod(int, int, )#y#0[false | true] -> mainMethod(int, int, )#z#0[false | true], " +
-                "mainMethod(int, int, )#z#0[false | true] -> z#0[false | true], }";
+        String expectedResult = "{mainMethod(int, int, )#y#0[false | true] -> mainMethod(int, int, )#x#0[false | true], " +
+                "mainMethod(int, int, )#y#0[false | true] -> mainMethod(int, int, )#z#0[false | true], }";
 
         assertEquals(expectedResult, builder.toString());
     }
@@ -190,7 +204,7 @@ public class SsaFormConverterGraphConditionTest {
                 "}");
 
         SsaFormConverter visitor = new SsaFormConverter();
-        visitor.visit(methodDeclaration, null);
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
 
         GraphBuilder builder = new ToStringGraphBuilder();
         visitor.getGraph().buildGraph(builder);
@@ -211,13 +225,12 @@ public class SsaFormConverterGraphConditionTest {
                 "}");
 
         SsaFormConverter visitor = new SsaFormConverter();
-        visitor.visit(methodDeclaration, null);
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
 
         GraphBuilder builder = new ToStringGraphBuilder();
         visitor.getGraph().buildGraph(builder);
 
-        String expectedResult = "{mainMethod(int, )#x#0[false | true] -> x#0[false | true], " +
-                "mainMethod(int, )#y#1[false | (x#0 < 2)] -> mainMethod(int, )#x#0[false | true], " +
+        String expectedResult = "{mainMethod(int, )#y#1[false | (x#0 < 2)] -> mainMethod(int, )#x#0[false | true], " +
                 "mainMethod(int, )#y#2[true | (x#0 < 2)] -> mainMethod(int, )#y#0[true | false], " +
                 "mainMethod(int, )#y#2[true | (x#0 < 2)] -> mainMethod(int, )#y#1[false | (x#0 < 2)], " +
                 "mainMethod(int, )#z#0[true | (x#0 < 2)] -> mainMethod(int, )#y#2[true | (x#0 < 2)], }";
@@ -238,13 +251,12 @@ public class SsaFormConverterGraphConditionTest {
                 "}");
 
         SsaFormConverter visitor = new SsaFormConverter();
-        visitor.visit(methodDeclaration, null);
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
 
         GraphBuilder builder = new ToStringGraphBuilder();
         visitor.getGraph().buildGraph(builder);
 
-        String expectedResult = "{mainMethod(int, )#x#0[false | true] -> x#0[false | true], " +
-                "mainMethod(int, )#y#1[false | (x#0 < 2)] -> mainMethod(int, )#x#0[false | true], " +
+        String expectedResult = "{mainMethod(int, )#y#1[false | (x#0 < 2)] -> mainMethod(int, )#x#0[false | true], " +
                 "mainMethod(int, )#y#3[(!(x#0 < 2)) | ((x#0 < 2)||false)] -> mainMethod(int, )#y#1[false | (x#0 < 2)], " +
                 "mainMethod(int, )#y#3[(!(x#0 < 2)) | ((x#0 < 2)||false)] -> mainMethod(int, )#y#2[(!(x#0 < 2)) | false], " +
                 "mainMethod(int, )#z#0[(!(x#0 < 2)) | ((x#0 < 2)||false)] -> mainMethod(int, )#y#3[(!(x#0 < 2)) | ((x#0 < 2)||false)], " +
@@ -270,13 +282,12 @@ public class SsaFormConverterGraphConditionTest {
                 "}");
 
         SsaFormConverter visitor = new SsaFormConverter();
-        visitor.visit(methodDeclaration, null);
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
 
         GraphBuilder builder = new ToStringGraphBuilder();
         visitor.getGraph().buildGraph(builder);
 
-        String expectedResult = "{mainMethod(int, )#x#0[false | true] -> x#0[false | true], " +
-                "mainMethod(int, )#y#1[false | ((x#0 < 2)&&(x#0 < 2))] -> mainMethod(int, )#x#0[false | true], " +
+        String expectedResult = "{mainMethod(int, )#y#1[false | ((x#0 < 2)&&(x#0 < 2))] -> mainMethod(int, )#x#0[false | true], " +
                 "mainMethod(int, )#y#0[true | false], " +
                 "mainMethod(int, )#y#3[(x#0 < 2) | false], " +
                 "mainMethod(int, )#y#4[(!(x#0 < 2)) | false], " +
@@ -294,22 +305,27 @@ public class SsaFormConverterGraphConditionTest {
                 "}");
 
         SsaFormConverter visitor = new SsaFormConverter();
-        visitor.visit(methodDeclaration, null);
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
 
         GraphBuilder builder = new ToStringGraphBuilder();
         visitor.getGraph().buildGraph(builder);
 
-        String expectedResult = "{method(int, )#x#0[false | true] -> x#0[false | true], " +
-                "method(int, )#x#1[false | true] -> method(int, )#x#0[false | true], " +
+//        String expectedResult = "{method(int, )#x#0[false | true] -> x#0[false | true], " +
+//                "method(int, )#x#1[false | true] -> method(int, )#x#0[false | true], " +
+//                "method(int, )#x#2[false | true] -> method(int, )#x#1[false | true], " +
+//                "method(int, )#x#3[false | (x < 2)] -> x#2[ | ], }";
+
+        //TODO add second to phi
+        String expectedResult = "{method(int, )#x#1[false | true] -> method(int, )#x#0[false | true], " +
                 "method(int, )#x#2[false | true] -> method(int, )#x#1[false | true], " +
-                "method(int, )#x#3[false | (x < 2)] -> x#2[ | ], }";
+                "method(int, )#x#3[false | (x#1 < 2)] -> method(int, )#x#2[false | true], }";
 
         assertEquals(expectedResult, builder.toString());
     }
 
     @Test()
-    public void testFiledProcessing() throws Exception {
-    CompilationUnit cu = ParseHelper.createCompilationUnit("public class Sample {"
+    public void testFieldProcessing() throws Exception {
+        CompilationUnit cu = ParseHelper.createCompilationUnit("public class Sample {"
                 + "A fieldA;"
                 + "public void method() {"
                 + "A a = fieldA;"
@@ -319,7 +335,7 @@ public class SsaFormConverterGraphConditionTest {
         MethodDeclaration methodDeclaration = (MethodDeclaration) cd.getMembers().get(1);
 
         SsaFormConverter visitor = new SsaFormConverter();
-        visitor.visit(methodDeclaration, null);
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
 
         GraphBuilder builder = new ToStringGraphBuilder();
         visitor.getGraph().buildGraph(builder);

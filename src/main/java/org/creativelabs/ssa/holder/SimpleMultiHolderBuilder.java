@@ -2,10 +2,12 @@ package org.creativelabs.ssa.holder;
 
 import org.creativelabs.graph.condition.Condition;
 import org.creativelabs.introspection.ClassType;
+import org.creativelabs.ssa.holder.variable.Variable;
 import org.creativelabs.typefinder.ImportList;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * @author azotcsit
@@ -17,7 +19,7 @@ public class SimpleMultiHolderBuilder {
     private Condition condition;
     private Set<String> fieldsNames;
     private Set<String> argsNames;
-    private Map<String, Integer> variables;
+    private Map<Variable, Integer> variables;
 
     private ImportList importList;
     private ClassType classType;
@@ -36,7 +38,7 @@ public class SimpleMultiHolderBuilder {
         return this;
     }
 
-    public SimpleMultiHolderBuilder setVariables(Map<String, Integer> variables) {
+    public SimpleMultiHolderBuilder setVariables(Map<Variable, Integer> variables) {
         this.variables = variables;
         return this;
     }
@@ -61,7 +63,7 @@ public class SimpleMultiHolderBuilder {
 
     private ClassFieldsHolder constructClassFieldsHolder() {
         if (fieldsNames != null) {
-            return new SimpleClassFieldsHolder(fieldsNames);
+            return new SimpleClassFieldsHolder(fieldsNames, new TreeSet<String>());
         } else {
             return new SimpleClassFieldsHolder();
         }
@@ -77,9 +79,9 @@ public class SimpleMultiHolderBuilder {
 
     private VariablesHolder constructVariablesHolder() {
         if (variables != null) {
-            return new SimpleVariablesHolder(variables);
+            return new ScopeVariablesHolder(variables);
         } else {
-            return new SimpleVariablesHolder();
+            return new ScopeVariablesHolder();
         }
     }
 

@@ -1,5 +1,6 @@
 package org.creativelabs.report;
 
+import org.creativelabs.ssa.SsaError;
 import org.creativelabs.typefinder.Dependency;
 import org.creativelabs.iig.InternalInstancesGraph;
 import org.creativelabs.ssa.representation.SsaFormRepresentation;
@@ -16,6 +17,7 @@ public class DataCollector implements ReportBuilder {
         private Map<String, Collection<Dependency>> dependencies;
         private Map<String, InternalInstancesGraph> internalInstances;
         private Set<SsaFormRepresentation> ssaFormRepresentations;
+        private Set<SsaError> ssaErrors;
     }
     
     public void setDependencies(String className, Map<String, Collection<Dependency>> dependencies) {
@@ -52,11 +54,24 @@ public class DataCollector implements ReportBuilder {
         cd.ssaFormRepresentations = ssaFormRepresentations;
     }
 
+    @Override
+    public void setSsaErrors(String className, Set<SsaError> ssaErrors) {
+        ClassData cd;
+        if (map.containsKey(className)) {
+            cd = map.get(className);
+        } else {
+            cd = new ClassData();
+            map.put(className, cd);
+        }
+        cd.ssaErrors = ssaErrors;
+    }
+
     public void buildReport(ReportBuilder reportBuilder) {
         for (Map.Entry<String, ClassData> entry : map.entrySet()) {
             reportBuilder.setDependencies(entry.getKey(), entry.getValue().dependencies);
             reportBuilder.setInternalInstances(entry.getKey(), entry.getValue().internalInstances);
             reportBuilder.setSsaFormRepresentations(entry.getKey(), entry.getValue().ssaFormRepresentations);
+            reportBuilder.setSsaErrors(entry.getKey(), entry.getValue().ssaErrors);
         }
     }
 
@@ -80,5 +95,9 @@ public class DataCollector implements ReportBuilder {
             pw.println(dependency);
         }
         pw.close();
+    }
+
+    public void buildSsaErrorsReport() {
+        buildReport(new ErrorIigReportBuilder());
     }
 }

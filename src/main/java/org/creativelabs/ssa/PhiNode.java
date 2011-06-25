@@ -6,6 +6,7 @@ import japa.parser.ast.expr.Expression;
 import japa.parser.ast.expr.MethodCallExpr;
 import japa.parser.ast.expr.NameExpr;
 import japa.parser.ast.stmt.ExpressionStmt;
+import org.creativelabs.ssa.holder.variable.Variable;
 
 import java.util.*;
 
@@ -17,11 +18,11 @@ import static org.creativelabs.Constants.SEPARATOR;
  *
  * @author azotov
  */
-public class PhiNode implements Comparable<PhiNode>{
+public class PhiNode implements Comparable<PhiNode> {
     /**
-     * Variable's name.
+     * variable's name.
      */
-    private String name;
+    private Variable name;
     /**
      * Indexes of left part of assignment of phi node.
      */
@@ -44,25 +45,25 @@ public class PhiNode implements Comparable<PhiNode>{
     public PhiNode() {
     }
 
-    public PhiNode(String name, Integer leftIndex, Integer... indexes) {
+    public PhiNode(Variable name, Integer leftIndex, Integer... indexes) {
         this.name = name;
         this.leftIndex = leftIndex;
         this.mode = PhiNode.Mode.NONE;
         this.indexes.addAll(Arrays.asList(indexes));
     }
 
-    public PhiNode(String name, Integer leftIndex, Mode mode, Integer... indexes) {
+    public PhiNode(Variable name, Integer leftIndex, Mode mode, Integer... indexes) {
         this.name = name;
         this.leftIndex = leftIndex;
         this.mode = mode;
         this.indexes.addAll(Arrays.asList(indexes));
     }
 
-    public String getName() {
+    public Variable getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(Variable name) {
         this.name = name;
     }
 
@@ -116,8 +117,18 @@ public class PhiNode implements Comparable<PhiNode>{
 
     @Override
     public int compareTo(PhiNode o) {
-        //TODO to change realisation
-        return this.hashCode() - o.hashCode();
+        int cmp = name.compareTo(o.getName());
+        if (cmp != 0) {
+            return cmp;
+        } else {
+            cmp = leftIndex.compareTo(o.getLeftIndex());
+            if (cmp != 0) {
+                return cmp;
+            } else {
+                //May be is needed to use 'mode' and 'indexes'...
+                return 0;
+            }
+        }
     }
 
     /**
@@ -145,6 +156,8 @@ public class PhiNode implements Comparable<PhiNode>{
 
         PhiNode phiNode = (PhiNode) o;
 
+        if (expressionStmt != null ? !expressionStmt.equals(phiNode.expressionStmt) : phiNode.expressionStmt != null)
+            return false;
         if (indexes != null ? !indexes.equals(phiNode.indexes) : phiNode.indexes != null) return false;
         if (leftIndex != null ? !leftIndex.equals(phiNode.leftIndex) : phiNode.leftIndex != null) return false;
         if (mode != phiNode.mode) return false;
@@ -159,6 +172,7 @@ public class PhiNode implements Comparable<PhiNode>{
         result = 31 * result + (leftIndex != null ? leftIndex.hashCode() : 0);
         result = 31 * result + (indexes != null ? indexes.hashCode() : 0);
         result = 31 * result + (mode != null ? mode.hashCode() : 0);
+        result = 31 * result + (expressionStmt != null ? expressionStmt.hashCode() : 0);
         return result;
     }
 

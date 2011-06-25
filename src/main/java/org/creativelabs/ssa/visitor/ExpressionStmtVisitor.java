@@ -6,17 +6,15 @@ import japa.parser.ast.visitor.GenericVisitorAdapter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.creativelabs.Constants;
-import org.creativelabs.graph.condition.Condition;
-import org.creativelabs.graph.condition.bool.FalseBooleanCondition;
-import org.creativelabs.graph.condition.bool.TrueBooleanCondition;
 import org.creativelabs.helper.GenericVisitorHelper;
 import org.creativelabs.iig.InternalInstancesGraph;
+import org.creativelabs.ssa.holder.MethodArgsHolder;
 import org.creativelabs.ssa.holder.MultiHolder;
+import org.creativelabs.ssa.holder.variable.StringVariable;
+import org.creativelabs.ssa.holder.variable.Variable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * @author azotcsit
@@ -33,9 +31,12 @@ public class ExpressionStmtVisitor extends GenericVisitorAdapter<Expression, Mul
 
     private String methodName;
 
-    public ExpressionStmtVisitor(InternalInstancesGraph graph, String methodName) {
+    private String className;
+
+    public ExpressionStmtVisitor(InternalInstancesGraph graph, String methodName, String className) {
         this.graph = graph;
         this.methodName = methodName;
+        this.className = className;
     }
 
     private boolean isCamelStyleClassName(String s) {
@@ -50,33 +51,62 @@ public class ExpressionStmtVisitor extends GenericVisitorAdapter<Expression, Mul
         return false;
     }
 
+    private boolean isCamelStyleStaticVariable(String s) {
+        for (int i = 0; i < s.length(); i++) {
+            if (Character.isLowerCase(s.charAt(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     @Override
     public Expression visit(NameExpr n, MultiHolder arg) {
         String variableName = n.getName();
+        Variable variable;
+        if (arg.getMethodArgsHolder().containsArgName(variableName)) {
+            variable = new StringVariable(n.getName(), Constants.ARG_SCOPE);
+        } else {
+            if (arg.getFieldsHolder().containsCreated(variableName)) {
+                variable = new StringVariable(n.getName(), Constants.EMPTY_SCOPE);
+            } else {
+                variable = new StringVariable(n.getName(), Constants.THIS_SCOPE);
+            }
+        }
 
         if (isCamelStyleClassName(variableName)) {
             return n;
         }
 
-        Integer variableIndex = arg.read(variableName);
+        //TODO to implement more smart processing of static variables
+
+        if (isCamelStyleStaticVariable(variableName)) {
+            n.setName(variableName + Constants.SEPARATOR + 0);
+            return n;
+        }
+
+        Integer variableIndex = arg.read(variable);
         if (variableIndex != null) {
             if (isNeededToIncreaseIndex) {
-                variableIndex = arg.readFrom(variableName, false);
+                variableIndex = arg.readFrom(variable, false);
                 variableIndex++;
-                arg.write(variableName, variableIndex);
+                arg.write(variable, variableIndex);
             }
             n.setName(variableName + Constants.SEPARATOR + variableIndex);
         } else {
-            log.error("Variable [name=" + variableName
-                    + "] is not contain in variables list.");
-            n.setName(variableName + " " + Constants.NOT_CONTAINS);
+
+            log.info("variable [name=" + variableName
+                    + "] is not contain in variables list in method [name=" + methodName
+                    + "] for class [name=" + className + "]");
+//            n.setName(variable.getString() + Constants.SEPARATOR + "0");
         }
 
         //TODO precoessing of static fields and methods
 
-//        if (arg.containsFieldName(variableName)) {
-//            return new FieldAccessExpr(new ThisExpr(), n.getName());
-//        }
+        if (arg.containsFieldName(variableName) && !arg.containsArgName(variableName)) {
+            arg.write(variable, 0);
+            return new FieldAccessExpr(new ThisExpr(), n.getName());
+        }
 
         return n;
     }
@@ -156,7 +186,7 @@ public class ExpressionStmtVisitor extends GenericVisitorAdapter<Expression, Mul
         if (n.getScope() != null) {
             n.setScope(GenericVisitorHelper.visitExpression(n.getScope(), arg, this));
         }
-        //TODO
+
         return n;
     }
 
@@ -207,7 +237,8 @@ public class ExpressionStmtVisitor extends GenericVisitorAdapter<Expression, Mul
         List<VariableDeclarator> vars = n.getVars();
         for (VariableDeclarator variableDeclarator : vars) {
             String variableName = variableDeclarator.getId().getName();
-            arg.write(variableName, 0);
+            arg.getFieldsHolder().addCreated(variableName);
+            arg.write(new StringVariable(variableName, Constants.EMPTY_SCOPE), 0);
             if (variableDeclarator.getInit() != null) {
                 variableDeclarator.setInit(GenericVisitorHelper.visitExpression(variableDeclarator.getInit(), arg, this));
             }
@@ -215,28 +246,30 @@ public class ExpressionStmtVisitor extends GenericVisitorAdapter<Expression, Mul
 
             String target = methodName + Constants.SEPARATOR + variableName;
 
-            Condition[] conditions = null;
-            if (variableDeclarator.getInit() != null) {
-                Set<String> valuesNames = new TreeSet<String>();
-                conditions = GenericVisitorHelper.visitExpression(
-                        variableDeclarator.getInit(),
-                        valuesNames,
-                        new ConditionFinder(graph, methodName, arg.getModifiersHolder(), arg.getPhiNodesHolder()));
-                for (String name : valuesNames) {
-                    graph.addEdge(target + Constants.SEPARATOR + 0, name);
-
-                }
-            } else {
-                conditions = new Condition[]{new TrueBooleanCondition(), new FalseBooleanCondition()};
-            }
-
-            if (conditions == null) {
-                throw new IllegalStateException(variableDeclarator.getInit().getClass() + " is not supported by ConditionFinder.");
-            }
-
-            graph.addVertexConditions(target + Constants.SEPARATOR + 0,
-                    conditions[0].and(arg.getBasicBlockCondition()),
-                    conditions[1].and(arg.getBasicBlockCondition()));
+            //TODO
+//            Condition[] conditions;
+//            if (variableDeclarator.getInit() != null) {
+//                Set<String> valuesNames = new TreeSet<String>();
+//                conditions = GenericVisitorHelper.visitExpression(
+//                        variableDeclarator.getInit(),
+//                        valuesNames,
+//                        new ConditionFinder(graph, methodName, className, arg.getModifiersHolder(), arg.getVariablesHolder(), arg.getMethodArgsHolder(), arg.getPhiNodesHolder()));
+//                for (String name : valuesNames) {
+//                    graph.addEdge(target + Constants.SEPARATOR + 0, methodName + Constants.SEPARATOR + name);
+//
+//                }
+//            } else {
+//                conditions = new Condition[]{new TrueBooleanCondition(), new FalseBooleanCondition()};
+//            }
+//
+//            if (conditions == null) {
+//                log.error(variableDeclarator.getInit().getClass() + " is not supported by ConditionFinder.");
+//                conditions = new Condition[]{new TrueBooleanCondition(), new FalseBooleanCondition()};
+//            }
+//
+//            graph.addVertexConditions(target + Constants.SEPARATOR + 0,
+//                    conditions[0].and(arg.getBasicBlockCondition()),
+//                    conditions[1].and(arg.getBasicBlockCondition()));
         }
 
         n.setVars(vars);
@@ -247,10 +280,14 @@ public class ExpressionStmtVisitor extends GenericVisitorAdapter<Expression, Mul
     public Expression visit(AssignExpr n, MultiHolder arg) {
         if (n.getTarget() instanceof ArrayAccessExpr) {
             String arrayName = null;
+            Variable variable;
             if (((ArrayAccessExpr) n.getTarget()).getName() instanceof FieldAccessExpr) {
                 arrayName = ((FieldAccessExpr) ((ArrayAccessExpr) n.getTarget()).getName()).getField();
+                String scope = ((FieldAccessExpr) ((ArrayAccessExpr) n.getTarget()).getName()).getScope().toString();
+                variable = createVariable(arrayName, scope, arg.getMethodArgsHolder());
             } else {
                 arrayName = ((NameExpr) ((ArrayAccessExpr) n.getTarget()).getName()).getName();
+                variable = createVariable(arrayName, null, arg.getMethodArgsHolder());
             }
 
             ((ArrayAccessExpr) n.getTarget()).setIndex(GenericVisitorHelper.visitExpression(
@@ -260,35 +297,46 @@ public class ExpressionStmtVisitor extends GenericVisitorAdapter<Expression, Mul
             String index = ((ArrayAccessExpr) n.getTarget()).getIndex().toString();
 
             List<Expression> expressions = new ArrayList<Expression>();
-            expressions.add(new NameExpr(arrayName + Constants.SEPARATOR + arg.read(arrayName)));
+            expressions.add(new NameExpr(arrayName + Constants.SEPARATOR + arg.read(variable)));
             expressions.add(new NameExpr(index));
             expressions.add(n.getValue());
 
             n.setValue(new MethodCallExpr(null, "Update", expressions));
 
-            arg.increaseIndex(arrayName);
-            n.setTarget(new NameExpr(arrayName + Constants.SEPARATOR + arg.read(arrayName)));
+            arg.increaseIndex(variable);
+            n.setTarget(new NameExpr(arrayName + Constants.SEPARATOR + arg.read(variable)));
 
             String variableName = expressions.get(0).toString();
             String target = methodName + Constants.SEPARATOR + expressions.get(2).toString();
 
-            Set<String> valuesNames = new TreeSet<String>();
-            Condition[] conditions = GenericVisitorHelper.visitExpression(
-                    n.getValue(),
-                    valuesNames,
-                    new ConditionFinder(graph, methodName, arg.getModifiersHolder(), arg.getPhiNodesHolder()));
-            for (String name : valuesNames) {
-                graph.addEdge(target + Constants.SEPARATOR + arg.read(variableName), name);
-
-            }
-
-            graph.addVertexConditions(target + Constants.SEPARATOR + arg.read(variableName),
-                    conditions[0].and(arg.getBasicBlockCondition()),
-                    conditions[1].and(arg.getBasicBlockCondition()));
+            //TODO
+//            Set<String> valuesNames = new TreeSet<String>();
+//            Condition[] conditions = GenericVisitorHelper.visitExpression(
+//                    n.getValue(),
+//                    valuesNames,
+//                    new ConditionFinder(graph, methodName, className, arg.getModifiersHolder(), arg.getVariablesHolder(), arg.getMethodArgsHolder(), arg.getPhiNodesHolder()));
+//            for (String name : valuesNames) {
+//                graph.addEdge(target + Constants.SEPARATOR + arg.read(variable), methodName + Constants.SEPARATOR + name);
+//
+//            }
+//
+//            graph.addVertexConditions(target + Constants.SEPARATOR + arg.read(variable),
+//                    conditions[0].and(arg.getBasicBlockCondition()),
+//                    conditions[1].and(arg.getBasicBlockCondition()));
 
         } else if (n.getTarget() instanceof NameExpr || n.getTarget() instanceof FieldAccessExpr) {
             n.setValue(GenericVisitorHelper.<Expression, MultiHolder>visitExpression(n.getValue(), arg, this));
             String variableName = n.getTarget().toString();
+            Variable variable;
+        if (arg.getMethodArgsHolder().containsArgName(variableName)) {
+            variable = new StringVariable(variableName, Constants.ARG_SCOPE);
+        } else {
+            if (arg.getFieldsHolder().containsCreated(variableName)) {
+                variable = new StringVariable(variableName, Constants.EMPTY_SCOPE);
+            } else {
+                variable = new StringVariable(variableName, Constants.THIS_SCOPE);
+            }
+        }
 
             isNeededToIncreaseIndex = true;
             n.setTarget(GenericVisitorHelper.<Expression, MultiHolder>visitExpression(n.getTarget(), arg, this));
@@ -296,20 +344,21 @@ public class ExpressionStmtVisitor extends GenericVisitorAdapter<Expression, Mul
 
             String target = methodName + Constants.SEPARATOR + variableName;
 
-            Set<String> valuesNames = new TreeSet<String>();
-            Condition[] conditions = GenericVisitorHelper.visitExpression(
-                    n.getValue(),
-                    valuesNames,
-                    new ConditionFinder(graph, methodName, arg.getModifiersHolder(), arg.getPhiNodesHolder()));
-            for (String name : valuesNames) {
-                graph.addEdge(target + Constants.SEPARATOR + arg.read(variableName), name);
-
-            }
-
-            graph.addVertexConditions(target + Constants.SEPARATOR + arg.read(variableName),
-                    conditions[0].and(arg.getBasicBlockCondition()),
-                    conditions[1].and(arg.getBasicBlockCondition()));
-
+            //TODO
+//            Set<String> valuesNames = new TreeSet<String>();
+//            Condition[] conditions = GenericVisitorHelper.visitExpression(
+//                    n.getValue(),
+//                    valuesNames,
+//                    new ConditionFinder(graph, methodName, className, arg.getModifiersHolder(), arg.getVariablesHolder(), arg.getMethodArgsHolder(), arg.getPhiNodesHolder()));
+//            for (String name : valuesNames) {
+//                graph.addEdge(target + Constants.SEPARATOR + arg.read(variable), methodName + Constants.SEPARATOR + name);
+//
+//            }
+//
+//            graph.addVertexConditions(target + Constants.SEPARATOR + arg.read(variable),
+//                    conditions[0].and(arg.getBasicBlockCondition()),
+//                    conditions[1].and(arg.getBasicBlockCondition()));
+//
 
         } else {
             throw new IllegalStateException("Class " + n.getTarget().getClass() + " is not supported " +
@@ -323,14 +372,22 @@ public class ExpressionStmtVisitor extends GenericVisitorAdapter<Expression, Mul
     @Override
     public Expression visit(FieldAccessExpr n, MultiHolder arg) {
 
+        //TODO to implement more smart processing of fields
+
         String name = n.getField();
-        if (arg.read(name) != null) {
+        String scope = n.getScope().toString();
+
+        Variable variable = createVariable(name, scope, arg.getMethodArgsHolder());
+
+        if (arg.read(variable) != null) {
             if (isNeededToIncreaseIndex) {
-                arg.increaseIndex(name);
-                n.setField(name + Constants.SEPARATOR + arg.read(name));
+                arg.increaseIndex(variable);
+                n.setField(name + Constants.SEPARATOR + arg.read(variable));
             } else {
-                n.setField(name + Constants.SEPARATOR + arg.read(name));
+                n.setField(name + Constants.SEPARATOR + arg.read(variable));
             }
+        } else {
+            n.setField(name + Constants.SEPARATOR + 0);
         }
 
         n.setScope(GenericVisitorHelper.visitExpression(n.getScope(), arg, this));
@@ -388,5 +445,17 @@ public class ExpressionStmtVisitor extends GenericVisitorAdapter<Expression, Mul
     @Override
     public Expression visit(NullLiteralExpr n, MultiHolder arg) {
         return n;
+    }
+
+    private Variable createVariable(String name, String scope, MethodArgsHolder methodArgsHolder) {
+        if (scope == null || scope.isEmpty()) {
+            if (methodArgsHolder.containsArgName(name)) {
+                return new StringVariable(name, Constants.ARG_SCOPE);
+            } else {
+                return new StringVariable(name, Constants.THIS_SCOPE);
+            }
+        } else {
+            return new StringVariable(name, scope);
+        }
     }
 }

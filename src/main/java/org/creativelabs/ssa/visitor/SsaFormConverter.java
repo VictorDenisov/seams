@@ -7,8 +7,8 @@ import japa.parser.ast.expr.MethodCallExpr;
 import japa.parser.ast.expr.VariableDeclarationExpr;
 import japa.parser.ast.stmt.*;
 import japa.parser.ast.visitor.VoidVisitorAdapter;
+import org.creativelabs.Constants;
 import org.creativelabs.graph.condition.Condition;
-import org.creativelabs.graph.condition.EmptyCondition;
 import org.creativelabs.graph.condition.StringCondition;
 import org.creativelabs.graph.condition.bool.FalseBooleanCondition;
 import org.creativelabs.graph.condition.bool.TrueBooleanCondition;
@@ -18,8 +18,9 @@ import org.creativelabs.iig.ConditionInternalInstancesGraph;
 import org.creativelabs.iig.InternalInstancesGraph;
 import org.creativelabs.ssa.PhiNode;
 import org.creativelabs.ssa.holder.MultiHolder;
-import org.creativelabs.ssa.holder.SimpleMultiHolderBuilder;
 import org.creativelabs.ssa.holder.SimpleUsingModifyingVariablesHolder;
+import org.creativelabs.ssa.holder.variable.StringVariable;
+import org.creativelabs.ssa.holder.variable.Variable;
 
 import java.util.*;
 
@@ -34,6 +35,8 @@ public class SsaFormConverter extends VoidVisitorAdapter<MultiHolder> {
 
     private String methodName;
 
+    private String className;
+
     private MethodDeclaration methodDeclaration;
 
     private Set<PhiNode> phiNodes = new HashSet<PhiNode>();
@@ -41,8 +44,9 @@ public class SsaFormConverter extends VoidVisitorAdapter<MultiHolder> {
     public SsaFormConverter() {
     }
 
-    public SsaFormConverter(InternalInstancesGraph graph) {
+    public SsaFormConverter(InternalInstancesGraph graph, String className) {
         this.graph = graph;
+        this.className = className;
     }
 
     public MethodDeclaration getMethodDeclaration() {
@@ -96,7 +100,7 @@ public class SsaFormConverter extends VoidVisitorAdapter<MultiHolder> {
         //processing of the condition
         n.setCondition(getGenericExpr(n.getCondition(), arg));
 
-        Set<String> assigningVariables = ((Statement) n.getThenStmt()).getVariablesHolder().getModifyingVariables();
+        Set<Variable> assigningVariables = ((Statement) n.getThenStmt()).getVariablesHolder().getModifyingVariables();
 
         //processing of the then branch
         MultiHolder thenVariables = arg.copy();
@@ -121,19 +125,12 @@ public class SsaFormConverter extends VoidVisitorAdapter<MultiHolder> {
             elseVariables = arg.copy();
         }
 
-        for (String name : assigningVariables) {
+        for (Variable name : assigningVariables) {
             Integer newIndex = Math.max(thenVariables.read(name) == null ? -1 :
                     thenVariables.read(name), elseVariables.read(name) == null ? -1 :
                     elseVariables.read(name)) + 1;
 
-            String thisString;
-            if (thenVariables.containsFieldName(name)) {
-                thisString = "this.";
-            } else {
-                thisString = "";
-            }
-
-            addPhi(n, new PhiNode(thisString + name, newIndex, PhiNode.Mode.AFTER, elseVariables.getPhiIndexes(thenVariables, name)));
+            addPhi(n, new PhiNode(name, newIndex, PhiNode.Mode.AFTER, elseVariables.getPhiIndexes(thenVariables, name)));
             elseVariables.write(name, newIndex);
         }
 
@@ -142,7 +139,7 @@ public class SsaFormConverter extends VoidVisitorAdapter<MultiHolder> {
 
     @Override
     public void visit(ForStmt n, MultiHolder arg) {
-        //TODO
+        //TODO: implement for processing
         MultiHolder holder1 = arg.copy();
         List<Expression> expressions = n.getInit();
         if (expressions != null) {
@@ -157,9 +154,9 @@ public class SsaFormConverter extends VoidVisitorAdapter<MultiHolder> {
 
         expressions = n.getUpdate();
         if (expressions != null) {
-            Set<String> usingVariables = expressions.get(0).getVariablesHolder().getUsingVariables();
+            Set<Variable> usingVariables = expressions.get(0).getVariablesHolder().getUsingVariables();
 
-            for (String var : usingVariables) {
+            for (Variable var : usingVariables) {
                 holder2.increaseIndex(var);
             }
 
@@ -199,14 +196,9 @@ public class SsaFormConverter extends VoidVisitorAdapter<MultiHolder> {
 //
 //        arg.mergeHolders(holder1, holder2);
 ////        return n;
-    }
-
-    @Override
-    public void visit(WhileStmt n, MultiHolder arg) {
-        Set<String> assigningVariables = ((Statement) n.getBody()).getVariablesHolder().getModifyingVariables();
+        /* Set<String> assigningVariables = ((Statement) n.getBody()).getVariablesHolder().getModifyingVariables();
 
         MultiHolder holder = arg.copy();
-        holder.setBasicBlockCondition(holder.getBasicBlockCondition().and(new StringCondition(n.getCondition().toString())));
 
         //phi nodes with only the one variable's index
         Set<PhiNode> beforeWhilePhiNodes = new HashSet<PhiNode>();
@@ -232,7 +224,12 @@ public class SsaFormConverter extends VoidVisitorAdapter<MultiHolder> {
         }
 
         //processing of the condition
-        n.setCondition(getGenericExpr(n.getCondition(), arg));
+        n.setCompare(getGenericExpr(n.getCompare(), arg));
+        if (n.getCompare() != null) {
+            holder.setBasicBlockCondition(holder.getBasicBlockCondition().and(new StringCondition(n.getCompare().toString())));
+        } else {
+            holder.setBasicBlockCondition(holder.getBasicBlockCondition().<Condition>copy());
+        }
 
 
         for (String var : assigningVariables) {
@@ -257,6 +254,7 @@ public class SsaFormConverter extends VoidVisitorAdapter<MultiHolder> {
                 inWhilePhiNodes.add(new PhiNode(thisString + name, holder.read(name) == null ? 0 : holder.read(name), PhiNode.Mode.BEFORE));
             }
         }
+
 
         if (!inWhilePhiNodes.isEmpty()) {
             addAllPhi(((BlockStmt) n.getBody()).getStmts().get(0), inWhilePhiNodes);
@@ -291,15 +289,91 @@ public class SsaFormConverter extends VoidVisitorAdapter<MultiHolder> {
             }
         }
 
+        arg.mergeHolders(holder);*/
+    }
+
+    @Override
+    public void visit(WhileStmt n, MultiHolder arg) {
+        Set<Variable> assigningVariables = ((Statement) n.getBody()).getVariablesHolder().getModifyingVariables();
+
+        MultiHolder holder = arg.copy();
+
+        //phi nodes with only the one variable's index
+        Set<PhiNode> beforeWhilePhiNodes = new HashSet<PhiNode>();
+
+        for (Variable var : assigningVariables) {
+            holder.increaseIndex(var);
+            if (assigningVariables.contains(var)) {
+                if (arg.read(var) != null) {
+                    beforeWhilePhiNodes.add(new PhiNode(var, (arg.read(var) == null ? 0 : arg.read(var)) + 1,
+                            PhiNode.Mode.BEFORE, arg.read(var)));
+                } else {
+                    beforeWhilePhiNodes.add(new PhiNode(var, (arg.read(var) == null ? 0 : arg.read(var)) + 1,
+                            PhiNode.Mode.BEFORE));
+                }
+                arg.increaseIndex(var);
+            }
+        }
+
+        //processing of the condition
+        n.setCondition(getGenericExpr(n.getCondition(), arg));
+        holder.setBasicBlockCondition(holder.getBasicBlockCondition().and(new StringCondition(n.getCondition().toString())));
+
+
+        for (Variable var : assigningVariables) {
+            if (assigningVariables.contains(var)) {
+                holder.increaseIndex(var);
+            }
+        }
+
+        //phi nodes with only one variable's index
+        Set<PhiNode> inWhilePhiNodes = new HashSet<PhiNode>();
+
+        for (Variable name : holder.getDifferenceInVariables(arg, false)) {
+
+            if (arg.read(name) != null) {
+                inWhilePhiNodes.add(new PhiNode(name, holder.read(name) == null ? 0 : holder.read(name), PhiNode.Mode.BEFORE, arg.read(name)));
+            } else {
+                inWhilePhiNodes.add(new PhiNode(name, holder.read(name) == null ? 0 : holder.read(name), PhiNode.Mode.BEFORE));
+            }
+        }
+
+        if (!inWhilePhiNodes.isEmpty()) {
+            addAllPhi(((BlockStmt) n.getBody()).getStmts().get(0), inWhilePhiNodes);
+        }
+        if (!beforeWhilePhiNodes.isEmpty()) {
+            addAllPhi(n, beforeWhilePhiNodes);
+        }
+
+        getVoidStmt(n.getBody(), holder);
+
+        for (PhiNode node : beforeWhilePhiNodes) {
+            node.addIndex(holder.read(node.getName()));
+        }
+
+        for (PhiNode node : inWhilePhiNodes) {
+            node.addIndex(holder.read(node.getName()));
+            node.addIndexToExprStmt(holder.read(node.getName()));
+        }
+
+        for (Variable name : assigningVariables) {
+            if (holder.containsKey(name, true) && arg.containsKey(name, true)) {
+
+
+                addPhi(n, new PhiNode(name, holder.read(name) + 1, PhiNode.Mode.AFTER, holder.getPhiIndexes(arg, name)));
+                arg.write(name, (Math.max(holder.read(name), arg.read(name)) + 1));
+            }
+        }
+
         arg.mergeHolders(holder);
     }
 
     @Override
     public void visit(ForeachStmt n, MultiHolder arg) {
 
-        Set<String> assigningVariables = ((Statement) n.getBody()).getVariablesHolder().getModifyingVariables();
+        Set<Variable> assigningVariables = ((Statement) n.getBody()).getVariablesHolder().getModifyingVariables();
 
-        Set<String> conditionsVars = ((Expression) n.getVariable()).getVariablesHolder().getUsingVariables();
+        Set<Variable> conditionsVars = ((Expression) n.getVariable()).getVariablesHolder().getUsingVariables();
 
         MultiHolder holder = arg.copy();
 
@@ -312,7 +386,7 @@ public class SsaFormConverter extends VoidVisitorAdapter<MultiHolder> {
                 ":" + n.getIterable().toString())));
 
 
-        for (String var : assigningVariables) {
+        for (Variable var : assigningVariables) {
             if (!conditionsVars.contains(var)) {
                 holder.increaseIndex(var);
             }
@@ -321,18 +395,13 @@ public class SsaFormConverter extends VoidVisitorAdapter<MultiHolder> {
         //phi nodes with only one variable's index
         Set<PhiNode> inWhilePhiNodes = new HashSet<PhiNode>();
 
-        for (String name : assigningVariables) {
-            String thisString;
-            if (holder.containsFieldName(name)) {
-                thisString = "this.";
-            } else {
-                thisString = "";
-            }
+        for (Variable name : assigningVariables) {
+
             if (!conditionsVars.contains(name)) {
                 if (arg.read(name) != null) {
-                    inWhilePhiNodes.add(new PhiNode(thisString + name, holder.read(name) == null ? 0 : holder.read(name), PhiNode.Mode.BEFORE, arg.read(name)));
+                    inWhilePhiNodes.add(new PhiNode(name, holder.read(name) == null ? 0 : holder.read(name), PhiNode.Mode.BEFORE, arg.read(name)));
                 } else {
-                    inWhilePhiNodes.add(new PhiNode(thisString + name, holder.read(name) == null ? 0 : holder.read(name), PhiNode.Mode.BEFORE));
+                    inWhilePhiNodes.add(new PhiNode(name, holder.read(name) == null ? 0 : holder.read(name), PhiNode.Mode.BEFORE));
                 }
             }
         }
@@ -360,17 +429,10 @@ public class SsaFormConverter extends VoidVisitorAdapter<MultiHolder> {
             }
         }
 
-        for (String name : assigningVariables) {
+        for (Variable name : assigningVariables) {
             if (holder.containsKey(name, true) && arg.containsKey(name, true)) {
 
-                String thisString;
-                if (holder.containsFieldName(name)) {
-                    thisString = "this.";
-                } else {
-                    thisString = "";
-                }
-
-                addPhi(n, new PhiNode(thisString + name, holder.read(name) + 1, PhiNode.Mode.AFTER, holder.getPhiIndexes(arg, name)));
+                addPhi(n, new PhiNode(name, holder.read(name) + 1, PhiNode.Mode.AFTER, holder.getPhiIndexes(arg, name)));
                 arg.write(name, (Math.max(holder.read(name), arg.read(name)) + 1));
             }
         }
@@ -390,13 +452,13 @@ public class SsaFormConverter extends VoidVisitorAdapter<MultiHolder> {
         if (n.getCatchs() != null) {
             for (CatchClause catchClause : n.getCatchs()) {
                 MultiHolder holder = arg.copy();
-                holder.write(catchClause.getExcept().getId().getName(), 0);
-
                 String name = catchClause.getExcept().getId().getName();
-                holder.write(name, 0);
+                holder.addArgName(name);
+                Variable variable = new StringVariable(name, Constants.ARG_SCOPE);
+
+                holder.write(variable, 0);
                 catchClause.getExcept().getId().setName(name + SEPARATOR + 0);
 
-                holder.increaseIndex(catchClause.getExcept().getId().getName());
                 getVoidStmt(catchClause.getCatchBlock(), holder);
             }
         }
@@ -421,9 +483,8 @@ public class SsaFormConverter extends VoidVisitorAdapter<MultiHolder> {
 
         methodName = methodDeclaration.getName() + types.toString();
 
-        new UsingModifyingVariablesVisitor().visit(methodDeclaration, new SimpleUsingModifyingVariablesHolder());
 
-        Map<String, Integer> variables = new TreeMap<String, Integer>();
+        Map<Variable, Integer> variables = new TreeMap<Variable, Integer>();
 
         if (methodDeclaration.getParameters() != null) {
             for (Parameter parameter : methodDeclaration.getParameters()) {
@@ -431,48 +492,44 @@ public class SsaFormConverter extends VoidVisitorAdapter<MultiHolder> {
                         new FalseBooleanCondition(),
                         new TrueBooleanCondition());
 
-                variables.put(parameter.getId().getName(), 0);
                 arg.getMethodArgsHolder().addArgName(parameter.getId().getName());
+                variables.put(new StringVariable(parameter.getId().getName(), Constants.ARG_SCOPE), 0);
 
                 //convert to ssa
                 parameter.getId().setName(parameter.getId().getName() + SEPARATOR + 0);
             }
         }
 
-        MultiHolder holder;
-        if (arg != null) {
-            if (arg.getFieldsHolder() != null) {
-                for (String fieldName : arg.getFieldsHolder().getFieldsNames()) {
-                    graph.addVertexConditions(methodName + SEPARATOR + fieldName + SEPARATOR + 0,
-                            new FalseBooleanCondition(),
-                            new TrueBooleanCondition());
-
-                    graph.addVertexConditions(fieldName + SEPARATOR + 0,
-                            new FalseBooleanCondition(),
-                            new TrueBooleanCondition());
-
-                    graph.addEdge(methodName + SEPARATOR + fieldName + SEPARATOR + 0,
-                            fieldName + SEPARATOR + 0);
-                }
-            }
-
-            Map<String, Integer> vars = variables;
-            vars.putAll(arg.getReadVariables());
-            arg.setReadVariables(vars);
-
-            vars = new HashMap<String, Integer>(variables);
-            vars.putAll(arg.getWriteVariables());
-            arg.setWriteVariables(vars);
-
-            holder = arg;
-        } else {
-            SimpleMultiHolderBuilder holderBuilder = new SimpleMultiHolderBuilder();
-            holderBuilder.setCondition(new EmptyCondition());
-            holderBuilder.setVariables(variables);
-            holder = holderBuilder.buildMultiHolder();
+        if (methodDeclaration.getBody() != null) {
+            new UsingModifyingVariablesVisitor(arg.getMethodArgsHolder()).visit(methodDeclaration.getBody(), new SimpleUsingModifyingVariablesHolder());
         }
 
-        visit(methodDeclaration.getBody(), holder);
+        if (arg.getFieldsHolder() != null) {
+            for (String fieldName : arg.getFieldsHolder().getFieldsNames()) {
+                graph.addVertexConditions(methodName + SEPARATOR + fieldName + SEPARATOR + 0,
+                        new FalseBooleanCondition(),
+                        new TrueBooleanCondition());
+
+                graph.addVertexConditions(fieldName + SEPARATOR + 0,
+                        new FalseBooleanCondition(),
+                        new TrueBooleanCondition());
+
+                graph.addEdge(methodName + SEPARATOR + fieldName + SEPARATOR + 0,
+                        fieldName + SEPARATOR + 0);
+
+                variables.put(new StringVariable(fieldName, Constants.THIS_SCOPE), 0);
+            }
+        }
+
+        Map<Variable, Integer> vars = variables;
+        vars.putAll(arg.getReadVariables());
+        arg.setReadVariables(vars);
+
+        vars = new HashMap<Variable, Integer>(variables);
+        vars.putAll(arg.getWriteVariables());
+        arg.setWriteVariables(vars);
+
+        visit(methodDeclaration.getBody(), arg);
 //        System.out.println(methodDeclaration);
     }
 
@@ -504,7 +561,7 @@ public class SsaFormConverter extends VoidVisitorAdapter<MultiHolder> {
      * @return Expression
      */
     private Expression getGenericExpr(Expression expression, MultiHolder arg) {
-        return GenericVisitorHelper.<Expression, MultiHolder>visitExpression(expression, arg, new ExpressionStmtVisitor(graph, methodName));
+        return GenericVisitorHelper.<Expression, MultiHolder>visitExpression(expression, arg, new ExpressionStmtVisitor(graph, methodName, className));
     }
 
     /**
@@ -526,6 +583,17 @@ public class SsaFormConverter extends VoidVisitorAdapter<MultiHolder> {
     private void addPhi(Statement stmt, PhiNode phiNode) {
         stmt.addPhi(phiNode);
         phiNodes.add(phiNode);
+//        graph.addVertexConditions(methodName + Constants.SEPARATOR +
+//                phiNode.getName().getString() + Constants.SEPARATOR + phiNode.getLeftIndex(),
+//                graph.getInternalVertexCondition(methodName + Constants.SEPARATOR +
+//                        phiNode.getName().getString() + Constants.SEPARATOR + phiNode.getIndexes()[0]),
+//                graph.getExternalVertexCondition(methodName + Constants.SEPARATOR +
+//                        phiNode.getName().getString() + Constants.SEPARATOR + phiNode.getIndexes()[0])
+//        );
+//        graph.addEdge(methodName + Constants.SEPARATOR +
+//                phiNode.getName().getString() + Constants.SEPARATOR + phiNode.getLeftIndex(),
+//                methodName + Constants.SEPARATOR +
+//                        phiNode.getName().getString() + Constants.SEPARATOR + phiNode.getIndexes()[0]);
     }
 
     /**
@@ -538,7 +606,17 @@ public class SsaFormConverter extends VoidVisitorAdapter<MultiHolder> {
         for (PhiNode phiNode : phiNodes) {
             stmt.addPhi(phiNode);
             this.phiNodes.add(phiNode);
+//            graph.addVertexConditions(methodName + Constants.SEPARATOR +
+//                    phiNode.getName().getString() + Constants.SEPARATOR + phiNode.getLeftIndex(),
+//                    graph.getInternalVertexCondition(methodName + Constants.SEPARATOR +
+//                            phiNode.getName().getString() + Constants.SEPARATOR + phiNode.getIndexes()[0]),
+//                    graph.getExternalVertexCondition(methodName + Constants.SEPARATOR +
+//                            phiNode.getName().getString() + Constants.SEPARATOR + phiNode.getIndexes()[0])
+//            );
+//            graph.addEdge(methodName + Constants.SEPARATOR +
+//                    phiNode.getName().getString() + Constants.SEPARATOR + phiNode.getLeftIndex(),
+//                    methodName + Constants.SEPARATOR +
+//                            phiNode.getName().getString() + Constants.SEPARATOR + phiNode.getIndexes()[0]);
         }
     }
-
 }

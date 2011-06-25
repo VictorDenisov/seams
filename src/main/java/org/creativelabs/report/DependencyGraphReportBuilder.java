@@ -1,5 +1,6 @@
 package org.creativelabs.report;
 
+import org.creativelabs.ssa.SsaError;
 import org.creativelabs.typefinder.Dependency;
 import org.creativelabs.graph.GraphBuilder;
 import org.creativelabs.graph.Vertex;
@@ -51,6 +52,10 @@ public class DependencyGraphReportBuilder implements ReportBuilder {
 
     @Override
     public void setSsaFormRepresentations(String className, Set<SsaFormRepresentation> ssaFormRepresentations) {
+    }
+
+    @Override
+    public void setSsaErrors(String className, Set<SsaError> ssaErrors) {
     }
 
 }

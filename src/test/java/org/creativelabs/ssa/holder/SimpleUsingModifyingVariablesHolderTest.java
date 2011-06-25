@@ -1,5 +1,7 @@
 package org.creativelabs.ssa.holder;
 
+import org.creativelabs.ssa.holder.variable.StringVariable;
+import org.creativelabs.ssa.holder.variable.Variable;
 import org.testng.annotations.Test;
 
 import java.util.HashSet;
@@ -21,47 +23,51 @@ public class SimpleUsingModifyingVariablesHolderTest {
     @Test
     public void testAddUsingVariable() throws Exception {
         SimpleUsingModifyingVariablesHolder holder = new SimpleUsingModifyingVariablesHolder();
-        holder.addUsingVariable("name1");
+        holder.addUsingVariable(new StringVariable("name1", "scope1"));
         assertEquals(1, holder.getUsingVariables().size());
-        assertTrue(holder.getUsingVariables().contains("name1"));
+        assertTrue(holder.getUsingVariables().contains(new StringVariable("name1", "scope1")));
     }
 
     @Test
     public void testAddUsingVariables() throws Exception {
         SimpleUsingModifyingVariablesHolder holder = new SimpleUsingModifyingVariablesHolder();
-        holder.addUsingVariables(new HashSet<String>(){{add("name1"); add("name2");}});
+        holder.addUsingVariables(new HashSet<Variable>(){{
+            add(new StringVariable("name1", "scope1"));
+            add(new StringVariable("name2", "scope2"));}});
         assertEquals(2, holder.getUsingVariables().size());
-        assertTrue(holder.getUsingVariables().contains("name1"));
-        assertTrue(holder.getUsingVariables().contains("name2"));
+        assertTrue(holder.getUsingVariables().contains(new StringVariable("name1", "scope1")));
+        assertTrue(holder.getUsingVariables().contains(new StringVariable("name2", "scope2")));
     }
 
     @Test
     public void testAddModifyingVariable() throws Exception {
         SimpleUsingModifyingVariablesHolder holder = new SimpleUsingModifyingVariablesHolder();
-        holder.addModifyingVariable("name1");
+        holder.addModifyingVariable(new StringVariable("name1", "scope1"));
         assertEquals(1, holder.getModifyingVariables().size());
-        assertTrue(holder.getModifyingVariables().contains("name1"));
+        assertTrue(holder.getModifyingVariables().contains(new StringVariable("name1", "scope1")));
     }
 
     @Test
     public void testAddModifyingVariables() throws Exception {
         SimpleUsingModifyingVariablesHolder holder = new SimpleUsingModifyingVariablesHolder();
-        holder.addModifyingVariables(new HashSet<String>() {{
-            add("name1");
-            add("name2");
+        holder.addModifyingVariables(new HashSet<Variable>() {{
+            add(new StringVariable("name1", "scope1"));
+            add(new StringVariable("name2", "scope2"));
         }});
         assertEquals(2, holder.getModifyingVariables().size());
-        assertTrue(holder.getModifyingVariables().contains("name1"));
-        assertTrue(holder.getModifyingVariables().contains("name2"));
+        assertTrue(holder.getModifyingVariables().contains(new StringVariable("name1", "scope1")));
+        assertTrue(holder.getModifyingVariables().contains(new StringVariable("name2", "scope2")));
     }
 
     @Test
     public void testAdd() throws Exception {
         SimpleUsingModifyingVariablesHolder holder = new SimpleUsingModifyingVariablesHolder();
-        holder.addUsingVariables(new HashSet<String>(){{add("name1"); add("name2");}});
+        holder.addUsingVariables(new HashSet<Variable>(){{
+            add(new StringVariable("name1", "scope1"));
+            add(new StringVariable("name2", "scope2"));}});
         assertEquals(2, holder.getUsingVariables().size());
-        assertTrue(holder.getUsingVariables().contains("name1"));
-        assertTrue(holder.getUsingVariables().contains("name2"));
+        assertTrue(holder.getUsingVariables().contains(new StringVariable("name1", "scope1")));
+        assertTrue(holder.getUsingVariables().contains(new StringVariable("name2", "scope2")));
     }
 
     @Test

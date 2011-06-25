@@ -1,0 +1,8 @@
+Ssa processing:
+1. Need to implement processing of conditions as boolean expressions. (now it 's processing as string).
+2. Need to implement availability of running on windows OS. Need to implement using Grappa instead direct GraphViz!
+3. Remove edge conditions processing. It's unused.
+4. Need to implement Builder<T> interface.
+5. Need to create more tests for ConditionFinder class.
+6. Need to implement processing of method's conditions via MethodModifiersHolder.
+7. Need to implement processing of ternary operator.

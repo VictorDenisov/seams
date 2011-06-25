@@ -44,8 +44,8 @@ public class SimplePhiNodesHolder implements PhiNodesHolder {
     }
 
     @Override
-    public Set<PhiNode> copy() {
-        return CopyingUtils.copy(phiNodes);
+    public SimplePhiNodesHolder copy() {
+        return CopyingUtils.<SimplePhiNodesHolder>copy(this);
     }
 
     @Override

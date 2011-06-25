@@ -6,20 +6,17 @@ import japa.parser.ast.body.ClassOrInterfaceDeclaration;
 import japa.parser.ast.body.TypeDeclaration;
 import org.apache.commons.cli.*;
 import org.creativelabs.chart.BarChartBuilder;
-import org.creativelabs.typefinder.DependenciesChart;
-import org.creativelabs.graph.GraphvizGraphBuilder;
+import org.creativelabs.drawer.ChartDrawer;
 import org.creativelabs.iig.InternalInstancesGraph;
 import org.creativelabs.introspection.ReflectionAbstractionImpl;
 import org.creativelabs.report.DataCollector;
 import org.creativelabs.report.ReportBuilder;
-import org.creativelabs.drawer.ChartDrawer;
-import org.creativelabs.drawer.GraphvizDrawer;
+import org.creativelabs.typefinder.DependenciesChart;
 import org.creativelabs.typefinder.ImportList;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.PrintWriter;
 
 public final class MainApp {
 
@@ -81,6 +78,7 @@ public final class MainApp {
             }
             dataCollector.buildDetailedDependencyReport();
             dataCollector.buildSsaFormRepresentationReport();
+            dataCollector.buildSsaErrorsReport();
             dataCollector.buildNumberOfErrorsReport();
         }
     }
@@ -97,20 +95,20 @@ public final class MainApp {
         if (commandLine.hasOption('g')) {
             InternalInstancesGraph graph = classProcessor.getSsaInternalInstancesGraph();
 
-//            Jung graph
-//            JungGraphBuilder graphBuilder = new JungGraphBuilder();
-//            graph.buildGraph(graphBuilder);
-//            new JungDrawer(graphBuilder.getGraph()).saveToFile(IMAGE_WIDTH, IMAGE_HEIGHT,
+////            Jung graph
+//            JungGraphBuilder graphBuilder1 = new JungGraphBuilder();
+//            graph.buildGraph(graphBuilder1);
+//            new JungDrawer(graphBuilder1.getGraph()).saveToFile(IMAGE_WIDTH, IMAGE_HEIGHT,
 //                    fileName);
-
-            PrintWriter writer = new PrintWriter(fileName + ".dot");
-            GraphvizGraphBuilder graphBuilder = new GraphvizGraphBuilder(writer);
-            graph.buildGraph(graphBuilder);
-            graphBuilder.finalizeGraph();
-            writer.flush();
-            writer.close();
-
-            new GraphvizDrawer().saveToFile(0, 0, fileName);
+//
+//            PrintWriter writer = new PrintWriter(fileName + ".dot");
+//            GraphvizGraphBuilder graphBuilder = new GraphvizGraphBuilder(writer);
+//            graph.buildGraph(graphBuilder);
+//            graphBuilder.finalizeGraph();
+//            writer.flush();
+//            writer.close();
+//
+//            new GraphvizDrawer().saveToFile(0, 0, fileName);
         }
         if (commandLine.hasOption('c')) {
             BarChartBuilder chartBuilder = new BarChartBuilder();

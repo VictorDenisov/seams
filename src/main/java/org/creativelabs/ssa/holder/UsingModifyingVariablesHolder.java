@@ -1,6 +1,7 @@
 package org.creativelabs.ssa.holder;
 
 import org.creativelabs.copy.Copyable;
+import org.creativelabs.ssa.holder.variable.Variable;
 
 import java.util.Set;
 
@@ -11,13 +12,13 @@ import java.util.Set;
  */
 public interface UsingModifyingVariablesHolder extends Copyable {
 
-    void addUsingVariable(String variableName);
-    void addUsingVariables(Set<String> variableNames);
-    public Set<String> getUsingVariables();
+    void addUsingVariable(Variable variableName);
+    void addUsingVariables(Set<Variable> variableNames);
+    public Set<Variable> getUsingVariables();
 
-    void addModifyingVariable(String variableName);
-    void addModifyingVariables(Set<String> variableNames);
-    Set<String> getModifyingVariables();
+    void addModifyingVariable(Variable variableName);
+    void addModifyingVariables(Set<Variable> variableNames);
+    Set<Variable> getModifyingVariables();
 
     void add(UsingModifyingVariablesHolder holder);
 }

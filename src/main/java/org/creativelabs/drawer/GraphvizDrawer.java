@@ -45,7 +45,7 @@ public class GraphvizDrawer implements Drawer {
             if (LINUX.equals(System.getProperty("os.name"))) {
                 return new String[]{"/bin/sh",
                         "-c",
-                        "dot -Tpng " + fileName + ".dot > " + fileName + ".png"};
+                        "dot -Tsvg " + fileName + ".dot > " + fileName + ".svg"};
             } else if (WINDOWS.equals(System.getProperty("os.name"))) {
                 //TODO to implement
             }

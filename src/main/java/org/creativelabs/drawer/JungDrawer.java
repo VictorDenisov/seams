@@ -1,6 +1,6 @@
 package org.creativelabs.drawer;
 
-import edu.uci.ics.jung.algorithms.layout.KKLayout;
+import edu.uci.ics.jung.algorithms.layout.ISOMLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.visualization.BasicVisualizationServer;
@@ -24,7 +24,7 @@ public class JungDrawer implements Drawer {
 
     private BasicVisualizationServer<Vertex, String> addContentToFrame(JFrame frame, int width, int height) {
         // The Layout<V, E> is parameterized by the vertex and edge types
-        Layout<Vertex, String> layout = new KKLayout<Vertex, String>(g);
+        Layout<Vertex, String> layout = new ISOMLayout<Vertex, String> (g);
         layout.setSize(new Dimension(width, height)); // sets the initial size of the space
         // The BasicVisualizationServer<V,E> is parameterized by the edge types
         BasicVisualizationServer<Vertex, String> vv =

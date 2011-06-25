@@ -1,5 +1,6 @@
 package org.creativelabs.report;
 
+import org.creativelabs.ssa.SsaError;
 import org.creativelabs.typefinder.Dependency;
 import org.creativelabs.MainApp;
 import org.creativelabs.iig.InternalInstancesGraph;
@@ -29,7 +30,11 @@ public class SsaFormRepresentationsReportBuilder implements ReportBuilder {
 
     @Override
     public void setSsaFormRepresentations(String className, Set<SsaFormRepresentation> ssaFormRepresentations) {
-        outData(ssaFormRepresentations, "detailedreport/" + className);
+        outData(ssaFormRepresentations, "detailedreport/ssa/" + className);
+    }
+
+    @Override
+    public void setSsaErrors(String className, Set<SsaError> ssaErrors) {
     }
 
     private void outData(Set<SsaFormRepresentation> ssaFormRepresentations, String fileName) {

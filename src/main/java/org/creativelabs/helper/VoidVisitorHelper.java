@@ -5,6 +5,8 @@ import japa.parser.ast.body.JavadocComment;
 import japa.parser.ast.expr.*;
 import japa.parser.ast.stmt.*;
 import japa.parser.ast.visitor.VoidVisitorAdapter;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * This class helps for visiting the statements and expressions.
@@ -15,6 +17,8 @@ import japa.parser.ast.visitor.VoidVisitorAdapter;
  */
 public class VoidVisitorHelper {
 
+    private static Log log = LogFactory.getLog(VoidVisitorHelper.class);
+
     /**
      * Visits a statement by visitor with some arguments.
      *
@@ -24,6 +28,7 @@ public class VoidVisitorHelper {
      * @param <T>       the type of argument
      */
     public static <T> void visitStatement(Statement statement, T arg, VoidVisitorAdapter<T> visitor) {
+        if (statement != null && arg != null) {
         if (statement instanceof AssertStmt) {
             visitor.visit((AssertStmt) statement, arg);
         } else if (statement instanceof BlockStmt) {
@@ -67,6 +72,9 @@ public class VoidVisitorHelper {
         } else {
             throw new UnsupportedOperationException("VoidVisitorHelper is not support statement for " +
                     statement.getClass() + ".");
+        }
+        } else {
+            log.error("statement=" + statement + " arg=" + arg);
         }
     }
 

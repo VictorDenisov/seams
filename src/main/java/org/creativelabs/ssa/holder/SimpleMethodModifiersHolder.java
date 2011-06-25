@@ -1,5 +1,7 @@
 package org.creativelabs.ssa.holder;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.creativelabs.copy.CopyingUtils;
 import org.creativelabs.introspection.ClassType;
 import org.creativelabs.typefinder.ImportList;
@@ -12,7 +14,10 @@ import java.util.List;
  *         Date: 21.05.11
  *         Time: 11:56
  */
+//TODO: to use it class
 public class SimpleMethodModifiersHolder implements MethodModifiersHolder {
+
+    Log log = LogFactory.getLog(SimpleMethodModifiersHolder.class);
 
     private ImportList importList;
     private ClassType classType;
@@ -26,20 +31,23 @@ public class SimpleMethodModifiersHolder implements MethodModifiersHolder {
     }
 
     @Override
-    public int getModifier(String methodName, List<String> argsNames) {
+    public int getModifier(String methodName, List<String> argsTypes) {
         int modifier = -1;
         try {
-            List<Class> argsTypes = new ArrayList<Class>();
-            for (String argName : argsNames) {
-                argsTypes.add(Class.forName(importList.getClassByShortName(argName).toString()));
+            List<Class> argsTypesCls = new ArrayList<Class>();
+            for (String argName : argsTypes) {
+                argsTypesCls.add(Class.forName(importList.getClassByShortName(argName).toString()));
             }
-            Class clazz = Class.forName(classType.toString());
-            modifier = clazz.getMethod(methodName, argsTypes.toArray(new Class[argsTypes.size()])).getModifiers();
+            String cl = importList.getClassByShortName(classType.getShortString()).toString();
+            Class clazz = Class.forName(cl);
+            modifier = clazz.getMethod(methodName, argsTypesCls.toArray(new Class[argsTypesCls.size()])).getModifiers();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
         }
+        log.error("Error while processing modifier of method[name= " + methodName +
+                "] with args[args=" + argsTypes + "]");
         return modifier;
     }
 

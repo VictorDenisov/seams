@@ -4,13 +4,22 @@ import japa.parser.ast.body.VariableDeclaratorId;
 import japa.parser.ast.expr.*;
 import japa.parser.ast.stmt.*;
 import japa.parser.ast.visitor.VoidVisitorAdapter;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.creativelabs.Constants;
 import org.creativelabs.copy.CopyingUtils;
 import org.creativelabs.helper.VoidVisitorHelper;
+import org.creativelabs.ssa.holder.MethodArgsHolder;
+import org.creativelabs.ssa.holder.SimpleMethodArgsHolder;
 import org.creativelabs.ssa.holder.SimpleUsingModifyingVariablesHolder;
 import org.creativelabs.ssa.holder.UsingModifyingVariablesHolder;
+import org.creativelabs.ssa.holder.variable.StringVariable;
+import org.creativelabs.ssa.holder.variable.Variable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Stores using and modifying variables in statements to statements.
@@ -20,13 +29,22 @@ import java.util.List;
  *         Time: 20:44
  */
 public class UsingModifyingVariablesVisitor extends VoidVisitorAdapter<UsingModifyingVariablesHolder> {
-    //TODO implement all functionality
+
+    private Log log = LogFactory.getLog(UsingModifyingVariablesVisitor.class);
+
+    MethodArgsHolder methodArgsHolder = new SimpleMethodArgsHolder();
+    Set<String> createdVars = new TreeSet<String>();
 
     private boolean isCondition = false;
+    private boolean isObjectCreation = false;
+
+    public UsingModifyingVariablesVisitor(MethodArgsHolder methodArgsHolder) {
+        this.methodArgsHolder = methodArgsHolder;
+    }
 
     @Override
     public void visit(NameExpr n, UsingModifyingVariablesHolder arg) {
-        arg.addUsingVariable(n.getName());
+        arg.addUsingVariable(createVariable(getName(n.getName()), getScope(n.getName()), methodArgsHolder));
         if (isCondition) {
             ((Expression) n).getVariablesHolder().add(arg);
         }
@@ -35,15 +53,17 @@ public class UsingModifyingVariablesVisitor extends VoidVisitorAdapter<UsingModi
     @Override
     public void visit(FieldAccessExpr n, UsingModifyingVariablesHolder arg) {
         VoidVisitorHelper.visitExpression(n.getScope(), arg, this);
-        arg.addUsingVariable(n.getField());
+        arg.addUsingVariable(createVariable(n.getField(), n.getScope().toString(), methodArgsHolder));
     }
 
     @Override
     public void visit(VariableDeclaratorId n, UsingModifyingVariablesHolder arg) {
-        arg.addUsingVariable(n.getName());
-        if (!isCondition) {
-            arg.addModifyingVariable(n.getName());
-        }
+        String name = n.getName();
+        createdVars.add(name);
+            arg.addUsingVariable(createVariable(name, Constants.EMPTY_SCOPE, methodArgsHolder));
+            if (!isCondition) {
+                arg.addModifyingVariable(createVariable(name, Constants.EMPTY_SCOPE, methodArgsHolder));
+            }
     }
 
     @Override
@@ -210,6 +230,42 @@ public class UsingModifyingVariablesVisitor extends VoidVisitorAdapter<UsingModi
             arg.add(updateHolder);
         }
         arg.add(bodyHolder);
+    }
+
+    private Variable createVariable(String name, String scope, MethodArgsHolder methodArgsHolder) {
+        if (scope == null || scope.isEmpty()) {
+            if (methodArgsHolder.containsArgName(name)) {
+                return new StringVariable(name, Constants.ARG_SCOPE);
+            } else {
+                if (createdVars.contains(name)) {
+                    return new StringVariable(name, Constants.EMPTY_SCOPE);
+                }
+                return new StringVariable(name, Constants.THIS_SCOPE);
+            }
+        } else {
+            return new StringVariable(name, scope);
+        }
+    }
+
+    private String getScope(String s) {
+        int i = s.lastIndexOf(".");
+        if (i == -1) {
+            return null;
+        } else {
+            if (s.indexOf(".") != i) {
+                log.warn("Scope is very complex [scope=" + s + "]");
+            }
+            return s.substring(i, s.length());
+        }
+    }
+
+    private String getName(String s) {
+        int i = s.lastIndexOf(".");
+        if (i == -1) {
+            return s;
+        } else {
+            return s.substring(i, s.length());
+        }
     }
 
 }

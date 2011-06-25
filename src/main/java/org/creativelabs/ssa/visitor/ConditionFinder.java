@@ -2,16 +2,21 @@ package org.creativelabs.ssa.visitor;
 
 import japa.parser.ast.expr.*;
 import japa.parser.ast.visitor.GenericVisitorAdapter;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.creativelabs.graph.condition.Condition;
 import org.creativelabs.graph.condition.EmptyCondition;
 import org.creativelabs.graph.condition.bool.FalseBooleanCondition;
 import org.creativelabs.graph.condition.bool.TrueBooleanCondition;
-import org.creativelabs.iig.InternalInstancesGraph;
 import org.creativelabs.helper.GenericVisitorHelper;
+import org.creativelabs.iig.InternalInstancesGraph;
 import org.creativelabs.ssa.PhiNode;
+import org.creativelabs.ssa.holder.MethodArgsHolder;
 import org.creativelabs.ssa.holder.MethodModifiersHolder;
 import org.creativelabs.ssa.holder.PhiNodesHolder;
+import org.creativelabs.ssa.holder.VariablesHolder;
 
+import java.lang.reflect.Modifier;
 import java.util.Set;
 
 import static org.creativelabs.Constants.SEPARATOR;
@@ -23,17 +28,25 @@ import static org.creativelabs.Constants.SEPARATOR;
  */
 public class ConditionFinder extends GenericVisitorAdapter<Condition[], Set<String>> {
 
+    Log log = LogFactory.getLog(ConditionFinder.class);
+
     private InternalInstancesGraph graph;
     private String methodName;
+    private String className;
     private MethodModifiersHolder modifiersHolder;
+    private VariablesHolder variablesHolder;
+    private MethodArgsHolder methodArgsHolder;
     private PhiNodesHolder phiNodesHolder;
 
     private boolean isMethodArgsProcessing = false;
 
-    public ConditionFinder(InternalInstancesGraph graph, String methodName, MethodModifiersHolder modifiersHolder, PhiNodesHolder phiNodesHolder) {
+    public ConditionFinder(InternalInstancesGraph graph, String methodName, String className, MethodModifiersHolder modifiersHolder, VariablesHolder variablesHolder, MethodArgsHolder methodArgsHolder, PhiNodesHolder phiNodesHolder) {
         this.graph = graph;
         this.methodName = methodName;
+        this.className = className;
         this.modifiersHolder = modifiersHolder;
+        this.variablesHolder = variablesHolder;
+        this.methodArgsHolder = methodArgsHolder;
         this.phiNodesHolder = phiNodesHolder;
     }
 
@@ -138,33 +151,32 @@ public class ConditionFinder extends GenericVisitorAdapter<Condition[], Set<Stri
         }
 
         for (PhiNode phiNode : phiNodesHolder.getPhiNodes()) {
-//            TODO bla bla
-//            if (phiNode.getName().indexOf(SEPARATOR) == -1) {
-                if (phiNode.getName().equals(n.getName().substring(0, n.getName().indexOf(SEPARATOR)))) {
-                    Condition[] condition = new Condition[]{new EmptyCondition(), new EmptyCondition()};
-                    for (Integer index : phiNode.getIndexes()) {
-                        condition = applyOrOperationForConditions(
-                                condition,
-                                new Condition[]{
-                                        graph.getInternalVertexCondition(methodName + SEPARATOR + phiNode.getName() + SEPARATOR + index),
-                                        graph.getExternalVertexCondition(methodName + SEPARATOR + phiNode.getName() + SEPARATOR + index)});
-                        graph.addEdge(
-                                methodName + SEPARATOR + phiNode.getName() + SEPARATOR + phiNode.getLeftIndex(),
-                                methodName + SEPARATOR + phiNode.getName() + SEPARATOR + index);
-                    }
-                    graph.addVertexConditions(
+            //TODO
+            if ((n.getName().contains(SEPARATOR)) && phiNode.getName().getName().equals(n.getName().substring(0, n.getName().indexOf(SEPARATOR)))) {
+                Condition[] condition = new Condition[]{new EmptyCondition(), new EmptyCondition()};
+                for (Integer index : phiNode.getIndexes()) {
+                    condition = applyOrOperationForConditions(
+                            condition,
+                            new Condition[]{
+                                    graph.getInternalVertexCondition(methodName + SEPARATOR + phiNode.getName() + SEPARATOR + index),
+                                    graph.getExternalVertexCondition(methodName + SEPARATOR + phiNode.getName() + SEPARATOR + index)});
+                    graph.addEdge(
                             methodName + SEPARATOR + phiNode.getName() + SEPARATOR + phiNode.getLeftIndex(),
-                            condition[0],
-                            condition[1]);
-                    if (n.getName().equals(phiNode.getName() + SEPARATOR + phiNode.getLeftIndex())) {
-                        return condition;
-                    }
+                            methodName + SEPARATOR + phiNode.getName() + SEPARATOR + index);
                 }
-//            }
+                graph.addVertexConditions(
+                        methodName + SEPARATOR + phiNode.getName() + SEPARATOR + phiNode.getLeftIndex(),
+                        condition[0],
+                        condition[1]);
+                if (n.getName().equals(phiNode.getName() + SEPARATOR + phiNode.getLeftIndex())) {
+                    return condition;
+                }
+            }
         }
 
-        throw new IllegalStateException("Variable " + n.getName() + " is not found in graph. " +
-                "Conditions couldn't be processed.");
+        log.error("Variable[name=" + n.getName() + "] is not found in graph.");
+
+        return getDefaultInternalConditions();
     }
 
     @Override
@@ -185,7 +197,7 @@ public class ConditionFinder extends GenericVisitorAdapter<Condition[], Set<Stri
             }
 
             for (PhiNode phiNode : phiNodesHolder.getPhiNodes()) {
-                if (phiNode.getName().equals(n.getField().substring(0, n.getField().indexOf(SEPARATOR)))) {
+                if (phiNode.getName().getName().equals(n.getField().substring(0, n.getField().indexOf(SEPARATOR)))) {
                     Condition[] condition = new Condition[]{new EmptyCondition(), new EmptyCondition()};
                     for (Integer index : phiNode.getIndexes()) {
                         condition = applyOrOperationForConditions(
@@ -207,23 +219,42 @@ public class ConditionFinder extends GenericVisitorAdapter<Condition[], Set<Stri
                 }
             }
         } else {
-//            return GenericVisitorHelper.visitExpression(n.getScope(), arg, this);
+            Condition internalCondition = graph.getInternalVertexCondition(methodName + SEPARATOR +
+                    n.getField());
+            Condition externalCondition = graph.getExternalVertexCondition(methodName + SEPARATOR +
+                    n.getField());
+            if (internalCondition != null && externalCondition != null
+                    && !(internalCondition instanceof EmptyCondition)
+                    && !(externalCondition instanceof EmptyCondition)) {
+                return new Condition[]{internalCondition, externalCondition};
+            }
+
+
+
+            log.info("Processing conditions of inner field[name=" + n.toString() + "].");
             //TODO to implement support of inner fields
             return getDefaultInternalConditions();
         }
 
-        throw new IllegalStateException("Variable " + n.getField() + " is not found in graph. " +
-                "Conditions couldn't be processed.");
+        log.error("Variable[name=" + n.toString() + "] is not found in graph.");
+
+        return getDefaultInternalConditions();
     }
 
     @Override
     public Condition[] visit(MethodCallExpr n, Set<String> arg) {
         isMethodArgsProcessing = true;
-        //TODO to implement!!!!
         arg.add(n.getName());
+        Condition[] conditions;
+
+        if (Modifier.PRIVATE == n.getModifier()) {
+            conditions = getDefaultInternalConditions();
+        } else {
+            conditions = getDefaultExternalConditions();
+        }
+
         isMethodArgsProcessing = false;
-//        modifiersHolder.
-        return getDefaultInternalConditions();
+        return conditions;
     }
 
     @Override

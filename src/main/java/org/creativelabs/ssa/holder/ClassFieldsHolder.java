@@ -20,4 +20,15 @@ public interface ClassFieldsHolder extends Copyable {
     boolean containsFieldName(String fieldName);
 
     int getCountOfFieldNames();
+
+
+    void addCreated(String name);
+    void addCreated(Collection<String> names);
+
+    Set<String> getCreated();
+    void setCreated(Set<String> names);
+
+    boolean containsCreated(String name);
+
+    int getCountOfCreated();
 }

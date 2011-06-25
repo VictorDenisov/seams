@@ -15,7 +15,8 @@ import java.util.*;
  */
 public class ConditionInternalInstancesGraph implements InternalInstancesGraph {
     private Set<String> allVertexes = new HashSet<String>();
-    private List<String> fromVertexes = new ArrayList<String>();
+    private List<String>
+            fromVertexes = new ArrayList<String>();
     private List<String> toVertexes = new ArrayList<String>();
     private Map<String, Condition> internalVertexConditions = new HashMap<String, Condition>();
     private Map<String, Condition> externalVertexConditions = new HashMap<String, Condition>();

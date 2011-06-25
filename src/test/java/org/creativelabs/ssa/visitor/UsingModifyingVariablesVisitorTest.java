@@ -7,9 +7,11 @@ import japa.parser.ast.expr.Expression;
 import japa.parser.ast.expr.NameExpr;
 import japa.parser.ast.expr.VariableDeclarationExpr;
 import japa.parser.ast.stmt.*;
+import org.creativelabs.ssa.holder.MethodArgsHolder;
+import org.creativelabs.ssa.holder.SimpleMethodArgsHolder;
 import org.creativelabs.ssa.holder.SimpleUsingModifyingVariablesHolder;
 import org.creativelabs.typefinder.ParseHelper;
-import org.testng.annotations.Test;
+import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
@@ -23,14 +25,19 @@ import static org.junit.Assert.assertEquals;
  */
 public class UsingModifyingVariablesVisitorTest {
 
+    MethodArgsHolder createMethodArgs() {
+        MethodArgsHolder holder = new SimpleMethodArgsHolder();
+        return holder;
+    }
+
     @Test
     public void testNameExpr() throws ParseException {
         NameExpr expr = (NameExpr) ParseHelper.createExpression("name");
 
         SimpleUsingModifyingVariablesHolder holder = new SimpleUsingModifyingVariablesHolder();
-        new UsingModifyingVariablesVisitor().visit(expr, holder);
+        new UsingModifyingVariablesVisitor(createMethodArgs()).visit(expr, holder);
 
-        assertEquals("[name]", holder.getUsingVariables().toString());
+        assertEquals("[this.name]", holder.getUsingVariables().toString());
         assertEquals("[]", holder.getModifyingVariables().toString());
     }
 
@@ -39,10 +46,10 @@ public class UsingModifyingVariablesVisitorTest {
         AssignExpr expr = (AssignExpr) ParseHelper.createExpression("a = b");
 
         SimpleUsingModifyingVariablesHolder holder = new SimpleUsingModifyingVariablesHolder();
-        new UsingModifyingVariablesVisitor().visit(expr, holder);
+        new UsingModifyingVariablesVisitor(createMethodArgs()).visit(expr, holder);
 
-        assertEquals("[a, b]", holder.getUsingVariables().toString());
-        assertEquals("[a]", holder.getModifyingVariables().toString());
+        assertEquals("[this.a, this.b]", holder.getUsingVariables().toString());
+        assertEquals("[this.a]", holder.getModifyingVariables().toString());
     }
 
     @Test
@@ -50,10 +57,10 @@ public class UsingModifyingVariablesVisitorTest {
         AssignExpr expr = (AssignExpr) ParseHelper.createExpression("a = method(b)");
 
         SimpleUsingModifyingVariablesHolder holder = new SimpleUsingModifyingVariablesHolder();
-        new UsingModifyingVariablesVisitor().visit(expr, holder);
+        new UsingModifyingVariablesVisitor(createMethodArgs()).visit(expr, holder);
 
-        assertEquals("[a, b]", holder.getUsingVariables().toString());
-        assertEquals("[a]", holder.getModifyingVariables().toString());
+        assertEquals("[this.a, this.b]", holder.getUsingVariables().toString());
+        assertEquals("[this.a]", holder.getModifyingVariables().toString());
     }
 
     @Test
@@ -61,9 +68,9 @@ public class UsingModifyingVariablesVisitorTest {
         VariableDeclarationExpr expr = (VariableDeclarationExpr) ParseHelper.createExpression("int a = b;");
 
         SimpleUsingModifyingVariablesHolder holder = new SimpleUsingModifyingVariablesHolder();
-        new UsingModifyingVariablesVisitor().visit(expr, holder);
+        new UsingModifyingVariablesVisitor(createMethodArgs()).visit(expr, holder);
 
-        assertEquals("[a, b]", holder.getUsingVariables().toString());
+        assertEquals("[a, this.b]", holder.getUsingVariables().toString());
         assertEquals("[]", holder.getModifyingVariables().toString());
     }
 
@@ -72,9 +79,9 @@ public class UsingModifyingVariablesVisitorTest {
         VariableDeclarationExpr expr = (VariableDeclarationExpr) ParseHelper.createExpression("int a = method(b);");
 
         SimpleUsingModifyingVariablesHolder holder = new SimpleUsingModifyingVariablesHolder();
-        new UsingModifyingVariablesVisitor().visit(expr, holder);
+        new UsingModifyingVariablesVisitor(createMethodArgs()).visit(expr, holder);
 
-        assertEquals("[a, b]", holder.getUsingVariables().toString());
+        assertEquals("[a, this.b]", holder.getUsingVariables().toString());
         assertEquals("[]", holder.getModifyingVariables().toString());
     }
 
@@ -89,7 +96,9 @@ public class UsingModifyingVariablesVisitorTest {
                 "}");
 
         SimpleUsingModifyingVariablesHolder holder = new SimpleUsingModifyingVariablesHolder();
-        new UsingModifyingVariablesVisitor().visit(methodDeclaration.getBody(), holder);
+        MethodArgsHolder methodArgs = createMethodArgs();
+        methodArgs.addArgName("x");
+        new UsingModifyingVariablesVisitor(methodArgs).visit(methodDeclaration.getBody(), holder);
 
         //check condition
         assertEquals("[x]", ((Expression) ((IfStmt) methodDeclaration.getBody().getStmts().get(0)).getCondition()).
@@ -130,7 +139,10 @@ public class UsingModifyingVariablesVisitorTest {
                 "}");
 
         SimpleUsingModifyingVariablesHolder holder = new SimpleUsingModifyingVariablesHolder();
-        new UsingModifyingVariablesVisitor().visit(methodDeclaration.getBody(), holder);
+        MethodArgsHolder methodArgs = createMethodArgs();
+        methodArgs.addArgName("x");
+        methodArgs.addArgName("z");
+        new UsingModifyingVariablesVisitor(methodArgs).visit(methodDeclaration.getBody(), holder);
 
         //check basic block
         assertEquals("[x, y, z]", ((Statement) methodDeclaration.getBody()).
@@ -182,10 +194,12 @@ public class UsingModifyingVariablesVisitorTest {
                 "}");
 
         SimpleUsingModifyingVariablesHolder holder = new SimpleUsingModifyingVariablesHolder();
-        new UsingModifyingVariablesVisitor().visit(methodDeclaration.getBody(), holder);
+        MethodArgsHolder methodArgs = createMethodArgs();
+        methodArgs.addArgName("x");
+        new UsingModifyingVariablesVisitor(methodArgs).visit(methodDeclaration.getBody(), holder);
 
         //check basic block
-        assertEquals("[x, z]", ((Statement) methodDeclaration.getBody()).
+        assertEquals("[x, this.z]", ((Statement) methodDeclaration.getBody()).
                 getVariablesHolder().getUsingVariables().toString());
         assertEquals("[x]", ((Statement) methodDeclaration.getBody()).
                 getVariablesHolder().getModifyingVariables().toString());
@@ -197,7 +211,7 @@ public class UsingModifyingVariablesVisitorTest {
                 getVariablesHolder().getModifyingVariables().toString());
 
         //check then
-        assertEquals("[x, z]", ((Statement) ((WhileStmt) methodDeclaration.getBody().getStmts().get(0)).getBody()).
+        assertEquals("[x, this.z]", ((Statement) ((WhileStmt) methodDeclaration.getBody().getStmts().get(0)).getBody()).
                 getVariablesHolder().getUsingVariables().toString());
         assertEquals("[x]", ((Statement) ((WhileStmt) methodDeclaration.getBody().getStmts().get(0)).getBody()).
                 getVariablesHolder().getModifyingVariables().toString());
@@ -215,22 +229,24 @@ public class UsingModifyingVariablesVisitorTest {
                 "}");
 
         SimpleUsingModifyingVariablesHolder holder = new SimpleUsingModifyingVariablesHolder();
-        new UsingModifyingVariablesVisitor().visit(methodDeclaration.getBody(), holder);
+        MethodArgsHolder methodArgs = createMethodArgs();
+        methodArgs.addArgName("x");
+        new UsingModifyingVariablesVisitor(methodArgs).visit(methodDeclaration.getBody(), holder);
 
         //check basic block
-        assertEquals("[x, y, z]", ((Statement) methodDeclaration.getBody()).
+        assertEquals("[x, this.y, this.z]", ((Statement) methodDeclaration.getBody()).
                 getVariablesHolder().getUsingVariables().toString());
         assertEquals("[x]", ((Statement) methodDeclaration.getBody()).
                 getVariablesHolder().getModifyingVariables().toString());
 
         //check condition
-        assertEquals("[y]", ((Expression) ((WhileStmt) methodDeclaration.getBody().getStmts().get(0)).getCondition()).
+        assertEquals("[this.y]", ((Expression) ((WhileStmt) methodDeclaration.getBody().getStmts().get(0)).getCondition()).
                 getVariablesHolder().getUsingVariables().toString());
         assertEquals("[]", ((Expression) ((WhileStmt) methodDeclaration.getBody().getStmts().get(0)).getCondition()).
                 getVariablesHolder().getModifyingVariables().toString());
 
         //check then
-        assertEquals("[x, z]", ((Statement) ((WhileStmt) methodDeclaration.getBody().getStmts().get(0)).getBody()).
+        assertEquals("[x, this.z]", ((Statement) ((WhileStmt) methodDeclaration.getBody().getStmts().get(0)).getBody()).
                 getVariablesHolder().getUsingVariables().toString());
         assertEquals("[x]", ((Statement) ((WhileStmt) methodDeclaration.getBody().getStmts().get(0)).getBody()).
                 getVariablesHolder().getModifyingVariables().toString());
@@ -244,7 +260,7 @@ public class UsingModifyingVariablesVisitorTest {
                 getVariablesHolder().getModifyingVariables().toString());
 
         //check nested then
-        assertEquals("[x, z]", ((Statement) ((WhileStmt) ((BlockStmt) ((WhileStmt) methodDeclaration.getBody().
+        assertEquals("[x, this.z]", ((Statement) ((WhileStmt) ((BlockStmt) ((WhileStmt) methodDeclaration.getBody().
                 getStmts().get(0)).getBody()).getStmts().get(0)).getBody()).
                 getVariablesHolder().getUsingVariables().toString());
         assertEquals("[x]", ((Statement) ((WhileStmt) ((BlockStmt) ((WhileStmt) methodDeclaration.getBody().
@@ -260,7 +276,9 @@ public class UsingModifyingVariablesVisitorTest {
                 "}");
 
         SimpleUsingModifyingVariablesHolder holder = new SimpleUsingModifyingVariablesHolder();
-        new UsingModifyingVariablesVisitor().visit(methodDeclaration.getBody(), holder);
+        MethodArgsHolder methodArgs = createMethodArgs();
+        methodArgs.addArgName("x");
+        new UsingModifyingVariablesVisitor(methodArgs).visit(methodDeclaration.getBody(), holder);
 
         //check condition
         assertEquals("[x]", ((Expression) ((IfStmt) methodDeclaration.getBody().getStmts().get(0)).getCondition()).
@@ -277,7 +295,9 @@ public class UsingModifyingVariablesVisitorTest {
                 "}");
 
         SimpleUsingModifyingVariablesHolder holder = new SimpleUsingModifyingVariablesHolder();
-        new UsingModifyingVariablesVisitor().visit(methodDeclaration.getBody(), holder);
+        MethodArgsHolder methodArgs = createMethodArgs();
+        methodArgs.addArgName("x");
+        new UsingModifyingVariablesVisitor(methodArgs).visit(methodDeclaration.getBody(), holder);
 
         //check condition
         assertEquals("[x]", ((Expression) ((IfStmt) methodDeclaration.getBody().getStmts().get(0)).getCondition()).
@@ -294,7 +314,9 @@ public class UsingModifyingVariablesVisitorTest {
                 "}");
 
         SimpleUsingModifyingVariablesHolder holder = new SimpleUsingModifyingVariablesHolder();
-        new UsingModifyingVariablesVisitor().visit(methodDeclaration.getBody(), holder);
+        MethodArgsHolder methodArgs = createMethodArgs();
+        methodArgs.addArgName("x");
+        new UsingModifyingVariablesVisitor(methodArgs).visit(methodDeclaration.getBody(), holder);
 
         //check condition
         assertEquals("[x]", ((Expression) ((IfStmt) methodDeclaration.getBody().getStmts().get(0)).getCondition()).
@@ -305,19 +327,20 @@ public class UsingModifyingVariablesVisitorTest {
 
     @Test
     public void testForeachStmt() throws Exception {
-        MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("void method(int x, int[] arr){" +
+        //TODO arr processing
+        MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("void method(int[] arr){" +
                 "for (int x : arr) {" +
                 "    z = x - 1;" +
                 "}" +
                 "}");
 
         SimpleUsingModifyingVariablesHolder holder = new SimpleUsingModifyingVariablesHolder();
-        new UsingModifyingVariablesVisitor().visit(methodDeclaration.getBody(), holder);
+        new UsingModifyingVariablesVisitor(createMethodArgs()).visit(methodDeclaration.getBody(), holder);
 
         //check basic block
-        assertEquals("[x, z]", ((Statement) methodDeclaration.getBody()).
+        assertEquals("[x, this.z]", ((Statement) methodDeclaration.getBody()).
                 getVariablesHolder().getUsingVariables().toString());
-        assertEquals("[z]", ((Statement) methodDeclaration.getBody()).
+        assertEquals("[this.z]", ((Statement) methodDeclaration.getBody()).
                 getVariablesHolder().getModifyingVariables().toString());
 
         //check condition
@@ -327,9 +350,9 @@ public class UsingModifyingVariablesVisitorTest {
                 getVariablesHolder().getModifyingVariables().toString());
 
         //check body
-        assertEquals("[x, z]", ((Statement) ((ForeachStmt) methodDeclaration.getBody().getStmts().get(0)).getBody()).
+        assertEquals("[x, this.z]", ((Statement) ((ForeachStmt) methodDeclaration.getBody().getStmts().get(0)).getBody()).
                 getVariablesHolder().getUsingVariables().toString());
-        assertEquals("[z]", ((Statement) ((ForeachStmt) methodDeclaration.getBody().getStmts().get(0)).getBody()).
+        assertEquals("[this.z]", ((Statement) ((ForeachStmt) methodDeclaration.getBody().getStmts().get(0)).getBody()).
                 getVariablesHolder().getModifyingVariables().toString());
     }
 
@@ -342,12 +365,12 @@ public class UsingModifyingVariablesVisitorTest {
                 "}");
 
         SimpleUsingModifyingVariablesHolder holder = new SimpleUsingModifyingVariablesHolder();
-        new UsingModifyingVariablesVisitor().visit(methodDeclaration.getBody(), holder);
+        new UsingModifyingVariablesVisitor(createMethodArgs()).visit(methodDeclaration.getBody(), holder);
 
         //check basic block
-        assertEquals("[i, x, z]", ((Statement) methodDeclaration.getBody()).
+        assertEquals("[i, this.x, this.z]", ((Statement) methodDeclaration.getBody()).
                 getVariablesHolder().getUsingVariables().toString());
-        assertEquals("[z]", ((Statement) methodDeclaration.getBody()).
+        assertEquals("[this.z]", ((Statement) methodDeclaration.getBody()).
                 getVariablesHolder().getModifyingVariables().toString());
 
         //check init
@@ -357,7 +380,7 @@ public class UsingModifyingVariablesVisitorTest {
                 getVariablesHolder().getModifyingVariables().toString());
 
         //check condition
-        assertEquals("[i, x]", ((Expression) ((ForStmt) methodDeclaration.getBody().getStmts().get(0)).getCompare()).
+        assertEquals("[i, this.x]", ((Expression) ((ForStmt) methodDeclaration.getBody().getStmts().get(0)).getCompare()).
                 getVariablesHolder().getUsingVariables().toString());
         assertEquals("[]", ((Expression) ((ForStmt) methodDeclaration.getBody().getStmts().get(0)).getCompare()).
                 getVariablesHolder().getModifyingVariables().toString());
@@ -370,11 +393,10 @@ public class UsingModifyingVariablesVisitorTest {
 //                getVariablesHolder().getModifyingVariables().toString());
 
         //check body
-        assertEquals("[i, x, z]", ((Statement) ((ForStmt) methodDeclaration.getBody().getStmts().get(0)).getBody()).
+        assertEquals("[i, this.x, this.z]", ((Statement) ((ForStmt) methodDeclaration.getBody().getStmts().get(0)).getBody()).
                 getVariablesHolder().getUsingVariables().toString());
-        assertEquals("[z]", ((Statement) ((ForStmt) methodDeclaration.getBody().getStmts().get(0)).getBody()).
+        assertEquals("[this.z]", ((Statement) ((ForStmt) methodDeclaration.getBody().getStmts().get(0)).getBody()).
                 getVariablesHolder().getModifyingVariables().toString());
     }
-
 
 }

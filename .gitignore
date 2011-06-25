@@ -4,6 +4,8 @@ patches
 .idea
 seams.iml
 *.deps
+*.error
+*.svg
 *.dot
 *.jpg
 *.png

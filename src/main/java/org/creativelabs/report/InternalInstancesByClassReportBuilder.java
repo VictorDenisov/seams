@@ -1,5 +1,6 @@
 package org.creativelabs.report;
 
+import org.creativelabs.ssa.SsaError;
 import org.creativelabs.typefinder.Dependency;
 import org.creativelabs.drawer.ChartDrawer;
 import org.creativelabs.iig.InternalInstancesGraph;
@@ -31,6 +32,10 @@ public class InternalInstancesByClassReportBuilder implements ReportBuilder {
 
     @Override
     public void setSsaFormRepresentations(String className, Set<SsaFormRepresentation> ssaFormRepresentations) {
+    }
+
+    @Override
+    public void setSsaErrors(String className, Set<SsaError> ssaErrors) {
     }
 
     public JFreeChart getChart() throws Exception {

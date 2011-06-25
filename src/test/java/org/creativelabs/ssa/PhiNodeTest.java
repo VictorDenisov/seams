@@ -1,18 +1,19 @@
 package org.creativelabs.ssa;
 
 
-import org.creativelabs.ssa.PhiNode;
+import org.creativelabs.Constants;
+import org.creativelabs.ssa.holder.variable.StringVariable;
 import org.testng.annotations.Test;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 public class PhiNodeTest {
 
     @Test
     public void testCreationOfExprStmt() {
-        PhiNode phiNode = new PhiNode("x", 2, 0, 1);
+        PhiNode phiNode = new PhiNode(new StringVariable("x", Constants.THIS_SCOPE), 2, 0, 1);
 
-        String expectedResult = "x#2 = #phi(x#0, x#1);";
+        String expectedResult = "this.x#2 = #phi(this.x#0, this.x#1);";
 
         String actualResult = phiNode.convertToExprStmt().toString();
 
