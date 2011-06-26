@@ -5,6 +5,7 @@ import japa.parser.ast.expr.*;
 import japa.parser.ast.visitor.GenericVisitorAdapter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.creativelabs.ClassProcessor;
 import org.creativelabs.Constants;
 import org.creativelabs.helper.GenericVisitorHelper;
 import org.creativelabs.iig.InternalInstancesGraph;
@@ -95,9 +96,8 @@ public class ExpressionStmtVisitor extends GenericVisitorAdapter<Expression, Mul
             n.setName(variableName + Constants.SEPARATOR + variableIndex);
         } else {
 
-            log.info("variable [name=" + variableName
-                    + "] is not contain in variables list in method [name=" + methodName
-                    + "] for class [name=" + className + "]");
+            log.info(ClassProcessor.debugInfo + "variable [name=" + variableName
+                    + "] is not contain in variables list.");
 //            n.setName(variable.getString() + Constants.SEPARATOR + "0");
         }
 
@@ -238,11 +238,16 @@ public class ExpressionStmtVisitor extends GenericVisitorAdapter<Expression, Mul
         for (VariableDeclarator variableDeclarator : vars) {
             String variableName = variableDeclarator.getId().getName();
             arg.getFieldsHolder().addCreated(variableName);
-            arg.write(new StringVariable(variableName, Constants.EMPTY_SCOPE), 0);
+            Variable variable = new StringVariable(variableName, Constants.EMPTY_SCOPE);
+            if (arg.read(variable) == null) {
+                arg.write(variable, 0);
+            } else {
+                arg.increaseIndex(variable);
+            }
             if (variableDeclarator.getInit() != null) {
                 variableDeclarator.setInit(GenericVisitorHelper.visitExpression(variableDeclarator.getInit(), arg, this));
             }
-            variableDeclarator.getId().setName(variableName + Constants.SEPARATOR + 0);
+            variableDeclarator.getId().setName(variableName + Constants.SEPARATOR + arg.read(variable));
 
             String target = methodName + Constants.SEPARATOR + variableName;
 

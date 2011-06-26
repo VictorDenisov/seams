@@ -21,8 +21,11 @@ import org.creativelabs.typefinder.DependencyCounterVisitorBuilder;
 
 import java.util.*;
 
-class ClassProcessor {
+public class ClassProcessor {
+
     private ClassOrInterfaceDeclaration typeDeclaration;
+
+    public static String debugInfo;
 
     protected Map<String, Collection<Dependency>> dependencies = new HashMap<String, Collection<Dependency>>();
 
@@ -117,6 +120,8 @@ class ClassProcessor {
     }
 
     void buildInternalInstancesGraph(MethodDeclaration md) {
+         debugInfo = "Class name = " + typeDeclaration.getName() +
+                 "; method name = " + md.getName() + "; ";
         Map<Variable, Integer> variables = new HashMap<Variable, Integer>();
         Set<String> fields = new HashSet<String>();
         for (BodyDeclaration bd : typeDeclaration.getMembers()) {
@@ -144,6 +149,10 @@ class ClassProcessor {
         SimpleMultiHolder holder = holderBuilder.buildMultiHolder();
         try {
             visitor.visit(md, holder);
+            if (md == null) {
+                //TODO find why md can be null
+                md = new MethodDeclaration();
+            }
         } catch (RuntimeException e) {
             errors.add(new SsaError(md, e, typeDeclaration.getName()));
         }

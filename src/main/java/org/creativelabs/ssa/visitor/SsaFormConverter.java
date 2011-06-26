@@ -105,6 +105,13 @@ public class SsaFormConverter extends VoidVisitorAdapter<MultiHolder> {
         thenVariables.setBasicBlockCondition(thenVariables.getBasicBlockCondition().and(new StringCondition(n.getCondition().toString())));
 
         Statement thenStmt = n.getThenStmt();
+
+        if (!(thenStmt instanceof BlockStmt)) {
+            BlockStmt blockStmt = new BlockStmt();
+            blockStmt.setStmts(Arrays.asList(thenStmt));
+            n.setThenStmt(blockStmt);
+        }
+
         getVoidStmt(thenStmt, thenVariables);
 
 
@@ -112,6 +119,11 @@ public class SsaFormConverter extends VoidVisitorAdapter<MultiHolder> {
         Statement elseStmt = n.getElseStmt();
         MultiHolder elseVariables;
         if (elseStmt != null) {
+            if (!(elseStmt instanceof BlockStmt)) {
+                BlockStmt blockStmt = new BlockStmt();
+                blockStmt.setStmts(Arrays.asList(elseStmt));
+                n.setElseStmt(blockStmt);
+            }
             elseVariables = thenVariables.copy();
             elseVariables.setReadVariables(arg.getReadVariables());
             elseVariables.setBasicBlockCondition(arg.getBasicBlockCondition().<Condition>copy());
@@ -145,12 +157,6 @@ public class SsaFormConverter extends VoidVisitorAdapter<MultiHolder> {
         Set<Variable> conditionVariable = ((Expression) n.getCompare()).getVariablesHolder().getUsingVariables();
         for (Variable variable : updateVariables) {
             if (conditionVariable.contains(variable)) {
-//                beforeWhilePhiNodes.add(new PhiNode(
-//                        variable,
-//                        1,
-//                        PhiNode.Mode.BEFORE,
-//                        0));
-//                        arg.write(variable, 1);
                 assigningVariables.add(variable);
             }
         }

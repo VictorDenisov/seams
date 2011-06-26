@@ -1165,12 +1165,16 @@ public class SsaFormConverterTest {
                 "public static <T> void visitComment(Comment comment#0, T arg#0, VoidVisitorAdapter<T> visitor#0) {\n" +
                         "    if (comment#0 instanceof LineComment) {\n" +
                         "        visitor#0.visit((LineComment) comment#0, arg#0);\n" +
-                        "    } else if (comment#0 instanceof BlockComment) {\n" +
-                        "        visitor#0.visit((BlockComment) comment#0, arg#0);\n" +
-                        "    } else if (comment#0 instanceof JavadocComment) {\n" +
-                        "        visitor#0.visit((JavadocComment) comment#0, arg#0);\n" +
                         "    } else {\n" +
-                        "        throw new UnsupportedOperationException(\"VoidVisitorHelper is not support comment for \" + comment.getClass() + \".\");\n" +
+                        "        if (comment#0 instanceof BlockComment) {\n" +
+                        "            visitor#0.visit((BlockComment) comment#0, arg#0);\n" +
+                        "        } else {\n" +
+                        "            if (comment#0 instanceof JavadocComment) {\n" +
+                        "                visitor#0.visit((JavadocComment) comment#0, arg#0);\n" +
+                        "            } else {\n" +
+                        "                throw new UnsupportedOperationException(\"VoidVisitorHelper is not support comment for \" + comment.getClass() + \".\");\n" +
+                        "            }\n" +
+                        "        }\n" +
                         "    }\n" +
                         "}";
 
@@ -1217,6 +1221,38 @@ public class SsaFormConverterTest {
                 "        return createErrorClassType(e#0.toString());\n" +
                 "    }\n" +
                 "}";
+
+        assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
+    public void testVarDeclInForeachStmt() throws Exception {
+
+        MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("public void visit(VariableDeclarationExpr n, Object o) {\n" +
+                "        for (VariableDeclarator v : n.getVars()) {\n" +
+                "            ClassType classType = imports.getClassByType(n.getType());\n" +
+                "            classType = ReflectionAbstractionImpl.create()\n" +
+                "                .convertToArray(classType, v.getId().getArrayCount());\n" +
+                "\n" +
+                "            localVariables.put(v.getId().getName(), classType);\n" +
+                "            ExpressionSeparatorVisitor esv = new ExpressionSeparatorVisitor(internalInstances);\n" +
+                "            if (v.getInit() != null) {\n" +
+                "                v.getInit().accept(esv, null);\n" +
+                "                if (esv.isAssignedInternalInstance()) {\n" +
+                "                    internalInstances.addEdge(v.getId().getName(), esv.getValue());\n" +
+                "                }\n" +
+                "            }\n" +
+                "        }\n" +
+                "        super.visit(n, o);\n" +
+                "    }");
+
+        SsaFormConverter visitor = new SsaFormConverter();
+        visitor.visit(methodDeclaration, createVariablesHolder(
+                new HashMap<Variable, Integer>()));
+        String actualResult = visitor.getMethodDeclaration().toString();
+
+        String expectedResult =
+                "";
 
         assertEquals(expectedResult, actualResult);
     }
@@ -1396,9 +1432,11 @@ public class SsaFormConverterTest {
 
         String expectedResult =
                 "void buildGraph(GraphBuilder graphBuilder#0) {\n" +
-                        "    for (int i#0 = 0; i#0 < this.fromVertexes#0.size(); i#1++) {\n" +
-                        "        Vertex a#0 = this.map#0.get(this.fromVertexes#0.get(i#1));\n" +
-                        "        Vertex b#0 = this.map#0.get(this.toVertexes#0.get(i#1));\n" +
+                        "    i#1 = #phi(i#0, i#2);\n" +
+                        "    for (int i#0 = 0; i#1 < this.fromVertexes#0.size(); i#2++) {\n" +
+                        "        i#2 = #phi(i#1, i#2);\n" +
+                        "        Vertex a#0 = this.map#0.get(this.fromVertexes#0.get(i#2));\n" +
+                        "        Vertex b#0 = this.map#0.get(this.toVertexes#0.get(i#2));\n" +
                         "        graphBuilder#0.addEdge(a#0, b#0);\n" +
                         "    }\n" +
                         "}";

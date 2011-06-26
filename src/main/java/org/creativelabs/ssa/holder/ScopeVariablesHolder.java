@@ -2,6 +2,7 @@ package org.creativelabs.ssa.holder;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.creativelabs.ClassProcessor;
 import org.creativelabs.ssa.holder.variable.Variable;
 
 import java.util.*;
@@ -109,11 +110,11 @@ public class ScopeVariablesHolder implements VariablesHolder {
         Integer index2 = readFrom(variableName, true);
         if (index1 == null) {
             index1 = -1;
-            log.error("Error while getting phi indexes for variable = " + variableName.getString());
+            log.error(ClassProcessor.debugInfo + "Error while getting phi indexes for variable = " + variableName.getString());
         }
         if (index2 == null) {
             index2 = -1;
-            log.error("Error while getting phi indexes for variable = " + variableName.getString());
+            log.error(ClassProcessor.debugInfo + "Error while getting phi indexes for variable = " + variableName.getString());
         }
         return new Integer[] {Math.min(index1, index2),
                 Math.max(index1, index2)};
@@ -127,12 +128,12 @@ public class ScopeVariablesHolder implements VariablesHolder {
         if (readVariables.containsKey(variableName)) {
             readVariables.put(variableName.<Variable>copy(), readVariables.get(variableName) + 1);
         } else {
-            log.warn("Error while increase phi index for variable = " + variableName.getString());
+            log.warn(ClassProcessor.debugInfo + "Error while increase phi index for variable = " + variableName.getString());
         }
         if (writeVariables.containsKey(variableName)) {
             writeVariables.put(variableName.<Variable>copy(), writeVariables.get(variableName) + 1);
         } else {
-            log.warn("Error while increase phi index for variable = " + variableName.getString());
+            log.warn(ClassProcessor.debugInfo + "Error while increase phi index for variable = " + variableName.getString());
         }
     }
 
@@ -141,7 +142,7 @@ public class ScopeVariablesHolder implements VariablesHolder {
         if (getCurrentVariables(read).containsKey(variableName)) {
             getCurrentVariables(read).put(variableName, getCurrentVariables(read).get(variableName) + 1);
         } else {
-            log.warn("Error while increase phi index for variable = " + variableName.getString());
+            log.warn(ClassProcessor.debugInfo + "Error while increase phi index for variable = " + variableName.getString());
         }
     }
 
