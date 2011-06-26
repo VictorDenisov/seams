@@ -12,7 +12,28 @@ import org.jfree.data.category.DefaultCategoryDataset;
 
 public class InternalInstancesByClassReportBuilder implements ReportBuilder {
 
-    protected Map<String, Integer> internalInstancesCount = new HashMap<String, Integer>();
+    private static class Pair implements Comparable<Pair> {
+        private String name;
+
+        private int count;
+
+        private Pair(String name, int count) {
+            this.name = name;
+            this.count = count;
+        }
+
+        public int compareTo(Pair p) {
+            if (count < p.count) {
+                return -1;
+            }
+            if (count > p.count) {
+                return 1;
+            }
+            return 0;
+        }
+    }
+
+    protected ArrayList<Pair> internalInstancesCount = new ArrayList<Pair>();
 
     public void setDependencies(String className, Map<String, Collection<Dependency>> dependencies) {
     }
@@ -22,10 +43,11 @@ public class InternalInstancesByClassReportBuilder implements ReportBuilder {
         for (Map.Entry<String, InternalInstancesGraph> entry : instances.entrySet()) {
             answer += entry.getValue().toSet().size();
         }
-        internalInstancesCount.put(className, answer);
+        internalInstancesCount.add(new Pair(className, answer));
     }
 
-    public JFreeChart getChart() throws Exception {
+    /*
+    private JFreeChart getChart() throws Exception {
         DefaultCategoryDataset dataSet = new DefaultCategoryDataset();
 
         for (String className : internalInstancesCount.keySet()) {
@@ -41,11 +63,51 @@ public class InternalInstancesByClassReportBuilder implements ReportBuilder {
                 PlotOrientation.VERTICAL,
                 true, true, false);
     }
+    */
+    private int count = 0;
+    private int bunchNumber = 0;
+    private DefaultCategoryDataset dataSet;
+    private final int CHART_WIDTH = 1000;
+    private final int CHART_HEIGHT = 500;
+
+    private void outputChart(String name) throws Exception {
+        ++bunchNumber;
+        count = 0;
+
+        JFreeChart chart = ChartFactory.createBarChart(
+                "Internal instances per class",
+                "Classes",
+                "Value",
+                dataSet,
+                PlotOrientation.VERTICAL,
+                true, true, false);
+
+        new ChartDrawer(chart)
+            .saveToFile(CHART_WIDTH, CHART_HEIGHT, name + bunchNumber);
+
+        dataSet = new DefaultCategoryDataset();
+    }
 
     public void saveToFile(String name) throws Exception {
-            final int CHART_WIDTH = 1000;
-            final int CHART_HEIGHT = 500;
-            new ChartDrawer(getChart())
-                .saveToFile(CHART_WIDTH, CHART_HEIGHT, name);
+        Collections.sort(internalInstancesCount);
+        dataSet = new DefaultCategoryDataset();
+        count = 0;
+        bunchNumber = 0;
+
+        for (Pair pair : internalInstancesCount) {
+            String className = pair.name;
+            int value = pair.count;
+
+            dataSet.addValue(value, "internal instances", className);
+
+            ++count;
+            if (count == 30) {
+                outputChart(name);
+            }
+            
+        }
+        if (count > 0) {
+            outputChart(name);
+        }
     }
 }

@@ -63,6 +63,6 @@ public class DataCollector implements ReportBuilder {
     public void buildInternalInstancesByClassReport() throws Exception {
         InternalInstancesByClassReportBuilder report = new InternalInstancesByClassReportBuilder();
         buildReport(report);
-        report.saveToFile("internal_instances_by_class.jpg");
+        report.saveToFile("internal_instances_by_class");
     }
 }
