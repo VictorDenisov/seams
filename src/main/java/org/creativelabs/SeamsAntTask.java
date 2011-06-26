@@ -26,6 +26,7 @@ public class SeamsAntTask extends MatchingTask {
     public SeamsAntTask() {
         supportedReports.add("deps-graph");
         supportedReports.add("deps-detail");
+        supportedReports.add("int-inst-chart");
         supportedReports.add("errors");
     }
 
@@ -194,6 +195,9 @@ public class SeamsAntTask extends MatchingTask {
                 //TODO Duplicating with constructor
                 if (report.name.equals("deps-detail")) {
                     dataCollector.buildDetailedDependencyReport();
+                }
+                if (report.name.equals("int-inst-chart")) {
+                    dataCollector.buildInternalInstancesByClassReport();
                 }
                 if (report.name.equals("errors")) {
                     dataCollector.buildNumberOfErrorsReport();

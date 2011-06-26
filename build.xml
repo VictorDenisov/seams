@@ -5,8 +5,8 @@
 
 	<target name="main">
 		<seams>
-			<report name="deps-graph"/>
 			<report name="deps-detail"/>
+			<report name="int-inst-chart"/>
 			<report name="errors"/>
 
 			<classpath>
