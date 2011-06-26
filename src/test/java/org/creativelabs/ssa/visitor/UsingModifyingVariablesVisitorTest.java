@@ -26,8 +26,7 @@ import static org.junit.Assert.assertEquals;
 public class UsingModifyingVariablesVisitorTest {
 
     MethodArgsHolder createMethodArgs() {
-        MethodArgsHolder holder = new SimpleMethodArgsHolder();
-        return holder;
+        return new SimpleMethodArgsHolder();
     }
 
     @Test
@@ -396,6 +395,34 @@ public class UsingModifyingVariablesVisitorTest {
         assertEquals("[i, this.x, this.z]", ((Statement) ((ForStmt) methodDeclaration.getBody().getStmts().get(0)).getBody()).
                 getVariablesHolder().getUsingVariables().toString());
         assertEquals("[this.z]", ((Statement) ((ForStmt) methodDeclaration.getBody().getStmts().get(0)).getBody()).
+                getVariablesHolder().getModifyingVariables().toString());
+    }
+
+    @Test
+    public void testTryInWhileStmt() throws Exception {
+        MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("void method(Class cl){" +
+                "while (cl != null) {\n" +
+                "    try {\n" +
+                "    } catch (NoSuchMethodException nsme) {\n" +
+                "        cl = cl.getSuperclass();\n" +
+                "    }\n" +
+                "}}");
+
+        SimpleUsingModifyingVariablesHolder holder = new SimpleUsingModifyingVariablesHolder();
+        MethodArgsHolder methodArgs = createMethodArgs();
+        methodArgs.addArgName("cl");
+        new UsingModifyingVariablesVisitor(methodArgs).visit(methodDeclaration.getBody(), holder);
+
+        //check condition
+        assertEquals("[cl]", ((Expression) ((WhileStmt) methodDeclaration.getBody().getStmts().get(0)).getCondition()).
+                getVariablesHolder().getUsingVariables().toString());
+        assertEquals("[]", ((Expression) ((WhileStmt) methodDeclaration.getBody().getStmts().get(0)).getCondition()).
+                getVariablesHolder().getModifyingVariables().toString());
+
+        //check body
+        assertEquals("[cl]", ((Statement) methodDeclaration.getBody()).
+                getVariablesHolder().getUsingVariables().toString());
+        assertEquals("[]", ((Statement) methodDeclaration.getBody()).
                 getVariablesHolder().getModifyingVariables().toString());
     }
 

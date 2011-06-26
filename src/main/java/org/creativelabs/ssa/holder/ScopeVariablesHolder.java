@@ -1,5 +1,7 @@
 package org.creativelabs.ssa.holder;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.creativelabs.ssa.holder.variable.Variable;
 
 import java.util.*;
@@ -10,6 +12,8 @@ import java.util.*;
  *         Time: 9:30
  */
 public class ScopeVariablesHolder implements VariablesHolder {
+
+    Log log = LogFactory.getLog(ScopeVariablesHolder.class);
 
      /**
      * List of variables and they indexes for reading.
@@ -105,9 +109,11 @@ public class ScopeVariablesHolder implements VariablesHolder {
         Integer index2 = readFrom(variableName, true);
         if (index1 == null) {
             index1 = -1;
+            log.error("Error while getting phi indexes for variable = " + variableName.getString());
         }
         if (index2 == null) {
             index2 = -1;
+            log.error("Error while getting phi indexes for variable = " + variableName.getString());
         }
         return new Integer[] {Math.min(index1, index2),
                 Math.max(index1, index2)};
@@ -120,9 +126,13 @@ public class ScopeVariablesHolder implements VariablesHolder {
     public void increaseIndex(Variable variableName) {
         if (readVariables.containsKey(variableName)) {
             readVariables.put(variableName.<Variable>copy(), readVariables.get(variableName) + 1);
+        } else {
+            log.warn("Error while increase phi index for variable = " + variableName.getString());
         }
         if (writeVariables.containsKey(variableName)) {
             writeVariables.put(variableName.<Variable>copy(), writeVariables.get(variableName) + 1);
+        } else {
+            log.warn("Error while increase phi index for variable = " + variableName.getString());
         }
     }
 
@@ -130,6 +140,8 @@ public class ScopeVariablesHolder implements VariablesHolder {
     public void increaseIndexIn(Variable variableName, boolean read) {
         if (getCurrentVariables(read).containsKey(variableName)) {
             getCurrentVariables(read).put(variableName, getCurrentVariables(read).get(variableName) + 1);
+        } else {
+            log.warn("Error while increase phi index for variable = " + variableName.getString());
         }
     }
 

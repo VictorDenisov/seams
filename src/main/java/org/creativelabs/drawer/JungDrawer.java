@@ -7,7 +7,6 @@ import edu.uci.ics.jung.visualization.BasicVisualizationServer;
 import org.apache.commons.collections15.Transformer;
 import org.creativelabs.graph.Vertex;
 import org.creativelabs.graph.condition.bool.FalseBooleanCondition;
-import org.creativelabs.graph.condition.bool.TrueBooleanCondition;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -34,11 +33,9 @@ public class JungDrawer implements Drawer {
         Transformer<Vertex, Paint> vertexPaint = new Transformer<Vertex,Paint>() {
             @Override
             public Paint transform(Vertex vertex) {
-                if ((vertex.getExternalCondition() instanceof TrueBooleanCondition) &&
-                        (vertex.getInternalCondition() instanceof FalseBooleanCondition)) {
+                if (vertex.getInternalCondition() instanceof FalseBooleanCondition) {
                     return Color.GREEN;
-                } else if ((vertex.getExternalCondition() instanceof FalseBooleanCondition) &&
-                        (vertex.getInternalCondition() instanceof TrueBooleanCondition)) {
+                } else if (vertex.getExternalCondition() instanceof FalseBooleanCondition) {
                     return Color.RED;
                 } else {
                     return Color.WHITE;
@@ -46,10 +43,12 @@ public class JungDrawer implements Drawer {
             }
         };
 
+        Transformer<Vertex, String> vertexLabeller = new getLabelLabeller<Vertex>();
+
         BasicVisualizationServer<Vertex, String> vv =
                 new BasicVisualizationServer<Vertex, String>(layout);
         vv.setPreferredSize(new Dimension(width, height)); //Sets the viewing area size
-        vv.getRenderContext().setVertexLabelTransformer(new getLabelLabeller<Vertex>());
+        vv.getRenderContext().setVertexLabelTransformer(vertexLabeller);
         vv.getRenderContext().setVertexFillPaintTransformer(vertexPaint);
 
         frame.getContentPane().add(vv);

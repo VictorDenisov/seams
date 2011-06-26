@@ -10,8 +10,6 @@ import japa.parser.ast.visitor.VoidVisitorAdapter;
 import org.creativelabs.Constants;
 import org.creativelabs.graph.condition.Condition;
 import org.creativelabs.graph.condition.StringCondition;
-import org.creativelabs.graph.condition.bool.FalseBooleanCondition;
-import org.creativelabs.graph.condition.bool.TrueBooleanCondition;
 import org.creativelabs.helper.GenericVisitorHelper;
 import org.creativelabs.helper.VoidVisitorHelper;
 import org.creativelabs.iig.ConditionInternalInstancesGraph;
@@ -125,6 +123,7 @@ public class SsaFormConverter extends VoidVisitorAdapter<MultiHolder> {
             elseVariables = arg.copy();
         }
 
+        //add phi for whole statement
         for (Variable name : assigningVariables) {
             Integer newIndex = Math.max(thenVariables.read(name) == null ? -1 :
                     thenVariables.read(name), elseVariables.read(name) == null ? -1 :
@@ -139,8 +138,26 @@ public class SsaFormConverter extends VoidVisitorAdapter<MultiHolder> {
 
     @Override
     public void visit(ForStmt n, MultiHolder arg) {
-        //TODO: implement for processing
+
+        Set<Variable> assigningVariables = ((Statement) n.getBody()).getVariablesHolder().getModifyingVariables();
+
+        Set<Variable> updateVariables = ((Expression) n.getUpdate().get(0)).getVariablesHolder().getUsingVariables();
+        Set<Variable> conditionVariable = ((Expression) n.getCompare()).getVariablesHolder().getUsingVariables();
+        for (Variable variable : updateVariables) {
+            if (conditionVariable.contains(variable)) {
+//                beforeWhilePhiNodes.add(new PhiNode(
+//                        variable,
+//                        1,
+//                        PhiNode.Mode.BEFORE,
+//                        0));
+//                        arg.write(variable, 1);
+                assigningVariables.add(variable);
+            }
+        }
+
         MultiHolder holder1 = arg.copy();
+
+        //process init expression
         List<Expression> expressions = n.getInit();
         if (expressions != null) {
             List<Expression> exprs = new ArrayList<Expression>();
@@ -150,112 +167,36 @@ public class SsaFormConverter extends VoidVisitorAdapter<MultiHolder> {
             n.setInit(exprs);
         }
 
-        MultiHolder holder2 = holder1.copy();
-
-        expressions = n.getUpdate();
-        if (expressions != null) {
-            Set<Variable> usingVariables = expressions.get(0).getVariablesHolder().getUsingVariables();
-
-            for (Variable var : usingVariables) {
-                holder2.increaseIndex(var);
-            }
-
-            List<Expression> exprs = new ArrayList<Expression>();
-            for (Expression expression : expressions) {
-                exprs.add(getGenericExpr(expression, holder2));
-            }
-            n.setUpdate(exprs);
+        //phi nodes with only the one variable's index
+        Set<PhiNode> beforeWhilePhiNodes = new TreeSet<PhiNode>();
+        for (Variable var : assigningVariables) {
+            beforeWhilePhiNodes.add(new PhiNode(
+                    var,
+                    (holder1.read(var) == null ? 0 : holder1.read(var)) + 1,
+                    PhiNode.Mode.BEFORE,
+                    holder1.read(var)));
+            holder1.increaseIndex(var);
         }
 
-        MultiHolder holder3 = holder2.copy();
-
-//        for (String name : holder3.getDifferenceInVariables(holder1, false)) {
-////            preparePhi(name + SEPARATOR + (holder1.read(name) + 1), false, holder3.getPhi(holder1, name));
-//        }
-
-        getVoidStmt(n.getBody(), holder3);
-
+        //process condition
         if (n.getCompare() != null) {
             n.setCompare(getGenericExpr(n.getCompare(), holder1));
         }
-//        List<Expression> phisInCondition = new ArrayList<Expression>();
-////        String[] s = holder1.getPhi(holder2, "i");
-//        ((BinaryExpr) n.getCompare()).setLeft(
-//                new MethodCallExpr(
-//                        null,
-//                        "phi",
-//                        phisInCondition));
-//
-//
-//        for (String name : usingVariables) {
-//            if (holder2.containsKey(name, true) && arg.containsKey(name, true)) {
-////                preparePhi(name + SEPARATOR + (Math.max(holder2.read(name), arg.read(name)) + 1), holder2.getPhi(arg, name));
-//                arg.write(name, (Math.max(holder2.read(name), arg.read(name)) + 1));
-//            }
-//        }
-//
-//        arg.mergeHolders(holder1, holder2);
-////        return n;
-        /* Set<String> assigningVariables = ((Statement) n.getBody()).getVariablesHolder().getModifyingVariables();
 
-        MultiHolder holder = arg.copy();
-
-        //phi nodes with only the one variable's index
-        Set<PhiNode> beforeWhilePhiNodes = new HashSet<PhiNode>();
-
-        for (String var : assigningVariables) {
-            holder.increaseIndex(var);
-            if (assigningVariables.contains(var)) {
-                String thisString;
-                if (holder.containsFieldName(var)) {
-                    thisString = "this.";
-                } else {
-                    thisString = "";
-                }
-                if (arg.read(var) != null) {
-                    beforeWhilePhiNodes.add(new PhiNode(thisString + var, (arg.read(var) == null ? 0 : arg.read(var)) + 1,
-                            PhiNode.Mode.BEFORE, arg.read(var)));
-                } else {
-                    beforeWhilePhiNodes.add(new PhiNode(thisString + var, (arg.read(var) == null ? 0 : arg.read(var)) + 1,
-                            PhiNode.Mode.BEFORE));
-                }
-                arg.increaseIndex(var);
-            }
-        }
-
-        //processing of the condition
-        n.setCompare(getGenericExpr(n.getCompare(), arg));
-        if (n.getCompare() != null) {
-            holder.setBasicBlockCondition(holder.getBasicBlockCondition().and(new StringCondition(n.getCompare().toString())));
-        } else {
-            holder.setBasicBlockCondition(holder.getBasicBlockCondition().<Condition>copy());
-        }
-
-
-        for (String var : assigningVariables) {
-            if (assigningVariables.contains(var)) {
-                holder.increaseIndex(var);
-            }
-        }
+        MultiHolder holder2 = holder1.copy();
 
         //phi nodes with only one variable's index
-        Set<PhiNode> inWhilePhiNodes = new HashSet<PhiNode>();
-
-        for (String name : holder.getDifferenceInVariables(arg, false)) {
-            String thisString;
-            if (holder.containsFieldName(name)) {
-                thisString = "this.";
-            } else {
-                thisString = "";
-            }
-            if (arg.read(name) != null) {
-                inWhilePhiNodes.add(new PhiNode(thisString + name, holder.read(name) == null ? 0 : holder.read(name), PhiNode.Mode.BEFORE, arg.read(name)));
-            } else {
-                inWhilePhiNodes.add(new PhiNode(thisString + name, holder.read(name) == null ? 0 : holder.read(name), PhiNode.Mode.BEFORE));
-            }
+        Set<PhiNode> inWhilePhiNodes = new TreeSet<PhiNode>();
+        for (Variable var : assigningVariables) {
+            holder2.increaseIndex(var);
         }
 
+        //add inner phi
+        for (Variable name : holder2.getDifferenceInVariables(holder1, false)) {
+            inWhilePhiNodes.add(new PhiNode(name, holder2.read(name) == null ? 0 : holder2.read(name), PhiNode.Mode.BEFORE, holder1.read(name)));
+        }
 
+        //add phi to statements
         if (!inWhilePhiNodes.isEmpty()) {
             addAllPhi(((BlockStmt) n.getBody()).getStmts().get(0), inWhilePhiNodes);
         }
@@ -263,33 +204,40 @@ public class SsaFormConverter extends VoidVisitorAdapter<MultiHolder> {
             addAllPhi(n, beforeWhilePhiNodes);
         }
 
-        getVoidStmt(n.getBody(), holder);
+        //process body
+        getVoidStmt(n.getBody(), holder2);
 
+        //process update expression
+        MultiHolder holder3 = holder2.copy();
+        expressions = n.getUpdate();
+        if (expressions != null) {
+            List<Expression> exprs = new ArrayList<Expression>();
+            for (Expression expression : expressions) {
+                exprs.add(getGenericExpr(expression, holder3));
+            }
+            n.setUpdate(exprs);
+        }
+
+        //add phi information
         for (PhiNode node : beforeWhilePhiNodes) {
-            node.addIndex(holder.read(node.getName()));
+            node.addIndex(holder3.read(node.getName()));
         }
 
         for (PhiNode node : inWhilePhiNodes) {
-            node.addIndex(holder.read(node.getName()));
-            node.addIndexToExprStmt(holder.read(node.getName()));
+            node.addIndex(holder3.read(node.getName()));
+            node.addIndexToExprStmt(holder3.read(node.getName()));
         }
 
-        for (String name : assigningVariables) {
-            if (holder.containsKey(name, true) && arg.containsKey(name, true)) {
-
-                String thisString;
-                if (holder.containsFieldName(name)) {
-                    thisString = "this.";
-                } else {
-                    thisString = "";
-                }
-
-                addPhi(n, new PhiNode(thisString + name, holder.read(name) + 1, PhiNode.Mode.AFTER, holder.getPhiIndexes(arg, name)));
-                arg.write(name, (Math.max(holder.read(name), arg.read(name)) + 1));
+        //add phi to whole statement
+        for (Variable name : assigningVariables) {
+            if (holder3.containsKey(name, true) && arg.containsKey(name, true)) {
+                addPhi(n, new PhiNode(name, holder3.read(name) + 1, PhiNode.Mode.AFTER, holder3.getPhiIndexes(holder1, name)));
+                holder3.write(name, (Math.max(holder3.read(name), holder1.read(name)) + 1));
             }
         }
 
-        arg.mergeHolders(holder);*/
+        arg.mergeHolders(holder3);
+
     }
 
     @Override
@@ -299,45 +247,31 @@ public class SsaFormConverter extends VoidVisitorAdapter<MultiHolder> {
         MultiHolder holder = arg.copy();
 
         //phi nodes with only the one variable's index
-        Set<PhiNode> beforeWhilePhiNodes = new HashSet<PhiNode>();
+        Set<PhiNode> beforeWhilePhiNodes = new TreeSet<PhiNode>();
 
         for (Variable var : assigningVariables) {
             holder.increaseIndex(var);
-            if (assigningVariables.contains(var)) {
-                if (arg.read(var) != null) {
-                    beforeWhilePhiNodes.add(new PhiNode(var, (arg.read(var) == null ? 0 : arg.read(var)) + 1,
-                            PhiNode.Mode.BEFORE, arg.read(var)));
-                } else {
-                    beforeWhilePhiNodes.add(new PhiNode(var, (arg.read(var) == null ? 0 : arg.read(var)) + 1,
-                            PhiNode.Mode.BEFORE));
-                }
-                arg.increaseIndex(var);
-            }
+            beforeWhilePhiNodes.add(new PhiNode(var, (arg.read(var) == null ? 0 : arg.read(var)) + 1,
+                    PhiNode.Mode.BEFORE, arg.read(var)));
+            arg.increaseIndex(var);
         }
 
         //processing of the condition
         n.setCondition(getGenericExpr(n.getCondition(), arg));
         holder.setBasicBlockCondition(holder.getBasicBlockCondition().and(new StringCondition(n.getCondition().toString())));
 
-
-        for (Variable var : assigningVariables) {
-            if (assigningVariables.contains(var)) {
-                holder.increaseIndex(var);
-            }
-        }
-
         //phi nodes with only one variable's index
-        Set<PhiNode> inWhilePhiNodes = new HashSet<PhiNode>();
-
-        for (Variable name : holder.getDifferenceInVariables(arg, false)) {
-
-            if (arg.read(name) != null) {
-                inWhilePhiNodes.add(new PhiNode(name, holder.read(name) == null ? 0 : holder.read(name), PhiNode.Mode.BEFORE, arg.read(name)));
-            } else {
-                inWhilePhiNodes.add(new PhiNode(name, holder.read(name) == null ? 0 : holder.read(name), PhiNode.Mode.BEFORE));
-            }
+        Set<PhiNode> inWhilePhiNodes = new TreeSet<PhiNode>();
+        for (Variable var : assigningVariables) {
+            holder.increaseIndex(var);
         }
 
+        //add inner phi
+        for (Variable name : holder.getDifferenceInVariables(arg, false)) {
+            inWhilePhiNodes.add(new PhiNode(name, holder.read(name) == null ? 0 : holder.read(name), PhiNode.Mode.BEFORE, arg.read(name)));
+        }
+
+        //add phi to statements
         if (!inWhilePhiNodes.isEmpty()) {
             addAllPhi(((BlockStmt) n.getBody()).getStmts().get(0), inWhilePhiNodes);
         }
@@ -345,8 +279,10 @@ public class SsaFormConverter extends VoidVisitorAdapter<MultiHolder> {
             addAllPhi(n, beforeWhilePhiNodes);
         }
 
+        //process body
         getVoidStmt(n.getBody(), holder);
 
+        //add phi information
         for (PhiNode node : beforeWhilePhiNodes) {
             node.addIndex(holder.read(node.getName()));
         }
@@ -356,10 +292,9 @@ public class SsaFormConverter extends VoidVisitorAdapter<MultiHolder> {
             node.addIndexToExprStmt(holder.read(node.getName()));
         }
 
+        //add phi to whole statement
         for (Variable name : assigningVariables) {
             if (holder.containsKey(name, true) && arg.containsKey(name, true)) {
-
-
                 addPhi(n, new PhiNode(name, holder.read(name) + 1, PhiNode.Mode.AFTER, holder.getPhiIndexes(arg, name)));
                 arg.write(name, (Math.max(holder.read(name), arg.read(name)) + 1));
             }
@@ -372,56 +307,49 @@ public class SsaFormConverter extends VoidVisitorAdapter<MultiHolder> {
     public void visit(ForeachStmt n, MultiHolder arg) {
 
         Set<Variable> assigningVariables = ((Statement) n.getBody()).getVariablesHolder().getModifyingVariables();
-
         Set<Variable> conditionsVars = ((Expression) n.getVariable()).getVariablesHolder().getUsingVariables();
 
         MultiHolder holder = arg.copy();
 
+        //modify foreach iterable expression
         n.setIterable(getGenericExpr(n.getIterable(), arg));
         n.setVariable((VariableDeclarationExpr) getGenericExpr(n.getVariable(), holder));
-
         n.getVariable().getVars().get(0).setInit(new MethodCallExpr(n.getIterable(), "#next"));
 
+        //create block condition
         holder.setBasicBlockCondition(holder.getBasicBlockCondition().and(new StringCondition(n.getVariable().toString() +
                 ":" + n.getIterable().toString())));
 
-
+        //phi nodes with only one variable's index
+        Set<PhiNode> inWhilePhiNodes = new HashSet<PhiNode>();
         for (Variable var : assigningVariables) {
             if (!conditionsVars.contains(var)) {
                 holder.increaseIndex(var);
             }
         }
-
-        //phi nodes with only one variable's index
-        Set<PhiNode> inWhilePhiNodes = new HashSet<PhiNode>();
-
+        //create inner phi
         for (Variable name : assigningVariables) {
-
             if (!conditionsVars.contains(name)) {
-                if (arg.read(name) != null) {
-                    inWhilePhiNodes.add(new PhiNode(name, holder.read(name) == null ? 0 : holder.read(name), PhiNode.Mode.BEFORE, arg.read(name)));
-                } else {
-                    inWhilePhiNodes.add(new PhiNode(name, holder.read(name) == null ? 0 : holder.read(name), PhiNode.Mode.BEFORE));
-                }
+                inWhilePhiNodes.add(new PhiNode(name, holder.read(name) == null ? 0 : holder.read(name), PhiNode.Mode.BEFORE, arg.read(name)));
             }
         }
 
+        //add inner phi and curly bracket if they are missed
+        //and process
         if (n.getBody() instanceof BlockStmt) {
             if (((BlockStmt) n.getBody()).getStmts() != null) {
                 addAllPhi(((BlockStmt) n.getBody()).getStmts().get(0), inWhilePhiNodes);
                 getVoidStmt(n.getBody(), holder);
             }
-        } else if (n.getBody() instanceof IfStmt) {
+        } else {
             BlockStmt blockStmt = new BlockStmt();
             blockStmt.setStmts(Arrays.asList(n.getBody()));
             n.setBody(blockStmt);
-
-            addAllPhi((BlockStmt) n.getBody(), inWhilePhiNodes);
+            addAllPhi(n.getBody(), inWhilePhiNodes);
             getVoidStmt(n.getBody(), holder);
-        } else {
-            //no operations
         }
 
+        //add information to phi nodes
         for (PhiNode node : inWhilePhiNodes) {
             if (holder.read(node.getName()) != null) {
                 node.addIndex(holder.read(node.getName()));
@@ -429,9 +357,9 @@ public class SsaFormConverter extends VoidVisitorAdapter<MultiHolder> {
             }
         }
 
+        //add phi after whole statement
         for (Variable name : assigningVariables) {
             if (holder.containsKey(name, true) && arg.containsKey(name, true)) {
-
                 addPhi(n, new PhiNode(name, holder.read(name) + 1, PhiNode.Mode.AFTER, holder.getPhiIndexes(arg, name)));
                 arg.write(name, (Math.max(holder.read(name), arg.read(name)) + 1));
             }
@@ -447,8 +375,10 @@ public class SsaFormConverter extends VoidVisitorAdapter<MultiHolder> {
 
     @Override
     public void visit(TryStmt n, MultiHolder arg) {
+        //process try block
         getVoidStmt(n.getTryBlock(), arg);
 
+        //process catches blocks
         if (n.getCatchs() != null) {
             for (CatchClause catchClause : n.getCatchs()) {
                 MultiHolder holder = arg.copy();
@@ -463,6 +393,7 @@ public class SsaFormConverter extends VoidVisitorAdapter<MultiHolder> {
             }
         }
 
+        //process finally block
         if (n.getFinallyBlock() != null) {
             getVoidStmt(n.getFinallyBlock(), arg);
         }
@@ -472,6 +403,8 @@ public class SsaFormConverter extends VoidVisitorAdapter<MultiHolder> {
     public void visit(MethodDeclaration n, MultiHolder arg) {
 //        methodDeclaration = new CopyingUtils<MethodDeclaration>().copy(n);
         methodDeclaration = n;
+
+        //generate method name
         StringBuilder types = new StringBuilder("(");
         if (methodDeclaration.getParameters() != null) {
             for (Parameter parameter : methodDeclaration.getParameters()) {
@@ -480,47 +413,46 @@ public class SsaFormConverter extends VoidVisitorAdapter<MultiHolder> {
             }
         }
         types.append(")");
-
         methodName = methodDeclaration.getName() + types.toString();
 
-
         Map<Variable, Integer> variables = new TreeMap<Variable, Integer>();
-
         if (methodDeclaration.getParameters() != null) {
             for (Parameter parameter : methodDeclaration.getParameters()) {
-                graph.addVertexConditions(methodName + SEPARATOR + parameter.getId().getName() + SEPARATOR + 0,
-                        new FalseBooleanCondition(),
-                        new TrueBooleanCondition());
+//                graph.addVertexConditions(methodName + SEPARATOR + parameter.getId().getName() + SEPARATOR + 0,
+//                        new FalseBooleanCondition(),
+//                        new TrueBooleanCondition());
 
+                //add arguments to arguments holder
                 arg.getMethodArgsHolder().addArgName(parameter.getId().getName());
+                //add arguments to variables holder
                 variables.put(new StringVariable(parameter.getId().getName(), Constants.ARG_SCOPE), 0);
-
                 //convert to ssa
                 parameter.getId().setName(parameter.getId().getName() + SEPARATOR + 0);
             }
         }
 
         if (methodDeclaration.getBody() != null) {
+            //find of using and modifying variables
             new UsingModifyingVariablesVisitor(arg.getMethodArgsHolder()).visit(methodDeclaration.getBody(), new SimpleUsingModifyingVariablesHolder());
         }
 
-        if (arg.getFieldsHolder() != null) {
-            for (String fieldName : arg.getFieldsHolder().getFieldsNames()) {
-                graph.addVertexConditions(methodName + SEPARATOR + fieldName + SEPARATOR + 0,
-                        new FalseBooleanCondition(),
-                        new TrueBooleanCondition());
+        for (String fieldName : arg.getFieldsHolder().getFieldsNames()) {
+//                graph.addVertexConditions(methodName + SEPARATOR + fieldName + SEPARATOR + 0,
+//                        new FalseBooleanCondition(),
+//                        new TrueBooleanCondition());
+//
+//                graph.addVertexConditions(fieldName + SEPARATOR + 0,
+//                        new FalseBooleanCondition(),
+//                        new TrueBooleanCondition());
+//
+//                graph.addEdge(methodName + SEPARATOR + fieldName + SEPARATOR + 0,
+//                        fieldName + SEPARATOR + 0);
 
-                graph.addVertexConditions(fieldName + SEPARATOR + 0,
-                        new FalseBooleanCondition(),
-                        new TrueBooleanCondition());
-
-                graph.addEdge(methodName + SEPARATOR + fieldName + SEPARATOR + 0,
-                        fieldName + SEPARATOR + 0);
-
-                variables.put(new StringVariable(fieldName, Constants.THIS_SCOPE), 0);
-            }
+            //add fields to variables holder
+            variables.put(new StringVariable(fieldName, Constants.THIS_SCOPE), 0);
         }
 
+        //add read and write variables
         Map<Variable, Integer> vars = variables;
         vars.putAll(arg.getReadVariables());
         arg.setReadVariables(vars);
@@ -530,7 +462,6 @@ public class SsaFormConverter extends VoidVisitorAdapter<MultiHolder> {
         arg.setWriteVariables(vars);
 
         visit(methodDeclaration.getBody(), arg);
-//        System.out.println(methodDeclaration);
     }
 
     /**
@@ -548,20 +479,10 @@ public class SsaFormConverter extends VoidVisitorAdapter<MultiHolder> {
      *
      * @param expression of type Expression
      * @param arg        of type MultiHolder
-     */
-    private void getVoidExpr(Expression expression, MultiHolder arg) {
-        VoidVisitorHelper.<MultiHolder>visitExpression(expression, arg, this);
-    }
-
-    /**
-     * Modifies the expression.
-     *
-     * @param expression of type Expression
-     * @param arg        of type MultiHolder
      * @return Expression
      */
     private Expression getGenericExpr(Expression expression, MultiHolder arg) {
-        return GenericVisitorHelper.<Expression, MultiHolder>visitExpression(expression, arg, new ExpressionStmtVisitor(graph, methodName, className));
+        return GenericVisitorHelper.visitExpression(expression, arg, new ExpressionStmtVisitor(graph, methodName, className));
     }
 
     /**

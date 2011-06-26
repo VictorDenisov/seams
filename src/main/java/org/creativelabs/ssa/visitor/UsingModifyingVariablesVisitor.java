@@ -226,10 +226,18 @@ public class UsingModifyingVariablesVisitor extends VoidVisitorAdapter<UsingModi
         if (conditionHolder != null) {
             arg.add(conditionHolder);
         }
-        if (updateHolder != null) {
-            arg.add(updateHolder);
-        }
+//        if (updateHolder != null) {
+//            arg.add(updateHolder);
+//        }
         arg.add(bodyHolder);
+    }
+
+    @Override
+    public void visit(TryStmt n, UsingModifyingVariablesHolder arg) {
+        VoidVisitorHelper.visitStatement(n.getTryBlock(), arg, this);
+        if (n.getFinallyBlock() != null) {
+            VoidVisitorHelper.visitStatement(n.getFinallyBlock(), arg, this);
+        }
     }
 
     private Variable createVariable(String name, String scope, MethodArgsHolder methodArgsHolder) {
