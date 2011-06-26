@@ -4,7 +4,10 @@ import edu.uci.ics.jung.algorithms.layout.ISOMLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.visualization.BasicVisualizationServer;
+import org.apache.commons.collections15.Transformer;
 import org.creativelabs.graph.Vertex;
+import org.creativelabs.graph.condition.bool.FalseBooleanCondition;
+import org.creativelabs.graph.condition.bool.TrueBooleanCondition;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -27,10 +30,27 @@ public class JungDrawer implements Drawer {
         Layout<Vertex, String> layout = new ISOMLayout<Vertex, String> (g);
         layout.setSize(new Dimension(width, height)); // sets the initial size of the space
         // The BasicVisualizationServer<V,E> is parameterized by the edge types
+
+        Transformer<Vertex, Paint> vertexPaint = new Transformer<Vertex,Paint>() {
+            @Override
+            public Paint transform(Vertex vertex) {
+                if ((vertex.getExternalCondition() instanceof TrueBooleanCondition) &&
+                        (vertex.getInternalCondition() instanceof FalseBooleanCondition)) {
+                    return Color.GREEN;
+                } else if ((vertex.getExternalCondition() instanceof FalseBooleanCondition) &&
+                        (vertex.getInternalCondition() instanceof TrueBooleanCondition)) {
+                    return Color.RED;
+                } else {
+                    return Color.WHITE;
+                }
+            }
+        };
+
         BasicVisualizationServer<Vertex, String> vv =
                 new BasicVisualizationServer<Vertex, String>(layout);
         vv.setPreferredSize(new Dimension(width, height)); //Sets the viewing area size
         vv.getRenderContext().setVertexLabelTransformer(new getLabelLabeller<Vertex>());
+        vv.getRenderContext().setVertexFillPaintTransformer(vertexPaint);
 
         frame.getContentPane().add(vv);
         frame.pack();
