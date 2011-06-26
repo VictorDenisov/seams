@@ -91,7 +91,8 @@ class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
     @Override
     public void visit(AssignExpr n, Object o) {
         if (n.getValue() != null) {
-            ExpressionSeparatorVisitor esv = new ExpressionSeparatorVisitor(internalInstances);
+            ExpressionSeparatorVisitor esv = new ExpressionSeparatorVisitor(internalInstances,
+                    new HashSet<String>());
             n.getValue().accept(esv, null);
             if (esv.isAssignedInternalInstance()) {
                 internalInstances.add(n.getTarget().toString(), esv.getValue());
@@ -107,7 +108,8 @@ class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
             classType = ra.addArrayDepth(classType, v.getId().getArrayCount());
 
             localVariables.put(v.getId().getName(), classType);
-            ExpressionSeparatorVisitor esv = new ExpressionSeparatorVisitor(internalInstances);
+            ExpressionSeparatorVisitor esv = new ExpressionSeparatorVisitor(internalInstances,
+                    new HashSet<String>());
             if (v.getInit() != null) {
                 v.getInit().accept(esv, null);
                 if (esv.isAssignedInternalInstance()) {

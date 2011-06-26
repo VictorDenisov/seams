@@ -14,8 +14,12 @@ public class ExpressionSeparatorVisitor extends VoidVisitorAdapter<Object> {
 
     private InternalInstancesGraph internalInstances;
 
-    public ExpressionSeparatorVisitor(InternalInstancesGraph internalInstances) {
+    private Set<String> excludedClasses;
+
+    public ExpressionSeparatorVisitor(InternalInstancesGraph internalInstances,
+            Set<String> excludedClasses) {
         this.internalInstances = internalInstances;
+        this.excludedClasses = excludedClasses;
     }
 
     public boolean isAssignedInternalInstance() {
@@ -59,6 +63,9 @@ public class ExpressionSeparatorVisitor extends VoidVisitorAdapter<Object> {
 
     @Override
     public void visit(ObjectCreationExpr n, Object o) {
+        if (excludedClasses.contains(n.getType().getName())) {
+            return;
+        }
         assignedInternalInstance = true;
     }
 
