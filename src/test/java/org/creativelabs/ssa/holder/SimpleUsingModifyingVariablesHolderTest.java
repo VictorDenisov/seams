@@ -60,6 +60,26 @@ public class SimpleUsingModifyingVariablesHolderTest {
     }
 
     @Test
+    public void testAddCreatingVariable() throws Exception {
+        SimpleUsingModifyingVariablesHolder holder = new SimpleUsingModifyingVariablesHolder();
+        holder.addCreatingVariable(new StringVariable("name1", "scope1"));
+        assertEquals(1, holder.getCreatingVariables().size());
+        assertTrue(holder.getCreatingVariables().contains(new StringVariable("name1", "scope1")));
+    }
+
+    @Test
+    public void testAddCreatingVariables() throws Exception {
+        SimpleUsingModifyingVariablesHolder holder = new SimpleUsingModifyingVariablesHolder();
+        holder.addCreatingVariables(new HashSet<Variable>() {{
+            add(new StringVariable("name1", "scope1"));
+            add(new StringVariable("name2", "scope2"));
+        }});
+        assertEquals(2, holder.getCreatingVariables().size());
+        assertTrue(holder.getCreatingVariables().contains(new StringVariable("name1", "scope1")));
+        assertTrue(holder.getCreatingVariables().contains(new StringVariable("name2", "scope2")));
+    }
+
+    @Test
     public void testAdd() throws Exception {
         SimpleUsingModifyingVariablesHolder holder = new SimpleUsingModifyingVariablesHolder();
         holder.addUsingVariables(new HashSet<Variable>(){{

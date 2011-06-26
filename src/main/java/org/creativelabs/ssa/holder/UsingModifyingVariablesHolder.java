@@ -20,5 +20,9 @@ public interface UsingModifyingVariablesHolder extends Copyable {
     void addModifyingVariables(Set<Variable> variableNames);
     Set<Variable> getModifyingVariables();
 
+    void addCreatingVariable(Variable variableName);
+    void addCreatingVariables(Set<Variable> variableNames);
+    Set<Variable> getCreatingVariables();
+
     void add(UsingModifyingVariablesHolder holder);
 }

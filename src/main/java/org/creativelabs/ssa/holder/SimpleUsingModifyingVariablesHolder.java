@@ -16,15 +16,18 @@ public class SimpleUsingModifyingVariablesHolder implements UsingModifyingVariab
 
     private Set<Variable> usingVariables;
     private Set<Variable> modifyingVariables;
+    private Set<Variable> creatingVariables;
 
     public SimpleUsingModifyingVariablesHolder() {
         usingVariables = new TreeSet<Variable>();
         modifyingVariables = new TreeSet<Variable>();
+        creatingVariables = new TreeSet<Variable>();
     }
 
-    public SimpleUsingModifyingVariablesHolder(Set<Variable> usingVariables, Set<Variable> modifyingVariables) {
+    public SimpleUsingModifyingVariablesHolder(Set<Variable> usingVariables, Set<Variable> modifyingVariables, Set<Variable> creatingVariables) {
         this.usingVariables = usingVariables;
         this.modifyingVariables = modifyingVariables;
+        this.creatingVariables = creatingVariables;
     }
 
     @Override
@@ -48,6 +51,21 @@ public class SimpleUsingModifyingVariablesHolder implements UsingModifyingVariab
     }
 
     @Override
+    public void addCreatingVariable(Variable variableName) {
+        creatingVariables.add(variableName);
+    }
+
+    @Override
+    public void addCreatingVariables(Set<Variable> variableNames) {
+        creatingVariables.addAll(variableNames);
+    }
+
+    @Override
+    public Set<Variable> getCreatingVariables() {
+        return creatingVariables;
+    }
+
+    @Override
     public void addModifyingVariable(Variable variableName) {
         modifyingVariables.add(variableName);
     }
@@ -61,6 +79,7 @@ public class SimpleUsingModifyingVariablesHolder implements UsingModifyingVariab
     public void add(UsingModifyingVariablesHolder holder) {
         addUsingVariables(holder.getUsingVariables());
         addModifyingVariables(holder.getModifyingVariables());
+        addCreatingVariables(holder.getCreatingVariables());
     }
 
     @Override
@@ -77,6 +96,8 @@ public class SimpleUsingModifyingVariablesHolder implements UsingModifyingVariab
 
         SimpleUsingModifyingVariablesHolder holder = (SimpleUsingModifyingVariablesHolder) o;
 
+        if (creatingVariables != null ? !creatingVariables.equals(holder.creatingVariables) : holder.creatingVariables != null)
+            return false;
         if (modifyingVariables != null ? !modifyingVariables.equals(holder.modifyingVariables) : holder.modifyingVariables != null)
             return false;
         if (usingVariables != null ? !usingVariables.equals(holder.usingVariables) : holder.usingVariables != null)
@@ -89,6 +110,7 @@ public class SimpleUsingModifyingVariablesHolder implements UsingModifyingVariab
     public int hashCode() {
         int result = usingVariables != null ? usingVariables.hashCode() : 0;
         result = 31 * result + (modifyingVariables != null ? modifyingVariables.hashCode() : 0);
+        result = 31 * result + (creatingVariables != null ? creatingVariables.hashCode() : 0);
         return result;
     }
 }

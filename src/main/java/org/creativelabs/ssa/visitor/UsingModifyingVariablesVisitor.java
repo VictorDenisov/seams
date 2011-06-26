@@ -60,10 +60,12 @@ public class UsingModifyingVariablesVisitor extends VoidVisitorAdapter<UsingModi
     public void visit(VariableDeclaratorId n, UsingModifyingVariablesHolder arg) {
         String name = n.getName();
         createdVars.add(name);
-            arg.addUsingVariable(createVariable(name, Constants.EMPTY_SCOPE, methodArgsHolder));
-            if (!isCondition) {
-                arg.addModifyingVariable(createVariable(name, Constants.EMPTY_SCOPE, methodArgsHolder));
-            }
+        arg.addUsingVariable(createVariable(name, Constants.EMPTY_SCOPE, methodArgsHolder));
+        if (!isCondition) {
+            arg.addModifyingVariable(createVariable(name, Constants.EMPTY_SCOPE, methodArgsHolder));
+        } else {
+             arg.addCreatingVariable(createVariable(name, Constants.EMPTY_SCOPE, methodArgsHolder));
+        }
     }
 
     @Override
