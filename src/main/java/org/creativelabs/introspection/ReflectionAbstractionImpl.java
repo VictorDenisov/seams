@@ -172,6 +172,8 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
             return true;
         } catch (ClassNotFoundException e) {
             return false;
+        } catch (NoClassDefFoundError e) {
+            return false;
         }
     }
 

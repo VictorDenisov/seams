@@ -5,6 +5,8 @@ import japa.parser.ast.CompilationUnit;
 import japa.parser.ast.body.ClassOrInterfaceDeclaration;
 import japa.parser.ast.body.TypeDeclaration;
 import org.apache.commons.cli.*;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.creativelabs.chart.BarChartBuilder;
 import org.creativelabs.drawer.ChartDrawer;
 import org.creativelabs.iig.InternalInstancesGraph;
@@ -19,6 +21,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
 public final class MainApp {
+
+    private static Log log = LogFactory.getLog(MainApp.class);
 
     private static ImportList imports;
 
@@ -84,6 +88,7 @@ public final class MainApp {
     }
 
     private static void processClass(ClassOrInterfaceDeclaration typeDeclaration, String fileName, ReportBuilder reportBuilder) throws FileNotFoundException {
+        log.info("Processing of class " + typeDeclaration.getName() + " in file " + fileName + "...");
         ClassProcessor classProcessor = new ClassProcessorBuilder()
                 .setTypeDeclaration(typeDeclaration)
                 .setPackage(packageName)

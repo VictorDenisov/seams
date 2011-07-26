@@ -242,12 +242,13 @@ public class ExpressionStmtVisitor extends GenericVisitorAdapter<Expression, Mul
             if (arg.read(variable) == null) {
                 arg.write(variable, 0);
             } else {
-                arg.increaseIndex(variable);
+//                arg.increaseIndex(variable);
             }
             if (variableDeclarator.getInit() != null) {
                 variableDeclarator.setInit(GenericVisitorHelper.visitExpression(variableDeclarator.getInit(), arg, this));
             }
-            variableDeclarator.getId().setName(variableName + Constants.SEPARATOR + arg.read(variable));
+//            variableDeclarator.getId().setName(variableName + Constants.SEPARATOR + arg.read(variable));
+            variableDeclarator.getId().setName(variableName + Constants.SEPARATOR + 0);
 
             String target = methodName + Constants.SEPARATOR + variableName;
 
@@ -289,10 +290,18 @@ public class ExpressionStmtVisitor extends GenericVisitorAdapter<Expression, Mul
             if (((ArrayAccessExpr) n.getTarget()).getName() instanceof FieldAccessExpr) {
                 arrayName = ((FieldAccessExpr) ((ArrayAccessExpr) n.getTarget()).getName()).getField();
                 String scope = ((FieldAccessExpr) ((ArrayAccessExpr) n.getTarget()).getName()).getScope().toString();
-                variable = createVariable(arrayName, scope, arg.getMethodArgsHolder());
+                variable = new StringVariable(arrayName, scope);
             } else {
                 arrayName = ((NameExpr) ((ArrayAccessExpr) n.getTarget()).getName()).getName();
-                variable = createVariable(arrayName, null, arg.getMethodArgsHolder());
+                if (arg.getMethodArgsHolder().containsArgName(arrayName)) {
+                    variable = new StringVariable(arrayName, Constants.ARG_SCOPE);
+                } else {
+                    if (arg.getFieldsHolder().containsCreated(arrayName)) {
+                        variable = new StringVariable(arrayName, Constants.EMPTY_SCOPE);
+                    } else {
+                        variable = new StringVariable(arrayName, Constants.THIS_SCOPE);
+                    }
+                }
             }
 
             ((ArrayAccessExpr) n.getTarget()).setIndex(GenericVisitorHelper.visitExpression(
@@ -306,7 +315,7 @@ public class ExpressionStmtVisitor extends GenericVisitorAdapter<Expression, Mul
             expressions.add(new NameExpr(index));
             expressions.add(n.getValue());
 
-            n.setValue(new MethodCallExpr(null, "Update", expressions));
+            n.setValue(new MethodCallExpr(null, "#Update", expressions));
 
             arg.increaseIndex(variable);
             n.setTarget(new NameExpr(arrayName + Constants.SEPARATOR + arg.read(variable)));
@@ -333,15 +342,15 @@ public class ExpressionStmtVisitor extends GenericVisitorAdapter<Expression, Mul
             n.setValue(GenericVisitorHelper.<Expression, MultiHolder>visitExpression(n.getValue(), arg, this));
             String variableName = n.getTarget().toString();
             Variable variable;
-        if (arg.getMethodArgsHolder().containsArgName(variableName)) {
-            variable = new StringVariable(variableName, Constants.ARG_SCOPE);
-        } else {
-            if (arg.getFieldsHolder().containsCreated(variableName)) {
-                variable = new StringVariable(variableName, Constants.EMPTY_SCOPE);
+            if (arg.getMethodArgsHolder().containsArgName(variableName)) {
+                variable = new StringVariable(variableName, Constants.ARG_SCOPE);
             } else {
-                variable = new StringVariable(variableName, Constants.THIS_SCOPE);
+                if (arg.getFieldsHolder().containsCreated(variableName)) {
+                    variable = new StringVariable(variableName, Constants.EMPTY_SCOPE);
+                } else {
+                    variable = new StringVariable(variableName, Constants.THIS_SCOPE);
+                }
             }
-        }
 
             isNeededToIncreaseIndex = true;
             n.setTarget(GenericVisitorHelper.<Expression, MultiHolder>visitExpression(n.getTarget(), arg, this));

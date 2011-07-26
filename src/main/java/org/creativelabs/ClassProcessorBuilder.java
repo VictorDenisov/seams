@@ -36,8 +36,8 @@ public class ClassProcessorBuilder {
     DependencyCounterVisitorBuilder constructDependencyCounterVisitor() {
         DependencyCounterVisitorBuilder builder = new DependencyCounterVisitorBuilder();
         return builder
-            .setClassFields(fieldList)
-            .setImports(imports);
+                .setClassFields(fieldList)
+                .setImports(imports);
     }
 
     VariableList constructVariableList() {
@@ -68,12 +68,13 @@ public class ClassProcessorBuilder {
         dependencyCounterBuilder = constructDependencyCounterVisitor();
 
         SimpleMultiHolderBuilder holderBuilder = new SimpleMultiHolderBuilder()
-        .setImportList(imports)
-        .setClassType(classValue);
+                .setImportList(imports)
+                .setClassType(classValue);
 
         return new ClassProcessor(
-                    typeDeclaration,
-                    dependencyCounterBuilder,
-                    holderBuilder);
+                typeDeclaration,
+                dependencyCounterBuilder,
+                imports,
+                holderBuilder);
     }
 }

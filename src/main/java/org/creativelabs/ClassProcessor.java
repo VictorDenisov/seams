@@ -2,9 +2,13 @@ package org.creativelabs;
 
 import japa.parser.ast.body.*;
 import japa.parser.ast.stmt.BlockStmt;
+import japa.parser.ast.type.ClassOrInterfaceType;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.creativelabs.graph.condition.EmptyCondition;
 import org.creativelabs.iig.ConditionInternalInstancesGraph;
 import org.creativelabs.iig.InternalInstancesGraph;
+import org.creativelabs.introspection.ClassType;
 import org.creativelabs.report.ReportBuilder;
 import org.creativelabs.ssa.SsaError;
 import org.creativelabs.ssa.holder.SimpleMultiHolder;
@@ -14,16 +18,17 @@ import org.creativelabs.ssa.holder.variable.Variable;
 import org.creativelabs.ssa.representation.AstSsaFormRepresentation;
 import org.creativelabs.ssa.representation.SsaFormRepresentation;
 import org.creativelabs.ssa.visitor.SsaFormConverter;
-import org.creativelabs.typefinder.DependenciesChart;
-import org.creativelabs.typefinder.Dependency;
-import org.creativelabs.typefinder.DependencyCounterVisitor;
-import org.creativelabs.typefinder.DependencyCounterVisitorBuilder;
+import org.creativelabs.typefinder.*;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.*;
 
 public class ClassProcessor {
 
     private ClassOrInterfaceDeclaration typeDeclaration;
+
+    private Log log = LogFactory.getLog(ClassProcessor.class);
 
     public static String debugInfo;
 
@@ -41,6 +46,8 @@ public class ClassProcessor {
 
     protected InternalInstancesGraph ssaInternalInstancesGraph = new ConditionInternalInstancesGraph();
 
+    protected ImportList imports;
+
     ClassProcessor(ClassOrInterfaceDeclaration typeDeclaration,
                    DependencyCounterVisitorBuilder dependencyCounterBuilder) {
         this.typeDeclaration = typeDeclaration;
@@ -50,6 +57,13 @@ public class ClassProcessor {
     ClassProcessor(ClassOrInterfaceDeclaration typeDeclaration, DependencyCounterVisitorBuilder dependencyCounterBuilder, SimpleMultiHolderBuilder holderBuilder) {
         this.typeDeclaration = typeDeclaration;
         this.dependencyCounterBuilder = dependencyCounterBuilder;
+        this.holderBuilder = holderBuilder;
+    }
+
+    public ClassProcessor(ClassOrInterfaceDeclaration typeDeclaration, DependencyCounterVisitorBuilder dependencyCounterBuilder, ImportList imports, SimpleMultiHolderBuilder holderBuilder) {
+        this.typeDeclaration = typeDeclaration;
+        this.dependencyCounterBuilder = dependencyCounterBuilder;
+        this.imports = imports;
         this.holderBuilder = holderBuilder;
     }
 
@@ -120,31 +134,20 @@ public class ClassProcessor {
     }
 
     void buildInternalInstancesGraph(MethodDeclaration md) {
-         debugInfo = "Class name = " + typeDeclaration.getName() +
-                 "; method name = " + md.getName() + "; ";
+        debugInfo = "Class name = " + typeDeclaration.getName() +
+                "; method name = " + md.getName() + "; ";
+
         Map<Variable, Integer> variables = new HashMap<Variable, Integer>();
         Set<String> fields = new HashSet<String>();
-        for (BodyDeclaration bd : typeDeclaration.getMembers()) {
-            if (bd instanceof FieldDeclaration) {
-                FieldDeclaration fd = (FieldDeclaration) bd;
-                for (VariableDeclarator vardecl : fd.getVariables()) {
-                    String name = vardecl.getId().getName();
 
-                    variables.put(new StringVariable(name, Constants.THIS_SCOPE), 0);
-                    fields.add(vardecl.getId().getName());
-
-//                    ssaInternalInstancesGraph.addEdge(vardecl.getId().getName(),
-//                            md.getName() + Constants.SEPARATOR + vardecl.getId().getName() + 0);
-
-                }
-            }
-        }
+        addFieldsOfCurrentClass(variables, fields, typeDeclaration);
+        addFieldsOfParentClass(variables, fields, typeDeclaration);
 
         SsaFormConverter visitor = new SsaFormConverter(ssaInternalInstancesGraph, typeDeclaration.getName());
 
         holderBuilder.setCondition(new EmptyCondition())
-        .setVariables(variables)
-        .setFieldsNames(fields);
+                .setVariables(variables)
+                .setFieldsNames(fields);
 
         SimpleMultiHolder holder = holderBuilder.buildMultiHolder();
         try {
@@ -159,6 +162,51 @@ public class ClassProcessor {
 
         forms.add(new AstSsaFormRepresentation(md));
         ssaInternalInstancesGraph = visitor.getGraph();
+    }
+
+    private void addField(Map<Variable, Integer> variables, Set<String> fields, String variableName) {
+        variables.put(new StringVariable(variableName, Constants.THIS_SCOPE), 0);
+        fields.add(variableName);
+
+//                    ssaInternalInstancesGraph.addEdge(vardecl.getId().getName(),
+//                            md.getName() + Constants.SEPARATOR + vardecl.getId().getName() + 0);
+    }
+
+    private void addFieldsOfCurrentClass(Map<Variable, Integer> variables, Set<String> fields, ClassOrInterfaceDeclaration typeDeclaration) {
+        for (BodyDeclaration bd : typeDeclaration.getMembers()) {
+            if (bd instanceof FieldDeclaration) {
+                FieldDeclaration fd = (FieldDeclaration) bd;
+                for (VariableDeclarator vardecl : fd.getVariables()) {
+                    String name = vardecl.getId().getName();
+                    addField(variables, fields, name);
+                }
+            }
+        }
+    }
+
+    private void addFieldsOfParentClass(Map<Variable, Integer> variables, Set<String> fields, ClassOrInterfaceDeclaration typeDeclaration) {
+        List<ClassOrInterfaceType> extendTypes = typeDeclaration.getExtends();
+        if (extendTypes != null) {
+            for (ClassOrInterfaceType classOrInterfaceType : extendTypes) {
+                ClassType type = imports.getClassByShortName(classOrInterfaceType.getName());
+                try {
+                    String className = type.toString();
+                    Integer endOfClassNameIndex = className.indexOf("<");
+                    if (endOfClassNameIndex == -1) {
+                        endOfClassNameIndex = className.length();
+                    }
+                    Class clazz = Class.forName(className.substring(0, endOfClassNameIndex));
+                    Field[] fieldsOfClass = clazz.getDeclaredFields();
+                    for (Field field : fieldsOfClass) {
+                        if (!Modifier.isPrivate(field.getModifiers())) {
+                            addField(variables, fields, field.getName());
+                        }
+                    }
+                } catch (ClassNotFoundException e) {
+                    log.error(e);
+                }
+            }
+        }
     }
 }
 

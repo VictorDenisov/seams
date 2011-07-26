@@ -1257,6 +1257,176 @@ public class SsaFormConverterTest {
         assertEquals(expectedResult, actualResult);
     }
 
+    @Test
+    public void testWhileCreateInnerVariable() throws Exception {
+        MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("void method(int x){" +
+                "while (x > 0) {" +
+                "    int y = x;" +
+                "}" +
+                "}");
+
+        SsaFormConverter visitor = new SsaFormConverter();
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
+        String actualResult = visitor.getMethodDeclaration().toString();
+
+        String expectedResult = "void method(int x#0) {\n" +
+                "    while (x#0 > 0) {\n" +
+                "        y#1 = #phi(y#0, y#1);\n" +
+                "        int y#0 = x#0;\n" +
+                "    }\n" +
+                "}";
+
+        assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
+    public void testWhileCreateInner2Variable() throws Exception {
+        MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("void method(int x){" +
+                "while (x > 0) {" +
+                "    int y;" +
+                "    if (x > 1) {" +
+                "        y = 1;" +
+                "    } else {" +
+                "        y = 2;" +
+                "    }" +
+                "}" +
+                "}");
+
+        SsaFormConverter visitor = new SsaFormConverter();
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
+        String actualResult = visitor.getMethodDeclaration().toString();
+
+        String expectedResult = "void method(int x#0) {\n" +
+                "    while (x#0 > 0) {\n" +
+                "        y#1 = #phi(y#0, y#4);\n" +
+                "        int y#0;\n" +
+                "        if (x#0 > 1) {\n" +
+                "            y#2 = 1;\n" +
+                "        } else {\n" +
+                "            y#3 = 2;\n" +
+                "        }\n" +
+                "        y#4 = #phi(y#2, y#3);\n" +
+                "    }\n" +
+                "}";
+
+        assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
+    public void testForCreateInnerVariable() throws Exception {
+        MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("void method(int x){" +
+                "for (int i = 0; i < x; i++) {" +
+                "    int y = i;" +
+                "}" +
+                "}");
+
+        SsaFormConverter visitor = new SsaFormConverter();
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
+        String actualResult = visitor.getMethodDeclaration().toString();
+
+        String expectedResult = "void method(int x#0) {\n" +
+                "    i#1 = #phi(i#0, i#2);\n" +
+                "    for (int i#0 = 0; i#1 < x#0; i#2++) {\n" +
+                "        i#2 = #phi(i#1, i#2);\n" +
+                "        y#1 = #phi(y#0, y#1);\n" +
+                "        int y#0 = i#2;\n" +
+                "    }\n" +
+                "}";
+
+        assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
+    public void testForCreateInner2Variable() throws Exception {
+        MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("void method(int x){" +
+                "for (int i = 0; i < x; i++) {" +
+                "    int y;" +
+                "    if (x > 1) {" +
+                "        y = 1;" +
+                "    } else {" +
+                "        y = 2;" +
+                "    }" +
+                "}" +
+                "}");
+
+        SsaFormConverter visitor = new SsaFormConverter();
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
+        String actualResult = visitor.getMethodDeclaration().toString();
+
+        String expectedResult = "void method(int x#0) {\n" +
+                "    i#1 = #phi(i#0, i#2);\n" +
+                "    for (int i#0 = 0; i#1 < x#0; i#2++) {\n" +
+                "        i#2 = #phi(i#1, i#2);\n" +
+                "        y#1 = #phi(y#0, y#4);\n" +
+                "        int y#0;\n" +
+                "        if (x#0 > 1) {\n" +
+                "            y#2 = 1;\n" +
+                "        } else {\n" +
+                "            y#3 = 2;\n" +
+                "        }\n" +
+                "        y#4 = #phi(y#2, y#3);\n" +
+                "    }\n" +
+                "}";
+
+        assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
+    public void testForeachCreateInnerVariable() throws Exception {
+        MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("void method(int x){" +
+                "for (int i : x) {" +
+                "    int y = i;" +
+                "}" +
+                "}");
+
+        SsaFormConverter visitor = new SsaFormConverter();
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
+        String actualResult = visitor.getMethodDeclaration().toString();
+
+        String expectedResult = "void method(int x#0) {\n" +
+                "    for (int i#0 = x#0.#next() : x#0) {\n" +
+                "        y#1 = #phi(y#0, y#1);\n" +
+                "        int y#0 = i#0;\n" +
+                "    }\n" +
+                "}";
+
+        assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
+    public void testForeachCreateInner2Variable() throws Exception {
+        MethodDeclaration methodDeclaration = ParseHelper.createMethodDeclaration("void method(int x){" +
+                "for (int i : x) {" +
+                "    int y;" +
+                "    if (x > 1) {" +
+                "        y = 1;" +
+                "    } else {" +
+                "        y = 2;" +
+                "    }" +
+                "}" +
+                "}");
+
+        SsaFormConverter visitor = new SsaFormConverter();
+        visitor.visit(methodDeclaration, createVariablesHolder(new TreeMap<Variable, Integer>()));
+        String actualResult = visitor.getMethodDeclaration().toString();
+
+        String expectedResult = "void method(int x#0) {\n" +
+                "    for (int i#0 = x#0.#next() : x#0) {\n" +
+                "        y#1 = #phi(y#0, y#4);\n" +
+                "        int y#0;\n" +
+                "        if (x#0 > 1) {\n" +
+                "            y#2 = 1;\n" +
+                "        } else {\n" +
+                "            y#3 = 2;\n" +
+                "        }\n" +
+                "        y#4 = #phi(y#2, y#3);\n" +
+                "    }\n" +
+                "}";
+
+        assertEquals(expectedResult, actualResult);
+    }
+
+
     //TODO
     @Test
     public void testMethod3() throws Exception {
