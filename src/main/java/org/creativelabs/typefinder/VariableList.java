@@ -6,33 +6,62 @@ import java.util.*;
 
 public class VariableList {
 
-    protected Map<String, ClassType> fieldTypes = new HashMap<String, ClassType>();
+    protected ArrayList<Map<String, ClassType>> fieldTypes;
 
-    protected VariableList() {
+    protected Map<String, ClassType> topFieldTypes;
+
+    private ReflectionAbstraction ra;
+
+    protected VariableList(ReflectionAbstraction ra) {
+        fieldTypes = new ArrayList<Map<String, ClassType>>();
+        topFieldTypes = new HashMap<String, ClassType>();
+        fieldTypes.add(topFieldTypes);
+        this.ra = ra;
     }
 
+    /**
+     * For test purposes only.
+     */
     public List<String> getNames() {
-        return new ArrayList<String>(fieldTypes.keySet());
+        return new ArrayList<String>(topFieldTypes.keySet());
     }
 
     public ClassType getFieldTypeAsClass(String fieldName) {
-        ClassType result = fieldTypes.get(fieldName);
-        if (result == null) {
-            result = ReflectionAbstractionImpl.create().createErrorClassType(fieldName + " doesn't exist");
+        for (int i = fieldTypes.size() - 1; i >= 0; --i) {
+            ClassType result = fieldTypes.get(i).get(fieldName);
+            if (result != null) {
+                return result;
+            }
         }
-        return result;
+        return ra.createErrorClassType(fieldName + " doesn't exist");
     }
 
+    /**
+     * For test purposes only.
+     */
     public boolean hasName(String fieldName) {
-        return fieldTypes.keySet().contains(fieldName);
+        return topFieldTypes.keySet().contains(fieldName);
     }
 
     public void put(String fieldName, ClassType clazz) {
-        fieldTypes.put(fieldName, clazz);
+        topFieldTypes.put(fieldName, clazz);
     }
 
     void addAll(VariableList list) {
-        fieldTypes.putAll(list.fieldTypes);
+        for (Map<String, ClassType> map : list.fieldTypes) {
+            fieldTypes.add(map);
+        }
+        topFieldTypes = fieldTypes.get(fieldTypes.size() - 1);
+    }
+
+    void incDepth() {
+        topFieldTypes = new HashMap<String, ClassType>();
+        fieldTypes.add(topFieldTypes);
+    }
+
+    void decDepth() {
+        fieldTypes.remove(fieldTypes.size() - 1);
+        topFieldTypes = fieldTypes.get(fieldTypes.size() - 1);
     }
 
 }

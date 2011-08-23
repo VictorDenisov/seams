@@ -1,18 +1,18 @@
 package org.creativelabs;
 
+import japa.parser.ast.body.ClassOrInterfaceDeclaration;
+import japa.parser.ast.stmt.BlockStmt;
+import org.creativelabs.introspection.ReflectionAbstraction;
+import org.creativelabs.introspection.ReflectionAbstractionImpl;
+import org.creativelabs.report.ReportBuilder;
 import org.creativelabs.ssa.holder.SimpleMultiHolderBuilder;
 import org.creativelabs.typefinder.*;
 import org.testng.annotations.Test;
 
-import japa.parser.ast.stmt.*;
-import japa.parser.ast.body.*;
+import java.util.HashMap;
 
-import org.creativelabs.report.*;
-
-import java.util.*;
-
-import static org.testng.AssertJUnit.*;
 import static org.mockito.Mockito.*;
+import static org.testng.AssertJUnit.assertEquals;
 
 public class ClassProcessorTest {
 
@@ -22,8 +22,8 @@ public class ClassProcessorTest {
         private StringBuffer logString;
 
         DependencyCounterVisitorToStringLogger(StringBuffer logString, 
-                VariableList classFields, ImportList imports) {
-            super(classFields, imports);
+                VariableList classFields, ImportList imports, ReflectionAbstraction ra) {
+            super(classFields, imports, ra);
             this.logString = logString;
         }
 
@@ -43,7 +43,7 @@ public class ClassProcessorTest {
             methodArgumentsList = methodArguments;
             logString.append("build; ");
             return new DependencyCounterVisitorToStringLogger(logString,
-                    null, null);
+                    null, null, (null));
         }
     }
 
@@ -54,6 +54,7 @@ public class ClassProcessorTest {
             = new DependencyCounterVisitorToStringLoggerBuilder();
         dependencyVisitorBuilder.logString = logString;
         dependencyVisitorBuilder
+            .setReflectionAbstraction(ReflectionAbstractionImpl.create())
             .setImports(ConstructionHelper.createEmptyImportList())
             .setClassFields(ConstructionHelper.createEmptyVariableList());
 
@@ -83,7 +84,7 @@ public class ClassProcessorTest {
         ClassOrInterfaceDeclaration typeDeclaration =
             ParseHelper.createClassDeclaration("class Main { }");
 
-        ClassProcessor classProcessor = new ClassProcessor(typeDeclaration, null);
+        ClassProcessor classProcessor = new ClassProcessor(typeDeclaration, null, new SimpleMultiHolderBuilder());
         HashMap dependencies = new HashMap();
         HashMap internalInstances = new HashMap();
         classProcessor.dependencies = dependencies;

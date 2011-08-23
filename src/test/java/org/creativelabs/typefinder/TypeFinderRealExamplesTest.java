@@ -19,18 +19,18 @@ public class TypeFinderRealExamplesTest {
                 "input", "java.io.InputStream",
                 "buffer", "byte[]");
 
-        ClassType type = new TypeFinder(varTypes, null).determineType(expr);
+        ClassType type = new TypeFinder(ra, varTypes, null).determineType(expr);
         assertEquals("int", type.toString());
 
     }
-    
+
     @Test
     public void testThisPath() throws Exception {
         Expression expr = ParseHelper.createExpression("(this.arrayChar)");
         VariableList varTypes = ConstructionHelper.createVarListWithValues(ra,
                 "this", "org.creativelabs.introspection.ReflectionAbstractionImpl");
-        
-        ClassType type = new TypeFinder(varTypes, null).determineType(expr);
+
+        ClassType type = new TypeFinder(ra, varTypes, null).determineType(expr);
 
         assertEquals("java.util.HashMap<java.lang.String, java.lang.String, >", type.toString());
     }
@@ -43,7 +43,7 @@ public class TypeFinderRealExamplesTest {
 
         ImportList imports = ConstructionHelper.createEmptyImportList();
 
-        ClassType type = new TypeFinder(varTypes, imports).determineType(expr);
+        ClassType type = new TypeFinder(ra, varTypes, imports).determineType(expr);
 
         assertEquals("java.lang.Class<java.lang.String, >", type.toString());
     }

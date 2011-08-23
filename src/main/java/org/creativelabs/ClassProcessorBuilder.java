@@ -1,8 +1,8 @@
 package org.creativelabs;
 
-import japa.parser.ast.body.*;
-
-import org.creativelabs.introspection.*;
+import japa.parser.ast.body.ClassOrInterfaceDeclaration;
+import japa.parser.ast.type.ClassOrInterfaceType;
+import org.creativelabs.introspection.ClassType;
 import org.creativelabs.ssa.holder.SimpleMultiHolderBuilder;
 import org.creativelabs.typefinder.DependencyCounterVisitorBuilder;
 import org.creativelabs.typefinder.ImportList;
@@ -19,12 +19,26 @@ public class ClassProcessorBuilder {
 
     protected DependencyCounterVisitorBuilder dependencyCounterBuilder;
 
+    protected VariableListBuilder variableListBuilder;
+
     public ClassProcessorBuilder setImports(ImportList importsVal) {
         this.imports = importsVal;
         return this;
     }
 
+    public ClassProcessorBuilder setVariableListBuilder(VariableListBuilder variableListBuilder) {
+        this.variableListBuilder = variableListBuilder;
+        return this;
+    }
+
     public ClassProcessorBuilder setPackage(String packageVal) {
+        return this;
+    }
+
+    public ClassProcessorBuilder setDependencyCounterBuilder(
+            DependencyCounterVisitorBuilder dependencyCounterBuilder) {
+
+        this.dependencyCounterBuilder = dependencyCounterBuilder;
         return this;
     }
 
@@ -34,14 +48,13 @@ public class ClassProcessorBuilder {
     }
 
     DependencyCounterVisitorBuilder constructDependencyCounterVisitor() {
-        DependencyCounterVisitorBuilder builder = new DependencyCounterVisitorBuilder();
-        return builder
-                .setClassFields(fieldList)
-                .setImports(imports);
+        return dependencyCounterBuilder
+            .setClassFields(fieldList)
+            .setImports(imports);
     }
 
     VariableList constructVariableList() {
-        return new VariableListBuilder().setImports(imports).buildFromClass(typeDeclaration);
+        return variableListBuilder.setImports(imports).buildFromClass(typeDeclaration);
     }
 
     ClassProcessor buildClassProcessor() {
@@ -57,8 +70,8 @@ public class ClassProcessorBuilder {
         ClassType classValue = null;
 
         if (typeDeclaration.getExtends() != null) {
-            String classShortName = typeDeclaration.getExtends().get(0).getName();
-            classValue = imports.getClassByShortName(classShortName);
+            ClassOrInterfaceType classShortName = typeDeclaration.getExtends().get(0);
+            classValue = imports.getClassByClassOrInterfaceType(classShortName);
         } else {
             classValue = imports.getClassByShortName("Object");
         }
@@ -69,7 +82,7 @@ public class ClassProcessorBuilder {
 
         SimpleMultiHolderBuilder holderBuilder = new SimpleMultiHolderBuilder()
                 .setImportList(imports)
-                .setClassType(classValue);
+                .setClassType(imports.getClassByShortName(typeDeclaration.getName()));
 
         return new ClassProcessor(
                 typeDeclaration,

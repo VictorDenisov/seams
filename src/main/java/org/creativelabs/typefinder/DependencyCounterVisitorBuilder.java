@@ -1,6 +1,7 @@
 package org.creativelabs.typefinder;
 
-import japa.parser.ast.body.*;
+import japa.parser.ast.body.MethodDeclaration;
+import org.creativelabs.introspection.ReflectionAbstraction;
 
 public class DependencyCounterVisitorBuilder {
 
@@ -9,6 +10,10 @@ public class DependencyCounterVisitorBuilder {
     protected VariableList classFields;
 
     protected VariableList methodArguments;
+
+    protected VariableListBuilder variableListBuilder = new VariableListBuilder();
+
+    protected ReflectionAbstraction reflectionAbstraction;
 
     public DependencyCounterVisitorBuilder setImports(ImportList importsArg) {
         this.imports = importsArg;
@@ -25,11 +30,17 @@ public class DependencyCounterVisitorBuilder {
         return this;
     }
 
+    public DependencyCounterVisitorBuilder setReflectionAbstraction(ReflectionAbstraction reflectionAbstraction) {
+        this.reflectionAbstraction = reflectionAbstraction;
+        variableListBuilder = variableListBuilder.setReflectionAbstraction(reflectionAbstraction);
+        return this;
+    }
+
     public DependencyCounterVisitorBuilder setConstructedMethodArguments(MethodDeclaration md) {
         if (imports == null) {
             throw new IllegalStateException("Imports should be not null for this operation");
         }
-        this.methodArguments = new VariableListBuilder().setImports(imports).buildFromMethod(md);
+        this.methodArguments = variableListBuilder.setImports(imports).buildFromMethod(md);
         return this;
     }
 
@@ -43,9 +54,9 @@ public class DependencyCounterVisitorBuilder {
         if (methodArguments == null) {
             throw new IllegalStateException("Method arguments can't be null");
         }
-        VariableList externalVariables = new VariableListBuilder().buildEmpty();
+        VariableList externalVariables = variableListBuilder.buildEmpty();
         externalVariables.addAll(classFields);
         externalVariables.addAll(methodArguments);
-        return new DependencyCounterVisitor(externalVariables, imports);
+        return new DependencyCounterVisitor(externalVariables, imports, reflectionAbstraction);
     }
 }

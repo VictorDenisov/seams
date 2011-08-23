@@ -2,17 +2,20 @@ package org.creativelabs.typefinder;
 
 import japa.parser.ast.CompilationUnit;
 import japa.parser.ast.ImportDeclaration;
+import japa.parser.ast.TypeParameter;
+import japa.parser.ast.body.ClassOrInterfaceDeclaration;
 import japa.parser.ast.expr.NameExpr;
 import japa.parser.ast.type.*;
-import japa.parser.ast.body.*;
+import org.creativelabs.introspection.ClassType;
+import org.creativelabs.introspection.ClassTypeError;
+import org.creativelabs.introspection.ReflectionAbstraction;
 
-import org.creativelabs.copy.Copyable;
-import org.creativelabs.copy.CopyingUtils;
-import org.creativelabs.introspection.*;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 
-import java.util.*;
-
-public class ImportList implements Copyable {
+public class ImportList implements Serializable {
 
     private List<ImportDeclaration> list = new ArrayList<ImportDeclaration>();
 
@@ -20,8 +23,15 @@ public class ImportList implements Copyable {
 
     protected String className;
 
+    protected HashSet<String> typeArgs = new HashSet<String>();
+
     public ImportList(ReflectionAbstraction ra, CompilationUnit cu, ClassOrInterfaceDeclaration cd) {
         this(ra, cu);
+        if (cd.getTypeParameters() != null) {
+            for (TypeParameter tp : cd.getTypeParameters()) {
+                typeArgs.add(tp.getName());
+            }
+        }
         if (cu.getPackage() != null) {
             className = cu.getPackage().getName().toString() + "." + cd.getName();
         } else {
@@ -29,17 +39,18 @@ public class ImportList implements Copyable {
         }
     }
 
-    ImportList(ReflectionAbstraction ra, CompilationUnit cu) {
+    public ImportList(ReflectionAbstraction ra, CompilationUnit cu) {
         this.ra = ra;
+        if (cu.getImports() != null) {
+            list.addAll(cu.getImports());
+        }
         if (cu.getPackage() != null) {
             list.add(new ImportDeclaration(new NameExpr(cu.getPackage().getName().toString()), false, true));
         }
         list.add(new ImportDeclaration(new NameExpr("java.lang"), false, true));
-        if (cu.getImports() != null) {
-            list.addAll(cu.getImports());
-        }
     }
-    List<String> getImports() {
+
+    public List<String> getImports() {
         List<String> result = new ArrayList<String>();
         for (ImportDeclaration d : list) {
             result.add(d.getName().toString());
@@ -85,7 +96,7 @@ public class ImportList implements Copyable {
         return result;
     }
 
-    ClassType getClassByClassOrInterfaceType(ClassOrInterfaceType classType) {
+    public ClassType getClassByClassOrInterfaceType(ClassOrInterfaceType classType) {
         ClassType result = null;
         if (classType.getScope() == null) {
             result = getClassByShortName(classType.toString());
@@ -102,7 +113,7 @@ public class ImportList implements Copyable {
         return result;
     }
 
-    ClassType getClassByType(Type type) {
+    public ClassType getClassByType(Type type) {
         if (type instanceof ReferenceType) {
             Type innerType = ((ReferenceType) type).getType();
 
@@ -111,12 +122,12 @@ public class ImportList implements Copyable {
 
                 ClassType result = getClassByClassOrInterfaceType(classType);
 
-                return ra.convertToArray(result, ((ReferenceType) type).getArrayCount());
+                return ra.addArrayDepth(result, ((ReferenceType) type).getArrayCount());
             } else {
                 PrimitiveType classType = (PrimitiveType) innerType;
                 ClassType result = getClassByShortName(classType.toString());
 
-                return ra.convertToArray(result, ((ReferenceType) type).getArrayCount());
+                return ra.addArrayDepth(result, ((ReferenceType) type).getArrayCount());
             }
         } else if (type instanceof ClassOrInterfaceType) {
             ClassOrInterfaceType classType = (ClassOrInterfaceType) type;
@@ -124,6 +135,8 @@ public class ImportList implements Copyable {
             ClassType result = getClassByClassOrInterfaceType(classType);
 
             return result;
+        } else if (type instanceof WildcardType) {
+            return getClassByShortName("Object");
         } else {
             return getClassByShortName(type.toString());
         }
@@ -139,11 +152,17 @@ public class ImportList implements Copyable {
     }
 
     public ClassType getClassByShortName(String shortName) {
+        if (typeArgs.contains(shortName)) {
+            return ra.getClassTypeByName("java.lang.Object");
+        }
         shortName = stripGeneric(shortName);
         shortName = processForNested(shortName);
         String scope = getScope(shortName);
         if (classIsPrimitive(shortName)) {
             return ra.getClassTypeByName(shortName);
+        }
+        if (ra.classWithNameExists(className + "$" + shortName)) {
+            return ra.getClassTypeByName(className + "$" + shortName);
         }
         for (ImportDeclaration id : list) {
             if (id.isAsterisk()) {
@@ -156,18 +175,78 @@ public class ImportList implements Copyable {
                 if (id.getName().getName().equals(scope)) {
                     String className = id.getName().toString();
                     className = className.substring(0, className.length() - scope.length());
-                    return ra.getClassTypeByName(className + shortName);
+
+                    String fullClassName = className + shortName;
+                    if (ra.classWithNameExists(fullClassName)) {
+                        return ra.getClassTypeByName(fullClassName);
+                    }
+                    for (;;) {
+                        int ind = fullClassName.lastIndexOf(".");
+                        if (ind < 0) {
+                            break;
+                        }
+                        fullClassName = fullClassName.substring(0, ind) + "$"
+                            + fullClassName.substring(ind + 1, fullClassName.length());
+                        if (ra.classWithNameExists(fullClassName)) {
+                            return ra.getClassTypeByName(fullClassName);
+                        }
+                    }
                 }
             }
         }
-        if (ra.classWithNameExists(className + "$" + shortName)) {
-            return ra.getClassTypeByName(className + "$" + shortName);
+        if (ra.classWithNameExists(shortName)) {
+            return ra.getClassTypeByName(shortName);
         }
+        ClassType clazz = ra.getClassTypeByName(className);
+        ClassType classType = ra.findClassInTypeHierarchy(clazz, shortName);
+        if (!(classType instanceof ClassTypeError)) {
+            return classType;
+        }
+
+        String testingClassName = className + "$1" + shortName;
+        if (ra.classWithNameExists(testingClassName)) {
+            return ra.getClassTypeByName(testingClassName);
+        }
+
         return ra.createErrorClassType("Unknown class: " + shortName);
     }
 
-    @Override
-    public ImportList copy() {
-        return CopyingUtils.copy(this);
+    public ClassType findStaticMethod(String methodName, ClassType[] types) {
+        for (ImportDeclaration decl : list) {
+            if (decl.isStatic()) {
+                if (decl.isAsterisk()) {
+                    ClassType classType = ra.getClassTypeByName(decl.getName().toString());
+                    ClassType result = ra.getReturnType(classType, methodName, types);
+                    if (!(result instanceof ClassTypeError)) {
+                        return result;
+                    }
+                }
+            }
+        }
+        return ra.createErrorClassType("There is no such static method");
     }
+
+    public ClassType findStaticField(String fieldName) {
+        for (ImportDeclaration decl : list) {
+            if (decl.isStatic()) {
+                if (decl.isAsterisk()) {
+                    ClassType classType = ra.getClassTypeByName(decl.getName().toString());
+                    ClassType result = ra.getFieldType(classType, fieldName);
+                    if (!(result instanceof ClassTypeError)) {
+                        return result;
+                    }
+                } else {
+                    String wholeName = decl.getName().toString();
+                    String name = decl.getName().getName();
+                    String scope = wholeName.substring(0, wholeName.length() - name.length() - 1);
+                    if (name.equals(fieldName)) {
+                        ClassType classType = ra.getClassTypeByName(scope);
+                        return ra.getFieldType(classType, fieldName);
+                    }
+                }
+            }
+        }
+        return ra.createErrorClassType("There is no such static field");
+    }
+
 }

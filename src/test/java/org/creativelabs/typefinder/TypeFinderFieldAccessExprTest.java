@@ -21,7 +21,7 @@ public class TypeFinderFieldAccessExprTest {
         VariableList varTypes = ConstructionHelper.createEmptyVariableList();
         varTypes.put("str", ra.getClassTypeByName(String.class.getName()));
 
-        ClassType type = new TypeFinder(varTypes, null).determineType(expr);
+        ClassType type = new TypeFinder(ra, varTypes, null).determineType(expr);
         assertEquals("java.util.Comparator<java.lang.String, >", type.toString());
     }
 
@@ -34,7 +34,7 @@ public class TypeFinderFieldAccessExprTest {
 
         ImportList imports = ParseHelper.createImportList("import org.apache.log4j.lf5.LogLevel;");
 
-        ClassType type = new TypeFinder(varTypes, imports).determineType(expr);
+        ClassType type = new TypeFinder(ra, varTypes, imports).determineType(expr);
 
         assertEquals("org.apache.log4j.lf5.LogLevel", type.toString());
     }
@@ -62,7 +62,7 @@ public class TypeFinderFieldAccessExprTest {
         VariableList varList = ConstructionHelper.createEmptyVariableList();
 
         ImportList imports = ConstructionHelper.createEmptyImportList();
-        TypeFinder typeFinder = new TypeFinder(varList, imports);
+        TypeFinder typeFinder = new TypeFinder(ra, varList, imports);
 
         ClassType type = typeFinder.determineType(expr);
 
@@ -75,7 +75,7 @@ public class TypeFinderFieldAccessExprTest {
         VariableList varList = ConstructionHelper.createEmptyVariableList();
 
         ImportList imports = ParseHelper.createImportList("import java.awt.event.*;");
-        TypeFinder typeFinder = new TypeFinder(varList, imports);
+        TypeFinder typeFinder = new TypeFinder(ra, varList, imports);
 
         ClassType type = typeFinder.determineType(expr);
 
@@ -95,16 +95,30 @@ public class TypeFinderFieldAccessExprTest {
     @Test
     public void testFieldAccessWithoutScope() throws Exception {
         Expression expr = ParseHelper.createExpression("rootPane");
-        
+
         ImportList importList = ConstructionHelper.createEmptyImportList();
         VariableList varList = ConstructionHelper.createEmptyVariableList();
         varList.put("this", ra.getClassTypeByName(
                     "org.creativelabs.typefinder.TypeFinderFieldAccessExprTest$JFrameDescendant"));
 
-        TypeFinder typeFinder = new TypeFinder(varList, importList);
+        TypeFinder typeFinder = new TypeFinder(ra, varList, importList);
 
         ClassType result = typeFinder.determineType(expr);
 
         assertEquals("javax.swing.JRootPane", result.toString());
+    }
+
+    @Test
+    public void testAccessImportedStaticFields() throws Exception {
+        Expression expr = ParseHelper.createExpression("PI");
+
+        ImportList importList = ParseHelper.createImportList("import static java.lang.Math.PI;");
+        VariableList varList = ConstructionHelper.createEmptyVariableList();
+
+        TypeFinder typeFinder = new TypeFinder(ra, varList, importList);
+
+        ClassType result = typeFinder.determineType(expr);
+
+        assertEquals("double", result.toString());
     }
 }

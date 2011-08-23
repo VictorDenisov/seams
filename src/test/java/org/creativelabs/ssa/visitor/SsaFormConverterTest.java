@@ -45,7 +45,7 @@ public class SsaFormConverterTest {
                         "    x#1 = 1;\n" +
                         "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test
@@ -63,7 +63,7 @@ public class SsaFormConverterTest {
                         "    int x#0 = 1;\n" +
                         "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test
@@ -81,7 +81,7 @@ public class SsaFormConverterTest {
                         "    x#1 = x#0;\n" +
                         "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test
@@ -96,10 +96,10 @@ public class SsaFormConverterTest {
 
         String expectedResult =
                 "void method(int x#0, int ar#0[]) {\n" +
-                        "    ar#1 = Update(ar#0, 2, x#0);\n" +
+                        "    ar#1 = #Update(ar#0, 2, x#0);\n" +
                         "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test
@@ -115,10 +115,10 @@ public class SsaFormConverterTest {
 
         String expectedResult =
                 "void method(int x#0, int ar#0[], int i#0) {\n" +
-                        "    ar#1 = Update(ar#0, i#0, x#0);\n" +
+                        "    ar#1 = #Update(ar#0, i#0, x#0);\n" +
                         "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test
@@ -136,7 +136,7 @@ public class SsaFormConverterTest {
                         "    x#1 = x#0 + 2;\n" +
                         "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test
@@ -156,7 +156,7 @@ public class SsaFormConverterTest {
                         "    x#1 = x#0 + y#0;\n" +
                         "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test
@@ -174,7 +174,7 @@ public class SsaFormConverterTest {
                         "    x#1 = x#0 + y#0 + y#0;\n" +
                         "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test
@@ -206,7 +206,7 @@ public class SsaFormConverterTest {
                         "    y#3 = #phi(y#1, y#2);\n" +
                         "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test
@@ -236,7 +236,7 @@ public class SsaFormConverterTest {
                         "    y#2 = #phi(y#0, y#1);\n" +
                         "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test
@@ -277,7 +277,7 @@ public class SsaFormConverterTest {
                         "    super.visit(n#0, o#0);\n" +
                         "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test
@@ -316,7 +316,7 @@ public class SsaFormConverterTest {
                         "    }\n" +
                         "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test
@@ -342,7 +342,7 @@ public class SsaFormConverterTest {
                         "    y#2 = #phi(y#0, y#1);\n" +
                         "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test
@@ -379,7 +379,7 @@ public class SsaFormConverterTest {
                         "    y#4 = #phi(y#2, y#3);\n" +
                         "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test
@@ -425,7 +425,7 @@ public class SsaFormConverterTest {
                         "    y#6 = #phi(y#4, y#5);\n" +
                         "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test
@@ -451,7 +451,7 @@ public class SsaFormConverterTest {
                 "    x#4 = #phi(x#1, x#3);\n" +
                 "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test
@@ -475,20 +475,22 @@ public class SsaFormConverterTest {
                 "    for (int i#0 = 0; i#1 < 10; i#3 = i#2 + 1) {\n" +
                 "        x#2 = #phi(x#1, x#7);\n" +
                 "        i#2 = #phi(i#1, i#3);\n" +
+                "        j#1 = #phi(j#0, j#5);\n" +
                 "        x#3 = i#2 + 1;\n" +
                 "        x#4 = #phi(x#3, x#6);\n" +
-                "        j#1 = #phi(j#0, j#3);\n" +
-                "        for (int j#0 = 1; j#1 < 5; j#3 = j#2 + 1) {\n" +
+                "        j#2 = #phi(j#1, j#4);\n" +
+                "        for (int j#0 = 1; j#2 < 5; j#4 = j#3 + 1) {\n" +
                 "            x#5 = #phi(x#4, x#6);\n" +
-                "            j#2 = #phi(j#1, j#3);\n" +
-                "            x#6 = j#2 + 2;\n" +
+                "            j#3 = #phi(j#2, j#4);\n" +
+                "            x#6 = j#3 + 2;\n" +
                 "        }\n" +
                 "        x#7 = #phi(x#4, x#6);\n" +
+                "        j#5 = #phi(j#2, j#4);\n" +
                 "    }\n" +
                 "    x#8 = #phi(x#1, x#7);\n" +
                 "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test()
@@ -512,7 +514,7 @@ public class SsaFormConverterTest {
                 "    x#4 = #phi(x#1, x#3);\n" +
                 "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test()
@@ -536,7 +538,7 @@ public class SsaFormConverterTest {
                 "    x#4 = #phi(x#1, x#3);\n" +
                 "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test()
@@ -555,7 +557,7 @@ public class SsaFormConverterTest {
                 "    }\n" +
                 "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test
@@ -580,10 +582,10 @@ public class SsaFormConverterTest {
         String actualResult = visitor.getMethodDeclaration().toString();
 
         String expectedResult = "void method(int x#0) {\n" +
-                "    x#1 = #Access(a#2, i#1);\n" +
+                "    x#1 = #Access(this.a#2, this.i#1);\n" +
                 "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test
@@ -601,7 +603,7 @@ public class SsaFormConverterTest {
                 "    int[] y#0 = x#0;\n" +
                 "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test
@@ -618,7 +620,7 @@ public class SsaFormConverterTest {
                 "    int[] y#0 = new int[2];\n" +
                 "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test
@@ -635,7 +637,7 @@ public class SsaFormConverterTest {
                 "    int[] y#0 = new int[] { 2, x#0 };\n" +
                 "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test
@@ -652,7 +654,7 @@ public class SsaFormConverterTest {
                 "    A x#0 = new A();\n" +
                 "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test
@@ -669,7 +671,7 @@ public class SsaFormConverterTest {
                 "    A y#0 = new A(x#0);\n" +
                 "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test
@@ -686,7 +688,7 @@ public class SsaFormConverterTest {
                 "    int y#0 = method2();\n" +
                 "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test
@@ -703,7 +705,7 @@ public class SsaFormConverterTest {
                 "    int y#0 = method2(x#0);\n" +
                 "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test
@@ -720,7 +722,7 @@ public class SsaFormConverterTest {
                 "    method2();\n" +
                 "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test
@@ -737,7 +739,7 @@ public class SsaFormConverterTest {
                 "    method2(x#0);\n" +
                 "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test
@@ -754,7 +756,7 @@ public class SsaFormConverterTest {
                 "    return x#0;\n" +
                 "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test
@@ -779,7 +781,7 @@ public class SsaFormConverterTest {
                 "    }\n" +
                 "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test
@@ -808,7 +810,7 @@ public class SsaFormConverterTest {
                 "    }\n" +
                 "}";
         //TODO resolve problem if assignment was in catch block.
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test
@@ -833,7 +835,7 @@ public class SsaFormConverterTest {
                 "    x#3 = #phi(x#0, x#2);\n" +
                 "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test
@@ -852,13 +854,14 @@ public class SsaFormConverterTest {
 
         String expectedResult = "void method(Set<ComplexClass> set#0) {\n" +
                 "    for (ComplexClass cc#0 = set#0.#next() : set#0) {\n" +
+                "        value#1 = #phi(value#0, value#1);\n" +
                 "        for (String value#0 = cc#0.values#0.#next() : cc#0.values#0) {\n" +
-                "            System.out#0.println(value#0);\n" +
+                "            System.out#0.println(value#1);\n" +
                 "        }\n" +
                 "    }\n" +
                 "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test
@@ -875,7 +878,7 @@ public class SsaFormConverterTest {
                 "    a#0.method();\n" +
                 "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test
@@ -892,7 +895,7 @@ public class SsaFormConverterTest {
                 "    this.method();\n" +
                 "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test
@@ -909,7 +912,7 @@ public class SsaFormConverterTest {
                 "    super.method();\n" +
                 "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test
@@ -928,7 +931,7 @@ public class SsaFormConverterTest {
                 "    }\n" +
                 "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test
@@ -947,7 +950,7 @@ public class SsaFormConverterTest {
                 "    }\n" +
                 "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test
@@ -964,7 +967,7 @@ public class SsaFormConverterTest {
                 "    method((A) a#0);\n" +
                 "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test
@@ -981,7 +984,7 @@ public class SsaFormConverterTest {
                 "    ((A) a#0).getB();\n" +
                 "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test
@@ -998,7 +1001,7 @@ public class SsaFormConverterTest {
                 "    (a#0).getB();\n" +
                 "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test(enabled = false)
@@ -1015,7 +1018,7 @@ public class SsaFormConverterTest {
                 "    Collections.sort(a#0);\n" +
                 "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test
@@ -1035,15 +1038,15 @@ public class SsaFormConverterTest {
         SimpleMultiHolder holder = createVariablesHolder(
                 new HashMap<Variable, Integer>() {
                     {
-                        put(new StringVariable("internalInstances", ""), 0);
+                        put(new StringVariable("internalInstances", Constants.THIS_SCOPE), 0);
                     }
 
                     {
-                        put(new StringVariable("assignedInternalInstance", ""), 0);
+                        put(new StringVariable("assignedInternalInstance", Constants.THIS_SCOPE), 0);
                     }
 
                     {
-                        put(new StringVariable("value", ""), 0);
+                        put(new StringVariable("value", Constants.THIS_SCOPE), 0);
                     }
                 });
         holder.addFieldName("internalInstances");
@@ -1065,7 +1068,7 @@ public class SsaFormConverterTest {
                         "    this.value#2 = #phi(this.value#0, this.value#1);\n" +
                         "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test
@@ -1115,7 +1118,7 @@ public class SsaFormConverterTest {
                         "    this.value#2 = #phi(this.value#0, this.value#1);\n" +
                         "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test
@@ -1135,7 +1138,7 @@ public class SsaFormConverterTest {
                         "    ClassType[] args#0 = new ClassType[classType#0.getTypeArgs().size()];\n" +
                         "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test
@@ -1178,7 +1181,7 @@ public class SsaFormConverterTest {
                         "    }\n" +
                         "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test
@@ -1222,7 +1225,7 @@ public class SsaFormConverterTest {
                 "    }\n" +
                 "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test
@@ -1247,14 +1250,46 @@ public class SsaFormConverterTest {
                 "    }");
 
         SsaFormConverter visitor = new SsaFormConverter();
-        visitor.visit(methodDeclaration, createVariablesHolder(
-                new HashMap<Variable, Integer>()));
+        SimpleMultiHolder holder = createVariablesHolder(
+                new HashMap<Variable, Integer>() {
+                    {
+                        put(new StringVariable("localVariables", Constants.THIS_SCOPE), 0);
+                    }
+
+                    {
+                        put(new StringVariable("internalInstances", Constants.THIS_SCOPE), 0);
+                    }
+
+                    {
+                        put(new StringVariable("imports", Constants.THIS_SCOPE), 0);
+                    }
+                });
+        holder.addFieldName("internalInstances");
+        holder.addFieldName("assignedInternalInstance");
+        holder.addFieldName("imports");
+        visitor.visit(methodDeclaration, holder);
         String actualResult = visitor.getMethodDeclaration().toString();
 
         String expectedResult =
-                "";
+                "public void visit(VariableDeclarationExpr n#0, Object o#0) {\n" +
+                        "    for (VariableDeclarator v#0 = n#0.getVars().#next() : n#0.getVars()) {\n" +
+                        "        classType#1 = #phi(classType#0, classType#2);\n" +
+                        "        esv#1 = #phi(esv#0, esv#1);\n" +
+                        "        ClassType classType#0 = this.imports#0.getClassByType(n#0.getType());\n" +
+                        "        classType#2 = ReflectionAbstractionImpl.create().convertToArray(classType#1, v#0.getId().getArrayCount());\n" +
+                        "        this.localVariables#0.put(v#0.getId().getName(), classType#2);\n" +
+                        "        ExpressionSeparatorVisitor esv#0 = new ExpressionSeparatorVisitor(this.internalInstances#0);\n" +
+                        "        if (v#0.getInit() != null) {\n" +
+                        "            v#0.getInit().accept(esv#1, null);\n" +
+                        "            if (esv#1.isAssignedInternalInstance()) {\n" +
+                        "                this.internalInstances#0.addEdge(v#0.getId().getName(), esv#1.getValue());\n" +
+                        "            }\n" +
+                        "        }\n" +
+                        "    }\n" +
+                        "    super.visit(n#0, o#0);\n" +
+                        "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test
@@ -1276,7 +1311,7 @@ public class SsaFormConverterTest {
                 "    }\n" +
                 "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test
@@ -1309,7 +1344,7 @@ public class SsaFormConverterTest {
                 "    }\n" +
                 "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test
@@ -1333,7 +1368,7 @@ public class SsaFormConverterTest {
                 "    }\n" +
                 "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test
@@ -1368,7 +1403,7 @@ public class SsaFormConverterTest {
                 "    }\n" +
                 "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test
@@ -1390,7 +1425,7 @@ public class SsaFormConverterTest {
                 "    }\n" +
                 "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test
@@ -1423,7 +1458,7 @@ public class SsaFormConverterTest {
                 "    }\n" +
                 "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
 
@@ -1510,7 +1545,7 @@ public class SsaFormConverterTest {
                 "    return n#0;\n" +
                 "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test
@@ -1565,7 +1600,7 @@ public class SsaFormConverterTest {
                 "    }\n" +
                 "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test
@@ -1583,20 +1618,25 @@ public class SsaFormConverterTest {
         SimpleMultiHolder holder = createVariablesHolder(
                 new HashMap<Variable, Integer>() {
                     {
-                        put(new StringVariable("fromVertexes", Constants.ARG_SCOPE), 0);
+                        put(new StringVariable("fromVertexes", Constants.THIS_SCOPE), 0);
                     }
 
                     {
-                        put(new StringVariable("toVertexes", Constants.ARG_SCOPE), 0);
+                        put(new StringVariable("toVertexes", Constants.THIS_SCOPE), 0);
                     }
 
                     {
-                        put(new StringVariable("map", Constants.ARG_SCOPE), 0);
+                        put(new StringVariable("map", Constants.THIS_SCOPE), 0);
+                    }
+
+                    {
+                        put(new StringVariable("graphBuilder", Constants.ARG_SCOPE), 0);
                     }
                 });
         holder.addFieldName("fromVertexes");
         holder.addFieldName("toVertexes");
         holder.addFieldName("map");
+        holder.addArgName("graphBuilder");
         visitor.visit(methodDeclaration, holder);
         String actualResult = visitor.getMethodDeclaration().toString();
 
@@ -1604,14 +1644,16 @@ public class SsaFormConverterTest {
                 "void buildGraph(GraphBuilder graphBuilder#0) {\n" +
                         "    i#1 = #phi(i#0, i#2);\n" +
                         "    for (int i#0 = 0; i#1 < this.fromVertexes#0.size(); i#2++) {\n" +
+                        "        a#1 = #phi(a#0, a#1);\n" +
+                        "        b#1 = #phi(b#0, b#1);\n" +
                         "        i#2 = #phi(i#1, i#2);\n" +
                         "        Vertex a#0 = this.map#0.get(this.fromVertexes#0.get(i#2));\n" +
                         "        Vertex b#0 = this.map#0.get(this.toVertexes#0.get(i#2));\n" +
-                        "        graphBuilder#0.addEdge(a#0, b#0);\n" +
+                        "        graphBuilder#0.addEdge(a#1, b#1);\n" +
                         "    }\n" +
                         "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test
@@ -1630,10 +1672,10 @@ public class SsaFormConverterTest {
         String expectedResult =
                 "void setDependencies(Map<String, Collection<Dependency>> dependencies#0) {\n" +
                         "    ClassData cd#0 = new ClassData();\n" +
-                        "    cd#0.dependencies = dependencies#0;\n" +
+                        "    cd#0.dependencies#0 = dependencies#0;\n" +
                         "}";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
     @Test
@@ -1746,7 +1788,7 @@ public class SsaFormConverterTest {
 
         String expectedResult = "";
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(actualResult, expectedResult);
     }
 
 }

@@ -48,12 +48,6 @@ public class ClassProcessor {
 
     protected ImportList imports;
 
-    ClassProcessor(ClassOrInterfaceDeclaration typeDeclaration,
-                   DependencyCounterVisitorBuilder dependencyCounterBuilder) {
-        this.typeDeclaration = typeDeclaration;
-        this.dependencyCounterBuilder = dependencyCounterBuilder;
-    }
-
     ClassProcessor(ClassOrInterfaceDeclaration typeDeclaration, DependencyCounterVisitorBuilder dependencyCounterBuilder, SimpleMultiHolderBuilder holderBuilder) {
         this.typeDeclaration = typeDeclaration;
         this.dependencyCounterBuilder = dependencyCounterBuilder;
@@ -155,14 +149,14 @@ public class ClassProcessor {
             if (md == null) {
                 //TODO find why md can be null
                 md = new MethodDeclaration();
-            }
+    }
         } catch (RuntimeException e) {
             errors.add(new SsaError(md, e, typeDeclaration.getName()));
         }
 
         forms.add(new AstSsaFormRepresentation(md));
         ssaInternalInstancesGraph = visitor.getGraph();
-    }
+}
 
     private void addField(Map<Variable, Integer> variables, Set<String> fields, String variableName) {
         variables.put(new StringVariable(variableName, Constants.THIS_SCOPE), 0);

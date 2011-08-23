@@ -97,6 +97,12 @@ public class DataCollector implements ReportBuilder {
         pw.close();
     }
 
+    public void buildInternalInstancesByClassReport() throws Exception {
+        InternalInstancesByClassReportBuilder report = new InternalInstancesByClassReportBuilder();
+        buildReport(report);
+        report.saveToFile("internal_instances_by_class");
+    }
+    
     public void buildSsaErrorsReport() {
         buildReport(new ErrorIigReportBuilder());
     }

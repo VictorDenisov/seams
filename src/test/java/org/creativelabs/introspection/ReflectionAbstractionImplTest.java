@@ -394,33 +394,6 @@ public class ReflectionAbstractionImplTest {
     }
 
     @Test
-    public void testLengthArrayField() throws Exception {
-        ClassType clazz = ra.getClassTypeByName("java.lang.String");
-        clazz = ra.convertToArray(clazz, 1);
-        ClassType result = ra.getFieldType(clazz, "length");
-        
-        assertEquals("int", result.toString());
-    }
-
-    @Test(groups = "reflection-abstraction-impl.interface-has-to-string")
-    public void testInterfaceHashMethodToString() throws Exception {
-        ClassType argsType = ra.getClassTypeByName("java.lang.reflect.Type");
-
-        ClassType result = ra.getReturnType(argsType, "toString", new ClassType[0]);
-
-        assertEquals("java.lang.String", result.toString());
-    }
-
-    @Test(groups = "reflection-abstraction-impl.interface-has-object-method")
-    public void testInterfaceHashMethodFromObjectClass() throws Exception {
-        ClassType argsType = ra.getClassTypeByName("java.lang.reflect.Type");
-
-        ClassType result = ra.getReturnType(argsType, "getClass", new ClassType[0]);
-
-        assertEquals("java.lang.Class<null, >", result.toString());
-    }
-
-    @Test
     public void testWhenArgumentIsAGenericType() {
         ClassType classType = createParameterizedClass("edu.uci.ics.jung.graph.Graph",
                 "org.creativelabs.graph.Vertex", "java.lang.String");
@@ -600,7 +573,7 @@ public class ReflectionAbstractionImplTest {
     public void testConvertToArrayFromPrimitive() throws Exception {
         ClassType classType = ra.getClassTypeByName("byte");
 
-        classType = ra.convertToArray(classType, 1);
+        classType = ra.addArrayDepth(classType, 1);
 
         assertEquals("[B", classType.toString());
     }

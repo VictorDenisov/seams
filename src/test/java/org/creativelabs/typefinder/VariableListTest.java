@@ -98,5 +98,53 @@ public class VariableListTest {
         assertEquals("name doesn't exist", value.toString());
     }
 
+    @Test
+    public void testIncDepthDecDepth() throws Exception {
+        VariableList varList = ConstructionHelper.createEmptyVariableList();
+        ClassType clazz = new ClassTypeStub("sampleType1");
+
+        varList.put("var", clazz);
+        varList.incDepth();
+
+        clazz = new ClassTypeStub("sampleType2");
+        varList.put("var", clazz);
+
+        assertEquals("sampleType2", varList.getFieldTypeAsClass("var").toString());
+        varList.decDepth();
+        assertEquals("sampleType1", varList.getFieldTypeAsClass("var").toString());
+    }
+
+    @Test
+    public void testGetFieldTypeWithIncDepth() throws Exception {
+        VariableList varList = ConstructionHelper.createEmptyVariableList();
+        ClassType clazz = new ClassTypeStub("sampleType1");
+        varList.put("a", clazz);
+        varList.incDepth();
+
+        clazz = new ClassTypeStub("sampleType2");
+        varList.put("b", clazz);
+
+        ClassType result = varList.getFieldTypeAsClass("a");
+
+        assertEquals("sampleType1", result.toString());
+    }
+
+    @Test
+    public void testAddAllWithIncDepth() throws Exception {
+        VariableList varList = ConstructionHelper.createEmptyVariableList();
+        varList.put("a", new ClassTypeStub("sampleType1"));
+
+        VariableList newVarList = ConstructionHelper.createEmptyVariableList();
+        newVarList.put("x", new ClassTypeStub("sampleType1"));
+        newVarList.incDepth();
+        newVarList.put("y", new ClassTypeStub("sampleType2"));
+
+        varList.addAll(newVarList);
+
+        assertEquals("sampleType1", varList.getFieldTypeAsClass("a").toString());
+        assertEquals("sampleType1", varList.getFieldTypeAsClass("x").toString());
+        assertEquals("sampleType2", varList.getFieldTypeAsClass("y").toString());
+    }
+
 
 }

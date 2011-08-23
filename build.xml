@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+
+<project name="OwnTaskExample" default="main" basedir=".">
+	<taskdef name="seams" classname="org.creativelabs.SeamsAntTask" classpath="./target/seams-0.1.jar"/>
+
+	<target name="main">
+		<seams>
+			<report name="deps-detail"/>
+			<report name="int-inst-chart"/>
+			<report name="errors"/>
+
+			<classpath>
+				<fileset dir="/home/victor/.m2/repository/net/sourceforge/collections/collections-generic">
+					<include name="**/*.jar"/>
+				</fileset>
+				<fileset dir="/home/victor/.m2/repository/javaparser">
+					<include name="**/*.jar"/>
+				</fileset>
+				<fileset dir="/home/victor/.m2/repository/commons-cli/commons-cli/1.2">
+					<include name="**/*.jar"/>
+				</fileset>
+				<fileset dir="/home/victor/.m2/repository/org/apache/ant/ant">
+					<include name="**/*.jar"/>
+				</fileset>
+				<fileset dir="/home/victor/.m2/repository/jfree">
+					<include name="**/*.jar"/>
+				</fileset>
+				<fileset dir="/home/victor/.m2/repository/net/sf/jung">
+					<include name="**/*.jar"/>
+				</fileset>
+				<pathelement path="target/classes"/>
+			</classpath>
+
+			<src path="src/main/java"/>
+			<include name="**/*.java"/>
+		</seams>
+	</target>
+</project>
+

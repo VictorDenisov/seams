@@ -16,14 +16,20 @@ public class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
 
     private ImportList imports;
 
-    public DependencyCounterVisitor(VariableList classFields, ImportList imports) {
+    private ReflectionAbstraction ra;
+
+    private VariableListBuilder variableListBuilder = new VariableListBuilder();
+
+    public DependencyCounterVisitor(VariableList classFields, ImportList imports, ReflectionAbstraction ra) {
         this.classFields = classFields;
         this.imports = imports;
+        this.ra = ra;
+        this.variableListBuilder = variableListBuilder.setReflectionAbstraction(ra);
     }
 
     private Set<Dependency> dependencies = new HashSet<Dependency>();
 
-    protected VariableList localVariables = new VariableListBuilder().buildEmpty();
+    protected VariableList localVariables = variableListBuilder.buildEmpty();
 
     private InternalInstancesGraph internalInstances = new SimpleInternalInstancesGraph();
 
@@ -35,12 +41,22 @@ public class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
         return internalInstances;
     }
 
+    public void visit(SwitchEntryStmt n, Object o) {
+        if (n.getStmts() != null) {
+            for (Statement s : n.getStmts()) {
+                s.accept(this, o);
+            }
+        }
+    }
+
     @Override
     public void visit(BlockStmt n, Object o) {
         if (n == null) {
             return;
         }
+        localVariables.incDepth();
         super.visit(n, o);
+        localVariables.decDepth();
     }
 
     @Override
@@ -51,11 +67,11 @@ public class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
     }
 
     protected ClassType runTypeFinder(Expression n) {
-        VariableList vList = new VariableListBuilder().buildEmpty();
+        VariableList vList = variableListBuilder.buildEmpty();
         vList.addAll(classFields);
         vList.addAll(localVariables);
         ClassType type = null;
-        type = new TypeFinder(vList, imports).determineType(n);
+        type = new TypeFinder(ra, vList, imports).determineType(n);
         return type;
     }
 
@@ -77,7 +93,8 @@ public class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
     @Override
     public void visit(AssignExpr n, Object o) {
         if (n.getValue() != null) {
-            ExpressionSeparatorVisitor esv = new ExpressionSeparatorVisitor(internalInstances);
+            ExpressionSeparatorVisitor esv = new ExpressionSeparatorVisitor(internalInstances,
+                    new HashSet<String>());
             n.getValue().accept(esv, null);
             if (esv.isAssignedInternalInstance()) {
                 internalInstances.addEdge(n.getTarget().toString(), esv.getValue());
@@ -90,11 +107,11 @@ public class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
     public void visit(VariableDeclarationExpr n, Object o) {
         for (VariableDeclarator v : n.getVars()) {
             ClassType classType = imports.getClassByType(n.getType());
-            classType = ReflectionAbstractionImpl.create()
-                .convertToArray(classType, v.getId().getArrayCount());
+            classType = ra.addArrayDepth(classType, v.getId().getArrayCount());
 
             localVariables.put(v.getId().getName(), classType);
-            ExpressionSeparatorVisitor esv = new ExpressionSeparatorVisitor(internalInstances);
+            ExpressionSeparatorVisitor esv = new ExpressionSeparatorVisitor(internalInstances,
+                    new HashSet<String>());
             if (v.getInit() != null) {
                 v.getInit().accept(esv, null);
                 if (esv.isAssignedInternalInstance()) {
@@ -111,7 +128,19 @@ public class DependencyCounterVisitor extends VoidVisitorAdapter<Object> {
 
         localVariables.put(n.getId().getName(), classType);
     }
+
+    @Override
+    public void visit(TypeDeclarationStmt n, Object o) {
+    }
+
+    @Override
+    public void visit(ObjectCreationExpr n, Object o) {
+        ClassType classType = imports.getClassByClassOrInterfaceType(n.getType());
+
+        dependencies.add(new Dependency(n.getType().toString(), classType));
+    }
 }
+
 
 // vim: set ts=4 sw=4 et:
 

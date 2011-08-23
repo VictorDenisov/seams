@@ -1,9 +1,8 @@
 package org.creativelabs.typefinder;
 
-import org.creativelabs.typefinder.ConstructionHelper;
+import org.creativelabs.introspection.ClassType;
+import org.creativelabs.introspection.ReflectionAbstraction;
 import org.testng.annotations.Test;
-
-import org.creativelabs.introspection.*;
 
 import static org.mockito.Mockito.*;
 
@@ -15,6 +14,6 @@ public class ConstructionHelperTest {
         ClassType result = ConstructionHelper.createClassTypeFromNotation(ra, "java.io.class[][][]");
 
         verify(ra).getClassTypeByName(eq("java.io.class"));
-        verify(ra).convertToArray(any(ClassType.class), eq(3));
+        verify(ra).addArrayDepth(any(ClassType.class), eq(3));
     }
 }

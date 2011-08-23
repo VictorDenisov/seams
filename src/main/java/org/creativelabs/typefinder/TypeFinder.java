@@ -4,12 +4,11 @@ import japa.parser.ast.expr.*;
 import org.creativelabs.introspection.ClassType;
 import org.creativelabs.introspection.ClassTypeError;
 import org.creativelabs.introspection.ReflectionAbstraction;
-import org.creativelabs.introspection.ReflectionAbstractionImpl;
 
 import java.util.ArrayList;
 import java.util.List;
 
-class TypeFinder {
+public class TypeFinder {
 
     private ReflectionAbstraction reflectionAbstraction;
 
@@ -21,10 +20,6 @@ class TypeFinder {
         this.reflectionAbstraction = reflectionAbstraction;
         this.varType = varType;
         this.imports = imports;
-    }
-
-    public TypeFinder(VariableList varType, ImportList imports) {
-        this(ReflectionAbstractionImpl.create(), varType, imports);
     }
 
     ClassType determineType(Expression expr) {
@@ -56,6 +51,8 @@ class TypeFinder {
             return determineType((EnclosedExpr) expr);
         } else if (expr instanceof ClassExpr) {
             return determineType((ClassExpr) expr);
+        } else if (expr instanceof ConditionalExpr) {
+            return determineType((ConditionalExpr) expr);
         }
 
         return reflectionAbstraction.createErrorClassType("unsupported expression");
@@ -78,9 +75,7 @@ class TypeFinder {
 
     private ClassType determineType(NameExpr expr) {
         String name = expr.getName();
-        if (isFullClassName(name)) {
-            return reflectionAbstraction.getClassTypeByName(name);
-        }
+
         ClassType result = null;
         if (imports != null) {
             result = imports.getClassByShortName(name);
@@ -93,12 +88,15 @@ class TypeFinder {
                 ClassType thisType = varType.getFieldTypeAsClass("this");
                 result = reflectionAbstraction.getFieldType(thisType, name);
             }
-            return result;
+            if (!(result instanceof ClassTypeError)) {
+                return result;
+            }
         }
+        return imports.findStaticField(name);
     }
 
-    private boolean isFullClassName(String className) {
-        if (className.indexOf('.') == -1) {
+    private boolean isFullClassName(String className){
+        if (className.indexOf('.') == -1){
             return false;
         }
         return true;
@@ -170,6 +168,15 @@ class TypeFinder {
 
     private ClassType determineType(ObjectCreationExpr expr) {
         return imports.getClassByType(expr.getType());
+    }
+
+    private ClassType determineType(ConditionalExpr expr) {
+        ClassType thenType = determineType(expr.getThenExpr());
+        ClassType elseType = determineType(expr.getElseExpr());
+        if (!(thenType.toString().equals(elseType.toString()))) {
+            return reflectionAbstraction.createErrorClassType("then and else expressions have different types");
+        }
+        return thenType;
     }
 
     private ClassType determineType(BinaryExpr expr) {
@@ -277,7 +284,7 @@ class TypeFinder {
     }
 
     private ClassType determineType(VariableDeclarationExpr expr) {
-        return determineType(new NameExpr(expr.getType().toString()));
+        return imports.getClassByType(expr.getType());
     }
 
 }

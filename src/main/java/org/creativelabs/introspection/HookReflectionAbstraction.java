@@ -1,10 +1,10 @@
 package org.creativelabs.introspection;
 
-class HookReflectionAbstraction implements ReflectionAbstraction {
+public class HookReflectionAbstraction implements ReflectionAbstraction {
 
     private ReflectionAbstraction ra;
 
-    HookReflectionAbstraction(ReflectionAbstractionImpl ra) {
+    public HookReflectionAbstraction(ReflectionAbstractionImpl ra) {
         this.ra = ra;
     }
     
@@ -45,10 +45,6 @@ class HookReflectionAbstraction implements ReflectionAbstraction {
         return ra.getNestedClass(className, nestedClassName);
     }
 
-    public ClassType convertToArray(ClassType classType, int dimension) {
-        return ra.convertToArray(classType, dimension);
-    }
-
     public ClassType getElementType(ClassType classType) {
         return ra.getElementType(classType);
     }
@@ -57,11 +53,18 @@ class HookReflectionAbstraction implements ReflectionAbstraction {
         return ra.createNullClassType();
     }
 
+    @Override
     public ClassType addArrayDepth(ClassType classType) {
         return ra.addArrayDepth(classType);
     }
 
+    @Override
     public ClassType addArrayDepth(ClassType classType, int count) {
         return ra.addArrayDepth(classType, count);
+    }
+
+    @Override
+    public ClassType findClassInTypeHierarchy(ClassType classType, String nestedName) {
+        return ra.findClassInTypeHierarchy(classType, nestedName);
     }
 }

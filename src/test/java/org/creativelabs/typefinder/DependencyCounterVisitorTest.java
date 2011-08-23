@@ -16,9 +16,11 @@ import static org.testng.AssertJUnit.*;
 
 public class DependencyCounterVisitorTest {
 
+    private ReflectionAbstraction ra = ReflectionAbstractionImpl.create();
+
     @Test
     public void testVisitNameExpr() throws Exception {
-        ClassOrInterfaceDeclaration classDeclaration = 
+        ClassOrInterfaceDeclaration classDeclaration =
             ParseHelper.createClassDeclaration("class Main { String name; }");
 
         ImportList imports = ParseHelper.createImportList("");
@@ -26,7 +28,7 @@ public class DependencyCounterVisitorTest {
         VariableList fieldList = ConstructionHelper
             .createVariableListFromClassFields(classDeclaration, imports);
 
-        DependencyCounterVisitor dc = new DependencyCounterVisitor(fieldList, imports);
+        DependencyCounterVisitor dc = new DependencyCounterVisitor(fieldList, imports, ra);
 
         NameExpr expr = (NameExpr)ParseHelper.createExpression("name");
 
@@ -42,7 +44,7 @@ public class DependencyCounterVisitorTest {
     public void testVisitNameExprClass() throws Exception {
         ImportList importList = ConstructionHelper.createEmptyImportList();
         DependencyCounterVisitor dc = new DependencyCounterVisitor(
-                ConstructionHelper.createEmptyVariableList(), importList);
+        ConstructionHelper.createEmptyVariableList(), importList, ra);
 
         MethodCallExpr expr = (MethodCallExpr)ParseHelper.createExpression("String.valueOf(true)");
 
@@ -57,7 +59,7 @@ public class DependencyCounterVisitorTest {
     public void testVisitBlockStmtForEmptyMethod() throws Exception {
         BlockStmt blockStmt = ParseHelper.createBlockStmt("public void method(){}");
 
-        DependencyCounterVisitor dependencyCounter = new DependencyCounterVisitor(null, null);
+        DependencyCounterVisitor dependencyCounter = new DependencyCounterVisitor(null, null, ra);
 
         String result = "noException";
         try {
@@ -72,7 +74,7 @@ public class DependencyCounterVisitorTest {
     public void testVisitBlockStmtForInterfaceMethod() throws Exception {
         BlockStmt blockStmt = ParseHelper.createBlockStmt("public void method();");
 
-        DependencyCounterVisitor dependencyCounter = new DependencyCounterVisitor(null, null);
+        DependencyCounterVisitor dependencyCounter = new DependencyCounterVisitor(null, null, ra);
 
         String result = "noException";
         try {
@@ -89,7 +91,7 @@ public class DependencyCounterVisitorTest {
         Expression expr = ParseHelper.createExpression("Map.Entry<String, String> entry;");
         VariableList varList = ConstructionHelper.createEmptyVariableList();
 
-        DependencyCounterVisitor dependencyCounter = new DependencyCounterVisitor(varList, imports);
+        DependencyCounterVisitor dependencyCounter = new DependencyCounterVisitor(varList, imports, ra);
         expr.accept(dependencyCounter, null);
 
         verify(imports, atLeastOnce()).getClassByType(any(Type.class));
@@ -102,9 +104,9 @@ public class DependencyCounterVisitorTest {
         ImportList imports = ParseHelper.createImportList("");
         VariableList classFields = ConstructionHelper.createEmptyVariableList();
 
-        DependencyCounterVisitor dependencyCounter = new DependencyCounterVisitor(classFields, imports);
+        DependencyCounterVisitor dependencyCounter = new DependencyCounterVisitor(classFields, imports, ra);
         expr.accept(dependencyCounter, null);
-        assertEquals("java.lang.Exception", 
+        assertEquals("java.lang.Exception",
                 dependencyCounter.localVariables.getFieldTypeAsClass("e").toString());
     }
 
@@ -115,7 +117,7 @@ public class DependencyCounterVisitorTest {
         ImportList imports = ParseHelper.createImportList("import java.util.Map;");
         VariableList classFields = ConstructionHelper.createEmptyVariableList();
 
-        DependencyCounterVisitor dependencyCounter = new DependencyCounterVisitor(classFields, imports);
+        DependencyCounterVisitor dependencyCounter = new DependencyCounterVisitor(classFields, imports, ra);
         expr.accept(dependencyCounter, null);
 
         assertEquals("java.util.Map$Entry<java.lang.String, java.lang.Integer, >",
@@ -128,7 +130,7 @@ public class DependencyCounterVisitorTest {
 
         ImportList imports = ConstructionHelper.createEmptyImportList();
         VariableList varList = ConstructionHelper.createEmptyVariableList();
-        DependencyCounterVisitor dependencyCounter = new DependencyCounterVisitor(varList, imports);
+        DependencyCounterVisitor dependencyCounter = new DependencyCounterVisitor(varList, imports, ra);
 
         expr.accept(dependencyCounter, null);
 
@@ -141,8 +143,8 @@ public class DependencyCounterVisitorTest {
 
         ImportList imports = ConstructionHelper.createEmptyImportList();
         VariableList varList = ConstructionHelper.createEmptyVariableList();
-        DependencyCounterVisitor dependencyCounter = 
-            spy(new DependencyCounterVisitor(varList, imports));
+        DependencyCounterVisitor dependencyCounter =
+            spy(new DependencyCounterVisitor(varList, imports, ra));
 
         expr.accept(dependencyCounter, null);
         verify(dependencyCounter).runTypeFinder(any(Expression.class));
@@ -155,9 +157,45 @@ public class DependencyCounterVisitorTest {
         ImportList imports = ConstructionHelper.createEmptyImportList();
         VariableList varList = ConstructionHelper.createEmptyVariableList();
 
-        DependencyCounterVisitor dependencyCounter = new DependencyCounterVisitor(varList, imports);
+        DependencyCounterVisitor dependencyCounter = new DependencyCounterVisitor(varList, imports, ra);
         expr.accept(dependencyCounter, null);
         ClassType result = dependencyCounter.localVariables.getFieldTypeAsClass("buffer");
         assertEquals("[B", result.toString());
+    }
+
+    @Test
+    public void testObjectCreationExpr() throws Exception {
+        ObjectCreationExpr expr = (ObjectCreationExpr) ParseHelper.createExpression("new MyObject() {}");
+
+        ImportList imports = ConstructionHelper.createEmptyImportList();
+        VariableList varList = ConstructionHelper.createEmptyVariableList();
+
+        DependencyCounterVisitor dependencyCounter = new DependencyCounterVisitor(varList, imports, ra);
+        dependencyCounter.visit(expr, null);
+
+        assertEquals(1, dependencyCounter.getDependencies().size());
+        assertEquals("MyObject", ((Dependency)dependencyCounter.getDependencies().iterator().next()).getExpression());
+    }
+
+    /**
+     * There is no need of processing case labels.
+     * Since their processing can be weird.
+     * Processing of Switch expression is enough.
+     */
+    @Test
+    public void testDoesntProcessSwitchLabel() throws Exception {
+        SwitchStmt stmt = (SwitchStmt) ParseHelper.createStatement("switch (x) {case v: break; case y: break;}");
+
+        ImportList imports = ConstructionHelper.createEmptyImportList();
+        VariableList varList = ConstructionHelper.createEmptyVariableList();
+
+        DependencyCounterVisitor dependencyCounter = spy(new DependencyCounterVisitor(varList, imports, ra));
+        dependencyCounter.visit(stmt, null);
+
+        NameExpr exprX = (NameExpr) ParseHelper.createExpression("v");
+        NameExpr exprY = (NameExpr) ParseHelper.createExpression("y");
+
+        verify(dependencyCounter, never()).visit(eq(exprX), eq(null));
+        verify(dependencyCounter, never()).visit(eq(exprY), eq(null));
     }
 }

@@ -10,15 +10,18 @@ import org.apache.commons.logging.LogFactory;
 import org.creativelabs.chart.BarChartBuilder;
 import org.creativelabs.drawer.ChartDrawer;
 import org.creativelabs.iig.InternalInstancesGraph;
+import org.creativelabs.introspection.HookReflectionAbstraction;
+import org.creativelabs.introspection.ReflectionAbstraction;
 import org.creativelabs.introspection.ReflectionAbstractionImpl;
 import org.creativelabs.report.DataCollector;
 import org.creativelabs.report.ReportBuilder;
 import org.creativelabs.typefinder.DependenciesChart;
+import org.creativelabs.typefinder.DependencyCounterVisitorBuilder;
 import org.creativelabs.typefinder.ImportList;
+import org.creativelabs.typefinder.VariableListBuilder;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 
 public final class MainApp {
 
@@ -28,9 +31,9 @@ public final class MainApp {
 
     private static String packageName;
 
-    private static final int IMAGE_WIDTH = 2000;
+    private static final int IMAGE_WIDTH = 8000;
 
-    private static final int IMAGE_HEIGHT = 2000;
+    private static final int IMAGE_HEIGHT = 1000;
 
     private static final String USAGE = "[-h] [-d] [-g] [-c] -f <file or directory> [<file or directory> ...]";
 
@@ -48,6 +51,7 @@ public final class MainApp {
     }
 
     public static void main(String... args) throws Exception {
+        ReflectionAbstraction ra = new HookReflectionAbstraction(new ReflectionAbstractionImpl());
         CommandLineParser parser = new PosixParser();
         Options options = new Options();
         options.addOption("h", "help", false, "Print this usage information");
@@ -78,7 +82,7 @@ public final class MainApp {
 
             for (String path : commandLine.getOptionValues('f')) {
                 File file = new File(path);
-                processFileOrDirectory(file, dataCollector);
+                processFileOrDirectory(file, dataCollector, ra);
             }
             dataCollector.buildDetailedDependencyReport();
             dataCollector.buildSsaFormRepresentationReport();
@@ -87,20 +91,31 @@ public final class MainApp {
         }
     }
 
-    private static void processClass(ClassOrInterfaceDeclaration typeDeclaration, String fileName, ReportBuilder reportBuilder) throws FileNotFoundException {
+    private static void processClass(ClassOrInterfaceDeclaration typeDeclaration, String fileName, ReportBuilder reportBuilder,
+            ReflectionAbstraction ra) {
         log.info("Processing of class " + typeDeclaration.getName() + " in file " + fileName + "...");
+
+        DependencyCounterVisitorBuilder depCountBuilder = new DependencyCounterVisitorBuilder();
+        depCountBuilder.setReflectionAbstraction(ra);
+
+        VariableListBuilder variableListBuilder = new VariableListBuilder();
+        variableListBuilder.setReflectionAbstraction(ra);
+
         ClassProcessor classProcessor = new ClassProcessorBuilder()
                 .setTypeDeclaration(typeDeclaration)
                 .setPackage(packageName)
                 .setImports(imports)
+                .setVariableListBuilder(variableListBuilder)
+                .setDependencyCounterBuilder(depCountBuilder)
                 .buildClassProcessor();
         classProcessor.compute();
         classProcessor.buildReport(reportBuilder);
 
+        //TODO Sould be moved to specific report builders.
         if (commandLine.hasOption('g')) {
             InternalInstancesGraph graph = classProcessor.getSsaInternalInstancesGraph();
 
-////            Jung graph
+//            Jung graph
 //            JungGraphBuilder graphBuilder1 = new JungGraphBuilder();
 //            graph.buildGraph(graphBuilder1);
 //            new JungDrawer(graphBuilder1.getGraph()).saveToFile(IMAGE_WIDTH, IMAGE_HEIGHT,
@@ -123,13 +138,14 @@ public final class MainApp {
         }
     }
 
-    private static void processFileOrDirectory(File fileOrDirectory, ReportBuilder reportBuilder) throws Exception {
+    public static void processFileOrDirectory(File fileOrDirectory, ReportBuilder reportBuilder,
+            ReflectionAbstraction ra) throws Exception {
         if (!fileOrDirectory.exists()) {
             throw new IllegalArgumentException(fileOrDirectory.getAbsolutePath() + " doesn't exist");
         }
         if (fileOrDirectory.isDirectory()) {
             for (File directory : fileOrDirectory.listFiles()) {
-                processFileOrDirectory(directory, reportBuilder);
+                processFileOrDirectory(directory, reportBuilder, ra);
             }
         } else {
             String fileName = fileOrDirectory.getName();
@@ -140,11 +156,11 @@ public final class MainApp {
                 for (TypeDeclaration typeDeclaration : cu.getTypes()) {
                     if (typeDeclaration instanceof ClassOrInterfaceDeclaration) {
                         imports =
-                                new ImportList(ReflectionAbstractionImpl.create(), cu,
+                                new ImportList(ra, cu,
                                         (ClassOrInterfaceDeclaration) typeDeclaration);
 
                         processClass((ClassOrInterfaceDeclaration) typeDeclaration,
-                                fileOrDirectory.getAbsolutePath(), reportBuilder);
+                                fileOrDirectory.getAbsolutePath(), reportBuilder, ra);
                     }
                 }
             }

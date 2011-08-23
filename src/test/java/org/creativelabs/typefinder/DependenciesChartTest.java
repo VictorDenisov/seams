@@ -1,10 +1,9 @@
 package org.creativelabs.typefinder;
 
 import org.creativelabs.chart.ToStringChartBuilder;
-import org.creativelabs.typefinder.DependenciesChart;
 import org.testng.annotations.Test;
 
-import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertEquals;
 
 public class DependenciesChartTest {
 

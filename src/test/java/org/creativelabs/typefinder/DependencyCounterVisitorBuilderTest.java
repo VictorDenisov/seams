@@ -1,10 +1,11 @@
 package org.creativelabs.typefinder;
 
+import japa.parser.ast.body.MethodDeclaration;
+import org.creativelabs.introspection.ReflectionAbstractionImpl;
 import org.testng.annotations.Test;
 
-import japa.parser.ast.body.*;
-
-import static org.testng.AssertJUnit.*;
+import static org.testng.AssertJUnit.assertEquals;
+import static org.testng.AssertJUnit.assertNotNull;
 
 public class DependencyCounterVisitorBuilderTest {
 
@@ -90,6 +91,7 @@ public class DependencyCounterVisitorBuilderTest {
         ImportList imports = ConstructionHelper.createEmptyImportList();
         VariableList classFields = ConstructionHelper.createEmptyVariableList();
 
+        builder.setReflectionAbstraction(ReflectionAbstractionImpl.create());
         builder.setImports(imports);
         builder.setClassFields(classFields);
         builder.setConstructedMethodArguments(md);

@@ -1,18 +1,21 @@
 package org.creativelabs.typefinder;
 
-import org.testng.annotations.*;
 import japa.parser.ast.CompilationUnit;
-import japa.parser.ast.type.*;
-import japa.parser.ast.body.*;
+import japa.parser.ast.body.ClassOrInterfaceDeclaration;
+import japa.parser.ast.type.Type;
+import org.creativelabs.introspection.ClassType;
+import org.creativelabs.introspection.ReflectionAbstraction;
+import org.creativelabs.introspection.ReflectionAbstractionImpl;
+import org.creativelabs.introspection.TestingReflectionAbstraction;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 
-import java.util.List;
 import java.util.Arrays;
+import java.util.List;
 
-import org.creativelabs.introspection.*;
-
-import static org.testng.AssertJUnit.*;
-import static org.creativelabs.typefinder.AssertHelper.*;
+import static org.creativelabs.typefinder.AssertHelper.assertEqualsList;
 import static org.mockito.Mockito.*;
+import static org.testng.AssertJUnit.assertEquals;
 
 public class ImportListTest {
 
@@ -37,7 +40,7 @@ public class ImportListTest {
 
         List<String> imports = importList.getImports();
 
-        assertEqualsList(Arrays.asList(new String[]{"java.lang", "java.util"}), imports);
+        assertEqualsList(Arrays.asList(new String[]{"java.util", "java.lang"}), imports);
     }
 
     @Test
@@ -46,7 +49,7 @@ public class ImportListTest {
 
         List<String> imports = importList.getImports();
 
-        assertEqualsList(Arrays.asList(new String[]{"java.lang", "org.apache.log4j"}), imports);
+        assertEqualsList(Arrays.asList(new String[]{"org.apache.log4j", "java.lang"}), imports);
     }
 
     @Test
@@ -54,7 +57,7 @@ public class ImportListTest {
 
         List<String> imports = importList.getImports();
 
-        assertEqualsList(Arrays.asList(new String[]{"java.lang", "org.apache.log4j.Logger"}), imports);
+        assertEqualsList(Arrays.asList(new String[]{"org.apache.log4j.Logger", "java.lang"}), imports);
     }
 
     @Test
@@ -234,14 +237,51 @@ public class ImportListTest {
         CompilationUnit cu = ParseHelper.createCompilationUnit(
                 "package org.creativelabs; public class Main { public static class Nested {}}");
         ReflectionAbstraction ra = mock(ReflectionAbstraction.class);
-        when(ra.classWithNameExists("org.creativelabs.Main$Nested")).thenReturn(true);
+
         when(ra.classWithNameExists("org.creativelabs.Main$Nested")).thenReturn(true);
 
-        ImportList imports = 
+        ImportList imports =
             new ImportList(ra, cu, (ClassOrInterfaceDeclaration)(cu.getTypes().get(0)));
 
         ClassType result = imports.getClassByShortName("Nested");
 
         verify(ra).getClassTypeByName("org.creativelabs.Main$Nested");
     }
+
+    @Test
+    public void testFindStaticMethod() throws Exception {
+        ReflectionAbstraction ra = new ReflectionAbstractionImpl();
+
+        ImportList imports = ParseHelper.createImportList("import static java.lang.Math.*;");
+
+        ClassType[] types = new ClassType[1];
+        types[0] = ra.getClassTypeByName("double");
+
+        ClassType type = imports.findStaticMethod("abs", types);
+
+        assertEquals("double", type.toString());
+    }
+
+    @Test
+    public void testFindStaticField() throws Exception {
+        ReflectionAbstraction ra = new ReflectionAbstractionImpl();
+
+        ImportList imports = ParseHelper.createImportList("import static java.lang.Math.*;");
+
+        ClassType type = imports.findStaticField("PI");
+
+        assertEquals("double", type.toString());
+    }
+
+    @Test
+    public void testFindStaticField_exactImport() throws Exception {
+        ReflectionAbstraction ra = new ReflectionAbstractionImpl();
+
+        ImportList imports = ParseHelper.createImportList("import static java.lang.Math.PI;");
+
+        ClassType type = imports.findStaticField("PI");
+
+        assertEquals("double", type.toString());
+    }
 }
+

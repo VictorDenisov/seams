@@ -18,8 +18,6 @@ public interface ReflectionAbstraction extends Serializable {
 
     ClassType getNestedClass(ClassType className, String nestedClassName);
 
-    ClassType convertToArray(ClassType classType, int dimension);
-
     ClassType getElementType(ClassType classType);
 
     ClassType createNullClassType();
@@ -27,4 +25,6 @@ public interface ReflectionAbstraction extends Serializable {
     ClassType addArrayDepth(ClassType classType);
 
     ClassType addArrayDepth(ClassType classType, int count);
+
+    ClassType findClassInTypeHierarchy(ClassType classType, String nestedClassName);
 }

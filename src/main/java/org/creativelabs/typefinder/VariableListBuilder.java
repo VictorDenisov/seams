@@ -9,14 +9,20 @@ public class VariableListBuilder {
 
     private ImportList imports;
 
+    private ReflectionAbstraction ra;
+
+    public VariableListBuilder setReflectionAbstraction(ReflectionAbstraction ra) {
+        this.ra = ra;
+        return this;
+    }
+
     public VariableListBuilder setImports(ImportList imports) {
         this.imports = imports;
         return this;
     }
 
     public VariableList buildFromMethod(MethodDeclaration methodDeclaration) {
-        VariableList result = new VariableList();
-        ReflectionAbstraction ra = ReflectionAbstractionImpl.create();
+        VariableList result = new VariableList(ra);
         if (methodDeclaration.getParameters() == null) {
             return result;
         }
@@ -29,21 +35,21 @@ public class VariableListBuilder {
             if (parameter.isVarArgs()) {
                 classType = ra.addArrayDepth(classType);
             }
-            result.fieldTypes.put(name, classType);
+            result.put(name, classType);
         }
         return result;
     }
 
     public VariableList buildFromClass(ClassOrInterfaceDeclaration classDeclaration) {
-        VariableList result = new VariableList();
+        VariableList result = new VariableList(ra);
         for (BodyDeclaration bd : classDeclaration.getMembers()) {
             if (bd instanceof FieldDeclaration) {
                 FieldDeclaration fd = (FieldDeclaration) bd;
                 Type type = fd.getType();
                 for (VariableDeclarator vardecl : fd.getVariables()) {
                     ClassType classType = imports.getClassByType(type);
-                    classType = ReflectionAbstractionImpl.create().convertToArray(classType, vardecl.getId().getArrayCount());
-                    result.fieldTypes.put(vardecl.getId().getName(), classType);
+                    classType = ra.addArrayDepth(classType, vardecl.getId().getArrayCount());
+                    result.put(vardecl.getId().getName(), classType);
                 }
             }
         }
@@ -51,6 +57,6 @@ public class VariableListBuilder {
     }
 
     public VariableList buildEmpty() {
-        return new VariableList();
+        return new VariableList(ra);
     }
 }

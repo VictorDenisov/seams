@@ -96,6 +96,8 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
 
     private HashMap<String, String> arrayChar;
 
+    private ClassLoader classLoader;
+
     private void addToBoxing(String data, Class clazz) {
         if (!boxingMap.containsKey(data)) {
             boxingMap.put(data, new ArrayList<Class>());
@@ -103,17 +105,32 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         boxingMap.get(data).add(clazz);
     }
 
+    /** 
+     * Only for test purposes only.
+     *
+     * @deprecated
+     */
     public static ReflectionAbstraction create() {
         return new HookReflectionAbstraction(new ReflectionAbstractionImpl());
     }
 
-    ReflectionAbstractionImpl() {
+    public ReflectionAbstractionImpl(ClassLoader classLoader) {
+        init();
+        this.classLoader = classLoader;
+    }
+
+    public ReflectionAbstractionImpl() {
+        this(ReflectionAbstractionImpl.class.getClassLoader());
+    }
+
+    private void init() {
         boxingMap = new HashMap<String, ArrayList<Class>>();
 
         addToBoxing("byte", Byte.class);
         addToBoxing("short", Short.class);
         addToBoxing("int", Integer.class);
         addToBoxing("int", short.class);
+        addToBoxing("int", byte.class);
         addToBoxing("int", long.class);
         addToBoxing("long", Long.class);
         addToBoxing("long", int.class);
@@ -122,6 +139,7 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         addToBoxing("char", Character.class);
         addToBoxing("char", int.class);
         addToBoxing("short", int.class);
+        addToBoxing("byte", int.class);
         addToBoxing("boolean", Boolean.class);
         addToBoxing("void", Void.class);
 
@@ -157,22 +175,20 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         arrayChar.put("boolean", "Z");
     }
 
-    private Class getClass(String type) throws ClassNotFoundException {
-        if (primitivesMap.containsKey(type)) {
-            return primitivesMap.get(type);
+    private Class getClass(String className) throws ClassNotFoundException {
+        if (primitivesMap.containsKey(className)) {
+            return primitivesMap.get(className);
         } else {
-            return Class.forName(type);
+            return Class.forName(className, false, classLoader);
         }
     }
 
     @Override
     public boolean classWithNameExists(String className) {
         try {
-            Class.forName(className);
+            Class.forName(className, false, classLoader);
             return true;
-        } catch (ClassNotFoundException e) {
-            return false;
-        } catch (NoClassDefFoundError e) {
+        } catch (Throwable e) {
             return false;
         }
     }
@@ -182,7 +198,7 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
         for (int i = 0; i < types.length; ++i) {
             if (types[i] instanceof ClassTypeNull) {
                 try {
-                    result[i] = Class.forName("java.lang.Object");
+                    result[i] = getClass("java.lang.Object");
                 } catch (Exception e) {
                     //java.lang.Object always exists
                 }
@@ -258,20 +274,24 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
             Class[] args = getTypeClasses(types);
             Method result = clazz.getDeclaredMethod(methodName, args);
             return result;
-        } catch (NoSuchMethodException e) {
-            Method[] methods = clazz.getDeclaredMethods();
-            for (Method method : methods) {
-                if (isEligible(method, methodName, types)) {
-                    return method;
+        } catch (Throwable e) {
+            try {
+                Method[] methods = clazz.getDeclaredMethods();
+                for (Method method : methods) {
+                    if (isEligible(method, methodName, types)) {
+                        return method;
+                    }
                 }
-            }
-            methods = clazz.getMethods();
-            for (Method method : methods) {
-                if (isEligible(method, methodName, types)) {
-                    return method;
+                methods = clazz.getMethods();
+                for (Method method : methods) {
+                    if (isEligible(method, methodName, types)) {
+                        return method;
+                    }
                 }
+                throw new NoSuchMethodException();
+            } catch (Throwable e1) {
+                throw new NoSuchMethodException();
             }
-            throw new NoSuchMethodException();
         }
     }
 
@@ -345,7 +365,7 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
             result = processGenericArgs(genericReturnType, classNameImpl, result);
 
             return result;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             return createErrorClassType(e.toString());
         }
     }
@@ -377,7 +397,7 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
             result = processGenericArgs(genericReturnType, classNameImpl, result);
 
             return result;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             return createErrorClassType(e.toString());
         }
     }
@@ -388,7 +408,7 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
             ClassTypeImpl c = new ClassTypeImpl();
             c.clazz = getClass(className);
             return c;
-        } catch (ClassNotFoundException e) {
+        } catch (Throwable e) {
             return createErrorClassType(e.toString());
         }
     }
@@ -412,6 +432,38 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
                 result.genericArgs.put(variable.toString(), args[i]);
             }
             return result;
+        } catch (Exception e) {
+            return createErrorClassType(e.toString());
+        }
+    }
+
+    @Override
+    public ClassType findClassInTypeHierarchy(ClassType classType, String nestedName) {
+        try {
+            ClassType res = getNestedClass(classType, nestedName);
+
+            if (!(res instanceof ClassTypeErrorImpl)) {
+                return res;
+            }
+
+            ClassTypeImpl classNameImpl = (ClassTypeImpl) classType;
+            Class[] list = classNameImpl.clazz.getInterfaces();
+            if (list == null) {
+                return res;
+            }
+            ClassTypeImpl interm = new ClassTypeImpl();
+            for (Class clazz : list) {
+                interm.clazz = clazz;
+                res = findClassInTypeHierarchy(interm, nestedName);
+
+                if (!(res instanceof ClassTypeErrorImpl)) {
+                    return res;
+                }
+            }
+            interm.clazz = classNameImpl.clazz.getSuperclass();
+            res = findClassInTypeHierarchy(interm, nestedName);
+            
+            return res;
         } catch (Exception e) {
             return createErrorClassType(e.toString());
         }
@@ -447,25 +499,6 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
     }
 
     @Override
-    public ClassType convertToArray(ClassType classType, int dimension) {
-        if (dimension == 0) {
-            return classType;
-        }
-        try {
-            ClassTypeImpl classTypeImpl = (ClassTypeImpl) classType;
-            String className = takeArrayName(classTypeImpl.clazz);
-            for (int i = 0; i < dimension; ++i) {
-                className = "[" + className;
-            }
-            ClassTypeImpl result = new ClassTypeImpl();
-            result.clazz = Class.forName(className);
-            return result;
-        } catch (Exception e) {
-            return createErrorClassType(e.toString());
-        }
-    }
-
-    @Override
     public ClassType addArrayDepth(ClassType classType, int count) {
         ClassType result = classType;
         for (int i = 0; i < count; ++i) {
@@ -484,7 +517,7 @@ public class ReflectionAbstractionImpl implements ReflectionAbstraction {
                 className = takeArrayName(previous.clazz);
             }
             className = "[" + className;
-            result.clazz = Class.forName(className);
+            result.clazz = getClass(className);
             return result;
         } catch (Exception e) {
             return createErrorClassType(e.toString());

@@ -1,6 +1,7 @@
 package org.creativelabs.introspection;
 
 import japa.parser.ast.body.*;
+import org.creativelabs.copy.CopyingUtils;
 
 import java.util.*;
 
@@ -136,28 +137,40 @@ public class TestingReflectionAbstraction implements ReflectionAbstraction {
         return classes.keySet().contains(className);
     }
 
+    private class ClassTypeErrorStub implements ClassTypeError {
+        private String message;
+
+        public ClassTypeErrorStub(String message) {
+            this.message = message;
+        }
+
+        public String toString() {
+            return message;
+        }
+
+        public String getShortString() {
+            return message;
+        }
+
+        @Override
+        public <ClassTypeErrorStub> ClassTypeErrorStub copy() {
+            return CopyingUtils.<ClassTypeErrorStub>copy(this);
+        }
+    }
+
     @Override
     public ClassType createErrorClassType(String message) {
-        return new ClassTypeStub(message);
+        return new ClassTypeErrorStub(message);
     }
 
     @Override
     public ClassType substGenericArgs(ClassType className, ClassType[] args) {
-        return null;
+        return createErrorClassType("");
     }
 
     @Override
     public ClassType getNestedClass(ClassType className, String nestedClassName) {
-        return null;
-    }
-
-    @Override
-    public ClassType convertToArray(ClassType classType, int dimension) {
-        StringBuffer buffer = new StringBuffer();
-        for (int i = 0; i < dimension; i++){
-            buffer.append("[]");
-        }
-        return new ClassTypeStub(classType.toString() + buffer);
+        return createErrorClassType("");
     }
 
     @Override
@@ -168,16 +181,25 @@ public class TestingReflectionAbstraction implements ReflectionAbstraction {
 
     @Override
     public ClassType createNullClassType() {
-        return null;
+        return createErrorClassType("");
     }
 
     @Override
     public ClassType addArrayDepth(ClassType classType) {
-        return null;
+        return createErrorClassType("");
     }
 
     @Override
     public ClassType addArrayDepth(ClassType classType, int count) {
-        return null;
+        StringBuffer buffer = new StringBuffer();
+        for (int i = 0; i < count; i++){
+            buffer.append("[]");
+        }
+        return new ClassTypeStub(classType.toString() + buffer);
+    }
+
+    @Override 
+    public ClassType findClassInTypeHierarchy(ClassType classType, String nestedName) {
+        return createErrorClassType("");
     }
 }
