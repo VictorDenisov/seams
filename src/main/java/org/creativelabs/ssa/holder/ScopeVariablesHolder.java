@@ -16,7 +16,7 @@ public class ScopeVariablesHolder implements VariablesHolder {
 
     Log log = LogFactory.getLog(ScopeVariablesHolder.class);
 
-     /**
+    /**
      * List of variables and they indexes for reading.
      */
     private Map<Variable, Integer> readVariables;
@@ -79,7 +79,7 @@ public class ScopeVariablesHolder implements VariablesHolder {
      * If read is true then search will be in rearVariables otherwise in writeVariables.
      *
      * @param holder holder of type SimpleMultiHolder
-     * @param read of type boolean
+     * @param read   of type boolean
      * @return List<String>
      */
     public List<Variable> getDifferenceInVariables(VariablesHolder holder, boolean read) {
@@ -101,13 +101,14 @@ public class ScopeVariablesHolder implements VariablesHolder {
 
     /**
      * Returns the indexes of variable. If the variable isn't contained in holder it will be return  -1.
-     * @param holder of type SimpleMultiHolder
+     *
+     * @param holder       of type SimpleMultiHolder
      * @param variableName name of the variable
      * @return Integer[]
      */
     public Integer[] getPhiIndexes(VariablesHolder holder, Variable variableName) {
-        Integer index1 = holder.readFrom(variableName, true);
-        Integer index2 = readFrom(variableName, true);
+        Integer index1 = holder.read(variableName);
+        Integer index2 = read(variableName);
         if (index1 == null) {
             index1 = -1;
             log.error(ClassProcessor.debugInfo + "Error while getting phi indexes for variable = " + variableName.getString());
@@ -116,9 +117,37 @@ public class ScopeVariablesHolder implements VariablesHolder {
             index2 = -1;
             log.error(ClassProcessor.debugInfo + "Error while getting phi indexes for variable = " + variableName.getString());
         }
-        return new Integer[] {Math.min(index1, index2),
+        return new Integer[]{Math.min(index1, index2),
                 Math.max(index1, index2)};
     }
+
+//    private Integer getIndexOfVariable(VariablesHolder holder, Variable variable) {
+//        Integer index = holder.read(variable);
+//        if (index != null) {
+//            return index;
+//        }
+//        variable = addInnerFieldForVariable(holder, variable);
+//        if (variable != null) {
+//            return holder.read(variable);
+//        }
+//        return null;
+//    }
+//
+//    private Variable addInnerFieldForVariable(VariablesHolder holder, Variable variable) {
+//        String scope = variable.getScope();
+//        if (scope != null && scope.contains(".")) {
+//            int indexOfLastDot = scope.lastIndexOf(".");
+//            String newScope = scope.substring(0, indexOfLastDot);
+//            String newName = scope.substring(indexOfLastDot - 1, scope.length());
+//            Variable newVariable = new StringVariable(newName, newScope);
+//            if (holder.read(newVariable) != null) {
+//                holder.write(variable, 0);
+//                return variable;
+//            }
+//
+//        }
+//        return null;
+//    }
 
     public boolean containsKey(Variable name, boolean read) {
         return getCurrentVariables(read).containsKey(name);
@@ -151,9 +180,9 @@ public class ScopeVariablesHolder implements VariablesHolder {
      *
      * @param holders of type SimpleMultiHolder
      */
-    public void mergeHolders(VariablesHolder... holders){
-        for (VariablesHolder holder : holders){
-            for (Map.Entry<Variable, Integer> entry : holder.getReadVariables().entrySet()){
+    public void mergeHolders(VariablesHolder... holders) {
+        for (VariablesHolder holder : holders) {
+            for (Map.Entry<Variable, Integer> entry : holder.getReadVariables().entrySet()) {
                 if (readVariables.containsKey(entry.getKey())) {
                     Variable key = entry.getKey().copy();
                     readVariables.put(key, Math.max(readVariables.get(key), entry.getValue()));
@@ -161,7 +190,7 @@ public class ScopeVariablesHolder implements VariablesHolder {
                     readVariables.put(entry.getKey(), entry.getValue());
                 }
             }
-            for (Map.Entry<Variable, Integer> entry : holder.getWriteVariables().entrySet()){
+            for (Map.Entry<Variable, Integer> entry : holder.getWriteVariables().entrySet()) {
                 if (writeVariables.containsKey(entry.getKey())) {
                     Variable key = entry.getKey().copy();
                     writeVariables.put(key, Math.max(writeVariables.get(key), entry.getValue()));

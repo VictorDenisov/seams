@@ -15,6 +15,8 @@ import org.creativelabs.ssa.holder.MethodArgsHolder;
 import org.creativelabs.ssa.holder.MethodModifiersHolder;
 import org.creativelabs.ssa.holder.PhiNodesHolder;
 import org.creativelabs.ssa.holder.VariablesHolder;
+import org.creativelabs.ssa.holder.variable.StringVariable;
+import org.creativelabs.ssa.holder.variable.Variable;
 
 import java.lang.reflect.Modifier;
 import java.util.Set;
@@ -219,6 +221,12 @@ public class ConditionFinder extends GenericVisitorAdapter<Condition[], Set<Stri
                 }
             }
         } else {
+
+            String scope = new ScopeVisitor().visit(n, null);
+            Variable variable = new StringVariable(n.getField(), scope);
+
+
+
             Condition internalCondition = graph.getInternalVertexCondition(methodName + SEPARATOR +
                     n.getField());
             Condition externalCondition = graph.getExternalVertexCondition(methodName + SEPARATOR +
@@ -229,9 +237,6 @@ public class ConditionFinder extends GenericVisitorAdapter<Condition[], Set<Stri
                 return new Condition[]{internalCondition, externalCondition};
             }
 
-
-
-            log.info("Processing conditions of inner field[name=" + n.toString() + "].");
             //TODO to implement support of inner fields
             return getDefaultInternalConditions();
         }

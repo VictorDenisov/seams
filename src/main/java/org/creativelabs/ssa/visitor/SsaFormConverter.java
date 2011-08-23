@@ -141,7 +141,8 @@ public class SsaFormConverter extends VoidVisitorAdapter<MultiHolder> {
 
         //add phi for whole statement
         for (Variable name : assigningVariables) {
-            if (!(thenCreatingVariables.contains(name) ^ elseCreatingVariables.contains(name))) {
+            if ((!(thenCreatingVariables.contains(name) ^ elseCreatingVariables.contains(name)))
+                    || (!thenCreatingVariables.contains(name) && !elseCreatingVariables.contains(name))) {
                 Integer[] indexes = thenVariables.getPhiIndexes(elseVariables, name);
                 Integer newIndex = Math.max(indexes[0], indexes[1]) + 1;
                 addPhi(n, new PhiNode(name, newIndex, PhiNode.Mode.AFTER, indexes));

@@ -52,7 +52,7 @@ public class UsingModifyingVariablesVisitor extends VoidVisitorAdapter<UsingModi
 
     @Override
     public void visit(FieldAccessExpr n, UsingModifyingVariablesHolder arg) {
-        VoidVisitorHelper.visitExpression(n.getScope(), arg, this);
+//        VoidVisitorHelper.visitExpression(n.getScope(), arg, this);
         arg.addUsingVariable(createVariable(n.getField(), n.getScope().toString(), methodArgsHolder));
     }
 

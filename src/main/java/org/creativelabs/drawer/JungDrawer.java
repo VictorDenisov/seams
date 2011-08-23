@@ -1,7 +1,8 @@
 package org.creativelabs.drawer;
 
-import edu.uci.ics.jung.algorithms.layout.ISOMLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
+import edu.uci.ics.jung.algorithms.layout.TreeLayout;
+import edu.uci.ics.jung.graph.Forest;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.visualization.BasicVisualizationServer;
 import org.apache.commons.collections15.Transformer;
@@ -24,10 +25,9 @@ public class JungDrawer implements Drawer {
         this.g = g;
     }
 
-    private BasicVisualizationServer<Vertex, String> addContentToFrame(JFrame frame, int width, int height) {
+    private BasicVisualizationServer<Vertex, String> addContentToFrame(JFrame frame) {
         // The Layout<V, E> is parameterized by the vertex and edge types
-        Layout<Vertex, String> layout = new ISOMLayout<Vertex, String> (g);
-        layout.setSize(new Dimension(width, height)); // sets the initial size of the space
+        Layout<Vertex, String> layout = new TreeLayout<Vertex, String>((Forest<Vertex, String>)g, 400, 150);
         // The BasicVisualizationServer<V,E> is parameterized by the edge types
 
         Transformer<Vertex, Paint> vertexPaint = new Transformer<Vertex,Paint>() {
@@ -43,13 +43,24 @@ public class JungDrawer implements Drawer {
             }
         };
 
+        Transformer<String,Font> edgeFontTransformer =
+                new Transformer<String,Font>() {
+            @Override
+            public Font transform(String text) {
+                return new Font("Helvetica", Font.PLAIN, 8);
+            }
+        };
+
+
         Transformer<Vertex, String> vertexLabeller = new getLabelLabeller<Vertex>();
 
         BasicVisualizationServer<Vertex, String> vv =
                 new BasicVisualizationServer<Vertex, String>(layout);
-        vv.setPreferredSize(new Dimension(width, height)); //Sets the viewing area size
+        vv.setPreferredSize(layout.getSize()); //Sets the viewing area size
+
         vv.getRenderContext().setVertexLabelTransformer(vertexLabeller);
         vv.getRenderContext().setVertexFillPaintTransformer(vertexPaint);
+        vv.getRenderContext().setEdgeFontTransformer(edgeFontTransformer);
 
         frame.getContentPane().add(vv);
         frame.pack();
@@ -58,16 +69,24 @@ public class JungDrawer implements Drawer {
 
     @Override
     public void draw(int width, int height, JFrame frame) {
-        addContentToFrame(frame, width, height);
+        addContentToFrame(frame);
         frame.setVisible(true);
     }
 
     @Override
     public void saveToFile(int width, int height, String fileName) {
         JFrame frame = new JFrame(fileName);
-        JPanel panel = addContentToFrame(frame, width, height);
+        JPanel panel = addContentToFrame(frame);
 
-        BufferedImage image = new BufferedImage(width, height, 1);
+        //if pickture would be bigger
+        if (panel.getWidth() > 13000) {
+            width = 13000;
+        } else {
+            width = panel.getWidth();
+        }
+
+        BufferedImage image = new BufferedImage(width , panel.getHeight(), 5);
+
         Graphics graphics = image.getGraphics();
         panel.paint(graphics);
          try {

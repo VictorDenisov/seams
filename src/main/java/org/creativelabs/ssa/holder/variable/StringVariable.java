@@ -16,15 +16,6 @@ public class StringVariable implements Variable {
     String name;
     String scope;
 
-//    public StringVariable(String name, boolean isArgumentOtherwiseThis) {
-//        this.name = name;
-//        if (isArgumentOtherwiseThis) {
-//            this.scope = Constants.ARG_SCOPE;
-//        } else {
-//            this.scope = Constants.THIS_SCOPE;
-//        }
-//    }
-
     public StringVariable(String name, String scope) {
         this.name = name;
         this.scope = scope;
